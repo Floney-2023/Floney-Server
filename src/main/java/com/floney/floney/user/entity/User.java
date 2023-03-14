@@ -33,9 +33,6 @@ public class User{
     @Column(nullable = false, length = 10)
     private String provider;
 
-    @Column(nullable = false)
-    private String accessToken;
-
-    @Column(nullable = false)
+    @Column
     private String refreshToken;
 }
