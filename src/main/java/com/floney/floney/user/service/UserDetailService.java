@@ -4,6 +4,7 @@ import com.floney.floney.common.BaseException;
 import com.floney.floney.common.BaseResponseStatus;
 import com.floney.floney.user.dto.UserDto;
 import com.floney.floney.user.dto.security.UserPrincipal;
+import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +19,13 @@ public class UserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userRepository
-                .findById(username)
-                .map(UserDto::from)
-                .map(UserPrincipal::from)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+        User user = userRepository.findByEmail(username);
+        if(user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+
+        return UserPrincipal.from(
+                UserDto.from(user)
+        );
     }
 }

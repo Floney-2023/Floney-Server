@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class UserDto implements Serializable {
+    private final Long id;
     private final String nickname;
     private final String email;
     private final String password;
@@ -19,12 +20,13 @@ public class UserDto implements Serializable {
     public static UserDto of(String nickname, String email, String password, String profileImg,
                              int marketingAgree, int subscribe, LocalDateTime lastAdTime, String provider) {
         return new UserDto(
-                nickname, email, password, profileImg, marketingAgree, subscribe, lastAdTime, provider
+                null, nickname, email, password, profileImg, marketingAgree, subscribe, lastAdTime, provider
         );
     }
 
     public static UserDto from(User entity) {
         return new UserDto(
+                entity.getId(),
                 entity.getNickname(),
                 entity.getEmail(),
                 entity.getPassword(),
