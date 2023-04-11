@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .antMatchers(
-//                        "/",
+                        "/",
                         "/users/signup",
                         "/users/signout",
                         "/users/password",

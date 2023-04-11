@@ -68,7 +68,7 @@ public class UserService {
     }
 
     public void signup(UserDto userDto) throws BaseException {
-        if (userRepository.existsById(userDto.getEmail())) {
+        if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new BaseException(BaseResponseStatus.USER_EXIST);
         }
 
@@ -79,7 +79,7 @@ public class UserService {
     }
 
     public void signout(String email) {
-        User user = userRepository.getReferenceById(email);
+        User user = userRepository.findByEmail(email);
         user.signout();
 
         userRepository.save(user);
@@ -109,14 +109,18 @@ public class UserService {
     }
 
     public void updateNickname(String nickname) throws BaseException {
-        User user = userRepository.findById(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_EXIST));
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(user == null) {
+            throw new BaseException(BaseResponseStatus.USER_NOT_EXIST);
+        }
         user.updateNickname(nickname);
     }
 
     public void updatePassword(String password) throws BaseException {
-        User user = userRepository.findById(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_EXIST));
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(user == null) {
+            throw new BaseException(BaseResponseStatus.USER_NOT_EXIST);
+        }
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
     }
