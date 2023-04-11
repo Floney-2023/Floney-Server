@@ -1,6 +1,7 @@
 package com.floney.floney.user.dto.request;
 
 import com.floney.floney.user.dto.UserDto;
+import com.floney.floney.user.dto.constant.Provider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -21,7 +22,7 @@ public class UserSignupRequestDto {
                 marketingAgree,
                 0,
                 null,
-                "email"
+                Provider.EMAIL.getName()
         );
     }
 }
