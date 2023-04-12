@@ -2,24 +2,31 @@ package com.floney.floney.user.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
-@Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
-public class User{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userIdx;
+@DynamicUpdate
+@Entity
+public class User extends AuditingFields {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 100)
+    private String email;
 
     @Column(nullable = false, length = 30)
     private String nickname;
 
-    @Column(nullable = false, length = 100)
-    private String email;
+    @Column(length = 100)
+    private String password;
 
     @Column(length = 300)
     private String profileImg;
@@ -30,9 +37,45 @@ public class User{
     @Column
     private LocalDateTime lastAdTime;
 
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
+    @ColumnDefault("0")
+    private int subscribe;
+
     @Column(nullable = false, length = 10)
     private String provider;
 
-    @Column
-    private String refreshToken;
+    private User(String nickname, String email, String password, String profileImg, int marketingAgree,
+                 int subscribe, LocalDateTime lastAdTime, String provider) {
+        this.nickname = nickname;
+        this.email = email;
+        this.password = password;
+        this.profileImg = profileImg;
+        this.marketingAgree = marketingAgree;
+        this.subscribe = subscribe;
+        this.lastAdTime = lastAdTime;
+        this.provider = provider;
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public static User of(
+            String nickname, String email, String password, String profileImg,
+            int marketingAgree, int subscribe, LocalDateTime lastAdTime, String provider
+    ) {
+        return new User(nickname, email, password, profileImg, marketingAgree, subscribe, lastAdTime, provider);
+    }
+
+    public void signout() {
+        this.status = "inactive";
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
