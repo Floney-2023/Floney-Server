@@ -26,7 +26,7 @@ public class BookResponse {
     private String code;
 
     @Builder
-    public BookResponse(String name, String profileImg, Boolean seeProfile, Long initialAsset, String bookKey, Long budget, int weekStartDay, Boolean carryOver, String code) {
+    private BookResponse(String name, String profileImg, Boolean seeProfile, Long initialAsset, String bookKey, Long budget, int weekStartDay, Boolean carryOver, String code) {
         this.name = name;
         this.profileImg = profileImg;
         this.seeProfile = seeProfile;

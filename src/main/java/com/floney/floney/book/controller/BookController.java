@@ -5,10 +5,9 @@ import com.floney.floney.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +18,22 @@ public class BookController {
 
     @PostMapping()
     public ResponseEntity createBook(@RequestBody CreateBookRequest request) {
-        return new ResponseEntity<>(bookService.createBook(request), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(userAuth(), request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{code}")
+    public ResponseEntity joinWithCode(@PathVariable(value = "code") String code) {
+        return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
+    }
+
+    private String userAuth() {
+        Authentication authentication = SecurityContextHolder
+            .getContext()
+            .getAuthentication();
+
+        return authentication.getName();
+
+
     }
 
 }

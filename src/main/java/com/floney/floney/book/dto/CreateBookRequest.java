@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 public class CreateBookRequest {
     private String name;
     private String profileImg;
-    private String email;
+
     @Builder
-    private CreateBookRequest(String name, String profileImg, String email) {
+    private CreateBookRequest(String name, String profileImg) {
         this.name = name;
         this.profileImg = profileImg;
-        this.email = email;
     }
-    public Book of(String code) {
+
+    public Book of(String code, String email) {
         return Book.builder()
             .name(name)
             .profileImg(profileImg)

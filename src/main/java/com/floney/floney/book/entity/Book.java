@@ -1,6 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.exception.MaxMemberException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,13 +19,14 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
+
     @Column(nullable = false, length = 10)
     private String name;
 
     @Column(name = "profile_img", length = 300)
     private String profileImg;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String provider;
 
     @Column(columnDefinition = "BINARY(16)")
@@ -53,21 +55,21 @@ public class Book extends BaseEntity {
     private Boolean status;
 
     @PrePersist
-    public void init() {
+    private void init() {
         if (this.bookKey == null) {
             this.bookKey = UUID.randomUUID();
         }
 
-        if(this.status == null){
+        if (this.status == null) {
             this.status = Boolean.TRUE;
         }
 
-        if(this.budget == null && this.initialAsset ==null ){
+        if (this.budget == null && this.initialAsset == null) {
             this.budget = 0L;
             this.initialAsset = 0L;
         }
 
-        if(this.carryOver == null && this.seeProfile == null){
+        if (this.carryOver == null && this.seeProfile == null) {
             this.carryOver = Boolean.FALSE;
             this.seeProfile = Boolean.TRUE;
         }
@@ -92,7 +94,8 @@ public class Book extends BaseEntity {
         this.status = status;
     }
 
-    public String getBookKey(){
+    public String getBookKey() {
         return this.bookKey.toString();
     }
+
 }
