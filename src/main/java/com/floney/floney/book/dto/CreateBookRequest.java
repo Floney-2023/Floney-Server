@@ -1,9 +1,12 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.service.CodeFactory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,13 +20,15 @@ public class CreateBookRequest {
         this.profileImg = profileImg;
     }
 
-    public Book of(String code, String email) {
+    public Book of(String email) {
         return Book.builder()
+            .bookKey(CodeFactory.bookKey())
             .name(name)
             .profileImg(profileImg)
             .provider(email)
-            .code(code)
+            .code(CodeFactory.generateCode())
             .build();
+
     }
 
 }

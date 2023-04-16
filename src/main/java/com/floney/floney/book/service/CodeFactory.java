@@ -7,4 +7,8 @@ public class CodeFactory {
     public static String generateCode() {
         return UUID.randomUUID().toString();
     }
+
+    public static UUID bookKey(){
+        return UUID.randomUUID();
+    }
 }
