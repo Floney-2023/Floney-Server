@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
@@ -24,18 +26,16 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookResponse createBook(String email, CreateBookRequest request) {
-        Book newBook = request.of(CodeFactory.generateCode(), email);
+        Book newBook = request.of(email);
         Book savedBook = bookRepository.save(newBook);
-
         bookUserRepository.save(BookUser.of(findUser(email), savedBook));
-
-        return BookResponse.of(savedBook);
+        return BookResponse.of(bookRepository.findBookByProvider(email));
     }
 
     @Override
     public BookResponse joinWithCode(String email, String code) {
         Book book = bookRepository.findBookByCode(code)
-            .orElseThrow(() -> new NotFoundBookException());
+            .orElseThrow(NotFoundBookException::new);
 
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));

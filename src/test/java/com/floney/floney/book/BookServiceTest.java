@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.floney.floney.book.BookFixture.CODE;
 import static com.floney.floney.book.BookFixture.EMAIL;
@@ -40,6 +41,7 @@ public class BookServiceTest {
     @DisplayName("초대코드로 가계부에 가입한다")
     void create_book() {
         Long id = 1L;
+        String code = CODE.toString();
         Book testBook = BookFixture.createBook(id);
 
         User testUser = UserFixture.createUser();
@@ -49,7 +51,7 @@ public class BookServiceTest {
         given(userRepository.findByEmail(EMAIL))
             .willReturn(testUser);
 
-        Assertions.assertThat(bookService.joinWithCode(EMAIL, CODE).getCode())
+        Assertions.assertThat(bookService.joinWithCode(EMAIL, code).getCode())
             .isEqualTo(BookFixture.bookResponse().getCode());
     }
 
