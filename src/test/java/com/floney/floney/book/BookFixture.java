@@ -25,7 +25,7 @@ public class BookFixture {
             .build();
     }
 
-    public static Book createBook(Long id) {
+    public static Book createBookWith(Long id) {
         return Book.builder()
             .id(id)
             .name(NAME)
@@ -38,6 +38,17 @@ public class BookFixture {
             .build();
     }
 
+    public static Book createBook() {
+        return Book.builder()
+            .name(NAME)
+            .profileImg(URL)
+            .bookKey(BOOK_KEY)
+            .budget(DEFAULT_VALUE)
+            .provider(EMAIL)
+            .code(CODE)
+            .initialAsset(DEFAULT_VALUE)
+            .build();
+    }
     public static BookResponse bookResponse(){
         return BookResponse.builder()
             .name(NAME)

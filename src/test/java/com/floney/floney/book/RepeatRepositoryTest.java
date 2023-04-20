@@ -1,9 +1,12 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.RepeatCategory;
+import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.RepeatCategoryRepository;
 import com.floney.floney.config.TestConfig;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,22 @@ public class RepeatRepositoryTest {
     @Autowired
     private RepeatCategoryRepository repeatRepository;
 
+    @Autowired
+    private BookRepository bookRepository;
+
+    Book savedBook;
+
+    @BeforeEach
+    void init() {
+        savedBook = bookRepository.save(BookFixture.createBookWith(1L));
+    }
+
     @Test
     @DisplayName("반복 설정을 저장하고 조회한다")
     void save_and_find() {
         String testKind = "1달";
         RepeatCategory newRepeat = RepeatCategory.builder()
+            .bookId(savedBook)
             .kind(testKind)
             .build();
 
