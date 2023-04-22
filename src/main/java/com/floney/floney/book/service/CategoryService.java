@@ -7,4 +7,5 @@ public interface CategoryService {
 
     CategoryResponse createCategory(CreateCategoryRequest request);
 
+    CategoryResponse findAllBy(String root, String bookKey);
 }

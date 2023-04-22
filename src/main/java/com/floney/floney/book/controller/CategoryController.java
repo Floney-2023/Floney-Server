@@ -19,4 +19,10 @@ public class CategoryController {
     }
 
 
+    @GetMapping("/books/categories")
+    public ResponseEntity findAllBy(@RequestParam String bookKey,
+                                    @RequestParam String root) {
+        return new ResponseEntity<>(categoryService.findAllBy(root, bookKey), HttpStatus.ACCEPTED);
+    }
+
 }
