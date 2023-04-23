@@ -10,6 +10,7 @@ import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookRepository bookRepository;
 
     @Override
+    @Transactional
     public CategoryResponse createCategory(CreateCategoryRequest request) {
         Category parent = rootParent();
         Book book = findBook(request.getBookKey());
@@ -40,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryResponse findAllBy(String root, String bookKey) {
         Book book = findBook(bookKey);
         Category rootCategory = categoryRepository.findByNameAndBook(root, book)

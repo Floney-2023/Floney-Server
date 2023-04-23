@@ -10,4 +10,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findBookByCode(String code);
 
     Book findBookByProvider(String email);
+
+    Optional<Book> findBookByBookKey(UUID fromString);
+
 }
