@@ -78,4 +78,5 @@ public class CategoryRepositoryTest {
             .isEqualTo(asList("자식카테고리1", "자식카테고리2"));
 
     }
+
 }

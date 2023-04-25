@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,6 +16,7 @@ import java.util.UUID;
 @Getter
 @DynamicInsert
 @DynamicUpdate
+//@Table(indexes = {@Index(name="key",columnList = "bookKey")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
@@ -27,8 +27,7 @@ public class Book extends BaseEntity {
 
     private String provider;
 
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID bookKey;
+    private String bookKey;
 
     private Boolean seeProfile;
 
@@ -47,7 +46,7 @@ public class Book extends BaseEntity {
 
     @Builder
     private Book(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, String name, String profileImg, String provider,
-                 UUID bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code, Boolean status) {
+                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code, Boolean status) {
         super(id, createdAt, updatedAt);
 
         this.name = name;
@@ -63,8 +62,5 @@ public class Book extends BaseEntity {
         this.status = status;
     }
 
-    public String getBookKey() {
-        return this.bookKey.toString();
-    }
 
 }

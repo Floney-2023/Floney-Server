@@ -13,7 +13,7 @@ public class BookFixture {
     private static String URL = "https://fileisHere.com";
     public static String CODE = "codeExample";
 
-    public static UUID BOOK_KEY = UUID.fromString("29d16907-61b6-4587-a584-72a0f344ff4e");
+    public static String BOOK_KEY = "book-key";
 
     private static Long DEFAULT_VALUE = 0L;
 

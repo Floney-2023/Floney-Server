@@ -12,7 +12,7 @@ public class CategoryFixture {
 
     public static CreateCategoryRequest createRootRequest() {
         return CreateCategoryRequest.builder()
-            .bookKey(BOOK_KEY.toString())
+            .bookKey(BOOK_KEY)
             .name(ROOT)
             .build();
     }

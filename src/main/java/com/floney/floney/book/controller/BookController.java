@@ -32,8 +32,6 @@ public class BookController {
             .getAuthentication();
 
         return authentication.getName();
-
-
     }
 
 }
