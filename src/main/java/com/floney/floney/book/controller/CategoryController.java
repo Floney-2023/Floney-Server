@@ -18,7 +18,6 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.createCategory(request), HttpStatus.CREATED);
     }
 
-
     @GetMapping("/books/categories")
     public ResponseEntity findAllBy(@RequestParam String bookKey,
                                     @RequestParam String root) {

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.floney.floney.book.entity.Category.rootParent;
@@ -20,6 +21,7 @@ import static com.floney.floney.book.entity.Category.rootParent;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    
     private final BookRepository bookRepository;
 
     @Override
@@ -38,20 +40,19 @@ public class CategoryServiceImpl implements CategoryService {
             parent.addChildren(newCategory);
             categoryRepository.save(parent);
         }
-        return CategoryResponse.of(newCategory);
+        return CategoryResponse.of(newCategory, request.getBookKey());
     }
 
     @Override
     @Transactional(readOnly = true)
     public CategoryResponse findAllBy(String root, String bookKey) {
-        Book book = findBook(bookKey);
-        Category rootCategory = categoryRepository.findByNameAndBook(root, book)
+        Category rootCategory = categoryRepository.findByName(root)
             .orElseThrow(NotFoundCategoryException::new);
-        return CategoryResponse.of(rootCategory);
+        return CategoryResponse.of(rootCategory,bookKey);
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKey(UUID.fromString(bookKey))
+        return bookRepository.findBookByBookKey(bookKey)
             .orElseThrow(NotFoundBookException::new);
     }
 

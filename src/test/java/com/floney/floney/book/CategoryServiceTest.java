@@ -50,7 +50,5 @@ public class CategoryServiceTest {
 
         Assertions.assertThat(categoryService.createCategory(request).getName())
             .isEqualTo(ROOT);
-        Assertions.assertThat(categoryService.createCategory(request).getParent())
-            .isEqualTo("ROOT-NO-PARENT");
     }
 }

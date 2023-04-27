@@ -1,6 +1,5 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.book.dto.CategoryResponse;
 import com.floney.floney.common.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,7 +23,7 @@ public class Category extends BaseEntity {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +31,7 @@ public class Category extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category parent;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent",fetch = FetchType.LAZY)
     private List<Category> children = new ArrayList<>();
 
 
@@ -46,13 +45,6 @@ public class Category extends BaseEntity {
 
     public void addChildren(Category child) {
         this.children.add(child);
-    }
-
-    public String getParentName() {
-        if (this.parent != null) {
-            return this.getParent().getName();
-        }
-        return ROOT;
     }
 
     public static Category rootParent() {

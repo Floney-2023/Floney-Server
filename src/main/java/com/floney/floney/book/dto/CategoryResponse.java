@@ -6,39 +6,42 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Getter
 public class CategoryResponse {
-    private String bookKey;
-
-    private String parent;
+    private static final String ROOT_BOOK = "ROOT";
 
     private String name;
 
     private List<CategoryResponse> children;
 
     @Builder
-    public CategoryResponse(String bookKey, String parent, String name, List<CategoryResponse> children) {
-        this.bookKey = bookKey;
-        this.parent = parent;
+    private CategoryResponse(String name, List<CategoryResponse> children) {
         this.name = name;
         this.children = children;
     }
 
-
-    public static CategoryResponse of(Category category) {
+    public static CategoryResponse of(Category category,String bookKey) {
         return CategoryResponse.builder()
-            .bookKey(category.getBook().getBookKey())
-            .parent(category.getParentName())
             .name(category.getName())
-            .children(category.getChildren()
-                .stream()
-                .map(child -> of(child))
-                .collect(toList()))
+            .children(children(category.getChildren(),bookKey))
             .build();
     }
+
+    private static List<CategoryResponse> children(List<Category> children,String bookKey){
+        return children
+            .stream()
+            .filter(child -> child.getBook()
+                .getBookKey()
+                .equals(bookKey))
+            .filter(child -> child.getBook()
+                .getName()
+                .equals(ROOT_BOOK))
+            .map(child -> of(child,bookKey))
+            .collect(toList());
+    }
+
 }
