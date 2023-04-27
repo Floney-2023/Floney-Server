@@ -41,7 +41,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .innerJoin(bookUser.user,user)
             .where(user.email.eq(auth))
             .innerJoin(bookUser.book,book)
-            .where(book.bookKey.eq(UUID.fromString(bookKey)))
+            .where(book.bookKey.eq(bookKey))
             .fetchOne();
     }
 }

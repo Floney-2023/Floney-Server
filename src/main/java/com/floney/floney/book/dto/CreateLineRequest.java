@@ -47,11 +47,11 @@ public class CreateLineRequest {
 
     public BookLine to(BookUser bookUser) {
         return BookLine.builder()
-            .bookId(bookUser.getBook())
+            .book(bookUser.getBook())
             .lineDate(lineDate)
             .money(money)
             .exceptStatus(except)
-            .writerUserId(bookUser)
+            .writer(bookUser)
             .description(description)
             .build();
     }

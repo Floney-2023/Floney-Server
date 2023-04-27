@@ -1,6 +1,8 @@
 package com.floney.floney.book.controller;
 
 import com.floney.floney.book.dto.CreateBookRequest;
+import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ public class BookController {
 
     private final BookService bookService;
 
+    private final BookLineService bookLineService;
+
     @PostMapping()
     public ResponseEntity createBook(@RequestBody CreateBookRequest request) {
         return new ResponseEntity<>(bookService.createBook(userAuth(), request), HttpStatus.CREATED);
@@ -24,6 +28,12 @@ public class BookController {
     @PostMapping("/{code}")
     public ResponseEntity joinWithCode(@PathVariable(value = "code") String code) {
         return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/book_line")
+    public ResponseEntity createBookLine(@RequestBody CreateLineRequest request){
+        return new ResponseEntity<>(bookLineService.addBookLine(userAuth(),request),HttpStatus.CREATED);
+
     }
 
     private String userAuth() {

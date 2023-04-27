@@ -11,6 +11,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Book findBookByProvider(String email);
 
-    Optional<Book> findBookByBookKey(UUID fromString);
+    Optional<Book> findBookByBookKey(String bookKey);
 
 }

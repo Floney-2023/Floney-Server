@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
@@ -22,6 +20,7 @@ public class BookServiceImpl implements BookService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
+    private final CategoryService categoryService;
 
     @Override
     @Transactional
@@ -46,4 +45,5 @@ public class BookServiceImpl implements BookService {
     private User findUser(String email) {
         return userRepository.findByEmail(email);
     }
+
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-//@Table(indexes = {@Index(name="key",columnList = "bookKey")})
+@Table(indexes = {@Index(name="key",columnList = "bookKey")})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
