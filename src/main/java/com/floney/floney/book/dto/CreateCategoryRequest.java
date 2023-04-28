@@ -1,6 +1,7 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,9 +24,9 @@ public class CreateCategoryRequest {
         this.name = name;
     }
 
-    public Category of(Book book, Category savedParent) {
+    public BookCategory of(Category savedParent, Book book) {
         Category parent = !Objects.equals(savedParent, Category.rootParent()) ? savedParent : null;
-        return Category.builder()
+        return BookCategory.builder()
             .book(book)
             .parent(parent)
             .name(name)

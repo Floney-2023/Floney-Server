@@ -8,7 +8,7 @@ import static com.floney.floney.book.BookFixture.BOOK_KEY;
 
 public class CategoryFixture {
 
-    public static final String ROOT = "루트 카테고리";
+    public static final String ROOT = "부모 카테고리";
 
     public static CreateCategoryRequest createRootRequest() {
         return CreateCategoryRequest.builder()
@@ -17,12 +17,8 @@ public class CategoryFixture {
             .build();
     }
 
-    public static Category createRootCategory(Book savedBook) {
-        return Category.builder()
-            .parent(null)
-            .name(ROOT)
-            .book(savedBook)
-            .build();
+    public static Category createRootCategory() {
+        return new Category(null,null,null,ROOT,null);
     }
 
 }

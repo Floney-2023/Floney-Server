@@ -15,7 +15,7 @@ public class CategoryController {
 
     @PostMapping("/books/categories")
     public ResponseEntity crateCategory(@RequestBody CreateCategoryRequest request) {
-        return new ResponseEntity<>(categoryService.createCategory(request), HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryService.createUserCategory(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/books/categories")

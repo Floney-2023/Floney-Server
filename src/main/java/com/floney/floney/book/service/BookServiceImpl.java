@@ -27,6 +27,7 @@ public class BookServiceImpl implements BookService {
     public BookResponse createBook(String email, CreateBookRequest request) {
         Book newBook = request.of(email);
         Book savedBook = bookRepository.save(newBook);
+        //user존재시
         bookUserRepository.save(BookUser.of(findUser(email), savedBook));
         return BookResponse.of(bookRepository.findBookByProvider(email));
     }

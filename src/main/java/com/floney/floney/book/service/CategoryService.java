@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    CategoryResponse createCategory(CreateCategoryRequest request);
+    CategoryResponse createUserCategory(CreateCategoryRequest request);
 
-    CategoryResponse findAllBy(String root, String bookKey);
+    List<CategoryResponse> findAllBy(String root, String bookKey);
 }

@@ -1,10 +1,13 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.repository.BookCategoryRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.CategoryRepository;
 import com.floney.floney.config.TestConfig;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +17,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.floney.floney.book.CategoryFixture.ROOT;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -29,54 +30,51 @@ public class CategoryRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private BookCategoryRepository bookCategoryRepository;
+
     Book savedBook;
+    Book savedBook2;
+    Category savedRoot;
+
 
     @BeforeEach
     void init() {
         savedBook = bookRepository.save(BookFixture.createBookWith(1L));
+        savedBook2 = bookRepository.save(BookFixture.createBookWith(2L));
+        savedRoot = categoryRepository.save(CategoryFixture.createRootCategory());
     }
 
     @Test
-    @DisplayName("부모 카테고리와 자식 카테고리를 저장하고, 조회한다")
-    void category_find() {
-        Category parentCategory = Category.builder()
-            .book(savedBook)
-            .name("부모카테고리")
+    @DisplayName("가계부마다 카테고리를 추가할 수 있다")
+    void save_category() {
+        Category child = Category.builder()
+            .parent(savedRoot)
+            .name("루트자식")
             .build();
 
-        Category savedParent = categoryRepository.save(parentCategory);
-
-        Category childCategory = Category.builder()
+        categoryRepository.save(child);
+        BookCategory bookCategory = BookCategory.builder()
+            .parent(savedRoot)
+            .name("커스텀자식1")
             .book(savedBook)
-            .name("자식카테고리1")
-            .parent(savedParent)
             .build();
 
-        Category childCategory2 = Category.builder()
+        BookCategory bookCategory2 = BookCategory.builder()
+            .parent(savedRoot)
+            .name("커스텀자식2")
             .book(savedBook)
-            .name("자식카테고리2")
-            .parent(savedParent)
             .build();
 
+        bookCategoryRepository.save(bookCategory);
+        bookCategoryRepository.save(bookCategory2);
 
-        Category child = categoryRepository.save(childCategory);
-        Category child2 = categoryRepository.save(childCategory2);
-
-        savedParent.addChildren(child);
-        savedParent.addChildren(child2);
-
-        categoryRepository.save(savedParent);
-        Category findParent = categoryRepository.findByNameAndBook("부모카테고리", savedBook)
-            .get();
-
-        List<String> childNames = findParent.getChildren()
-            .stream()
-            .map(c -> c.getName())
-            .collect(Collectors.toList());
-
-        assertThat(childNames)
-            .isEqualTo(asList("자식카테고리1", "자식카테고리2"));
+        Assertions.assertThat(categoryRepository.findAllCategory(savedRoot)
+            .size()).isEqualTo(1);
+        Assertions.assertThat(categoryRepository.findCustom(savedRoot, savedBook.getBookKey())
+            .size()).isEqualTo(2);
 
     }
+
 
 }

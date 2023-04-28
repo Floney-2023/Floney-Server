@@ -44,11 +44,11 @@ public class CategoryServiceTest {
         given(bookRepository.findBookByBookKey(BOOK_KEY))
             .willReturn(ofNullable(savedBook));
 
-        rootCategory = CategoryFixture.createRootCategory(savedBook);
+        rootCategory = CategoryFixture.createRootCategory();
         given(categoryRepository.save(rootCategory))
             .willReturn(rootCategory);
 
-        Assertions.assertThat(categoryService.createCategory(request).getName())
+        Assertions.assertThat(categoryService.createUserCategory(request).getName())
             .isEqualTo(ROOT);
     }
 }
