@@ -34,7 +34,7 @@ public class BookUserRepositoryTest {
     @DisplayName("가계부 코드와 이메일을 동시에 만족하는 BookUser를 조회한다")
     void getBookUser() {
         User savedUser = userRepository.save(UserFixture.createUser());
-        Book savedBook = bookRepository.save(BookFixture.createBookWith(1L));
+        Book savedBook = bookRepository.save(BookFixture.createBookWith(1L,"1234"));
 
         BookUser newBookUser = BookUser.builder()
             .book(savedBook)

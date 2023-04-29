@@ -16,9 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.List;
-
-import static com.floney.floney.book.CategoryFixture.ROOT;
+import static com.floney.floney.book.CategoryFixture.CHILD;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -34,47 +32,46 @@ public class CategoryRepositoryTest {
     private BookCategoryRepository bookCategoryRepository;
 
     Book savedBook;
-    Book savedBook2;
     Category savedRoot;
 
 
     @BeforeEach
     void init() {
-        savedBook = bookRepository.save(BookFixture.createBookWith(1L));
-        savedBook2 = bookRepository.save(BookFixture.createBookWith(2L));
-        savedRoot = categoryRepository.save(CategoryFixture.createRootCategory());
+        savedBook = bookRepository.save(BookFixture.createBookWith(1L, "1234"));
+        savedRoot = categoryRepository.save(CategoryFixture.createDefaultRoot("ROOT"));
     }
 
     @Test
-    @DisplayName("가계부마다 카테고리를 추가할 수 있다")
+    @DisplayName("가게부만의 카테고리를 추가할 수 있다")
     void save_category() {
-        Category child = Category.builder()
-            .parent(savedRoot)
-            .name("루트자식")
-            .build();
-
-        categoryRepository.save(child);
-        BookCategory bookCategory = BookCategory.builder()
-            .parent(savedRoot)
-            .name("커스텀자식1")
-            .book(savedBook)
-            .build();
-
-        BookCategory bookCategory2 = BookCategory.builder()
-            .parent(savedRoot)
-            .name("커스텀자식2")
-            .book(savedBook)
-            .build();
-
-        bookCategoryRepository.save(bookCategory);
-        bookCategoryRepository.save(bookCategory2);
-
-        Assertions.assertThat(categoryRepository.findAllCategory(savedRoot)
-            .size()).isEqualTo(1);
-        Assertions.assertThat(categoryRepository.findCustom(savedRoot, savedBook.getBookKey())
+        Book savedBook2 = bookRepository.save(BookFixture.createBookWith(2L, "2222"));
+        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        Assertions.assertThat(categoryRepository.findAllCustom(savedRoot, savedBook.getBookKey())
             .size()).isEqualTo(2);
-
+        Assertions.assertThat(categoryRepository.findAllCustom(savedRoot, savedBook2.getBookKey())
+            .size()).isEqualTo(0);
     }
 
+    @Test
+    @DisplayName("공통 가계부의 자식 카테고리들을 모두 조회한다")
+    void find_all_default() {
+        Category root = categoryRepository.save(CategoryFixture.createDefaultRoot("ROOT1"));
+
+        categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD1"));
+        categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD2"));
+
+        Assertions.assertThat(categoryRepository.findAllCategory(root).size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("가계부만의 카테고리 추가 시 중복을 체크한다")
+    void is_duplicate(){
+        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+
+        Assertions.assertThat(categoryRepository.findCustomTarget(savedRoot,savedBook.getBookKey(),CHILD))
+            .isFalse();
+    }
 
 }

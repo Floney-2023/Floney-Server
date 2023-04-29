@@ -8,5 +8,7 @@ import java.util.List;
 public interface CategoryCustomRepository {
     List<Category> findAllCategory(Category root);
 
-    List<BookCategory> findCustom(Category targetRoot, String bookKey);
+    List<BookCategory> findAllCustom(Category targetRoot, String bookKey);
+
+    boolean findCustomTarget(Category targetRoot, String bookKey, String target);
 }
