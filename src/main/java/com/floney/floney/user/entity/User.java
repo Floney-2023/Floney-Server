@@ -1,5 +1,6 @@
 package com.floney.floney.user.entity;
 
+import com.floney.floney.common.BaseEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @DynamicInsert
 @DynamicUpdate
 @Entity
-public class User extends AuditingFields {
+public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
