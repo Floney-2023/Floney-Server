@@ -6,15 +6,15 @@ import com.floney.floney.common.BaseResponseStatus;
 import com.floney.floney.common.jwt.dto.TokenDto;
 import com.floney.floney.user.dto.request.UserLoginRequestDto;
 import com.floney.floney.user.dto.request.UserSignupRequestDto;
+import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.service.UserService;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -45,9 +45,14 @@ public class UserController {
 
     @PostMapping("/login")
     public BaseResponse<?> login(@RequestBody @Validated UserLoginRequestDto loginRequestDto) {
-        String email = loginRequestDto.getEmail();
-        String password = loginRequestDto.getPassword();
-        return new BaseResponse<>(userService.login(email, password));
+        try{
+            String email = loginRequestDto.getEmail();
+            String password = loginRequestDto.getPassword();
+            return new BaseResponse<>(userService.login(email, password));
+        } catch (Exception e) {
+            return new BaseResponse<>(BaseResponseStatus.AUTHENTICATION_FAIL);
+        }
+
     }
 
     @PostMapping("/logout")
@@ -99,4 +104,5 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 }
