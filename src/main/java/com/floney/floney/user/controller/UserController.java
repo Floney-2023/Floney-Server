@@ -7,11 +7,14 @@ import com.floney.floney.common.jwt.dto.TokenDto;
 import com.floney.floney.user.dto.request.UserLoginRequestDto;
 import com.floney.floney.user.dto.request.UserSignupRequestDto;
 import com.floney.floney.user.service.UserService;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -29,6 +32,15 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
         return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    }
+
+    @PostMapping("/email")
+    public BaseResponse<?> authenticateEmail(@RequestBody @Validated String email) {
+        try {
+            return new BaseResponse<>(userService.authenticateEmail(email));
+        } catch (Exception e) {
+            return new BaseResponse<>(BaseResponseStatus.AUTHENTICATION_FAIL);
+        }
     }
 
     @PostMapping("/login")

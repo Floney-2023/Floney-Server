@@ -5,11 +5,16 @@ import com.floney.floney.common.BaseResponseStatus;
 import com.floney.floney.common.jwt.JwtTokenProvider;
 import com.floney.floney.common.jwt.dto.TokenDto;
 import com.floney.floney.user.dto.UserDto;
+import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +36,8 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
+    private final JavaMailSender javaMailSender;
+
 
     public TokenDto login(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
@@ -79,7 +86,9 @@ public class UserService {
     }
 
     public void signout(String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+
         user.signout();
 
         userRepository.save(user);
@@ -92,7 +101,7 @@ public class UserService {
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String redisRefreshToken = redisTemplate.opsForValue().get(authentication.getName());
 
-        if(!refreshToken.equals(redisRefreshToken)) {
+        if (!refreshToken.equals(redisRefreshToken)) {
             throw new BaseException(BaseResponseStatus.AUTHENTICATION_FAIL);
         }
 
@@ -109,19 +118,33 @@ public class UserService {
     }
 
     public void updateNickname(String nickname) throws BaseException {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(user == null) {
-            throw new BaseException(BaseResponseStatus.USER_NOT_EXIST);
-        }
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_EXIST));
+
         user.updateNickname(nickname);
     }
 
     public void updatePassword(String password) throws BaseException {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(user == null) {
-            throw new BaseException(BaseResponseStatus.USER_NOT_EXIST);
-        }
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.USER_NOT_EXIST));
+
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
     }
+
+    public String authenticateEmail(String email) throws MailException {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(email);
+        simpleMailMessage.setSubject("[Floney] 이메일 인증 코드");
+
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+        String code = String.format("%06d", random.nextInt(1_000_000) % 1_000_000);
+        simpleMailMessage.setText(String.format("인증 코드: %s\n앱으로 돌아가서 인증을 완료해주세요.\n", code));
+
+        javaMailSender.send(simpleMailMessage);
+
+        return code;
+    }
+
 }
