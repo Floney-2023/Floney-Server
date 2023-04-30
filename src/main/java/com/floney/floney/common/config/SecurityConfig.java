@@ -1,11 +1,9 @@
 package com.floney.floney.common.config;
 
+import com.floney.floney.common.OAuth2AuthenticationSuccessHandler;
 import com.floney.floney.common.jwt.JwtAuthenticationFilter;
 import com.floney.floney.common.jwt.JwtTokenProvider;
-import com.floney.floney.user.dto.UserDto;
-import com.floney.floney.user.dto.security.UserPrincipal;
-import com.floney.floney.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.floney.floney.user.service.CustomOAuth2UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,18 +12,29 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    public SecurityConfig(
+            JwtTokenProvider jwtTokenProvider,
+            RedisTemplate<String, String> redisTemplate,
+            CustomOAuth2UserService customOAuth2UserService,
+            OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler
+    ) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.redisTemplate = redisTemplate;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,6 +55,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+
                 .antMatchers(
                         "/",
                         "/users/signup",
@@ -53,12 +63,21 @@ public class SecurityConfig {
                         "/users/password",
                         "/users/login",
                         "/users/logout",
-                        "/users/reissue"
+                        "/users/reissue",
+                        "/users/email"
                 ).permitAll()
                 .anyRequest().authenticated()
+
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+
+                .and()
+                .oauth2Login()
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .userInfoEndpoint().userService(customOAuth2UserService)
+                .and()
+
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate),
                         UsernamePasswordAuthenticationFilter.class);
