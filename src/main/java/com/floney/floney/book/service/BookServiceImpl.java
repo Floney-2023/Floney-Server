@@ -20,23 +20,22 @@ public class BookServiceImpl implements BookService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
-    private final CategoryService categoryService;
 
     @Override
     @Transactional
     public BookResponse createBook(String email, CreateBookRequest request) {
         Book newBook = request.of(email);
         Book savedBook = bookRepository.save(newBook);
-        //user존재시
+
         bookUserRepository.save(BookUser.of(findUser(email), savedBook));
-        return BookResponse.of(bookRepository.findBookByProvider(email));
+        return BookResponse.of(savedBook);
     }
 
     @Override
     public BookResponse joinWithCode(String email, String code) {
         Book book = bookRepository.findBookByCode(code)
             .orElseThrow(NotFoundBookException::new);
-
+        //중복 체크
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));
 

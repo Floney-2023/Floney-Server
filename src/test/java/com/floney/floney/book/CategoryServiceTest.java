@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.repository.BookCategoryRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.CategoryRepository;
@@ -52,7 +53,7 @@ public class CategoryServiceTest {
 
         BookCategory rootCategory = CategoryFixture.createRootCategory(savedBook);
 
-        given(bookCategoryRepository.save(any(BookCategory.class)))
+        given(categoryRepository.save(any(BookCategory.class)))
             .willReturn(rootCategory);
 
         Assertions.assertThat(categoryService.createUserCategory(request))
@@ -64,7 +65,7 @@ public class CategoryServiceTest {
     @DisplayName("사용자가 자식 카테고리를 추가한다")
     void custom_category() {
         Book savedBook = BookFixture.createBookWith(1L,"1234");
-        Category rootCategory = CategoryFixture.createDefaultRoot("ROOT");
+        DefaultCategory rootCategory = CategoryFixture.createDefaultRoot("ROOT");
 
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
@@ -72,7 +73,7 @@ public class CategoryServiceTest {
         given(bookRepository.findBookByBookKey(BOOK_KEY))
             .willReturn(ofNullable(savedBook));
 
-        given(bookCategoryRepository.save(any(BookCategory.class)))
+        given(categoryRepository.save(any(BookCategory.class)))
             .willReturn(CategoryFixture.createChildCategory(rootCategory,savedBook));
 
         CreateCategoryRequest request = CategoryFixture.createBookCategory();
@@ -82,7 +83,7 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("가계부를 찾을 수 없으면 NotFoundBookException을 발생한다")
     void not_found_book() {
-        Category rootCategory = CategoryFixture.createDefaultRoot("ROOT");
+        DefaultCategory rootCategory = CategoryFixture.createDefaultRoot("ROOT");
 
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));

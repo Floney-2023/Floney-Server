@@ -2,23 +2,36 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.common.BaseEntity;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class Category extends BaseEntity {
+@DiscriminatorColumn
+@Inheritance()
+@SuperBuilder
+public abstract class Category {
+
+    @Id
+    @GeneratedValue
+    @Column(nullable = false)
+    private Long id;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     private String name;
 
@@ -27,16 +40,11 @@ public class Category extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category parent;
 
-    @Builder
-    public Category(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, String name, Category parent) {
-        super(id, createdAt, updatedAt);
+    public Category(String name, Category parent) {
         this.name = name;
         this.parent = parent;
     }
 
-    public static Category rootParent() {
-        return new Category();
-    }
 
     @Override
     public boolean equals(Object o) {

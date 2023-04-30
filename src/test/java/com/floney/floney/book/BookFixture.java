@@ -25,12 +25,12 @@ public class BookFixture {
             .build();
     }
 
-    public static Book createBookWith(Long id) {
+    public static Book createBookWith(Long id,String bookKey) {
         return Book.builder()
             .id(id)
             .name(NAME)
             .profileImg(URL)
-            .bookKey(BOOK_KEY)
+            .bookKey(bookKey)
             .budget(DEFAULT_VALUE)
             .provider(EMAIL)
             .code(CODE)

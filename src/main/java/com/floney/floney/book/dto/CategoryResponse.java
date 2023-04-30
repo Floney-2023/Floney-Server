@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -21,28 +22,26 @@ public class CategoryResponse {
         this.name = name;
     }
 
-    public static List<CategoryResponse> to(List<Category> categories, List<BookCategory> bookCategories) {
-        List<CategoryResponse> responses = categories.stream()
+    public static List<CategoryResponse> to(List<Category> categories) {
+        return categories.stream()
             .map(CategoryResponse::of)
             .collect(Collectors.toList());
-
-        responses.addAll(bookCategories.stream()
-            .map(CategoryResponse::of)
-            .collect(Collectors.toList()));
-
-        return responses;
     }
-
-    public static CategoryResponse of(BookCategory category) {
+    public static CategoryResponse of(Category category) {
         return CategoryResponse.builder()
             .name(category.getName())
             .build();
     }
-
-    private static CategoryResponse of(Category category) {
-        return CategoryResponse.builder()
-            .name(category.getName())
-            .build();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CategoryResponse that = (CategoryResponse) o;
+        return Objects.equals(name, that.name);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }

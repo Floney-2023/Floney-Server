@@ -3,6 +3,7 @@ package com.floney.floney.book;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.repository.BookCategoryRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.CategoryRepository;
@@ -32,7 +33,7 @@ public class CategoryRepositoryTest {
     private BookCategoryRepository bookCategoryRepository;
 
     Book savedBook;
-    Category savedRoot;
+    DefaultCategory savedRoot;
 
 
     @BeforeEach
@@ -47,9 +48,9 @@ public class CategoryRepositoryTest {
         Book savedBook2 = bookRepository.save(BookFixture.createBookWith(2L, "2222"));
         bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        Assertions.assertThat(categoryRepository.findAllCustom(savedRoot, savedBook.getBookKey())
+        Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook.getBookKey())
             .size()).isEqualTo(2);
-        Assertions.assertThat(categoryRepository.findAllCustom(savedRoot, savedBook2.getBookKey())
+        Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook2.getBookKey())
             .size()).isEqualTo(0);
     }
 
@@ -61,7 +62,8 @@ public class CategoryRepositoryTest {
         categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD1"));
         categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD2"));
 
-        Assertions.assertThat(categoryRepository.findAllCategory(root).size()).isEqualTo(2);
+        Assertions.assertThat(categoryRepository.findAllCategory("ROOT1","book").size())
+            .isEqualTo(2);
     }
 
     @Test
