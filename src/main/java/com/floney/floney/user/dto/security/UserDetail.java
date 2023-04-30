@@ -1,9 +1,11 @@
 package com.floney.floney.user.dto.security;
 
+import com.floney.floney.user.dto.OAuth2UserDto;
 import com.floney.floney.user.dto.UserDto;
 import com.floney.floney.user.dto.constant.Role;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -11,27 +13,26 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter
 @AllArgsConstructor
-public class UserPrincipal implements UserDetails {
-    private final String email;
-    private final String password;
+public class UserDetail implements UserDetails, OAuth2User {
+    private final UserDto userDto;
+    private final OAuth2UserDto oAuth2UserDto;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public static UserPrincipal of(String email,
-                                   String password,
-                                   int subscribe) {
+    public static UserDetail of(UserDto userDto) {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
 
-        if(subscribe == 1) {
+        if(userDto.getSubscribe() == Role.SUBSCRIBER.getStatus()) {
             roles.add(Role.SUBSCRIBER);
         }
 
-        return new UserPrincipal(
-                email,
-                password,
+        return new UserDetail(
+                userDto,
+                null,
                 roles.stream()
                         .map(Role::getName)
                         .map(SimpleGrantedAuthority::new)
@@ -39,8 +40,9 @@ public class UserPrincipal implements UserDetails {
         );
     }
 
-    public static UserPrincipal from(UserDto dto) {
-        return UserPrincipal.of(dto.getEmail(), dto.getPassword(), dto.getSubscribe());
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
     }
 
     @Override
@@ -50,12 +52,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return userDto.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return userDto.getEmail();
     }
 
     @Override
@@ -78,4 +80,8 @@ public class UserPrincipal implements UserDetails {
         return true;
     }
 
+    @Override
+    public String getName() {
+        return oAuth2UserDto.getProviderId();
+    }
 }
