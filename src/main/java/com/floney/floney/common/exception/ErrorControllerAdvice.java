@@ -21,7 +21,7 @@ public class ErrorControllerAdvice {
     }
 
     @ExceptionHandler(NotFoundCategoryException.class)
-    protected ResponseEntity<ErrorResponse> maxMember(NotFoundCategoryException exception) {
+    protected ResponseEntity<ErrorResponse> notFoundCategory(NotFoundCategoryException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
