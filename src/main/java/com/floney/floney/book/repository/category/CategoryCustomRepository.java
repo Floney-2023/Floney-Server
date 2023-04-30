@@ -1,4 +1,4 @@
-package com.floney.floney.book.repository;
+package com.floney.floney.book.repository.category;
 
 import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;

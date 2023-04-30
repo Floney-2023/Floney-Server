@@ -1,7 +1,6 @@
-package com.floney.floney.book.repository;
+package com.floney.floney.book.repository.category;
 
 import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
