@@ -17,7 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @DynamicUpdate
 @Entity
 public class User extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 100)
@@ -47,6 +49,7 @@ public class User extends BaseEntity {
 
     private User(String nickname, String email, String password, String profileImg, int marketingAgree,
                  int subscribe, LocalDateTime lastAdTime, String provider) {
+
         this.nickname = nickname;
         this.email = email;
         this.password = password;
