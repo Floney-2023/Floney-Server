@@ -19,9 +19,4 @@ public class DefaultCategory extends Category {
     public static DefaultCategory rootParent() {
         return new DefaultCategory();
     }
-
-    public DefaultCategory(String name, Category parent) {
-        super(name, parent);
-    }
-
 }

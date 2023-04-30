@@ -17,7 +17,6 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@DiscriminatorColumn
 @Inheritance()
 @SuperBuilder
 public abstract class Category {

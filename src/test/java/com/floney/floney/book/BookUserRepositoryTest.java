@@ -31,7 +31,7 @@ public class BookUserRepositoryTest {
     private BookUserRepository bookUserRepository;
 
     @Test
-    @DisplayName("가계부 코드와 이메일을 동시에 만족하는 BookUser를 조회한다")
+    @DisplayName("가계부 코드와 닉네임을 동시에 만족하는 BookUser를 조회한다")
     void getBookUser() {
         User savedUser = userRepository.save(UserFixture.createUser());
         Book savedBook = bookRepository.save(BookFixture.createBook());
@@ -42,7 +42,7 @@ public class BookUserRepositoryTest {
             .build();
 
         bookUserRepository.save(newBookUser);
-        BookUser find = bookUserRepository.findUserWith(savedUser.getEmail(), savedBook.getBookKey());
+        BookUser find = bookUserRepository.findUserWith(savedUser.getNickname(), savedBook.getBookKey());
         Assertions.assertThat(find.getBook().getName())
             .isEqualTo(savedBook.getName());
     }

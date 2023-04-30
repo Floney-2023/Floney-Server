@@ -45,9 +45,9 @@ public class CreateLineRequest {
         this.nickname = nickname;
     }
 
-    public BookLine to(BookUser bookUser) {
+    public BookLine to(BookUser bookUser,Book book) {
         return BookLine.builder()
-            .book(bookUser.getBook())
+            .book(book)
             .lineDate(lineDate)
             .money(money)
             .exceptStatus(except)

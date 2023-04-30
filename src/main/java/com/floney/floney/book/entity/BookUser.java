@@ -46,4 +46,8 @@ public class BookUser extends BaseEntity {
             .book(book)
             .build();
     }
+
+    public String getNickName() {
+        return this.user.getNickname();
+    }
 }

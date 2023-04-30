@@ -34,12 +34,12 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BookUser findUserWith(String auth, String bookKey){
+    public BookUser findUserWith(String nickName, String bookKey){
         return jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
             .innerJoin(bookUser.user,user)
-            .where(user.email.eq(auth))
+            .where(user.nickname.eq(nickName))
             .innerJoin(bookUser.book,book)
             .where(book.bookKey.eq(bookKey))
             .fetchOne();

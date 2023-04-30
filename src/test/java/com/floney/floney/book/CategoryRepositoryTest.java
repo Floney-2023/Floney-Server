@@ -1,12 +1,10 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
-import com.floney.floney.book.repository.BookCategoryRepository;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.CategoryRepository;
+import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.config.TestConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +27,6 @@ public class CategoryRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
 
-    @Autowired
-    private BookCategoryRepository bookCategoryRepository;
-
     Book savedBook;
     DefaultCategory savedRoot;
 
@@ -46,8 +41,8 @@ public class CategoryRepositoryTest {
     @DisplayName("가게부만의 카테고리를 추가할 수 있다")
     void save_category() {
         Book savedBook2 = bookRepository.save(BookFixture.createBookWith(2L, "2222"));
-        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook.getBookKey())
             .size()).isEqualTo(2);
         Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook2.getBookKey())
@@ -69,11 +64,26 @@ public class CategoryRepositoryTest {
     @Test
     @DisplayName("가계부만의 카테고리 추가 시 중복을 체크한다")
     void is_duplicate(){
-        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        bookCategoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
 
         Assertions.assertThat(categoryRepository.findCustomTarget(savedRoot,savedBook.getBookKey(),CHILD))
             .isFalse();
     }
+
+    @Test
+    @DisplayName("카테고리 조회시, 기본 카테고리가 아니면 커스텀 카테고리에서 찾는다")
+    void find_custom_category(){
+        Category category = categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        Assertions.assertThat(categoryRepository.findCategory(CHILD,savedBook.getBookKey()).get()).isEqualTo(category);
+    }
+
+    @Test
+    @DisplayName("기본 카테고리를 조회한다")
+    void find_default_category(){
+        DefaultCategory category = categoryRepository.save(CategoryFixture.createDefaultChild(savedRoot,"기본자식카테고리"));
+        Assertions.assertThat(categoryRepository.findCategory("기본자식카테고리",savedBook.getBookKey()).get()).isEqualTo(category);
+    }
+
 
 }

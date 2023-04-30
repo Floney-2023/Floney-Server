@@ -3,11 +3,9 @@ package com.floney.floney.book;
 import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookCategory;
-import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
-import com.floney.floney.book.repository.BookCategoryRepository;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.CategoryRepository;
+import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.service.CategoryServiceImpl;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
@@ -35,9 +33,6 @@ public class CategoryServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
-
-    @Mock
-    private BookCategoryRepository bookCategoryRepository;
 
     @InjectMocks
     private CategoryServiceImpl categoryService;

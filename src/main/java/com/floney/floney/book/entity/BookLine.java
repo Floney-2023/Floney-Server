@@ -23,7 +23,6 @@ public class BookLine extends BaseEntity {
     private Book book;
 
     @OneToMany
-    @JoinColumn(name = "line_id")
     private Map<CategoryEnum, Category> category;
 
     private Long money;
@@ -49,8 +48,12 @@ public class BookLine extends BaseEntity {
         this.status = status;
     }
 
-
-    public void addCategory(Map<CategoryEnum, Category> categories) {
+    public void add(Map<CategoryEnum, Category> categories) {
         this.category = categories;
     }
+
+    public String getTargetCategory(CategoryEnum key){
+        return this.category.get(key).getName();
+    }
+
 }
