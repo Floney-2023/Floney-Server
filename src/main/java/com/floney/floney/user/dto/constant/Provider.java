@@ -3,10 +3,10 @@ package com.floney.floney.user.dto.constant;
 import lombok.Getter;
 
 public enum Provider {
-    EMAIL("EMAIL"),
-    KAKAO("KAKAO"),
-    GOOGLE("GOOGLE"),
-    APPLE("APPLE");
+    EMAIL("email"),
+    KAKAO("kakao"),
+    GOOGLE("google"),
+    APPLE("apple");
 
     @Getter
     private final String name;
