@@ -5,7 +5,6 @@ import com.floney.floney.common.BaseResponseStatus;
 import com.floney.floney.common.jwt.JwtTokenProvider;
 import com.floney.floney.common.jwt.dto.TokenDto;
 import com.floney.floney.user.dto.UserDto;
-import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.Random;
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService {
+public class CustomUserService {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
 
