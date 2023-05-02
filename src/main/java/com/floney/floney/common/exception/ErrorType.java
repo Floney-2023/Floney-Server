@@ -9,7 +9,8 @@ public enum ErrorType {
 
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),
-    NOT_FOUND_CATEGORY("B003", "카테고리가 존재하지 않습니다");
+    NOT_FOUND_CATEGORY("B003", "카테고리가 존재하지 않습니다"),
+    OUT_OF_BUDGET("B004","자산 범위를 초과하였습니다");
 
     private final String code;
     private final String message;

@@ -1,7 +1,8 @@
 package com.floney.floney.book.entity;
 
+import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.common.BaseEntity;
-import lombok.AccessLevel;
+import com.floney.floney.common.exception.OutOfBudgetException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,16 +11,18 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@Table(indexes = {@Index(name="key",columnList = "bookKey")})
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "Book", indexes = {
+    @Index(name = "key", columnList = "bookKey")
+})
+@NoArgsConstructor
 public class Book extends BaseEntity {
-
+    private static final Long MIN_BUDGET = 0L;
+    private static final Long MAX_BUDGET = 999999999L;
     @Column(nullable = false, length = 10)
     private String name;
 
@@ -62,5 +65,21 @@ public class Book extends BaseEntity {
         this.status = status;
     }
 
+    public void processTrans(AssetType assetType, long amount) {
+        long remain = budget;
+        if (assetType == AssetType.OUTCOME) {
+            remain -= amount;
+        } else if (assetType == AssetType.INCOME) {
+            remain += amount;
+        }
+        isValid(remain);
+        budget = remain;
+    }
+
+    private void isValid(long remain) {
+        if (remain < MIN_BUDGET || remain > MAX_BUDGET) {
+            throw new OutOfBudgetException();
+        }
+    }
 
 }

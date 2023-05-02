@@ -2,10 +2,8 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.BookLineResponse;
 import com.floney.floney.book.dto.CreateLineRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.*;
+import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -16,32 +14,63 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.EnumMap;
-import java.util.Map;
+import static com.floney.floney.book.entity.AssetType.find;
+import static com.floney.floney.book.entity.BookLineCategory.of;
+import static com.floney.floney.book.service.CategoryEnum.*;
 
 @Service
 @RequiredArgsConstructor
 public class BookLineServiceImpl implements BookLineService {
     private final BookRepository bookRepository;
+
     private final BookUserRepository bookUserRepository;
+
     private final BookLineRepository bookLineRepository;
+
     private final CategoryRepository categoryRepository;
+
+    private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
-    public BookLineResponse addBookLine(CreateLineRequest request) {
-        BookLine bookLine = request.to(findBookUser(request), findBook(request));
-        bookLine.add(findCategories(request));
-        BookLine newBookLine = bookLineRepository.save(bookLine);
+    public BookLineResponse createBookLine(CreateLineRequest request) {
+        Book updatedBook = updateBudget(findBook(request), request);
+        BookLine requestLine = request.to(findBookUser(request), updatedBook);
+
+        BookLine savedLine = bookLineRepository.save(requestLine);
+        findCategories(savedLine, request);
+
+        BookLine newBookLine = bookLineRepository.save(savedLine);
         return BookLineResponse.of(newBookLine);
     }
 
-    private Map<CategoryEnum, Category> findCategories(CreateLineRequest request) {
-        Map<CategoryEnum, Category> categories = new EnumMap<>(CategoryEnum.class);
-        categories.put(CategoryEnum.ASSET,findCategory(request.getBookKey(),request.getAsset()));
-        categories.put(CategoryEnum.FLOW,findCategory(request.getBookKey(),request.getFlow()));
-        categories.put(CategoryEnum.FLOW_LINE,findCategory(request.getBookKey(),request.getLine()));
-        return categories;
+    private Book updateBudget(Book book, CreateLineRequest request) {
+        book.processTrans(find(request.getFlow()), request.getMoney());
+        return book;
+    }
+
+    private void findCategories(BookLine bookLine, CreateLineRequest request) {
+        bookLine.add(FLOW, saveBookLineCategory(bookLine, request, FLOW));
+        bookLine.add(ASSET, saveBookLineCategory(bookLine, request, ASSET));
+        bookLine.add(FLOW_LINE, saveBookLineCategory(bookLine, request, FLOW_LINE));
+    }
+
+    private BookLineCategory saveBookLineCategory(BookLine bookLine, CreateLineRequest request, CategoryEnum categoryEnum) {
+        Category category = findCategory(request.getBookKey(), getCategoryFromRequest(categoryEnum, request));
+        return bookLineCategoryRepository.save(of(bookLine, category));
+    }
+
+    private String getCategoryFromRequest(CategoryEnum categoryEnum, CreateLineRequest request) {
+        switch (categoryEnum) {
+            case FLOW:
+                return request.getFlow();
+            case ASSET:
+                return request.getAsset();
+            case FLOW_LINE:
+                return request.getLine();
+            default:
+                throw new NotFoundCategoryException();
+        }
     }
 
     private BookUser findBookUser(CreateLineRequest request) {
@@ -53,8 +82,9 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookException::new);
     }
 
-    private Category findCategory(String bookKey,String name){
-        return categoryRepository.findCategory(name,bookKey).orElseThrow(NotFoundCategoryException::new);
+    private Category findCategory(String bookKey, String name) {
+        return categoryRepository.findCategory(name, bookKey)
+            .orElseThrow(NotFoundCategoryException::new);
     }
 
 }

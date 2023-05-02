@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,6 +34,9 @@ public abstract class Category {
     private LocalDateTime updatedAt;
 
     private String name;
+
+    @OneToMany(mappedBy = "category")
+    private List<BookLineCategory> bookLineCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

@@ -7,10 +7,10 @@ public enum CategoryEnum {
     FLOW("내역"),
     ASSET("자산"),
     FLOW_LINE("내역분류");
-    private String rootName;
+    private String name;
 
-    CategoryEnum(String rootName) {
-        this.rootName = rootName;
+    CategoryEnum(String name) {
+        this.name = name;
     }
 
 

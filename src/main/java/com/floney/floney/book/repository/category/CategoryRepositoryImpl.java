@@ -51,7 +51,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
         if (categories.isEmpty()) {
             categories = Optional.ofNullable(jpaQueryFactory.selectFrom(bookCategory)
                 .innerJoin(bookCategory.book, book)
-                .where(book.bookKey.eq(bookKey))
+                .where(book.bookKey.eq(bookKey),bookCategory.name.eq(name))
                 .fetchOne());
         }
         return categories;

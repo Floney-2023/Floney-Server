@@ -49,7 +49,7 @@ public class BookFixture {
             .initialAsset(DEFAULT_VALUE)
             .build();
     }
-    public static BookResponse bookResponse(){
+    public static BookResponse bookResponse() {
         return BookResponse.builder()
             .name(NAME)
             .profileImg(URL)

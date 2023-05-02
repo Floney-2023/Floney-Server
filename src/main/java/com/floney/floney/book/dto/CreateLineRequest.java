@@ -1,6 +1,8 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.*;
+import com.floney.floney.book.service.CategoryEnum;
+import com.floney.floney.common.exception.NotFoundCategoryException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -55,4 +57,5 @@ public class CreateLineRequest {
             .description(description)
             .build();
     }
+
 }

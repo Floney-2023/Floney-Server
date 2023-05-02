@@ -30,10 +30,6 @@ public class BookServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private BookUserRepository bookUserRepository;
-
     @InjectMocks
     private BookServiceImpl bookService;
 

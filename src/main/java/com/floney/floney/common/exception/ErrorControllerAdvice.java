@@ -25,5 +25,11 @@ public class ErrorControllerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
+
+    @ExceptionHandler(OutOfBudgetException.class)
+    protected ResponseEntity<ErrorResponse> outOfBudget(OutOfBudgetException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
 }
 

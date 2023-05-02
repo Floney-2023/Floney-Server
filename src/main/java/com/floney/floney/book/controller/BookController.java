@@ -32,7 +32,7 @@ public class BookController {
 
     @PostMapping("/book_line")
     public ResponseEntity createBookLine(@RequestBody CreateLineRequest request){
-        return new ResponseEntity<>(bookLineService.addBookLine(request),HttpStatus.CREATED);
+        return new ResponseEntity<>(bookLineService.createBookLine(request),HttpStatus.CREATED);
 
     }
 

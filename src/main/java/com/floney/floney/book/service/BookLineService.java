@@ -5,5 +5,5 @@ import com.floney.floney.book.dto.CreateLineRequest;
 
 public interface BookLineService {
 
-    BookLineResponse addBookLine(CreateLineRequest request);
+    BookLineResponse createBookLine(CreateLineRequest request);
 }

@@ -1,22 +1,25 @@
 package com.floney.floney.book.entity;
 
-public enum ASSET {
+import com.floney.floney.common.exception.NotFoundCategoryException;
+
+public enum AssetType {
 
     OUTCOME("지출"),
     INCOME("수입"),
     BANK("이체");
     private String kind;
 
-    ASSET(String kind) {
+    AssetType(String kind) {
         this.kind = kind;
     }
 
-    public static boolean isOutcome(String asset){
-        return OUTCOME.kind.equals(asset);
-    }
-
-    public static boolean isIncome(String asset){
-        return INCOME.kind.equals(asset);
+    public static AssetType find(String name) {
+        for (AssetType assetType : AssetType.values()) {
+            if (assetType.kind.equals(name)) {
+                return assetType;
+            }
+        }
+        throw new NotFoundCategoryException();
     }
 
 }
