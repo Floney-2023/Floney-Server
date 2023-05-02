@@ -6,10 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -23,7 +26,7 @@ public class BookLine extends BaseEntity {
     private Book book;
 
     @OneToMany
-    private Map<CategoryEnum, Category> category;
+    private Map<CategoryEnum, BookLineCategory> bookLineCategories;
 
     private Long money;
 
@@ -48,12 +51,13 @@ public class BookLine extends BaseEntity {
         this.status = status;
     }
 
-    public void add(Map<CategoryEnum, Category> categories) {
-        this.category = categories;
+    public void add(CategoryEnum flow, BookLineCategory category) {
+        this.bookLineCategories.put(flow, category);
     }
 
-    public String getTargetCategory(CategoryEnum key){
-        return this.category.get(key).getName();
+    public String getTargetCategory(CategoryEnum key) {
+        return this.bookLineCategories.get(key).getName();
     }
+
 
 }
