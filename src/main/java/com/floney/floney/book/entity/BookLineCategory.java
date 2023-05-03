@@ -4,10 +4,8 @@ import com.floney.floney.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
@@ -24,8 +22,8 @@ public class BookLineCategory extends BaseEntity {
     private String name;
 
     @Builder
-    public BookLineCategory(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, BookLine bookLine, Category category, String name) {
-        super(id, createdAt, updatedAt);
+    public BookLineCategory(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, BookLine bookLine, Category category, String name) {
+        super(id, createdAt, updatedAt, status);
         this.bookLine = bookLine;
         this.category = category;
         this.name = name;

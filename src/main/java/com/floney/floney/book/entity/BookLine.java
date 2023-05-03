@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.EnumMap;
 import java.util.Map;
 
 @Entity
@@ -26,7 +27,7 @@ public class BookLine extends BaseEntity {
     private Book book;
 
     @OneToMany
-    private Map<CategoryEnum, BookLineCategory> bookLineCategories;
+    private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
     private Long money;
 
@@ -37,18 +38,16 @@ public class BookLine extends BaseEntity {
 
     private Boolean exceptStatus;
 
-    private Boolean status;
 
     @Builder
-    public BookLine(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus, Boolean status) {
-        super(id, createdAt, updatedAt);
+    public BookLine(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
+        super(id, createdAt, updatedAt,status);
         this.writer = writer;
         this.book = book;
         this.money = money;
         this.lineDate = lineDate;
         this.description = description;
         this.exceptStatus = exceptStatus;
-        this.status = status;
     }
 
     public void add(CategoryEnum flow, BookLineCategory category) {

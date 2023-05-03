@@ -43,7 +43,10 @@ public abstract class Category {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category parent;
 
-    public Category(String name, Category parent) {
+    private Boolean status;
+
+    public Category(String name, Category parent, Boolean status) {
+        this.status = status;
         this.name = name;
         this.parent = parent;
     }

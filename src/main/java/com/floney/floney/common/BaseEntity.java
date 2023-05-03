@@ -29,6 +29,8 @@ public abstract class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    private Boolean status;
+
     protected BaseEntity() {
     }
 

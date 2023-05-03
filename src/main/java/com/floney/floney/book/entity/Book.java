@@ -48,9 +48,9 @@ public class Book extends BaseEntity {
 
 
     @Builder
-    private Book(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, String name, String profileImg, String provider,
-                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code, Boolean status) {
-        super(id, createdAt, updatedAt);
+    private Book(Long id, LocalDateTime createdAt, LocalDateTime updatedAt,  Boolean status,String name, String profileImg, String provider,
+                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code) {
+        super(id, createdAt, updatedAt,status);
 
         this.name = name;
         this.profileImg = profileImg;

@@ -34,7 +34,7 @@ public class BookUser extends BaseEntity {
 
     @Builder
     private BookUser(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User user, Book book, Boolean status) {
-        super(id, createdAt, updatedAt);
+        super(id, createdAt, updatedAt,status);
         this.user = user;
         this.book = book;
         this.status = status;
