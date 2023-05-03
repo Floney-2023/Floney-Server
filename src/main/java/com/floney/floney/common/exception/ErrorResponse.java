@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 public class ErrorResponse {
 
-    private String message;
-    private String code;
+    private final String message;
+    private final String code;
 
     public ErrorResponse(ErrorType errorType) {
         this.message = errorType.getMessage();
