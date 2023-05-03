@@ -1,8 +1,8 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.user.dto.KakaoUserDto;
-import com.floney.floney.user.dto.OAuth2UserDto;
-import com.floney.floney.user.dto.UserDto;
+import com.floney.floney.user.dto.KakaoUserResponse;
+import com.floney.floney.user.dto.OAuth2UserResponse;
+import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.repository.UserRepository;
@@ -26,17 +26,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
-        OAuth2UserDto oAuth2UserDto;
+        OAuth2UserResponse oAuth2UserResponse;
         if (Provider.KAKAO.getName().equals(provider)) {
-            oAuth2UserDto = KakaoUserDto.of(oAuth2User.getAttributes());
+            oAuth2UserResponse = KakaoUserResponse.of(oAuth2User.getAttributes());
         } else {
             throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
         }
 
-        UserDto userDto = UserDto.from(userRepository.findByEmail(oAuth2UserDto.getEmail())
-                .orElseGet(() -> userRepository.save(oAuth2UserDto.toUserDto().to())));
+        UserResponse userResponse = UserResponse.from(userRepository.findByEmail(oAuth2UserResponse.getEmail())
+                .orElseGet(() -> userRepository.save(oAuth2UserResponse.toUserDto().to())));
 
-        return UserDetail.of(userDto);
+        return UserDetail.of(userResponse);
     }
 
 }

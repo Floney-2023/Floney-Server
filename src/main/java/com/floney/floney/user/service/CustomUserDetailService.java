@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.user.dto.UserDto;
+import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -21,7 +21,7 @@ public class CustomUserDetailService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
         return UserDetail.of(
-                UserDto.from(user)
+                UserResponse.from(user)
         );
     }
 }

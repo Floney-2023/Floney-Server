@@ -1,7 +1,7 @@
 package com.floney.floney.user.dto.security;
 
-import com.floney.floney.user.dto.OAuth2UserDto;
-import com.floney.floney.user.dto.UserDto;
+import com.floney.floney.user.dto.OAuth2UserResponse;
+import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.dto.constant.Role;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,20 +18,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @Getter
 @AllArgsConstructor
 public class UserDetail implements UserDetails, OAuth2User {
-    private final UserDto userDto;
-    private final OAuth2UserDto oAuth2UserDto;
+    private final UserResponse userResponse;
+    private final OAuth2UserResponse oAuth2UserResponse;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public static UserDetail of(UserDto userDto) {
+    public static UserDetail of(UserResponse userResponse) {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
 
-        if(userDto.getSubscribe() == Role.SUBSCRIBER.getStatus()) {
+        if(userResponse.getSubscribe() == Role.SUBSCRIBER.getStatus()) {
             roles.add(Role.SUBSCRIBER);
         }
 
         return new UserDetail(
-                userDto,
+                userResponse,
                 null,
                 roles.stream()
                         .map(Role::getName)
@@ -52,12 +52,12 @@ public class UserDetail implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return userDto.getPassword();
+        return userResponse.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userDto.getEmail();
+        return userResponse.getEmail();
     }
 
     @Override
@@ -82,6 +82,6 @@ public class UserDetail implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return oAuth2UserDto.getProviderId();
+        return oAuth2UserResponse.getProviderId();
     }
 }

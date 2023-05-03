@@ -1,27 +1,32 @@
 package com.floney.floney.user.dto;
 
 import com.floney.floney.user.dto.constant.Provider;
-import com.floney.floney.user.entity.User;
 import java.util.Map;
 
-public class KakaoUserDto implements OAuth2UserDto {
+public class KakaoUserResponse implements OAuth2UserResponse {
     private final Map<String, Object> attributes;
     private final Map<String, Object> attributesAccount;
     private final Map<String, Object> attributesProfile;
 
-    private KakaoUserDto(Map<String, Object> attributes) {
+    private KakaoUserResponse(Map<String, Object> attributes) {
         this.attributes = attributes;
         this.attributesAccount = (Map<String, Object>) attributes.get("kakao_account");
         this.attributesProfile = (Map<String, Object>) attributesAccount.get("profile");
     }
 
-    public static KakaoUserDto of(Map<String, Object> attributes) {
-        return new KakaoUserDto(attributes);
+    public static KakaoUserResponse of(Map<String, Object> attributes) {
+        return new KakaoUserResponse(attributes);
     }
 
     @Override
-    public UserDto toUserDto() {
-        return UserDto.of(getNickname(), getEmail(), null, null, 0, 0, null, getProvider());
+    public UserResponse toUserDto() {
+        return UserResponse.builder()
+                .nickname(getNickname())
+                .email(getEmail())
+                .subscribe(0)
+                .provider(getProvider())
+                .status(true)
+                .build();
     }
 
     @Override
