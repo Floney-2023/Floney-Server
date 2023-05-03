@@ -1,8 +1,9 @@
 package com.floney.floney.common.config;
 
+import com.floney.floney.common.CustomAuthenticationEntryPoint;
 import com.floney.floney.common.OAuth2AuthenticationSuccessHandler;
-import com.floney.floney.common.jwt.JwtAuthenticationFilter;
-import com.floney.floney.common.jwt.JwtTokenProvider;
+import com.floney.floney.common.token.JwtAuthenticationFilter;
+import com.floney.floney.common.token.JwtTokenProvider;
 import com.floney.floney.user.service.CustomOAuth2UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +65,8 @@ public class SecurityConfig {
                         "/users/login",
                         "/users/logout",
                         "/users/reissue",
-                        "/users/email"
+                        "/users/email",
+                        "/users/find-password"
                 ).permitAll()
                 .anyRequest().authenticated()
 
