@@ -4,6 +4,8 @@ import com.floney.floney.common.BaseEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -12,15 +14,13 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @DynamicUpdate
 @Entity
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(length = 100)
     private String email;
@@ -47,32 +47,16 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String provider;
 
-    private User(String nickname, String email, String password, String profileImg, int marketingAgree,
-                 int subscribe, LocalDateTime lastAdTime, String provider) {
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
+    @ColumnDefault("1")
+    protected boolean status;
 
-        this.nickname = nickname;
-        this.email = email;
-        this.password = password;
-        this.profileImg = profileImg;
-        this.marketingAgree = marketingAgree;
-        this.subscribe = subscribe;
-        this.lastAdTime = lastAdTime;
-        this.provider = provider;
-    }
-
-    public void encodePassword(PasswordEncoder passwordEncoder){
+    public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
     }
 
-    public static User of(
-            String nickname, String email, String password, String profileImg,
-            int marketingAgree, int subscribe, LocalDateTime lastAdTime, String provider
-    ) {
-        return new User(nickname, email, password, profileImg, marketingAgree, subscribe, lastAdTime, provider);
-    }
-
     public void signout() {
-        this.status = "inactive";
+        this.status = false;
     }
 
     public void updateNickname(String nickname) {
@@ -81,5 +65,9 @@ public class User extends BaseEntity {
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
     }
 }
