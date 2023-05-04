@@ -13,7 +13,7 @@ public class BookFixture {
     private static String URL = "https://fileisHere.com";
     public static String CODE = "codeExample";
 
-    private static UUID BOOK_KEY = UUID.fromString("29d16907-61b6-4587-a584-72a0f344ff4e");
+    public static String BOOK_KEY = "book-key";
 
     private static Long DEFAULT_VALUE = 0L;
 
@@ -25,9 +25,21 @@ public class BookFixture {
             .build();
     }
 
-    public static Book createBook(Long id) {
+    public static Book createBookWith(Long id,String bookKey) {
         return Book.builder()
             .id(id)
+            .name(NAME)
+            .profileImg(URL)
+            .bookKey(bookKey)
+            .budget(DEFAULT_VALUE)
+            .provider(EMAIL)
+            .code(CODE)
+            .initialAsset(DEFAULT_VALUE)
+            .build();
+    }
+
+    public static Book createBook() {
+        return Book.builder()
             .name(NAME)
             .profileImg(URL)
             .bookKey(BOOK_KEY)
@@ -37,8 +49,7 @@ public class BookFixture {
             .initialAsset(DEFAULT_VALUE)
             .build();
     }
-
-    public static BookResponse bookResponse(){
+    public static BookResponse bookResponse() {
         return BookResponse.builder()
             .name(NAME)
             .profileImg(URL)

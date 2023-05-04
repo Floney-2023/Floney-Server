@@ -10,10 +10,9 @@ import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +27,16 @@ public class BookServiceImpl implements BookService {
     public BookResponse createBook(String email, CreateBookRequest request) {
         Book newBook = request.of(email);
         Book savedBook = bookRepository.save(newBook);
+
         bookUserRepository.save(BookUser.of(findUser(email), savedBook));
-        return BookResponse.of(bookRepository.findBookByProvider(email));
+        return BookResponse.of(savedBook);
     }
 
     @Override
     public BookResponse joinWithCode(String email, String code) {
         Book book = bookRepository.findBookByCode(code)
             .orElseThrow(NotFoundBookException::new);
-
+        bookUserRepository.existBookUser(email,code);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));
 
@@ -44,6 +44,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private User findUser(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
+
 }

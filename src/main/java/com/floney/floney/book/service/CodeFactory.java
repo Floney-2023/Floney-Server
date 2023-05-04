@@ -4,11 +4,10 @@ package com.floney.floney.book.service;
 import java.util.UUID;
 
 public class CodeFactory {
-    public static String generateCode() {
-        return UUID.randomUUID().toString();
-    }
 
-    public static UUID bookKey(){
-        return UUID.randomUUID();
+    private static final int START = 0;
+    private static final int END = 8;
+    public static String generateCode() {
+        return UUID.randomUUID().toString().substring(START, END);
     }
 }

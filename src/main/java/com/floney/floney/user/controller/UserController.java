@@ -1,14 +1,17 @@
 package com.floney.floney.user.controller;
 
-import com.floney.floney.common.BaseException;
-import com.floney.floney.common.BaseResponse;
-import com.floney.floney.common.BaseResponseStatus;
-import com.floney.floney.common.jwt.dto.TokenDto;
-import com.floney.floney.user.dto.request.UserLoginRequestDto;
-import com.floney.floney.user.dto.request.UserSignupRequestDto;
+import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.user.dto.request.UserLoginRequest;
+import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,70 +24,74 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public BaseResponse<?> signup(@RequestBody @Validated UserSignupRequestDto signupRequestDto) {
-        try {
-            userService.signup(signupRequestDto.to());
-            userService.login(signupRequestDto.getEmail(), signupRequestDto.getPassword());
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
-        return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+    public ResponseEntity<?> signup(@RequestBody @Validated UserSignupRequest signupRequestDto) {
+        userService.signup(signupRequestDto.to());
+        return new ResponseEntity<>(
+                userService.login(signupRequestDto.getEmail(), signupRequestDto.getPassword()),
+                HttpStatus.CREATED);
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<?> authenticateEmail(@RequestBody @Validated String email) {
+        return new ResponseEntity<>(
+                userService.sendAuthenticateEmail(email),
+                HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public BaseResponse<?> login(@RequestBody @Validated UserLoginRequestDto loginRequestDto) {
+    public ResponseEntity<?> login(@RequestBody @Validated UserLoginRequest loginRequestDto) {
         String email = loginRequestDto.getEmail();
         String password = loginRequestDto.getPassword();
-        return new BaseResponse<>(userService.login(email, password));
+        return new ResponseEntity<>(userService.login(email, password), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public BaseResponse<?> logout(@RequestBody @Validated String accessToken) {
-        try {
-            userService.logout(accessToken);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
+    public ResponseEntity<?> logout(@RequestBody @Validated String accessToken) {
+        userService.logout(accessToken);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/reissue")
-    public BaseResponse<?> regenerateToken(@RequestBody @Validated TokenDto tokenDto) {
-        try {
-            return new BaseResponse<>(userService.regenerateToken(tokenDto));
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
+    public ResponseEntity<?> regenerateToken(@RequestBody @Validated TokenDto tokenDto) {
+        return new ResponseEntity<>(
+                userService.regenerateToken(tokenDto),
+                HttpStatus.CREATED);
     }
 
     @PostMapping("/signout")
-    public BaseResponse<?> signout(@RequestBody @Validated String accessToken) {
-        try {
-            String email = userService.logout(accessToken);
-            userService.signout(email);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
+    public ResponseEntity<?> signout(@RequestBody @Validated String accessToken) {
+        String email = userService.logout(accessToken);
+        userService.signout(email);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/nickname")
-    public BaseResponse<?> updateNickname(@RequestBody @Validated String nickname) {
-        try {
-            userService.updateNickname(nickname);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
+    public ResponseEntity<?> updateNickname(@RequestBody @Validated String nickname) {
+        userService.updateNickname(nickname);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/password")
-    public BaseResponse<?> updatePassword(@RequestBody @Validated String password) {
-        try {
-            userService.updatePassword(password);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
-        } catch (BaseException e) {
-            return new BaseResponse<>(e.getStatus());
-        }
+    public ResponseEntity<?> updatePassword(@RequestBody @Validated String password) {
+        userService.updatePassword(password);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/find-password")
+    public ResponseEntity<?> findPassword(@RequestBody @Validated String email) {
+        userService.updatePassword(email, userService.sendPasswordFindEmail(email));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/img")
+    public ResponseEntity<?> updateProfileImg(@RequestBody @Validated String profileImg) {
+        userService.updateProfileImg(profileImg);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal @Validated UserDetails principal) {
+        return new ResponseEntity<>(userService.getUserInfo(principal.getUsername()), HttpStatus.OK);
+    }
+
 }
