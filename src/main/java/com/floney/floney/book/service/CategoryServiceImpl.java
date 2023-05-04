@@ -55,7 +55,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (!categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())) {
             //에러 던지기
         }
-        ;
     }
 
 }

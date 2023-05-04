@@ -3,11 +3,10 @@ package com.floney.floney.book.repository;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.exception.MaxMemberException;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
@@ -34,14 +33,26 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BookUser findUserWith(String nickName, String bookKey){
+    public BookUser findUserWith(String nickName, String bookKey) {
         return jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
-            .innerJoin(bookUser.user,user)
+            .innerJoin(bookUser.user, user)
             .where(user.nickname.eq(nickName))
-            .innerJoin(bookUser.book,book)
+            .innerJoin(bookUser.book, book)
             .where(book.bookKey.eq(bookKey))
             .fetchOne();
+    }
+
+    @Override
+    public BooleanExpression existBookUser(String email, String code) {
+        return jpaQueryFactory
+            .select(bookUser)
+            .from(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(email))
+            .innerJoin(bookUser.book, book)
+            .where(book.code.eq(code))
+            .exists();
     }
 }

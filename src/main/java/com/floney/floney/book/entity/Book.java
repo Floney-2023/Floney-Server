@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 public class Book extends BaseEntity {
     private static final Long MIN_BUDGET = 0L;
     private static final Long MAX_BUDGET = 999999999L;
+
     @Column(nullable = false, length = 10)
     private String name;
 

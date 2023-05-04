@@ -1,7 +1,6 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.service.CategoryEnum;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class BookLineResponse {
 
     private String asset;
 
-    private String flowLine;
+    private String line;
 
     private LocalDate lineDate;
 
@@ -31,11 +30,11 @@ public class BookLineResponse {
     private String nickname;
 
     @Builder
-    private BookLineResponse(Long money, String flow, String asset, String flowLine, LocalDate lineDate, String description, Boolean except,String nickname) {
+    private BookLineResponse(Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
         this.money = money;
         this.flow = flow;
         this.asset = asset;
-        this.flowLine = flowLine;
+        this.line = line;
         this.lineDate = lineDate;
         this.description = description;
         this.except = except;
@@ -47,7 +46,7 @@ public class BookLineResponse {
             .money(bookLine.getMoney())
             .flow(bookLine.getTargetCategory(FLOW))
             .asset(bookLine.getTargetCategory(ASSET))
-            .flowLine(bookLine.getTargetCategory(FLOW_LINE))
+            .line(bookLine.getTargetCategory(FLOW_LINE))
             .lineDate(bookLine.getLineDate())
             .description(bookLine.getDescription())
             .except(bookLine.getExceptStatus())

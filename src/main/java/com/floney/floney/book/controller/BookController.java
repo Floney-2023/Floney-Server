@@ -26,11 +26,11 @@ public class BookController {
     }
 
     @PostMapping("/{code}")
-    public ResponseEntity joinWithCode(@PathVariable(value = "code") String code) {
+    public ResponseEntity joinWithCode(@RequestParam("code") String code) {
         return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/book_line")
+    @PostMapping("/lines")
     public ResponseEntity createBookLine(@RequestBody CreateLineRequest request){
         return new ResponseEntity<>(bookLineService.createBookLine(request),HttpStatus.CREATED);
 

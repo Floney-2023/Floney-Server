@@ -42,19 +42,41 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public Optional<Category> findCategory(String name, String bookKey) {
-        Optional<Category> categories = Optional.ofNullable(jpaQueryFactory.selectFrom(category)
+    public Category findFlowCategory(String name) {
+        return jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(name),
+                category.instanceOf(DefaultCategory.class),
+                category.parent.isNull())
+            .fetchOne();
+    }
+
+    @Override
+    public Category findAssetCategory(String name) {
+        return jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
                 category.instanceOf(DefaultCategory.class))
+            .innerJoin(category)
+            .where(category.parent.name.eq("자산"))
+            .fetchOne();
+    }
+
+
+    @Override
+    public Optional<Category> findLineCategory(String name, String bookKey, String parent) {
+        Optional<Category> target = Optional.ofNullable(jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(name),
+                category.parent.eq(findFlowCategory(parent))
+                , category.instanceOf(DefaultCategory.class))
             .fetchOne());
 
-        if (categories.isEmpty()) {
-            categories = Optional.ofNullable(jpaQueryFactory.selectFrom(bookCategory)
+        if (target.isEmpty()) {
+            target = Optional.ofNullable(jpaQueryFactory.selectFrom(category)
                 .innerJoin(bookCategory.book, book)
-                .where(book.bookKey.eq(bookKey),bookCategory.name.eq(name))
+                .where(book.bookKey.eq(bookKey), bookCategory.name.eq(name),
+                    bookCategory.parent.eq(findFlowCategory(parent)))
                 .fetchOne());
         }
-        return categories;
+        return target;
     }
 
     @Override

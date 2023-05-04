@@ -8,7 +8,11 @@ import java.util.Optional;
 public interface CategoryCustomRepository {
     List<Category> findAllCategory(String name, String bookKey);
 
-    Optional<Category> findCategory(String name, String bookKey);
+    Category findFlowCategory(String name);
+
+    Category findAssetCategory(String name);
+
+    Optional<Category> findLineCategory(String name, String bookKey, String parent);
 
     boolean findCustomTarget(Category targetRoot, String bookKey, String target);
 }

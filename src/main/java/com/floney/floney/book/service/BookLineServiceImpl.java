@@ -50,27 +50,25 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
-        bookLine.add(FLOW, saveBookLineCategory(bookLine, request, FLOW));
-        bookLine.add(ASSET, saveBookLineCategory(bookLine, request, ASSET));
-        bookLine.add(FLOW_LINE, saveBookLineCategory(bookLine, request, FLOW_LINE));
+        bookLine.add(FLOW, saveFlowCategory(bookLine, request));
+        bookLine.add(ASSET, saveAssetCategory(bookLine,request));
+        bookLine.add(FLOW_LINE, saveLineCategory(bookLine, request));
     }
 
-    private BookLineCategory saveBookLineCategory(BookLine bookLine, CreateLineRequest request, CategoryEnum categoryEnum) {
-        Category category = findCategory(request.getBookKey(), getCategoryFromRequest(categoryEnum, request));
+    private BookLineCategory saveLineCategory(BookLine bookLine, CreateLineRequest request) {
+        Category category = categoryRepository.findLineCategory(request.getLine(),request.getBookKey(),request.getFlow())
+            .orElseThrow(NotFoundCategoryException::new);
         return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
-    private String getCategoryFromRequest(CategoryEnum categoryEnum, CreateLineRequest request) {
-        switch (categoryEnum) {
-            case FLOW:
-                return request.getFlow();
-            case ASSET:
-                return request.getAsset();
-            case FLOW_LINE:
-                return request.getLine();
-            default:
-                throw new NotFoundCategoryException();
-        }
+    private BookLineCategory saveFlowCategory(BookLine bookLine, CreateLineRequest request) {
+        Category category = categoryRepository.findFlowCategory(request.getFlow());
+        return bookLineCategoryRepository.save(of(bookLine, category));
+    }
+
+    private BookLineCategory saveAssetCategory(BookLine bookLine,CreateLineRequest request){
+        Category category = categoryRepository.findAssetCategory(request.getAsset());
+        return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
     private BookUser findBookUser(CreateLineRequest request) {
@@ -82,9 +80,5 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookException::new);
     }
 
-    private Category findCategory(String bookKey, String name) {
-        return categoryRepository.findCategory(name, bookKey)
-            .orElseThrow(NotFoundCategoryException::new);
-    }
 
 }
