@@ -1,15 +1,25 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.common.BaseException;
-import com.floney.floney.common.BaseResponseStatus;
-import com.floney.floney.common.jwt.JwtTokenProvider;
-import com.floney.floney.common.jwt.dto.TokenDto;
-import com.floney.floney.user.dto.UserDto;
+import com.floney.floney.common.exception.UserSignoutException;
+import com.floney.floney.common.token.RedisProvider;
+import com.floney.floney.common.exception.MailAddressException;
+import com.floney.floney.common.exception.UserFoundException;
+import com.floney.floney.common.exception.UserNotFoundException;
+import com.floney.floney.common.token.JwtTokenProvider;
+import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.user.dto.MyPageResponse;
+import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.concurrent.TimeUnit;
+import io.jsonwebtoken.MalformedJwtException;
+import java.util.NoSuchElementException;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,108 +30,152 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserService {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder bCryptPasswordEncoder;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisProvider redisProvider;
+    private final JavaMailSender javaMailSender;
 
     public TokenDto login(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
 
-        TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);
-
-        redisTemplate.opsForValue().set(
-                authentication.getName(),
-                tokenDto.getRefreshToken(),
-                REFRESH_TOKEN_EXPIRE_TIME,
-                TimeUnit.MILLISECONDS
-        );
-
-        return tokenDto;
+        return jwtTokenProvider.generateToken(authentication);
     }
 
-    public String logout(String accessToken) throws BaseException {
-        if (!jwtTokenProvider.validateToken(accessToken)) {
-            throw new BaseException(BaseResponseStatus.INVALID_TOKEN);
-        }
-
+    public String logout(String accessToken) {
+        jwtTokenProvider.validateToken(accessToken);
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String email = authentication.getName();
 
-        if (redisTemplate.opsForValue().get(email) != null) {
-            redisTemplate.delete(email);
+        if (redisProvider.get(email) != null) {
+            redisProvider.delete(email);
         }
 
         long expiration = jwtTokenProvider.getExpiration(accessToken);
-        redisTemplate.opsForValue().set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+        redisProvider.set(accessToken, "logout", expiration);
 
         return email;
     }
 
-    public void signup(UserDto userDto) throws BaseException {
-        if (userRepository.existsByEmail(userDto.getEmail())) {
-            throw new BaseException(BaseResponseStatus.USER_EXIST);
+    @Transactional
+    public void signup(UserResponse userResponse) {
+        try {
+            User user = userRepository.findByEmail(userResponse.getEmail()).orElseThrow();
+            throw new UserFoundException(user.getProvider());
+        } catch (NoSuchElementException exception) {
+            User user = userResponse.to();
+            user.encodePassword(bCryptPasswordEncoder);
+
+            userRepository.save(user);
+        }
+    }
+
+    @Transactional
+    public void signout(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+
+        if(!user.isStatus()) {
+            throw new UserSignoutException();
         }
 
-        User user = userDto.to();
-        user.encodePassword(bCryptPasswordEncoder);
-
-        userRepository.save(user);
-    }
-
-    public void signout(String email) {
-        User user = userRepository.findByEmail(email);
         user.signout();
-
         userRepository.save(user);
     }
 
-    public TokenDto regenerateToken(TokenDto tokenDto) throws BaseException {
+    public TokenDto regenerateToken(TokenDto tokenDto) {
         String accessToken = tokenDto.getAccessToken();
         String refreshToken = tokenDto.getRefreshToken();
 
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        String redisRefreshToken = redisTemplate.opsForValue().get(authentication.getName());
+        String redisRefreshToken = redisProvider.get(authentication.getName());
 
-        if(!refreshToken.equals(redisRefreshToken)) {
-            throw new BaseException(BaseResponseStatus.AUTHENTICATION_FAIL);
+        if (!refreshToken.equals(redisRefreshToken)) {
+            throw new MalformedJwtException("");
         }
 
-        TokenDto newToken = jwtTokenProvider.generateToken(authentication);
-
-        redisTemplate.opsForValue().set(
-                authentication.getName(),
-                tokenDto.getRefreshToken(),
-                REFRESH_TOKEN_EXPIRE_TIME,
-                TimeUnit.MILLISECONDS
-        );
-
-        return newToken;
+        return jwtTokenProvider.generateToken(authentication);
     }
 
-    public void updateNickname(String nickname) throws BaseException {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(user == null) {
-            throw new BaseException(BaseResponseStatus.USER_NOT_EXIST);
-        }
+    public MyPageResponse getUserInfo(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+        return MyPageResponse.from(UserResponse.from(user));
+    }
+
+    @Transactional
+    public void updateNickname(String nickname) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(UserNotFoundException::new);
+
         user.updateNickname(nickname);
     }
 
-    public void updatePassword(String password) throws BaseException {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(user == null) {
-            throw new BaseException(BaseResponseStatus.USER_NOT_EXIST);
-        }
+    @Transactional
+    public void updatePassword(String password) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(UserNotFoundException::new);
+
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
     }
+
+    @Transactional
+    public void updatePassword(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.updatePassword(password);
+        user.encodePassword(bCryptPasswordEncoder);
+    }
+
+    @Transactional
+    public void updateProfileImg(String profileImg) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(UserNotFoundException::new);
+
+        user.updateProfileImg(profileImg);
+    }
+
+    public String sendAuthenticateEmail(String email) {
+        Random random = new Random();
+        random.setSeed(System.currentTimeMillis());
+        String code = String.format("%06d", random.nextInt(1_000_000) % 1_000_000);
+
+        String mailSubject = "[Floney] 이메일 인증 코드";
+        String mailText = String.format("인증 코드: %s\n앱으로 돌아가서 인증을 완료해주세요.\n", code);
+
+        sendMail(email, mailSubject, mailText);
+        return code;
+    }
+
+    public String sendPasswordFindEmail(String email) {
+        String newPassword = RandomStringUtils.random(50, true, true);
+
+        String mailSubject = "[Floney] 새 비밀번호 안내";
+        String mailText = String.format("새 비밀번호: %s\n바뀐 비밀번호로 로그인 해주세요.\n", newPassword);
+
+        sendMail(email, mailSubject, mailText);
+        return newPassword;
+    }
+
+    private void sendMail(String email, String subject, String text) {
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setTo(email);
+        simpleMailMessage.setSubject(subject);
+        simpleMailMessage.setText(text);
+
+        try{
+            javaMailSender.send(simpleMailMessage);
+        } catch (MailParseException | MailAuthenticationException exception) {
+            throw new MailAddressException();
+        }
+    }
+
 }

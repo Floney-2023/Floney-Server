@@ -1,4 +1,4 @@
-package com.floney.floney.common.jwt.dto;
+package com.floney.floney.common.token.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

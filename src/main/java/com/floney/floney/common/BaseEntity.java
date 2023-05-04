@@ -7,15 +7,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 
 @AllArgsConstructor
 @Getter
 @MappedSuperclass
-@SuperBuilder
+@DynamicInsert  
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
     @Id
@@ -24,9 +27,11 @@ public abstract class BaseEntity {
     private Long id;
 
     @CreatedDate
+    @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime updatedAt;
 
     private Boolean status;

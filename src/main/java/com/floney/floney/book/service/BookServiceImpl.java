@@ -10,6 +10,7 @@ import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private User findUser(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
 }

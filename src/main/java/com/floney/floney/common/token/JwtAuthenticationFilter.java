@@ -1,5 +1,6 @@
-package com.floney.floney.common.jwt;
+package com.floney.floney.common.token;
 
+import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,8 +23,14 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = resolveToken((HttpServletRequest) request);
+        try{
+            jwtTokenProvider.validateToken(token);
+        } catch (JwtException exception) {
+            chain.doFilter(request, response);
+            return;
+        }
 
-        if(token != null && jwtTokenProvider.validateToken(token) && redisTemplate.opsForValue().get(token) == null) {
+        if(token != null && redisTemplate.opsForValue().get(token) == null) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
