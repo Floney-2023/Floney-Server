@@ -22,7 +22,7 @@ public class CreateBookRequest {
 
     public Book of(String email) {
         return Book.builder()
-            .bookKey(CodeFactory.bookKey())
+            .bookKey(CodeFactory.generateCode())
             .name(name)
             .profileImg(profileImg)
             .provider(email)
@@ -30,5 +30,6 @@ public class CreateBookRequest {
             .build();
 
     }
+
 
 }

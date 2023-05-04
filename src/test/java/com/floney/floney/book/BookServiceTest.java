@@ -31,10 +31,6 @@ public class BookServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private BookUserRepository bookUserRepository;
-
     @InjectMocks
     private BookServiceImpl bookService;
 
@@ -43,7 +39,7 @@ public class BookServiceTest {
     void create_book() {
         Long id = 1L;
         String code = CODE.toString();
-        Book testBook = BookFixture.createBook(id);
+        Book testBook = BookFixture.createBookWith(id,"1234");
 
         User testUser = UserFixture.createUser();
         given(bookRepository.findBookByCode(CODE))
