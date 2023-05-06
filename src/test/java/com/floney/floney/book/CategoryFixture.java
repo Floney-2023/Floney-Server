@@ -2,10 +2,7 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.dto.CategoryResponse;
 import com.floney.floney.book.dto.CreateCategoryRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookCategory;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.*;
 
 import static com.floney.floney.book.BookFixture.BOOK_KEY;
 
@@ -27,7 +24,7 @@ public class CategoryFixture {
             .build();
     }
 
-    public static DefaultCategory createDefaultChild(Category parent,String name) {
+    public static DefaultCategory createDefaultChild(Category parent, String name) {
         return DefaultCategory.builder()
             .parent(parent)
             .name(name)
@@ -41,7 +38,25 @@ public class CategoryFixture {
             .build();
     }
 
-    public static BookCategory createChildCategory(Category parent,Book book) {
+    public static DefaultCategory incomeBookCategory() {
+        return DefaultCategory.builder()
+            .name("수입")
+            .build();
+    }
+
+    public static DefaultCategory outComeBookCategory() {
+        return DefaultCategory.builder()
+            .name("지출")
+            .build();
+    }
+
+
+    public static BookLineCategory createIncomeLineCategory(DefaultCategory income, BookLine bookLine) {
+        return BookLineCategory.of(bookLine, income);
+    }
+
+
+    public static BookCategory createChildCategory(Category parent, Book book) {
         return BookCategory.builder()
             .book(book)
             .parent(parent)
@@ -50,7 +65,7 @@ public class CategoryFixture {
     }
 
 
-    public static CreateCategoryRequest createBookCategory(){
+    public static CreateCategoryRequest createBookCategory() {
         return CreateCategoryRequest.builder()
             .bookKey(BOOK_KEY)
             .parent(ROOT)
@@ -58,13 +73,13 @@ public class CategoryFixture {
             .build();
     }
 
-    public static CategoryResponse categoryRootResponse(){
+    public static CategoryResponse categoryRootResponse() {
         return CategoryResponse.builder()
             .name(ROOT)
             .build();
     }
 
-    public static CategoryResponse categoryChildResponse(){
+    public static CategoryResponse categoryChildResponse() {
         return CategoryResponse.builder()
             .name(CHILD)
             .build();
