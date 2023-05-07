@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserResponse implements Serializable {
+public class UserResponse {
     private final String nickname;
     private final String email;
     private final String password;
