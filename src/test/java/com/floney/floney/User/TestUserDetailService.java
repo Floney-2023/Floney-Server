@@ -14,9 +14,9 @@ public class TestUserDetailService implements UserDetailsService {
             UserResponse.builder()
                     .email("floney@naver.com")
                     .password("1234")
-                    .provider(Provider.EMAIL.getName())
-                    .subscribe(0)
-                    .marketingAgree(0)
+                    .provider(Provider.EMAIL)
+                    .subscribe(false)
+                    .marketingAgree(false)
                     .profileImg("imageUrl")
                     .build());
 

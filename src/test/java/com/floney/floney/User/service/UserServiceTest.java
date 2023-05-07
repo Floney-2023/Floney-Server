@@ -10,6 +10,7 @@ import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import com.floney.floney.user.service.UserService;
@@ -48,10 +49,14 @@ class UserServiceTest {
     @DisplayName("회원가입에 성공한다")
     void signup_success() {
         // given
+        User user = UserFixture.getUser();
+        UserSignupRequest userSignupRequest = new UserSignupRequest(
+                user.getEmail(), user.getNickname(), user.getPassword(), user.isMarketingAgree());
+
         given(userRepository.save(any(User.class))).willReturn(null);
 
         // when
-        userService.signup(UserResponse.from(UserFixture.getUser()));
+        userService.signup(userSignupRequest);
 
         // then
         then(userRepository).should().save(any(User.class));
@@ -62,10 +67,12 @@ class UserServiceTest {
     void signup_fail_throws_userFoundException() {
         // given
         User user = UserFixture.getUser();
+        UserSignupRequest userSignupRequest = new UserSignupRequest(
+                user.getEmail(), user.getNickname(), user.getPassword(), user.isMarketingAgree());
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
-        assertThatThrownBy(() -> userService.signup(UserResponse.from(user)))
+        assertThatThrownBy(() -> userService.signup(userSignupRequest))
                 .isInstanceOf(UserFoundException.class);
     }
 

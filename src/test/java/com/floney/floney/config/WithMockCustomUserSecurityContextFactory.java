@@ -15,9 +15,9 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
         UserDetail principal = UserDetail.of(UserResponse.builder()
                 .email(customUser.username())
                 .password(customUser.password())
-                .provider(Provider.EMAIL.getName())
-                .subscribe(0)
-                .marketingAgree(0)
+                .provider(Provider.EMAIL)
+                .subscribe(false)
+                .marketingAgree(false)
                 .profileImg("imageUrl")
                 .status(true)
                 .build());

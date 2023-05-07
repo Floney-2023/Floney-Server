@@ -17,6 +17,7 @@ public enum ErrorType {
     USER_NOT_FOUND("U008", "해당 이메일로 가입된 유저가 없습니다"),
     INVALID_LOGIN("U009", "잘못된 정보로 로그인에 실패했습니다"),
     USER_SIGNOUT("U010", "탈퇴한 회원입니다"),
+    INVALID_PROVIDER("U011", "올바르지 않은 회원 유형입니다"),
 
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),

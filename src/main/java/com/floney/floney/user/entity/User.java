@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Entity
+@Table(indexes = {
+        @Index(name = "email", columnList = "email", unique = true)
+})
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,7 +51,7 @@ public class User extends BaseEntity {
     @Column(nullable = false, updatable = false, length = 10)
     private String provider;
 
-    @Builder
+    @Builder(builderMethodName = "signupBuilder")
     private User(String email, String nickname, String password, boolean marketingAgree, Provider provider) {
         this.email = email;
         this.nickname = nickname;
@@ -56,6 +59,20 @@ public class User extends BaseEntity {
         this.marketingAgree = marketingAgree;
         this.lastAdTime = LocalDateTime.now();
         this.provider = provider.getName();
+    }
+
+    @Builder
+    private User(String email, String nickname, String password, String profileImg, boolean marketingAgree,
+                LocalDateTime lastAdTime, boolean subscribe, Provider provider, boolean status) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.profileImg = profileImg;
+        this.marketingAgree = marketingAgree;
+        this.lastAdTime = lastAdTime;
+        this.subscribe = subscribe;
+        this.provider = provider.getName();
+        this.status = status;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

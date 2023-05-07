@@ -9,6 +9,7 @@ import com.floney.floney.common.token.JwtTokenProvider;
 import com.floney.floney.common.token.dto.TokenDto;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
@@ -64,12 +65,12 @@ public class UserService {
     }
 
     @Transactional
-    public void signup(UserResponse userResponse) {
+    public void signup(UserSignupRequest userSignupRequest) {
         try {
-            User user = userRepository.findByEmail(userResponse.getEmail()).orElseThrow();
+            User user = userRepository.findByEmail(userSignupRequest.getEmail()).orElseThrow();
             throw new UserFoundException(user.getProvider());
         } catch (NoSuchElementException exception) {
-            User user = userResponse.to();
+            User user = userSignupRequest.to();
             user.encodePassword(bCryptPasswordEncoder);
 
             userRepository.save(user);
