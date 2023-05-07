@@ -23,25 +23,19 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid UserSignupRequest signupRequestDto) {
-        userService.signup(signupRequestDto);
-        return new ResponseEntity<>(
-                userService.login(signupRequestDto.getEmail(), signupRequestDto.getPassword()),
-                HttpStatus.CREATED);
+    public ResponseEntity<?> signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
+        userService.signup(userSignupRequest);
+        return new ResponseEntity<>(userService.login(userSignupRequest.toLoginRequest()), HttpStatus.CREATED);
     }
 
     @PostMapping("/email")
     public ResponseEntity<?> authenticateEmail(@RequestBody @Valid String email) {
-        return new ResponseEntity<>(
-                userService.sendAuthenticateEmail(email),
-                HttpStatus.OK);
+        return new ResponseEntity<>(userService.sendAuthenticateEmail(email), HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequest loginRequestDto) {
-        String email = loginRequestDto.getEmail();
-        String password = loginRequestDto.getPassword();
-        return new ResponseEntity<>(userService.login(email, password), HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
+        return new ResponseEntity<>(userService.login(userLoginRequest), HttpStatus.OK);
     }
 
     @PostMapping("/logout")
@@ -52,9 +46,7 @@ public class UserController {
 
     @PostMapping("/reissue")
     public ResponseEntity<?> regenerateToken(@RequestBody @Valid TokenDto tokenDto) {
-        return new ResponseEntity<>(
-                userService.regenerateToken(tokenDto),
-                HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.regenerateToken(tokenDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/signout")

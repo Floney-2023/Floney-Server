@@ -50,8 +50,12 @@ class UserServiceTest {
     void signup_success() {
         // given
         User user = UserFixture.getUser();
-        UserSignupRequest userSignupRequest = new UserSignupRequest(
-                user.getEmail(), user.getNickname(), user.getPassword(), user.isMarketingAgree());
+        UserSignupRequest userSignupRequest = UserSignupRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .marketingAgree(user.isMarketingAgree())
+                .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
 
@@ -67,9 +71,12 @@ class UserServiceTest {
     void signup_fail_throws_userFoundException() {
         // given
         User user = UserFixture.getUser();
-        UserSignupRequest userSignupRequest = new UserSignupRequest(
-                user.getEmail(), user.getNickname(), user.getPassword(), user.isMarketingAgree());
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        UserSignupRequest userSignupRequest = UserSignupRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .marketingAgree(user.isMarketingAgree())
+                .build();
 
         // when & then
         assertThatThrownBy(() -> userService.signup(userSignupRequest))

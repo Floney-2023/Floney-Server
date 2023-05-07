@@ -9,6 +9,7 @@ import com.floney.floney.common.token.JwtTokenProvider;
 import com.floney.floney.common.token.dto.TokenDto;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.request.UserLoginRequest;
 import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -41,9 +42,9 @@ public class UserService {
     private final RedisProvider redisProvider;
     private final JavaMailSender javaMailSender;
 
-    public TokenDto login(String email, String password) {
+    public TokenDto login(UserLoginRequest userLoginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword())
         );
 
         return jwtTokenProvider.generateToken(authentication);
