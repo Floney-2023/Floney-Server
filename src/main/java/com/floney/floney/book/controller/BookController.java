@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -26,14 +28,19 @@ public class BookController {
     }
 
     @PostMapping("/{code}")
-    public ResponseEntity joinWithCode(@RequestParam("code") String code) {
+    public ResponseEntity joinWithCode(@RequestParam(value = "code") String code) {
         return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/lines")
     public ResponseEntity createBookLine(@RequestBody CreateLineRequest request){
         return new ResponseEntity<>(bookLineService.createBookLine(request),HttpStatus.CREATED);
+    }
 
+    @GetMapping("/lines")
+    public ResponseEntity getAllExpense(@RequestParam(value = "bookKey") String bookKey,
+                                        @RequestParam(value = "date") String date){
+        return new ResponseEntity<>(bookLineService.allExpense(bookKey,date),HttpStatus.OK);
     }
 
     private String userAuth() {

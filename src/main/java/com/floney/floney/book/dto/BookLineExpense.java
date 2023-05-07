@@ -3,10 +3,14 @@ package com.floney.floney.book.dto;
 import com.floney.floney.book.entity.AssetType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@RequiredArgsConstructor
+@Getter
 public class BookLineExpense {
     private LocalDate date;
     private Long money;
