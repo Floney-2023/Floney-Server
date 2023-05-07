@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; // 60분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
     private final Key key;
     private final CustomUserDetailService customUserDetailService;
