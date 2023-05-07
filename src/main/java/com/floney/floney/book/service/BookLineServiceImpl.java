@@ -1,9 +1,6 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.BookLineResponse;
-import com.floney.floney.book.dto.CreateLineRequest;
-import com.floney.floney.book.dto.DateFormatter;
+import com.floney.floney.book.dto.*;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
@@ -29,6 +26,7 @@ import static com.floney.floney.book.service.CategoryEnum.*;
 @Service
 @RequiredArgsConstructor
 public class BookLineServiceImpl implements BookLineService {
+
     private final BookRepository bookRepository;
 
     private final BookUserRepository bookUserRepository;
@@ -42,9 +40,11 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse createBookLine(CreateLineRequest request) {
-        Book updatedBook = updateBudget(findBook(request), request);
-        BookLine requestLine = request.to(findBookUser(request), updatedBook);
-
+        Book book = findBook(request);
+        if (!request.getExcept()) {
+            book = updateBudget(book, request);
+        }
+        BookLine requestLine = request.to(findBookUser(request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         findCategories(savedLine, request);
 
@@ -54,9 +54,13 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookLineExpense> allExpense(String bookKey, String date) {
+    public CalendarLinesResponse allExpense(String bookKey, String date) {
         Map<String, LocalDate> dates = DateFormatter.getDate(date);
-        return bookLineRepository.dayIncomeAndOutcome(bookKey,dates.get(START),dates.get(END));
+        LocalDate start = dates.get(START);
+        LocalDate end = dates.get(END);
+
+        return CalendarLinesResponse.of(daysExpense(bookKey, start, end)
+            , totalExpense(bookKey, start, end));
     }
 
     private Book updateBudget(Book book, CreateLineRequest request) {
@@ -93,6 +97,14 @@ public class BookLineServiceImpl implements BookLineService {
     private Book findBook(CreateLineRequest request) {
         return bookRepository.findBookByBookKey(request.getBookKey())
             .orElseThrow(NotFoundBookException::new);
+    }
+
+    private List<BookLineExpense> daysExpense(String bookKey, LocalDate start, LocalDate end) {
+        return bookLineRepository.dayIncomeAndOutcome(bookKey, start, end);
+    }
+
+    private List<CalendarTotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
+        return bookLineRepository.totalExpense(bookKey, start, end);
     }
 
 

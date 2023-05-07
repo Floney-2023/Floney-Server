@@ -37,7 +37,7 @@ public class BookController {
         return new ResponseEntity<>(bookLineService.createBookLine(request),HttpStatus.CREATED);
     }
 
-    @GetMapping("/lines")
+    @GetMapping("/calendars")
     public ResponseEntity getAllExpense(@RequestParam(value = "bookKey") String bookKey,
                                         @RequestParam(value = "date") String date){
         return new ResponseEntity<>(bookLineService.allExpense(bookKey,date),HttpStatus.OK);

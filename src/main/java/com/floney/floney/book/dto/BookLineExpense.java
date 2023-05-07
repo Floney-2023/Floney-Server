@@ -3,14 +3,15 @@ package com.floney.floney.book.dto;
 import com.floney.floney.book.entity.AssetType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class BookLineExpense {
     private LocalDate date;
     private Long money;
@@ -25,16 +26,4 @@ public class BookLineExpense {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BookLineExpense that = (BookLineExpense) o;
-        return Objects.equals(date, that.date) && Objects.equals(money, that.money) && assetType == that.assetType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(date, money, assetType);
-    }
 }
