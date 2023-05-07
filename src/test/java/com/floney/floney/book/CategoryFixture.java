@@ -51,8 +51,8 @@ public class CategoryFixture {
     }
 
 
-    public static BookLineCategory createIncomeLineCategory(DefaultCategory income, BookLine bookLine) {
-        return BookLineCategory.of(bookLine, income);
+    public static BookLineCategory createLineCategory(DefaultCategory category, BookLine bookLine) {
+        return BookLineCategory.of(bookLine, category);
     }
 
 

@@ -2,7 +2,6 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.entity.*;
-import com.floney.floney.book.service.CategoryEnum;
 
 import java.time.LocalDate;
 
@@ -33,7 +32,7 @@ public class BookLineFixture {
             .build();
     }
 
-    public static BookLine createIncomeLine(Book book,Long money) {
+    public static BookLine createBookLine(Book book, Long money) {
         BookLine bookline = BookLine.builder()
             .book(book)
             .money(money)

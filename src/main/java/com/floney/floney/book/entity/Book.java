@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "Book", indexes = {
-    @Index(name = "key", columnList = "bookKey")
+    @Index(name = "book_keys", columnList = "bookKey")
 })
 @NoArgsConstructor
 public class Book extends BaseEntity {

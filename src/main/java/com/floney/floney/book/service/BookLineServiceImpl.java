@@ -44,6 +44,10 @@ public class BookLineServiceImpl implements BookLineService {
         return BookLineResponse.of(newBookLine);
     }
 
+//    private void dayIncome(String bookKey){
+//        bookLineRepository.dayIncome(bookKey);
+//    }
+
     private Book updateBudget(Book book, CreateLineRequest request) {
         book.processTrans(find(request.getFlow()), request.getMoney());
         return book;
