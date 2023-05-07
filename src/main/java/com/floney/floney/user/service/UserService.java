@@ -6,7 +6,7 @@ import com.floney.floney.common.exception.MailAddressException;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.common.token.JwtTokenProvider;
-import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.dto.request.UserLoginRequest;
@@ -42,7 +42,7 @@ public class UserService {
     private final RedisProvider redisProvider;
     private final JavaMailSender javaMailSender;
 
-    public TokenDto login(UserLoginRequest userLoginRequest) {
+    public Token login(UserLoginRequest userLoginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword())
         );
@@ -91,9 +91,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public TokenDto regenerateToken(TokenDto tokenDto) {
-        String accessToken = tokenDto.getAccessToken();
-        String refreshToken = tokenDto.getRefreshToken();
+    public Token reissueToken(Token token) {
+        String accessToken = token.getAccessToken();
+        String refreshToken = token.getRefreshToken();
 
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String redisRefreshToken = redisProvider.get(authentication.getName());

@@ -1,6 +1,6 @@
 package com.floney.floney.common.token;
 
-import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.service.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
@@ -34,8 +34,8 @@ public class JwtTokenProvider {
         this.redisProvider = redisProvider;
     }
 
-    public TokenDto generateToken(Authentication authentication) {
-        return new TokenDto(generateAccessToken(authentication), generateRefreshToken(authentication));
+    public Token generateToken(Authentication authentication) {
+        return new Token(generateAccessToken(authentication), generateRefreshToken(authentication));
     }
 
     public String generateAccessToken(Authentication authentication) {

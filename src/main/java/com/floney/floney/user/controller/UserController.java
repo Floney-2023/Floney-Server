@@ -1,6 +1,6 @@
 package com.floney.floney.user.controller;
 
-import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.request.UserLoginRequest;
 import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.service.UserService;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -28,8 +29,8 @@ public class UserController {
         return new ResponseEntity<>(userService.login(userSignupRequest.toLoginRequest()), HttpStatus.CREATED);
     }
 
-    @PostMapping("/email")
-    public ResponseEntity<?> authenticateEmail(@RequestBody @Valid String email) {
+    @GetMapping("/email")
+    public ResponseEntity<?> authenticateEmail(@RequestParam String email) {
         return new ResponseEntity<>(userService.sendAuthenticateEmail(email), HttpStatus.OK);
     }
 
@@ -38,51 +39,50 @@ public class UserController {
         return new ResponseEntity<>(userService.login(userLoginRequest), HttpStatus.OK);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody @Valid String accessToken) {
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(@RequestParam String accessToken) {
         userService.logout(accessToken);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<?> regenerateToken(@RequestBody @Valid TokenDto tokenDto) {
-        return new ResponseEntity<>(userService.regenerateToken(tokenDto), HttpStatus.CREATED);
+    public ResponseEntity<?> reissueToken(@RequestBody @Valid Token token) {
+        return new ResponseEntity<>(userService.reissueToken(token), HttpStatus.CREATED);
     }
 
-    @PostMapping("/signout")
-    public ResponseEntity<?> signout(@RequestBody String accessToken) {
-        String email = userService.logout(accessToken);
-        userService.signout(email);
+    @GetMapping("/signout")
+    public ResponseEntity<?> signout(@RequestParam String accessToken) {
+        userService.signout(userService.logout(accessToken));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/nickname")
-    public ResponseEntity<?> updateNickname(@RequestBody String nickname) {
+    @GetMapping("/nickname")
+    public ResponseEntity<?> updateNickname(@RequestParam String nickname) {
         userService.updateNickname(nickname);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/password")
-    public ResponseEntity<?> updatePassword(@RequestBody String password) {
+    @GetMapping("/password")
+    public ResponseEntity<?> updatePassword(@RequestParam String password) {
         userService.updatePassword(password);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/find-password")
-    public ResponseEntity<?> findPassword(@RequestBody String email) {
+    @GetMapping("/find-password")
+    public ResponseEntity<?> findPassword(@RequestParam String email) {
         userService.updatePassword(email, userService.sendPasswordFindEmail(email));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/img")
-    public ResponseEntity<?> updateProfileImg(@RequestBody String profileImg) {
+    @GetMapping("/img")
+    public ResponseEntity<?> updateProfileImg(@RequestParam String profileImg) {
         userService.updateProfileImg(profileImg);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/mypage")
-    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal UserDetails principal) {
-        return new ResponseEntity<>(userService.getUserInfo(principal.getUsername()), HttpStatus.OK);
+    public ResponseEntity<?> getMyPage(@AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(userService.getUserInfo(userDetail.getUsername()), HttpStatus.OK);
     }
 
 }
