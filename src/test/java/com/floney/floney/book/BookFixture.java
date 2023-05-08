@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.entity.Book;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class BookFixture {
@@ -12,9 +13,7 @@ public class BookFixture {
     public static String EMAIL = "floney@naver.com";
     private static String URL = "https://fileisHere.com";
     public static String CODE = "codeExample";
-
     public static String BOOK_KEY = "book-key";
-
     private static Long DEFAULT_VALUE = 0L;
 
 

@@ -7,30 +7,31 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
+import lombok.RequiredArgsConstructor;
 @Getter
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class UserSignupRequest {
-    @NotNull private String email;
-    @NotNull private String nickname;
-    @NotNull private String password;
-    @NotNull private boolean marketingAgree;
+    private String email;
+    private String nickname;
+    private String password;
+    private int marketingAgree;
 
-    public User to() {
-        return User.signupBuilder()
-                .email(email)
-                .password(password)
-                .nickname(nickname)
-                .marketingAgree(marketingAgree)
-                .provider(Provider.EMAIL)
-                .build();
+    public UserSignupRequest(String email, String nickname, String password, int marketingAgree) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.marketingAgree = marketingAgree;
     }
-
-    public UserLoginRequest toLoginRequest() {
-        return UserLoginRequest.builder()
+    
+    public UserResponse to() {
+        return UserResponse.builder()
+                .nickname(nickname)
                 .email(email)
                 .password(password)
+                .marketingAgree(marketingAgree)
+                .subscribe(0)
+                .status(true)
+                .provider(Provider.EMAIL.getName())
                 .build();
     }
 }

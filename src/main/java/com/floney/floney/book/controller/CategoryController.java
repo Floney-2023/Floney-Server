@@ -14,12 +14,12 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/books/categories")
-    public ResponseEntity crateCategory(@RequestBody CreateCategoryRequest request) {
+    public ResponseEntity<?> crateCategory(@RequestBody CreateCategoryRequest request) {
         return new ResponseEntity<>(categoryService.createUserCategory(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/books/categories")
-    public ResponseEntity findAllBy(@RequestParam String bookKey,
+    public ResponseEntity<?> findAllBy(@RequestParam String bookKey,
                                     @RequestParam String root) {
         return new ResponseEntity<>(categoryService.findAllBy(root, bookKey), HttpStatus.ACCEPTED);
     }

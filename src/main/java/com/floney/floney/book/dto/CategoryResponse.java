@@ -1,17 +1,14 @@
 package com.floney.floney.book.dto;
 
-import com.floney.floney.book.entity.BookCategory;
 import com.floney.floney.book.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-@RequiredArgsConstructor
 @Getter
 public class CategoryResponse {
 
@@ -27,11 +24,13 @@ public class CategoryResponse {
             .map(CategoryResponse::of)
             .collect(Collectors.toList());
     }
+
     public static CategoryResponse of(Category category) {
         return CategoryResponse.builder()
             .name(category.getName())
             .build();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -5,11 +5,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class UserLoginRequest {
-    @NotNull private String email;
-    @NotNull private String password;
+    private String email;
+    
+    private String password;
+    public UserLoginRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
 }

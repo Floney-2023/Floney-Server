@@ -45,8 +45,8 @@ public class BookServiceTest {
         given(bookRepository.findBookByCode(CODE))
             .willReturn(Optional.ofNullable(testBook));
 
-//        given(userRepository.findByEmail(EMAIL))
-//            .willReturn(testUser);
+        given(userRepository.findByEmail(EMAIL))
+            .willReturn(Optional.ofNullable(testUser));
 
         Assertions.assertThat(bookService.joinWithCode(EMAIL, code).getCode())
             .isEqualTo(BookFixture.bookResponse().getCode());

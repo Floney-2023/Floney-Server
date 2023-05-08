@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 import static com.floney.floney.book.service.CategoryEnum.*;
 
-@RequiredArgsConstructor
 @Getter
 public class BookLineResponse {
 

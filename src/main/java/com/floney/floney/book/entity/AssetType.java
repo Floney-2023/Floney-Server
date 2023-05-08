@@ -1,7 +1,9 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.common.exception.NotFoundCategoryException;
+import lombok.Getter;
 
+@Getter
 public enum AssetType {
 
     OUTCOME("지출"),
