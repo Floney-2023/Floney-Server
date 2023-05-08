@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @Getter
-@RequiredArgsConstructor
 public class CalendarLinesResponse {
 
     private static final int INCOME = 0;
