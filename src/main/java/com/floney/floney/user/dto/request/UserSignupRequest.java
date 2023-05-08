@@ -4,9 +4,10 @@ import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.dto.constant.Provider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserSignupRequest {
     private String email;
     private String nickname;
