@@ -1,9 +1,9 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.QBookLineExpense;
-import com.floney.floney.book.dto.QTotalExpense;
 import com.floney.floney.book.dto.CalendarTotalExpense;
+import com.floney.floney.book.dto.QBookLineExpense;
+import com.floney.floney.book.dto.QCalendarTotalExpense;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,7 +26,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Override
     public List<CalendarTotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
         return jpaQueryFactory.select(
-                new QTotalExpense(
+                new QCalendarTotalExpense(
                     bookLine.money.sum(),
                     bookLineCategory.name
                 )
