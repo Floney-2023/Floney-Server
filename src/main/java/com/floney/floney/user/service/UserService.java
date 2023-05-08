@@ -1,5 +1,8 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.repository.BookUserCustomRepository;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.common.exception.MailAddressException;
@@ -12,6 +15,8 @@ import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
+
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +44,8 @@ public class UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
     private final JavaMailSender javaMailSender;
+    private final BookService bookService;
+    private final BookUserCustomRepository bookUserRepository;
 
     public TokenDto login(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
@@ -106,7 +113,8 @@ public class UserService {
     public MyPageResponse getUserInfo(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
-        return MyPageResponse.from(UserResponse.from(user));
+        List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
+        return MyPageResponse.from(UserResponse.from(user),myBooks);
     }
 
     @Transactional
