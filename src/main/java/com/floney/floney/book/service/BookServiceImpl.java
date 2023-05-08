@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
     public BookResponse joinWithCode(String email, String code) {
         Book book = bookRepository.findBookByCode(code)
             .orElseThrow(NotFoundBookException::new);
-        bookUserRepository.existBookUser(email,code);
+        bookUserRepository.existBookUser(email, code);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));
 

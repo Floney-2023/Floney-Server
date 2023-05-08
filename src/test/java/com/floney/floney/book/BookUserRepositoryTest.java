@@ -1,11 +1,11 @@
 package com.floney.floney.book;
 
-import com.floney.floney.User.UserFixture;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.config.TestConfig;
+import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
