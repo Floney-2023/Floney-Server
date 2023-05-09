@@ -2,6 +2,7 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookRequest;
+import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 
 import java.util.UUID;
@@ -49,10 +50,10 @@ public class BookFixture {
             .initialAsset(DEFAULT_VALUE)
             .build();
     }
-    public static BookResponse bookResponse() {
-        return BookResponse.builder()
-            .name(NAME)
-            .profileImg(URL)
+
+    public static CreateBookResponse bookResponse() {
+        return CreateBookResponse.builder()
+            .bookKey(BOOK_KEY)
             .code(CODE)
             .build();
     }
