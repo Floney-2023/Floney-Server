@@ -24,6 +24,10 @@ public class RedisProvider {
         return redisTemplate.opsForValue().get(key);
     }
 
+    public Boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
     public void delete(String key) {
         redisTemplate.delete(key);
     }

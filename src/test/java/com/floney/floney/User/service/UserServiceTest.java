@@ -9,7 +9,7 @@ import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
-import com.floney.floney.user.dto.request.UserSignupRequest;
+import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import com.floney.floney.user.service.UserService;
@@ -57,7 +57,7 @@ class UserServiceTest {
     void signup_success() {
         // given
         User user = UserFixture.getUser();
-        UserSignupRequest userSignupRequest = UserSignupRequest.builder()
+        SignupRequest signupRequest = SignupRequest.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
@@ -67,7 +67,7 @@ class UserServiceTest {
         given(userRepository.save(any(User.class))).willReturn(null);
 
         // when
-        userService.signup(userSignupRequest);
+        userService.signup(signupRequest);
 
         // then
         then(userRepository).should().save(any(User.class));
@@ -78,7 +78,7 @@ class UserServiceTest {
     void signup_fail_throws_userFoundException() {
         // given
         User user = UserFixture.getUser();
-        UserSignupRequest userSignupRequest = UserSignupRequest.builder()
+        SignupRequest signupRequest = SignupRequest.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
@@ -86,7 +86,7 @@ class UserServiceTest {
                 .build();
 
         // when & then
-        assertThatThrownBy(() -> userService.signup(userSignupRequest))
+        assertThatThrownBy(() -> userService.signup(signupRequest))
                 .isInstanceOf(UserFoundException.class);
     }
 
