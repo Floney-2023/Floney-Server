@@ -33,14 +33,14 @@ public class CategoryRepositoryTest {
 
     @BeforeEach
     void init() {
-        savedBook = bookRepository.save(BookFixture.createBookWith(1L, "1234"));
+        savedBook = bookRepository.save(BookFixture.createBookWith( "1234"));
         savedRoot = categoryRepository.save(CategoryFixture.createDefaultRoot("ROOT"));
     }
 
     @Test
     @DisplayName("가게부만의 카테고리를 추가할 수 있다")
     void save_category() {
-        Book savedBook2 = bookRepository.save(BookFixture.createBookWith(2L, "2222"));
+        Book savedBook2 = bookRepository.save(BookFixture.createBookWith( "2222"));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook.getBookKey())

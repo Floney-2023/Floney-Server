@@ -1,12 +1,8 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookRequest;
-import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 public class BookFixture {
 
@@ -26,9 +22,8 @@ public class BookFixture {
             .build();
     }
 
-    public static Book createBookWith(Long id,String bookKey) {
+    public static Book createBookWith(String bookKey) {
         return Book.builder()
-            .id(id)
             .name(NAME)
             .profileImg(URL)
             .bookKey(bookKey)
@@ -50,10 +45,10 @@ public class BookFixture {
             .initialAsset(DEFAULT_VALUE)
             .build();
     }
-    public static BookResponse bookResponse() {
-        return BookResponse.builder()
-            .name(NAME)
-            .profileImg(URL)
+
+    public static CreateBookResponse bookResponse() {
+        return CreateBookResponse.builder()
+            .bookKey(BOOK_KEY)
             .code(CODE)
             .build();
     }

@@ -30,11 +30,9 @@ public class BookUser extends BaseEntity {
     @JoinColumn(name = "book_id")
     private Book book;
 
-    private Boolean status;
-
     @Builder
-    private BookUser(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User user, Book book, Boolean status) {
-        super(id, createdAt, updatedAt,status);
+    private BookUser(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User user, Book book, boolean status) {
+        super(id, createdAt, updatedAt, status);
         this.user = user;
         this.book = book;
         this.status = status;

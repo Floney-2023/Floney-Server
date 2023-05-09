@@ -40,13 +40,13 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("사용자가 루트 카테고리를 생성한다")
     void create_root_category() {
-        CreateCategoryRequest request = CategoryFixture.createRootRequest();
-        Book savedBook = BookFixture.createBookWith(1L,"1234");
+        CreateCategoryRequest request = createRootRequest();
+        Book savedBook = BookFixture.createBookWith("1234");
 
         given(bookRepository.findBookByBookKey(BOOK_KEY))
             .willReturn(ofNullable(savedBook));
 
-        BookCategory rootCategory = CategoryFixture.createRootCategory(savedBook);
+        BookCategory rootCategory = createRootCategory(savedBook);
 
         given(categoryRepository.save(any(BookCategory.class)))
             .willReturn(rootCategory);
@@ -59,8 +59,8 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("사용자가 자식 카테고리를 추가한다")
     void custom_category() {
-        Book savedBook = BookFixture.createBookWith(1L,"1234");
-        DefaultCategory rootCategory = CategoryFixture.createDefaultRoot("ROOT");
+        Book savedBook = BookFixture.createBookWith("1234");
+        DefaultCategory rootCategory = createDefaultRoot("ROOT");
 
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
@@ -69,16 +69,16 @@ public class CategoryServiceTest {
             .willReturn(ofNullable(savedBook));
 
         given(categoryRepository.save(any(BookCategory.class)))
-            .willReturn(CategoryFixture.createChildCategory(rootCategory,savedBook));
+            .willReturn(createChildCategory(rootCategory,savedBook));
 
-        CreateCategoryRequest request = CategoryFixture.createBookCategory();
+        CreateCategoryRequest request = createBookCategory();
         Assertions.assertThat(categoryService.createUserCategory(request)).isEqualTo(categoryChildResponse());
     }
 
     @Test
     @DisplayName("가계부를 찾을 수 없으면 NotFoundBookException을 발생한다")
     void not_found_book() {
-        DefaultCategory rootCategory = CategoryFixture.createDefaultRoot("ROOT");
+        DefaultCategory rootCategory = createDefaultRoot("ROOT");
 
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
@@ -86,7 +86,7 @@ public class CategoryServiceTest {
         given(bookRepository.findBookByBookKey(BOOK_KEY))
             .willReturn(Optional.empty());
 
-        CreateCategoryRequest request = CategoryFixture.createBookCategory();
+        CreateCategoryRequest request = createBookCategory();
         Assertions.assertThatThrownBy(() -> categoryService.createUserCategory(request))
             .isInstanceOf(NotFoundBookException.class);
     }
@@ -97,7 +97,7 @@ public class CategoryServiceTest {
         given(categoryRepository.findByName(ROOT))
             .willReturn(Optional.empty());
 
-        CreateCategoryRequest request = CategoryFixture.createBookCategory();
+        CreateCategoryRequest request = createBookCategory();
         Assertions.assertThatThrownBy(() -> categoryService.createUserCategory(request))
             .isInstanceOf(NotFoundCategoryException.class);
     }

@@ -46,13 +46,9 @@ public class Book extends BaseEntity {
 
     private String code;
 
-    private Boolean status;
-
-
-    @Builder
-    private Book(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, String name, String profileImg, String provider,
+ @Builder
+    private Book(boolean status, String name, String profileImg, String provider,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code) {
-        super(id, createdAt, updatedAt, status);
 
         this.name = name;
         this.profileImg = profileImg;
@@ -66,7 +62,7 @@ public class Book extends BaseEntity {
         this.code = code;
         this.status = status;
     }
-
+  
     public void processTrans(AssetType assetType, long amount) {
         long remain = budget;
         if (assetType == AssetType.OUTCOME) {
