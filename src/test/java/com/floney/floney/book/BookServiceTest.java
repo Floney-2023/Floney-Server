@@ -41,7 +41,7 @@ public class BookServiceTest {
     void create_book() {
         Long id = 1L;
         String code = CODE.toString();
-        Book testBook = BookFixture.createBookWith(id, "1234");
+        Book testBook = BookFixture.createBookWith( "1234");
 
         User testUser = UserFixture.createUser();
         given(bookRepository.findBookByCode(CODE))

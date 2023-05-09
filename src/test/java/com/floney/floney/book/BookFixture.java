@@ -26,9 +26,8 @@ public class BookFixture {
             .build();
     }
 
-    public static Book createBookWith(Long id,String bookKey) {
+    public static Book createBookWith(String bookKey) {
         return Book.builder()
-            .id(id)
             .name(NAME)
             .profileImg(URL)
             .bookKey(bookKey)
