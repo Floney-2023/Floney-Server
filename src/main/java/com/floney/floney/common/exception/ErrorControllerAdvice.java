@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,8 +33,8 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(MailSendException.class)
-    protected ResponseEntity<ErrorResponse> failToSendMail(MailSendException exception) {
+    @ExceptionHandler(MailException.class)
+    protected ResponseEntity<ErrorResponse> failToSendMail(MailException exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorType.FAIL_TO_SEND_MAIL));
     }
@@ -54,6 +55,18 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> invalidLogin(BadCredentialsException exception) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse.of(ErrorType.INVALID_LOGIN));
+    }
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> emailNotFound(EmailNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(CodeNotSameException.class)
+    protected ResponseEntity<ErrorResponse> invalidCode(CodeNotSameException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     // BOOK

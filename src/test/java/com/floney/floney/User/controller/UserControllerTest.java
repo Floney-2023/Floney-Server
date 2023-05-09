@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.config.UserFixture;
-import com.floney.floney.user.dto.request.UserLoginRequest;
+import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.entity.User;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,7 @@ class UserControllerTest {
     void login() throws Exception {
         // given
         User user = UserFixture.getUser();
-        UserLoginRequest requestUser = UserLoginRequest.builder()
+        LoginRequest requestUser = LoginRequest.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .build();

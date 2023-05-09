@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserSignupRequest {
+public class SignupRequest {
     @NotNull private String email;
     @NotNull private String nickname;
     @NotNull private String password;
     @NotNull private boolean marketingAgree;
 
-    public UserLoginRequest toLoginRequest() {
-        return UserLoginRequest.builder()
+    public LoginRequest toLoginRequest() {
+        return LoginRequest.builder()
                 .email(email)
                 .password(password)
                 .build();

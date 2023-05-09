@@ -3,6 +3,8 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.dto.MyBookInfo;
 import com.floney.floney.book.repository.BookUserCustomRepository;
 import com.floney.floney.book.service.BookService;
+import com.floney.floney.common.exception.CodeNotSameException;
+import com.floney.floney.common.exception.EmailNotFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.common.exception.MailAddressException;
@@ -12,8 +14,9 @@ import com.floney.floney.common.token.JwtTokenProvider;
 import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
-import com.floney.floney.user.dto.request.UserLoginRequest;
-import com.floney.floney.user.dto.request.UserSignupRequest;
+import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
+import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
@@ -49,9 +52,9 @@ public class UserService {
     private final BookService bookService;
     private final BookUserCustomRepository bookUserRepository;
 
-    public Token login(UserLoginRequest userLoginRequest) {
+    public Token login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
 
         return jwtTokenProvider.generateToken(authentication);
@@ -73,12 +76,12 @@ public class UserService {
     }
 
     @Transactional
-    public void signup(UserSignupRequest userSignupRequest) {
+    public void signup(SignupRequest signupRequest) {
         try {
-            User user = userRepository.findByEmail(userSignupRequest.getEmail()).orElseThrow();
+            User user = userRepository.findByEmail(signupRequest.getEmail()).orElseThrow();
             throw new UserFoundException(user.getProvider());
         } catch (NoSuchElementException exception) {
-            User user = userSignupRequest.to();
+            User user = signupRequest.to();
             user.encodePassword(bCryptPasswordEncoder);
 
             userRepository.save(user);
@@ -162,6 +165,7 @@ public class UserService {
         String mailText = String.format("인증 코드: %s\n앱으로 돌아가서 인증을 완료해주세요.\n", code);
 
         sendMail(email, mailSubject, mailText);
+        redisProvider.set(email, code, 1000 * 60 * 5);
         return code;
     }
 
@@ -188,4 +192,11 @@ public class UserService {
         }
     }
 
+    public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
+        if(!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
+            throw new EmailNotFoundException();
+        } else if(!redisProvider.get(emailAuthenticationRequest.getEmail()).equals(emailAuthenticationRequest.getCode())) {
+            throw new CodeNotSameException();
+        }
+    }
 }

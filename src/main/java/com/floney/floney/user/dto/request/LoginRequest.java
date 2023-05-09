@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserLoginRequest {
+public class LoginRequest {
     @NotNull private String email;
     @NotNull private String password;
 

@@ -1,8 +1,9 @@
 package com.floney.floney.user.controller;
 
 import com.floney.floney.common.token.dto.Token;
-import com.floney.floney.user.dto.request.UserLoginRequest;
-import com.floney.floney.user.dto.request.UserSignupRequest;
+import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
+import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +25,25 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid UserSignupRequest userSignupRequest) {
-        userService.signup(userSignupRequest);
-        return new ResponseEntity<>(userService.login(userSignupRequest.toLoginRequest()), HttpStatus.CREATED);
+    public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
+        userService.signup(signupRequest);
+        return new ResponseEntity<>(userService.login(signupRequest.toLoginRequest()), HttpStatus.CREATED);
     }
 
     @GetMapping("/email")
-    public ResponseEntity<?> authenticateEmail(@RequestParam String email) {
+    public ResponseEntity<?> sendAuthenticateEmail(@RequestParam String email) {
         return new ResponseEntity<>(userService.sendAuthenticateEmail(email), HttpStatus.OK);
     }
 
+    @PostMapping("/email")
+    public ResponseEntity<?> authenticateEmail(@RequestBody EmailAuthenticationRequest emailAuthenticationRequest) {
+        userService.authenticateEmail(emailAuthenticationRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserLoginRequest userLoginRequest) {
-        return new ResponseEntity<>(userService.login(userLoginRequest), HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
+        return new ResponseEntity<>(userService.login(loginRequest), HttpStatus.OK);
     }
 
     @GetMapping("/logout")
@@ -56,25 +63,25 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/nickname")
+    @GetMapping("/nickname/update")
     public ResponseEntity<?> updateNickname(@RequestParam String nickname) {
         userService.updateNickname(nickname);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/password")
+    @GetMapping("/password/update")
     public ResponseEntity<?> updatePassword(@RequestParam String password) {
         userService.updatePassword(password);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/find-password")
+    @GetMapping("/password/find")
     public ResponseEntity<?> findPassword(@RequestParam String email) {
         userService.updatePassword(email, userService.sendPasswordFindEmail(email));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/img")
+    @GetMapping("/profileimg/update")
     public ResponseEntity<?> updateProfileImg(@RequestParam String profileImg) {
         userService.updateProfileImg(profileImg);
         return new ResponseEntity<>(HttpStatus.OK);
