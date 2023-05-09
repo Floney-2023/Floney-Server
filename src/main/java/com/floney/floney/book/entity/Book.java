@@ -1,6 +1,5 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.common.BaseEntity;
 import com.floney.floney.common.exception.OutOfBudgetException;
 import lombok.Builder;
@@ -9,8 +8,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @Entity
 @Getter
@@ -45,13 +46,10 @@ public class Book extends BaseEntity {
 
     private String code;
 
-    private Boolean status;
-
 
     @Builder
-    private Book(Long id, LocalDateTime createdAt, LocalDateTime updatedAt,  Boolean status,String name, String profileImg, String provider,
+    private Book(boolean status, String name, String profileImg, String provider,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code) {
-        super(id, createdAt, updatedAt,status);
 
         this.name = name;
         this.profileImg = profileImg;
