@@ -1,8 +1,8 @@
 package com.floney.floney.book.dto;
 
-import com.floney.floney.book.entity.*;
-import com.floney.floney.book.service.CategoryEnum;
-import com.floney.floney.common.exception.NotFoundCategoryException;
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookLine;
+import com.floney.floney.book.entity.BookUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +29,10 @@ public class CreateLineRequest {
 
     private Boolean except;
 
-    private String repeat;
-
     private String nickname;
 
     @Builder
-    private CreateLineRequest(String bookKey, Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String repeat, String nickname) {
+    private CreateLineRequest(String bookKey, Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
         this.bookKey = bookKey;
         this.money = money;
         this.flow = flow;
@@ -43,11 +41,10 @@ public class CreateLineRequest {
         this.lineDate = lineDate;
         this.description = description;
         this.except = except;
-        this.repeat = repeat;
         this.nickname = nickname;
     }
 
-    public BookLine to(BookUser bookUser,Book book) {
+    public BookLine to(BookUser bookUser, Book book) {
         return BookLine.builder()
             .book(book)
             .lineDate(lineDate)
