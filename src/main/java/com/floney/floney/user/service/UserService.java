@@ -1,17 +1,24 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.repository.BookUserCustomRepository;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.common.exception.MailAddressException;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.common.token.JwtTokenProvider;
-import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.request.UserLoginRequest;
+import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
+
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +46,12 @@ public class UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
     private final JavaMailSender javaMailSender;
+    private final BookService bookService;
+    private final BookUserCustomRepository bookUserRepository;
 
-    public TokenDto login(String email, String password) {
+    public Token login(UserLoginRequest userLoginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword())
         );
 
         return jwtTokenProvider.generateToken(authentication);
@@ -64,12 +73,12 @@ public class UserService {
     }
 
     @Transactional
-    public void signup(UserResponse userResponse) {
+    public void signup(UserSignupRequest userSignupRequest) {
         try {
-            User user = userRepository.findByEmail(userResponse.getEmail()).orElseThrow();
+            User user = userRepository.findByEmail(userSignupRequest.getEmail()).orElseThrow();
             throw new UserFoundException(user.getProvider());
         } catch (NoSuchElementException exception) {
-            User user = userResponse.to();
+            User user = userSignupRequest.to();
             user.encodePassword(bCryptPasswordEncoder);
 
             userRepository.save(user);
@@ -89,9 +98,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public TokenDto regenerateToken(TokenDto tokenDto) {
-        String accessToken = tokenDto.getAccessToken();
-        String refreshToken = tokenDto.getRefreshToken();
+    public Token reissueToken(Token token) {
+        String accessToken = token.getAccessToken();
+        String refreshToken = token.getRefreshToken();
 
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         String redisRefreshToken = redisProvider.get(authentication.getName());
@@ -106,7 +115,8 @@ public class UserService {
     public MyPageResponse getUserInfo(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
-        return MyPageResponse.from(UserResponse.from(user));
+        List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
+        return MyPageResponse.from(UserResponse.from(user),myBooks);
     }
 
     @Transactional

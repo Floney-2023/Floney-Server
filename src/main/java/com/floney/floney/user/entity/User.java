@@ -1,28 +1,31 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.common.BaseEntity;
+import com.floney.floney.user.dto.constant.Provider;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
+@Entity
+@Table(indexes = {
+        @Index(name = "email", columnList = "email", unique = true)
+})
 @DynamicInsert
 @DynamicUpdate
-@Entity
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
 
-    @Column(length = 100)
+    @Column(nullable = false, updatable = false, length = 100)
     private String email;
 
     @Column(nullable = false, length = 30)
@@ -35,21 +38,42 @@ public class User extends BaseEntity {
     private String profileImg;
 
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    private int marketingAgree;
+    private boolean marketingAgree;
 
-    @Column
+    @Column(nullable = false)
+    @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime lastAdTime;
 
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     @ColumnDefault("0")
-    private int subscribe;
+    private boolean subscribe;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, updatable = false, length = 10)
     private String provider;
 
-    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    @ColumnDefault("1")
-    protected boolean status;
+    @Builder(builderMethodName = "signupBuilder")
+    private User(String email, String nickname, String password, boolean marketingAgree, Provider provider) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.marketingAgree = marketingAgree;
+        this.lastAdTime = LocalDateTime.now();
+        this.provider = provider.getName();
+    }
+
+    @Builder
+    private User(String email, String nickname, String password, String profileImg, boolean marketingAgree,
+                LocalDateTime lastAdTime, boolean subscribe, Provider provider, boolean status) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.profileImg = profileImg;
+        this.marketingAgree = marketingAgree;
+        this.lastAdTime = lastAdTime;
+        this.subscribe = subscribe;
+        this.provider = provider.getName();
+        this.status = status;
+    }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);

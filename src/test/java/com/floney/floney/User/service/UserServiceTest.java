@@ -1,8 +1,7 @@
 package com.floney.floney.User.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
-
+import com.floney.floney.book.BookFixture;
+import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.JwtTokenProvider;
@@ -10,10 +9,10 @@ import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.request.UserSignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import com.floney.floney.user.service.UserService;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -33,6 +39,8 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private BookUserRepository bookUserRepository;
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
@@ -48,10 +56,18 @@ class UserServiceTest {
     @DisplayName("회원가입에 성공한다")
     void signup_success() {
         // given
+        User user = UserFixture.getUser();
+        UserSignupRequest userSignupRequest = UserSignupRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .marketingAgree(user.isMarketingAgree())
+                .build();
+
         given(userRepository.save(any(User.class))).willReturn(null);
 
         // when
-        userService.signup(UserResponse.from(UserFixture.getUser()));
+        userService.signup(userSignupRequest);
 
         // then
         then(userRepository).should().save(any(User.class));
@@ -62,10 +78,15 @@ class UserServiceTest {
     void signup_fail_throws_userFoundException() {
         // given
         User user = UserFixture.getUser();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        UserSignupRequest userSignupRequest = UserSignupRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .marketingAgree(user.isMarketingAgree())
+                .build();
 
         // when & then
-        assertThatThrownBy(() -> userService.signup(UserResponse.from(user)))
+        assertThatThrownBy(() -> userService.signup(userSignupRequest))
                 .isInstanceOf(UserFoundException.class);
     }
 
@@ -112,9 +133,11 @@ class UserServiceTest {
         // given
         User user = UserFixture.getUser();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
+        given(bookUserRepository.findMyBooks(user))
+            .willReturn(Arrays.asList(BookFixture.myBookInfo()));
         // when & then
-        assertThat(userService.getUserInfo(user.getEmail())).isEqualTo(MyPageResponse.from(UserResponse.from(user)));
+        assertThat(userService.getUserInfo(user.getEmail())).isEqualTo(MyPageResponse.from(UserResponse.from(user),
+            Arrays.asList(BookFixture.myBookInfo())));
     }
 
     @Test

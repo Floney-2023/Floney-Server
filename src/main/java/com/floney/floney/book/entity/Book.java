@@ -1,7 +1,6 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.common.BaseEntity;
-import com.floney.floney.common.exception.OutOfBudgetException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +11,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "Book", indexes = {
-    @Index(name = "key", columnList = "bookKey")
+    @Index(name = "book_keys", columnList = "bookKey")
 })
 @NoArgsConstructor
 public class Book extends BaseEntity {
@@ -46,8 +46,7 @@ public class Book extends BaseEntity {
 
     private String code;
 
-
-    @Builder
+ @Builder
     private Book(boolean status, String name, String profileImg, String provider,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code) {
 
@@ -63,7 +62,7 @@ public class Book extends BaseEntity {
         this.code = code;
         this.status = status;
     }
-
+  
     public void processTrans(AssetType assetType, long amount) {
         long remain = budget;
         if (assetType == AssetType.OUTCOME) {
@@ -71,14 +70,8 @@ public class Book extends BaseEntity {
         } else if (assetType == AssetType.INCOME) {
             remain += amount;
         }
-        isValid(remain);
         budget = remain;
     }
 
-    private void isValid(long remain) {
-        if (remain < MIN_BUDGET || remain > MAX_BUDGET) {
-            throw new OutOfBudgetException();
-        }
-    }
 
 }

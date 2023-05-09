@@ -1,5 +1,6 @@
 package com.floney.floney.user.dto;
 
+import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,29 +14,27 @@ import lombok.ToString;
 @ToString
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserResponse implements Serializable {
-    private final Long id;
+public class UserResponse {
     private final String nickname;
     private final String email;
     private final String password;
     private final String profileImg;
-    private final int marketingAgree;
-    private final int subscribe;
+    private final boolean marketingAgree;
+    private final boolean subscribe;
     private final LocalDateTime lastAdTime;
-    private final String provider;
+    private final Provider provider;
     private final boolean status;
 
     public static UserResponse from(User entity) {
         return new UserResponseBuilder()
-                .id(entity.getId())
                 .nickname(entity.getNickname())
                 .email(entity.getEmail())
                 .password(entity.getPassword())
                 .profileImg(entity.getProfileImg())
-                .marketingAgree(entity.getMarketingAgree())
-                .subscribe(entity.getSubscribe())
+                .marketingAgree(entity.isMarketingAgree())
+                .subscribe(entity.isSubscribe())
                 .lastAdTime(entity.getLastAdTime())
-                .provider(entity.getProvider())
+                .provider(Provider.findByName(entity.getProvider()))
                 .status(entity.isStatus())
                 .build();
     }

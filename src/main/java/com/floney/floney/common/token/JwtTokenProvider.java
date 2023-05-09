@@ -1,6 +1,6 @@
 package com.floney.floney.common.token;
 
-import com.floney.floney.common.token.dto.TokenDto;
+import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.service.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; // 60분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
     private final Key key;
     private final CustomUserDetailService customUserDetailService;
@@ -34,8 +34,8 @@ public class JwtTokenProvider {
         this.redisProvider = redisProvider;
     }
 
-    public TokenDto generateToken(Authentication authentication) {
-        return new TokenDto(generateAccessToken(authentication), generateRefreshToken(authentication));
+    public Token generateToken(Authentication authentication) {
+        return new Token(generateAccessToken(authentication), generateRefreshToken(authentication));
     }
 
     public String generateAccessToken(Authentication authentication) {
