@@ -1,12 +1,18 @@
 package com.floney.floney.book.repository;
 
+import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.dto.QMyBookInfo;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.exception.MaxMemberException;
+import com.floney.floney.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
@@ -55,4 +61,24 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .where(book.code.eq(code))
             .exists();
     }
+
+    @Override
+    public List<MyBookInfo> findMyBooks(User user) {
+        List<Book> books = jpaQueryFactory.select(book)
+            .from(bookUser)
+            .where(bookUser.user.eq(user))
+            .fetch();
+
+        List<MyBookInfo> infos = new ArrayList<>();
+        for (Book target : books) {
+            MyBookInfo my = jpaQueryFactory.select(new QMyBookInfo(book.profileImg, book.name, bookUser.count(), book.bookKey))
+                .from(bookUser)
+                .where(bookUser.book.eq(target))
+                .fetchOne();
+            infos.add(my);
+        }
+        return infos;
+    }
+
+
 }

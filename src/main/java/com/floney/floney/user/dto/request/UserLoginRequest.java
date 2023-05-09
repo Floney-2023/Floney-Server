@@ -8,14 +8,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
+@Builder
 @RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserLoginRequest {
-    private String email;
-    
-    private String password;
-    public UserLoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
+    @NotNull private String email;
+    @NotNull private String password;
 
 }

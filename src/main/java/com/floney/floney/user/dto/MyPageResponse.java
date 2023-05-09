@@ -1,13 +1,10 @@
 package com.floney.floney.user.dto;
 
+import com.floney.floney.book.dto.MyBookInfo;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 @ToString
@@ -19,14 +16,15 @@ public class MyPageResponse {
     private final String email;
     private final boolean subscribe;
     private final LocalDateTime lastAdTime;
-    // TODO: 해당 유저의 가계부 정보(가계부 이름, 가계부 인원) 추가
+    private final List<MyBookInfo> myBooks;
 
-    public static MyPageResponse from(UserResponse userResponse) {
+    public static MyPageResponse from(UserResponse userResponse, List<MyBookInfo> myBooks) {
         return MyPageResponse.builder()
                 .nickname(userResponse.getNickname())
                 .email(userResponse.getEmail())
                 .subscribe(userResponse.isSubscribe())
                 .lastAdTime(userResponse.getLastAdTime())
+                .myBooks(myBooks)
                 .build();
     }
 }
