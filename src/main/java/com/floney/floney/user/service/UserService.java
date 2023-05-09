@@ -165,7 +165,7 @@ public class UserService {
         String mailText = String.format("인증 코드: %s\n앱으로 돌아가서 인증을 완료해주세요.\n", code);
 
         sendMail(email, mailSubject, mailText);
-        redisProvider.set(email, code, 1000 * 60 * 2);
+        redisProvider.set(email, code, 1000 * 60 * 5);
         return code;
     }
 
