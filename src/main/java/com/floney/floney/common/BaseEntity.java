@@ -34,7 +34,9 @@ public abstract class BaseEntity {
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime updatedAt;
 
-    private Boolean status;
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
+    @ColumnDefault("1")
+    protected boolean status;
 
     protected BaseEntity() {
     }

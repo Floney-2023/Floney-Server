@@ -17,7 +17,7 @@ import lombok.ToString;
 public class MyPageResponse {
     private final String nickname;
     private final String email;
-    private final int subscribe;
+    private final boolean subscribe;
     private final LocalDateTime lastAdTime;
     // TODO: 해당 유저의 가계부 정보(가계부 이름, 가계부 인원) 추가
 
@@ -25,7 +25,7 @@ public class MyPageResponse {
         return MyPageResponse.builder()
                 .nickname(userResponse.getNickname())
                 .email(userResponse.getEmail())
-                .subscribe(userResponse.getSubscribe())
+                .subscribe(userResponse.isSubscribe())
                 .lastAdTime(userResponse.getLastAdTime())
                 .build();
     }

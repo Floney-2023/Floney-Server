@@ -1,10 +1,8 @@
 package com.floney.floney.common.config;
 
 import com.floney.floney.common.CustomAuthenticationEntryPoint;
-import com.floney.floney.common.OAuth2AuthenticationSuccessHandler;
 import com.floney.floney.common.token.JwtAuthenticationFilter;
 import com.floney.floney.common.token.JwtTokenProvider;
-import com.floney.floney.user.service.CustomOAuth2UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,19 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     public SecurityConfig(
             JwtTokenProvider jwtTokenProvider,
-            RedisTemplate<String, String> redisTemplate,
-            CustomOAuth2UserService customOAuth2UserService,
-            OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler
+            RedisTemplate<String, String> redisTemplate
     ) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.redisTemplate = redisTemplate;
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
     }
 
     @Bean
@@ -73,12 +65,6 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-
-                .and()
-                .oauth2Login()
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .userInfoEndpoint().userService(customOAuth2UserService)
-                .and()
 
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate),
