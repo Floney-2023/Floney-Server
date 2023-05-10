@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -22,11 +21,11 @@ public class BookLineCategory extends BaseEntity {
     private String name;
 
     @Builder
-    public BookLineCategory(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, BookLine bookLine, Category category, String name) {
-        super(id, createdAt, updatedAt, status);
+    public BookLineCategory(boolean status, BookLine bookLine, Category category, String name) {
         this.bookLine = bookLine;
         this.category = category;
         this.name = name;
+        this.status = status;
     }
 
     public static BookLineCategory of(BookLine bookLine, Category category) {

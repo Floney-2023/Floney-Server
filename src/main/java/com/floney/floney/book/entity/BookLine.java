@@ -1,6 +1,6 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.book.service.CategoryEnum;
+import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,14 +40,14 @@ public class BookLine extends BaseEntity {
 
 
     @Builder
-    public BookLine(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
-        super(id, createdAt, updatedAt,status);
+    public BookLine(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, boolean status, BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
         this.writer = writer;
         this.book = book;
         this.money = money;
         this.lineDate = lineDate;
         this.description = description;
         this.exceptStatus = exceptStatus;
+        this.status = status;
     }
 
     public void add(CategoryEnum flow, BookLineCategory category) {

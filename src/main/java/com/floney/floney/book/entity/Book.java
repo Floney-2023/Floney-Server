@@ -1,5 +1,6 @@
 package com.floney.floney.book.entity;
 
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -46,9 +46,10 @@ public class Book extends BaseEntity {
 
     private String code;
 
- @Builder
+    @Builder
     private Book(boolean status, String name, String profileImg, String provider,
-                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code) {
+                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
+                 int weekStartDay, Boolean carryOver, String code) {
 
         this.name = name;
         this.profileImg = profileImg;
@@ -62,7 +63,7 @@ public class Book extends BaseEntity {
         this.code = code;
         this.status = status;
     }
-  
+
     public void processTrans(AssetType assetType, long amount) {
         long remain = budget;
         if (assetType == AssetType.OUTCOME) {
