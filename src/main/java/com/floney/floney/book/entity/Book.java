@@ -1,5 +1,6 @@
 package com.floney.floney.book.entity;
 
+import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
 import lombok.Builder;
@@ -12,6 +13,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
+
+import static com.floney.floney.book.dto.constant.AssetType.*;
+import static com.floney.floney.book.dto.constant.AssetType.find;
 
 @Entity
 @Getter
@@ -64,15 +68,14 @@ public class Book extends BaseEntity {
         this.status = status;
     }
 
-    public void processTrans(AssetType assetType, long amount) {
-        long remain = budget;
-        if (assetType == AssetType.OUTCOME) {
-            remain -= amount;
-        } else if (assetType == AssetType.INCOME) {
-            remain += amount;
+    public void processTrans(CreateLineRequest request) {
+        AssetType assetType = find(request.getFlow());
+        Long amount = request.getMoney();
+        if (assetType == OUTCOME) {
+            initialAsset -= amount;
+        } else if (assetType == INCOME) {
+            budget += amount;
         }
-        budget = remain;
     }
-
 
 }

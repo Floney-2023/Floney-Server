@@ -55,4 +55,8 @@ public class CreateLineRequest {
             .build();
     }
 
+    public boolean isNotExcept(){
+        return !this.except;
+    }
+
 }

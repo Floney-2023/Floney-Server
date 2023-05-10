@@ -17,7 +17,8 @@ public class BookLineFixture {
     public static CreateLineRequest createOutcomeRequest() {
         return CreateLineRequest.builder()
             .bookKey(BOOK_KEY)
-            .asset("지출")
+            .flow("지출")
+            .asset("은행")
             .line("식비")
             .money(OUTCOME)
             .build();
@@ -26,7 +27,8 @@ public class BookLineFixture {
     public static CreateLineRequest createIncomeRequest() {
         return CreateLineRequest.builder()
             .bookKey(BOOK_KEY)
-            .asset("수입")
+            .flow("수입")
+            .asset("은행")
             .line("월급")
             .money(OUTCOME)
             .build();

@@ -42,8 +42,8 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public BookLineResponse createBookLine(CreateLineRequest request) {
         Book book = findBook(request);
-        if (!request.getExcept()) {
-            book = updateBudget(book, request);
+        if (request.isNotExcept()) {
+            book.processTrans(request);
         }
         BookLine requestLine = request.to(findBookUser(request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
@@ -62,11 +62,6 @@ public class BookLineServiceImpl implements BookLineService {
 
         return CalendarLinesResponse.of(daysExpense(bookKey, start, end)
             , totalExpense(bookKey, start, end));
-    }
-
-    private Book updateBudget(Book book, CreateLineRequest request) {
-        book.processTrans(find(request.getFlow()), request.getMoney());
-        return book;
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {

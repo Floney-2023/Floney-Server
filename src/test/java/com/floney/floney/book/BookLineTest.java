@@ -11,22 +11,22 @@ import static com.floney.floney.book.BookFixture.BOOK_KEY;
 public class BookLineTest {
 
     @Test
-    @DisplayName("지출 내역일 경우 자산에서 해당 값을 뺀다")
+    @DisplayName("지출 내역을 예산에서 포함 시킬 시 예산에서 해당 값을 뺀다")
     void outcome() {
         Long outcome = 1000L;
-        Long budget = 2000L;
+        Long initialAsset = 2000L;
         Book book = Book.builder()
             .bookKey(BOOK_KEY)
-            .budget(budget)
+            .initialAsset(initialAsset)
             .build();
 
-        book.processTrans(AssetType.OUTCOME, outcome);
-        Assertions.assertThat(book.getBudget())
-            .isEqualTo(budget - outcome);
+        book.processTrans(BookLineFixture.createOutcomeRequest());
+        Assertions.assertThat(book.getInitialAsset())
+            .isEqualTo(initialAsset - outcome);
     }
 
     @Test
-    @DisplayName("수입 내역일 경우 자산에서 해당 값을 더한다")
+    @DisplayName("수입 내역을 자산에서 포함 시킬 시 해당 값을 더한다")
     void income() {
         Long income = 1000L;
         Long budget = 2000L;
@@ -35,7 +35,7 @@ public class BookLineTest {
             .budget(budget)
             .build();
 
-        book.processTrans(AssetType.INCOME, income);
+        book.processTrans(BookLineFixture.createIncomeRequest());
         Assertions.assertThat(book.getBudget())
             .isEqualTo(budget + income);
     }
