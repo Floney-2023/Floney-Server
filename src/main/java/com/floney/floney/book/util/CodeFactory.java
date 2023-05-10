@@ -1,4 +1,4 @@
-package com.floney.floney.book.service;
+package com.floney.floney.book.util;
 
 
 import java.util.UUID;

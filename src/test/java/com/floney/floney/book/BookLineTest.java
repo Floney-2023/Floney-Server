@@ -1,8 +1,7 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.entity.AssetType;
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.common.exception.OutOfBudgetException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

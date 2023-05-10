@@ -1,11 +1,10 @@
 package com.floney.floney.book.dto;
 
-import com.floney.floney.book.entity.AssetType;
+import com.floney.floney.book.dto.constant.AssetType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @EqualsAndHashCode

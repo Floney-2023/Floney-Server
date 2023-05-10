@@ -1,12 +1,10 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.service.CodeFactory;
+import com.floney.floney.book.util.CodeFactory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor

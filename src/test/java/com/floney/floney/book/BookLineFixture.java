@@ -34,6 +34,7 @@ public class BookLineFixture {
 
     public static BookLine createBookLine(Book book, Long money) {
         BookLine bookline = BookLine.builder()
+            .id(1L)
             .book(book)
             .money(money)
             .lineDate(LOCAL_DATE)

@@ -1,4 +1,4 @@
-package com.floney.floney.book.dto;
+package com.floney.floney.book.util;
 
 import java.time.LocalDate;
 import java.time.YearMonth;

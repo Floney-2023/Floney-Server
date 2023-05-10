@@ -1,4 +1,4 @@
-package com.floney.floney.book.entity;
+package com.floney.floney.book.dto.constant;
 
 import com.floney.floney.common.exception.NotFoundCategoryException;
 import lombok.Getter;

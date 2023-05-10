@@ -1,6 +1,6 @@
 package com.floney.floney.book.repository.category;
 
-import com.floney.floney.book.entity.BookCategory;
+import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.querydsl.jpa.impl.JPAQueryFactory;

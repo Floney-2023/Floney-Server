@@ -32,7 +32,7 @@ public class CreateLineRequest {
     private String nickname;
 
     @Builder
-    private CreateLineRequest(String bookKey, Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
+    public CreateLineRequest(String bookKey, Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
         this.bookKey = bookKey;
         this.money = money;
         this.flow = flow;

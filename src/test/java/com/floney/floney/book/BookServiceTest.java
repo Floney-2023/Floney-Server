@@ -7,9 +7,8 @@ import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +23,6 @@ import static com.floney.floney.book.BookFixture.EMAIL;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-@Disabled
 public class BookServiceTest {
 
     @Mock
@@ -39,9 +37,8 @@ public class BookServiceTest {
     @Test
     @DisplayName("초대코드로 가계부에 가입한다")
     void create_book() {
-        Long id = 1L;
         String code = CODE.toString();
-        Book testBook = BookFixture.createBookWith( "1234");
+        Book testBook = BookFixture.createBookWith("1234");
 
         User testUser = UserFixture.createUser();
         given(bookRepository.findBookByCode(CODE))
@@ -50,7 +47,8 @@ public class BookServiceTest {
         given(userRepository.findByEmail(EMAIL))
             .willReturn(Optional.ofNullable(testUser));
 
-        //given(bookUserRepository.existBookUser(EMAIL,CODE)).willReturn(Boolean.TRUE);
+        given(bookUserRepository.existBookUser(EMAIL, CODE))
+            .willReturn(Expressions.asBoolean(true).isTrue());
 
         Assertions.assertThat(bookService.joinWithCode(EMAIL, code).getCode())
             .isEqualTo(BookFixture.bookResponse().getCode());

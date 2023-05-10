@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.DateFormatter;
+import com.floney.floney.book.util.DateFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

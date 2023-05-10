@@ -3,11 +3,10 @@ package com.floney.floney.book.dto;
 import com.floney.floney.book.entity.BookLine;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
-import static com.floney.floney.book.service.CategoryEnum.*;
+import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 
 @Getter
 public class BookLineResponse {
@@ -40,7 +39,7 @@ public class BookLineResponse {
         this.nickname = nickname;
     }
 
-    public static BookLineResponse of(BookLine bookLine){
+    public static BookLineResponse of(BookLine bookLine) {
         return BookLineResponse.builder()
             .money(bookLine.getMoney())
             .flow(bookLine.getTargetCategory(FLOW))

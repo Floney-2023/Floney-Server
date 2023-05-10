@@ -1,13 +1,12 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.service.CodeFactory;
+import com.floney.floney.book.util.CodeFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Disabled
 public class CodeFactoryTest {

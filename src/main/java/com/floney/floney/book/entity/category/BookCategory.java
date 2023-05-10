@@ -1,5 +1,7 @@
-package com.floney.floney.book.entity;
+package com.floney.floney.book.entity.category;
 
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.Category;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

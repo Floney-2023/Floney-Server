@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.floney.floney.book.entity.AssetType.INCOME;
-import static com.floney.floney.book.entity.AssetType.OUTCOME;
+import static com.floney.floney.book.dto.constant.AssetType.INCOME;
+import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookLine.bookLine;
 import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
