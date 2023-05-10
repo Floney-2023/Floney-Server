@@ -15,7 +15,6 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 import static com.floney.floney.book.dto.constant.AssetType.*;
-import static com.floney.floney.book.dto.constant.AssetType.find;
 
 @Entity
 @Getter
@@ -26,8 +25,6 @@ import static com.floney.floney.book.dto.constant.AssetType.find;
 })
 @NoArgsConstructor
 public class Book extends BaseEntity {
-    private static final Long MIN_BUDGET = 0L;
-    private static final Long MAX_BUDGET = 999999999L;
 
     @Column(nullable = false, length = 10)
     private String name;
@@ -54,7 +51,6 @@ public class Book extends BaseEntity {
     private Book(boolean status, String name, String profileImg, String provider,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
                  int weekStartDay, Boolean carryOver, String code) {
-
         this.name = name;
         this.profileImg = profileImg;
         this.provider = provider;

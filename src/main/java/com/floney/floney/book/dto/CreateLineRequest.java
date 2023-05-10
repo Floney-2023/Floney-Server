@@ -56,7 +56,9 @@ public class CreateLineRequest {
     }
 
     public boolean isNotExcept(){
+        if(except == null){
+            return false;
+        }
         return !this.except;
     }
-
 }
