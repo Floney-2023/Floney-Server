@@ -19,8 +19,8 @@ public class BookCategory extends Category {
     @ManyToOne
     private Book book;
 
-    public BookCategory(String name, Category parent, Book book, boolean status) {
-        super(name,parent,status);
+    public BookCategory(String name, Category parent, Book book) {
+        super(name,parent);
         this.book = book;
     }
 }

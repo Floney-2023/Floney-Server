@@ -21,11 +21,10 @@ public class BookLineCategory extends BaseEntity {
     private String name;
 
     @Builder
-    public BookLineCategory(boolean status, BookLine bookLine, Category category, String name) {
+    public BookLineCategory(BookLine bookLine, Category category, String name) {
         this.bookLine = bookLine;
         this.category = category;
         this.name = name;
-        this.status = status;
     }
 
     public static BookLineCategory of(BookLine bookLine, Category category) {

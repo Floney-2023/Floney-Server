@@ -49,7 +49,6 @@ public class UserResponse {
                 .subscribe(subscribe)
                 .lastAdTime(lastAdTime)
                 .provider(provider)
-                .status(status)
                 .build();
     }
 }

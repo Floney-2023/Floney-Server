@@ -48,7 +48,7 @@ public class Book extends BaseEntity {
     private String code;
 
     @Builder
-    private Book(boolean status, String name, String profileImg, String provider,
+    private Book(String name, String profileImg, String provider,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
                  int weekStartDay, Boolean carryOver, String code) {
         this.name = name;
@@ -61,7 +61,7 @@ public class Book extends BaseEntity {
         this.weekStartDay = weekStartDay;
         this.carryOver = carryOver;
         this.code = code;
-        this.status = status;
+
     }
 
     public void processTrans(CreateLineRequest request) {
