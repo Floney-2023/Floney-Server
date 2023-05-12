@@ -1,5 +1,7 @@
-package com.floney.floney.book.entity;
+package com.floney.floney.book.entity.category;
 
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.Category;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +19,8 @@ public class BookCategory extends Category {
     @ManyToOne
     private Book book;
 
-    public BookCategory(String name, Category parent, Book book, boolean status) {
-        super(name,parent,status);
+    public BookCategory(String name, Category parent, Book book) {
+        super(name,parent);
         this.book = book;
     }
 }

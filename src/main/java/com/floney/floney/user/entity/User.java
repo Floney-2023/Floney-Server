@@ -63,7 +63,7 @@ public class User extends BaseEntity {
 
     @Builder
     private User(String email, String nickname, String password, String profileImg, boolean marketingAgree,
-                LocalDateTime lastAdTime, boolean subscribe, Provider provider, boolean status) {
+                LocalDateTime lastAdTime, boolean subscribe, Provider provider) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -72,7 +72,6 @@ public class User extends BaseEntity {
         this.lastAdTime = lastAdTime;
         this.subscribe = subscribe;
         this.provider = provider.getName();
-        this.status = status;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

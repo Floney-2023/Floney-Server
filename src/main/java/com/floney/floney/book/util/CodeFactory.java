@@ -1,4 +1,4 @@
-package com.floney.floney.book.service;
+package com.floney.floney.book.util;
 
 
 import java.util.UUID;
@@ -8,6 +8,9 @@ public class CodeFactory {
     private static final int START = 0;
     private static final int END = 8;
     public static String generateCode() {
-        return UUID.randomUUID().toString().substring(START, END);
+        return UUID.randomUUID()
+            .toString()
+            .substring(START, END)
+            .toUpperCase();
     }
 }

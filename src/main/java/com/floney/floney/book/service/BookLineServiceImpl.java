@@ -7,6 +7,7 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.util.DateFormatter;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.dto.DateFormatter.END;
-import static com.floney.floney.book.dto.DateFormatter.START;
-import static com.floney.floney.book.entity.AssetType.find;
+import static com.floney.floney.book.util.DateFormatter.END;
+import static com.floney.floney.book.util.DateFormatter.START;
+import static com.floney.floney.book.dto.constant.AssetType.find;
 import static com.floney.floney.book.entity.BookLineCategory.of;
-import static com.floney.floney.book.service.CategoryEnum.*;
+import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,8 +42,8 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public BookLineResponse createBookLine(CreateLineRequest request) {
         Book book = findBook(request);
-        if (!request.getExcept()) {
-            book = updateBudget(book, request);
+        if (request.isNotExcept()) {
+            book.processTrans(request);
         }
         BookLine requestLine = request.to(findBookUser(request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
@@ -61,11 +62,6 @@ public class BookLineServiceImpl implements BookLineService {
 
         return CalendarLinesResponse.of(daysExpense(bookKey, start, end)
             , totalExpense(bookKey, start, end));
-    }
-
-    private Book updateBudget(Book book, CreateLineRequest request) {
-        book.processTrans(find(request.getFlow()), request.getMoney());
-        return book;
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {

@@ -25,7 +25,6 @@ public class UserFixture {
                 .marketingAgree(true)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
                 .provider(Provider.EMAIL)
-                .status(true)
                 .build();
     }
 }

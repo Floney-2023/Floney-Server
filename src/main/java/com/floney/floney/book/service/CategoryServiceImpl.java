@@ -4,7 +4,7 @@ import com.floney.floney.book.dto.CategoryResponse;
 import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.BookCategory;
+import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.exception.NotFoundBookException;

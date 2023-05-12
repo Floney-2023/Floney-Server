@@ -1,6 +1,5 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.common.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Inheritance()
+@Inheritance
 @SuperBuilder
 public abstract class Category {
 
@@ -43,10 +42,8 @@ public abstract class Category {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category parent;
 
-    private Boolean status;
 
-    public Category(String name, Category parent, Boolean status) {
-        this.status = status;
+    public Category(String name, Category parent) {
         this.name = name;
         this.parent = parent;
     }

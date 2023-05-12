@@ -7,7 +7,7 @@ import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.service.CategoryEnum;
+import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.config.TestConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

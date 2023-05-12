@@ -1,4 +1,4 @@
-package com.floney.floney.book.service;
+package com.floney.floney.book.dto.constant;
 
 import lombok.Getter;
 

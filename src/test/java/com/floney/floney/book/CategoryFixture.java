@@ -3,6 +3,7 @@ package com.floney.floney.book;
 import com.floney.floney.book.dto.CategoryResponse;
 import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.*;
+import com.floney.floney.book.entity.category.BookCategory;
 
 import static com.floney.floney.book.BookFixture.BOOK_KEY;
 

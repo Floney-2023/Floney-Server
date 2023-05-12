@@ -13,7 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,11 +30,9 @@ public class BookUser extends BaseEntity {
     private Book book;
 
     @Builder
-    private BookUser(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, User user, Book book, boolean status) {
-        super(id, createdAt, updatedAt, status);
+    private BookUser(User user, Book book) {
         this.user = user;
         this.book = book;
-        this.status = status;
     }
 
     public static BookUser of(User user, Book book) {

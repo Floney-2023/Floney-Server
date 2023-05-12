@@ -1,23 +1,27 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.book.service.CategoryEnum;
+import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.common.BaseEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.Map;
 
 @Entity
 @Getter
-@RequiredArgsConstructor
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 
     @ManyToOne
@@ -40,8 +44,7 @@ public class BookLine extends BaseEntity {
 
 
     @Builder
-    public BookLine(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
-        super(id, createdAt, updatedAt,status);
+    public BookLine(BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
         this.writer = writer;
         this.book = book;
         this.money = money;

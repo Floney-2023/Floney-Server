@@ -1,7 +1,7 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookCategory;
+import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import lombok.Builder;

@@ -1,16 +1,16 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.common.BaseEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class BookLineCategory extends BaseEntity {
     @ManyToOne
@@ -22,8 +22,7 @@ public class BookLineCategory extends BaseEntity {
     private String name;
 
     @Builder
-    public BookLineCategory(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean status, BookLine bookLine, Category category, String name) {
-        super(id, createdAt, updatedAt, status);
+    private BookLineCategory(BookLine bookLine, Category category, String name) {
         this.bookLine = bookLine;
         this.category = category;
         this.name = name;

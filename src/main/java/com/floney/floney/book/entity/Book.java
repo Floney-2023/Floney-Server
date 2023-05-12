@@ -1,6 +1,9 @@
 package com.floney.floney.book.entity;
 
+import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +14,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+
+import static com.floney.floney.book.dto.constant.AssetType.*;
 
 @Entity
 @Getter
@@ -20,10 +24,8 @@ import java.time.LocalDateTime;
 @Table(name = "Book", indexes = {
     @Index(name = "book_keys", columnList = "bookKey")
 })
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
-    private static final Long MIN_BUDGET = 0L;
-    private static final Long MAX_BUDGET = 999999999L;
 
     @Column(nullable = false, length = 10)
     private String name;
@@ -46,10 +48,10 @@ public class Book extends BaseEntity {
 
     private String code;
 
- @Builder
-    private Book(boolean status, String name, String profileImg, String provider,
-                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget, int weekStartDay, Boolean carryOver, String code) {
-
+    @Builder
+    private Book(String name, String profileImg, String provider,
+                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
+                 int weekStartDay, Boolean carryOver, String code) {
         this.name = name;
         this.profileImg = profileImg;
         this.provider = provider;
@@ -60,18 +62,17 @@ public class Book extends BaseEntity {
         this.weekStartDay = weekStartDay;
         this.carryOver = carryOver;
         this.code = code;
-        this.status = status;
-    }
-  
-    public void processTrans(AssetType assetType, long amount) {
-        long remain = budget;
-        if (assetType == AssetType.OUTCOME) {
-            remain -= amount;
-        } else if (assetType == AssetType.INCOME) {
-            remain += amount;
-        }
-        budget = remain;
+
     }
 
+    public void processTrans(CreateLineRequest request) {
+        AssetType assetType = find(request.getFlow());
+        Long amount = request.getMoney();
+        if (assetType == OUTCOME) {
+            initialAsset -= amount;
+        } else if (assetType == INCOME) {
+            budget += amount;
+        }
+    }
 
 }
