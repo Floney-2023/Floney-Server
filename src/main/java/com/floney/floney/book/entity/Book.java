@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ import static com.floney.floney.book.dto.constant.AssetType.*;
 @Table(name = "Book", indexes = {
     @Index(name = "book_keys", columnList = "bookKey")
 })
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
     @Column(nullable = false, length = 10)

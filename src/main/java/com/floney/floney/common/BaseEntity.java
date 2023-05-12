@@ -35,6 +35,7 @@ public abstract class BaseEntity {
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     protected boolean status;
 
     protected BaseEntity() {

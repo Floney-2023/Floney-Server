@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookUser extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
