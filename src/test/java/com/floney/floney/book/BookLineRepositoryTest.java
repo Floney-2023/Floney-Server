@@ -152,7 +152,7 @@ public class BookLineRepositoryTest {
         bookLineRepository.save(bookLine2);
 
         LocalDate targetDate = LOCAL_DATE;
-        Assertions.assertThat(bookLineRepository.allLinesInDay(targetDate, BOOK_KEY).size())
+        Assertions.assertThat(bookLineRepository.allLinesByDay(targetDate, BOOK_KEY).size())
             .isEqualTo(3);
 
     }
