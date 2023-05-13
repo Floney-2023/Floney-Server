@@ -29,16 +29,20 @@ public class BookUser extends BaseEntity {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    private String profileImg;
+
     @Builder
-    private BookUser(User user, Book book) {
+    private BookUser(User user, Book book,String profileImg) {
         this.user = user;
         this.book = book;
+        this.profileImg = profileImg;
     }
 
     public static BookUser of(User user, Book book) {
         return BookUser.builder()
             .user(user)
             .book(book)
+            .profileImg(user.getProfileImg())
             .build();
     }
 

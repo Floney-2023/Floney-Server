@@ -56,6 +56,10 @@ public class CategoryFixture {
         return BookLineCategory.of(bookLine, category);
     }
 
+    public static BookLineCategory createChildLineCategory(BookCategory category, BookLine bookLine) {
+        return BookLineCategory.of(bookLine, category);
+    }
+
 
     public static BookCategory createChildCategory(Category parent, Book book) {
         return BookCategory.builder()

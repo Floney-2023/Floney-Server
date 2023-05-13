@@ -44,7 +44,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> allLinesInDay(LocalDate date, String bookKey) {
+    public List<DayLine> allLinesByDay(LocalDate date, String bookKey) {
         return jpaQueryFactory.select(
                 new QDayLine(
                     bookLine.id,

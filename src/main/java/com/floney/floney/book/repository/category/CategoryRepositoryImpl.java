@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QBookCategory.bookCategory;
 import static com.floney.floney.book.entity.QCategory.category;
+import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
 
 @Repository
 @RequiredArgsConstructor
