@@ -1,9 +1,6 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.*;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 public interface BookLineService {
 
@@ -11,5 +8,5 @@ public interface BookLineService {
 
     CalendarLinesResponse showByCalendars(String bookKey, String date);
 
-    List<DayLinesResponse> showByDays(String bookKey, String date);
+    TotalDayLinesResponse showByDays(String bookKey, String date);
 }

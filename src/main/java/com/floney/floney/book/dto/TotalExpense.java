@@ -8,14 +8,14 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode
-public class CalendarTotalExpense {
+public class TotalExpense {
 
     private Long money;
     private AssetType assetType;
 
     @QueryProjection
     @Builder
-    public CalendarTotalExpense(Long money, String assetType) {
+    public TotalExpense(Long money, String assetType) {
         this.money = money;
         this.assetType = AssetType.find(assetType);
     }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @EqualsAndHashCode
-public class DayLinesResponse {
+public class DayLines {
 
     private Long money;
     private String img;
@@ -21,7 +21,7 @@ public class DayLinesResponse {
     private String content;
 
     @Builder
-    public DayLinesResponse(Long money, String img, String content, List<String> category, AssetType assetType) {
+    public DayLines(Long money, String img, String content, List<String> category, AssetType assetType) {
         this.money = money;
         this.img = img;
         this.assetType = assetType;
@@ -29,22 +29,23 @@ public class DayLinesResponse {
         this.content = content;
     }
 
-    public static List<DayLinesResponse> of(List<DayLine> dayLines) {
-        Map<Long, DayInfos> InfosByDay = new HashMap<>();
+    public static List<DayLines> of(List<DayLine> dayLines) {
+        Map<Long, DayLineInfo> InfosByDay = new HashMap<>();
         for (DayLine dayLine : dayLines) {
             if (InfosByDay.get(dayLine.getId()) == null) {
-                InfosByDay.put(dayLine.getId(), DayInfos.toDayInfos(dayLine));
+                InfosByDay.put(dayLine.getId(), DayLineInfo.toDayInfos(dayLine));
             } else {
                 InfosByDay.get(dayLine.getId()).addCategory(dayLine.getCategories());
             }
         }
-        return InfosByDay.values().stream()
-            .map(DayLinesResponse::toDayLineResponse)
+        return InfosByDay.values()
+            .stream()
+            .map(DayLines::toDayLineResponse)
             .collect(Collectors.toList());
     }
 
-    private static DayLinesResponse toDayLineResponse(DayInfos dayInfo) {
-        return DayLinesResponse.builder()
+    private static DayLines toDayLineResponse(DayLineInfo dayInfo) {
+        return DayLines.builder()
             .assetType(dayInfo.getAssetType())
             .money(dayInfo.getMoney())
             .content(dayInfo.getContent())

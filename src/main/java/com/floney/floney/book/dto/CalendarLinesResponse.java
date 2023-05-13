@@ -2,7 +2,6 @@ package com.floney.floney.book.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class CalendarLinesResponse {
         this.totalOutcome = totalOutcome;
     }
 
-    public static CalendarLinesResponse of(List<BookLineExpense> expenses, List<CalendarTotalExpense> totalExpenses) {
+    public static CalendarLinesResponse of(List<BookLineExpense> expenses, List<TotalExpense> totalExpenses) {
         return CalendarLinesResponse.builder()
             .expenses(expenses)
             .totalIncome(totalExpenses.get(INCOME).getMoney())

@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.CalendarTotalExpense;
+import com.floney.floney.book.dto.TotalExpense;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
@@ -118,12 +118,12 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 1);
         LocalDate end = LOCAL_DATE;
 
-        CalendarTotalExpense income = CalendarTotalExpense.builder()
+        TotalExpense income = TotalExpense.builder()
             .money(1000L)
             .assetType("수입")
             .build();
 
-        CalendarTotalExpense outcome = CalendarTotalExpense.builder()
+        TotalExpense outcome = TotalExpense.builder()
             .money(1000L)
             .assetType("지출")
             .build();
@@ -131,6 +131,37 @@ public class BookLineRepositoryTest {
         Assertions.assertThat(bookLineRepository.totalExpense(BOOK_KEY, start, end))
             .isEqualTo(Arrays.asList(income, outcome));
 
+    }
+
+    @Test
+    @DisplayName("날짜별로 총수입/총지출을 조회한다")
+    void day_expenses() {
+        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000L));
+        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000L));
+
+        BookLineCategory category = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
+        bookLine.add(CategoryEnum.FLOW, category);
+
+        BookLineCategory category2 = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) outcomeCategory, bookLine2));
+        bookLine2.add(CategoryEnum.FLOW, category2);
+
+        bookLineRepository.save(bookLine);
+        bookLineRepository.save(bookLine2);
+
+        LocalDate target = LOCAL_DATE;
+
+        TotalExpense income = TotalExpense.builder()
+            .money(1000L)
+            .assetType("수입")
+            .build();
+
+        TotalExpense outcome = TotalExpense.builder()
+            .money(1000L)
+            .assetType("지출")
+            .build();
+
+        Assertions.assertThat(bookLineRepository.totalExpenseByDay(target,BOOK_KEY))
+            .isEqualTo(Arrays.asList(income, outcome));
     }
 
     @Test

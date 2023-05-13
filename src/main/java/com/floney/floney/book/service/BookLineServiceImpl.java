@@ -66,8 +66,8 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DayLinesResponse> showByDays(String bookKey, String date) {
-        return DayLinesResponse.of(bookLineRepository.allLinesByDay(parse(date), bookKey));
+    public TotalDayLinesResponse showByDays(String bookKey, String date) {
+        return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)),bookLineRepository.totalExpenseByDay(parse(date),bookKey));
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
@@ -105,7 +105,7 @@ public class BookLineServiceImpl implements BookLineService {
         return bookLineRepository.dayIncomeAndOutcome(bookKey, start, end);
     }
 
-    private List<CalendarTotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
+    private List<TotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
         return bookLineRepository.totalExpense(bookKey, start, end);
     }
 

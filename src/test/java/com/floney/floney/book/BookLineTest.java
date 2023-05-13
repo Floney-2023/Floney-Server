@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.dto.DayLine;
-import com.floney.floney.book.dto.DayLinesResponse;
+import com.floney.floney.book.dto.DayLines;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.entity.Book;
 import org.assertj.core.api.Assertions;
@@ -64,7 +64,7 @@ public class BookLineTest {
             .profileImg("img")
             .build();
 
-        List<DayLinesResponse> result = Arrays.asList(DayLinesResponse.builder()
+        List<DayLines> result = Arrays.asList(DayLines.builder()
             .assetType(AssetType.find("수입"))
             .img("img")
             .category(Arrays.asList("급여"))
@@ -73,7 +73,7 @@ public class BookLineTest {
             .build());
 
 
-        Assertions.assertThat(DayLinesResponse.of(Arrays.asList(dayLine, dayLine2))).isEqualTo(result);
+        Assertions.assertThat(DayLines.of(Arrays.asList(dayLine, dayLine2))).isEqualTo(result);
     }
 
 }

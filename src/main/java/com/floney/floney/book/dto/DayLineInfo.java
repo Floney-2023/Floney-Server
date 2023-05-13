@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class DayInfos {
+public class DayLineInfo {
     private Long money;
 
     private String content;
@@ -20,7 +20,7 @@ public class DayInfos {
     private String img;
 
     @Builder
-    public DayInfos(Long money, String assetType, String content, List<String> categories,String img) {
+    public DayLineInfo(Long money, String assetType, String content, List<String> categories, String img) {
         this.money = money;
         this.content = content;
         this.assetType = AssetType.find(assetType);
@@ -32,8 +32,8 @@ public class DayInfos {
         this.categories.add(category);
     }
 
-    public static DayInfos toDayInfos(DayLine dayLine){
-        return DayInfos.builder()
+    public static DayLineInfo toDayInfos(DayLine dayLine){
+        return DayLineInfo.builder()
             .assetType(dayLine.getCategories())
             .categories(new ArrayList<>())
             .money(dayLine.getMoney())
