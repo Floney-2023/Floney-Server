@@ -36,9 +36,15 @@ public class BookController {
     }
 
     @GetMapping("/calendars")
-    public ResponseEntity<?> getAllExpense(@RequestParam("bookKey") String bookKey,
-                                           @RequestParam("date") String date) {
-        return new ResponseEntity<>(bookLineService.allExpense(bookKey, date), HttpStatus.OK);
+    public ResponseEntity<?> showByCalendars(@RequestParam("bookKey") String bookKey,
+                                             @RequestParam("date") String date) {
+        return new ResponseEntity<>(bookLineService.showByCalendars(bookKey, date), HttpStatus.OK);
+    }
+
+    @GetMapping("/days")
+    public ResponseEntity<?> showByDays(@RequestParam("bookKey") String bookKey,
+                                        @RequestParam("date") String date) {
+        return new ResponseEntity<>(bookLineService.showByDays(bookKey, date), HttpStatus.OK);
     }
 
     private String userAuth() {

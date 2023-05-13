@@ -1,12 +1,15 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.BookLineResponse;
-import com.floney.floney.book.dto.CalendarLinesResponse;
-import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.dto.*;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 public interface BookLineService {
 
     BookLineResponse createBookLine(CreateLineRequest request);
 
-    CalendarLinesResponse allExpense(String bookKey, String date);
+    CalendarLinesResponse showByCalendars(String bookKey, String date);
+
+    List<DayLinesResponse> showByDays(String bookKey, String date);
 }
