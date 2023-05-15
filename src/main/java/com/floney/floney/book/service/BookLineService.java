@@ -6,7 +6,7 @@ public interface BookLineService {
 
     BookLineResponse createBookLine(CreateLineRequest request);
 
-    CalendarLinesResponse showByCalendars(String bookKey, String date);
+    MonthLinesResponse showByMonth(String bookKey, String date);
 
     TotalDayLinesResponse showByDays(String bookKey, String date);
 }

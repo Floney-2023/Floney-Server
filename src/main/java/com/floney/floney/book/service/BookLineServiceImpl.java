@@ -55,12 +55,12 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional(readOnly = true)
-    public CalendarLinesResponse showByCalendars(String bookKey, String date) {
+    public MonthLinesResponse showByMonth(String bookKey, String date) {
         Map<String, LocalDate> dates = DateFormatter.getDate(date);
         LocalDate start = dates.get(START);
         LocalDate end = dates.get(END);
 
-        return CalendarLinesResponse.of(daysExpense(bookKey, start, end)
+        return MonthLinesResponse.of(daysExpense(bookKey, start, end)
             , totalExpense(bookKey, start, end));
     }
 

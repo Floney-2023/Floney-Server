@@ -35,10 +35,10 @@ public class BookController {
         return new ResponseEntity<>(bookLineService.createBookLine(request), HttpStatus.CREATED);
     }
 
-    @GetMapping("/calendars")
-    public ResponseEntity<?> showByCalendars(@RequestParam("bookKey") String bookKey,
-                                             @RequestParam("date") String date) {
-        return new ResponseEntity<>(bookLineService.showByCalendars(bookKey, date), HttpStatus.OK);
+    @GetMapping("/month")
+    public ResponseEntity<?> showByMonth(@RequestParam("bookKey") String bookKey,
+                                         @RequestParam("date") String date) {
+        return new ResponseEntity<>(bookLineService.showByMonth(bookKey, date), HttpStatus.OK);
     }
 
     @GetMapping("/days")
