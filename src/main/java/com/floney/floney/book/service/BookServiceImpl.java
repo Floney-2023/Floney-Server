@@ -2,11 +2,14 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookRequest;
+import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.common.exception.NotFoundBookException;
+import com.floney.floney.common.exception.NotSubscribeException;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,26 +24,55 @@ public class BookServiceImpl implements BookService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
-
+    private static final int SUBSCRIBE_MAX = 2;
+    private static final int DEFAULT_MAX = 1;
     @Override
     @Transactional
-    public BookResponse initBook(String email, CreateBookRequest request) {
+    public CreateBookResponse createBook(String email, CreateBookRequest request) {
         Book newBook = request.of(email);
         Book savedBook = bookRepository.save(newBook);
 
         bookUserRepository.save(BookUser.of(findUser(email), savedBook));
-        return BookResponse.of(savedBook);
+        return CreateBookResponse.of(savedBook);
+    }
+
+    @Transactional
+    @Override
+    public CreateBookResponse addBook(String email, CreateBookRequest request) {
+        User requestUser = findUser(email);
+        int count = bookUserRepository.countBookUserByUser(requestUser);
+        if (requestUser.isSubscribe()) {
+            return subscribeCreateBook(count, email, request);
+        } else {
+            return notSubscribeCreateBook(count, email, request);
+        }
+    }
+
+    @Transactional
+    public CreateBookResponse subscribeCreateBook(int count, String email, CreateBookRequest request) {
+        if (count >= SUBSCRIBE_MAX) {
+            throw new LimitRequestException();
+        }
+        return createBook(email, request);
+    }
+
+    @Transactional
+    public CreateBookResponse notSubscribeCreateBook(int count, String email, CreateBookRequest request) {
+        if (count >= DEFAULT_MAX) {
+            throw new NotSubscribeException();
+        }
+        return createBook(email, request);
     }
 
     @Override
-    public BookResponse joinWithCode(String email, String code) {
+    public CreateBookResponse joinWithCode(String email, String code) {
         Book book = bookRepository.findBookByCode(code)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.existBookUser(email, code);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));
 
-        return BookResponse.of(book);
+        return CreateBookResponse.of(book);
     }
 
 
