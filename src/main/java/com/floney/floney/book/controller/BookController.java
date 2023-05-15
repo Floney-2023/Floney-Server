@@ -25,7 +25,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.createBook(userAuth(), request), HttpStatus.CREATED);
     }
 
-    @PostMapping("/{code}")
+    @PostMapping("/join")
     public ResponseEntity<?> joinWithCode(@RequestParam("code") String code) {
         return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
     }
