@@ -24,7 +24,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Override
     public List<TotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
         return jpaQueryFactory.select(
-                new QCalendarTotalExpense(
+                new QTotalExpense(
                     bookLine.money.sum(),
                     bookLineCategory.name
                 )
@@ -67,7 +67,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Override
     public List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey) {
         return jpaQueryFactory.select(
-                new QCalendarTotalExpense(
+                new QTotalExpense(
                     bookLine.money.sum(),
                     bookLineCategory.name
                 )
