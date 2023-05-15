@@ -24,7 +24,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookResponse createBook(String email, CreateBookRequest request) {
+    public BookResponse initBook(String email, CreateBookRequest request) {
         Book newBook = request.of(email);
         Book savedBook = bookRepository.save(newBook);
 
@@ -42,6 +42,7 @@ public class BookServiceImpl implements BookService {
 
         return BookResponse.of(book);
     }
+
 
     private User findUser(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));

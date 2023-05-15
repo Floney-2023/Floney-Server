@@ -5,7 +5,8 @@ import com.floney.floney.book.dto.CreateBookRequest;
 
 public interface BookService {
 
-    BookResponse createBook(String email, CreateBookRequest request);
+    BookResponse initBook(String email, CreateBookRequest request);
 
     BookResponse joinWithCode(String email, String code);
+
 }
