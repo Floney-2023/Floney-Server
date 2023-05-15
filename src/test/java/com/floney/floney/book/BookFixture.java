@@ -4,6 +4,8 @@ import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.dto.MyBookInfo;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.user.entity.User;
 
 public class BookFixture {
 
@@ -59,6 +61,13 @@ public class BookFixture {
             .name(NAME)
             .bookImg(URL)
             .memberCount(1L)
+            .build();
+    }
+
+    public static BookUser createBookUser(User user, Book book){
+        return BookUser.builder()
+            .book(book)
+            .user(user)
             .build();
     }
 

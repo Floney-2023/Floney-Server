@@ -2,10 +2,7 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.common.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -21,6 +18,7 @@ import java.util.Map;
 @Getter
 @DynamicInsert
 @DynamicUpdate
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 

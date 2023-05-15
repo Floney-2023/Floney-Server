@@ -18,11 +18,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import static com.floney.floney.book.dto.constant.CategoryEnum.*;
+import static com.floney.floney.book.entity.BookLineCategory.of;
 import static com.floney.floney.book.util.DateFormatter.END;
 import static com.floney.floney.book.util.DateFormatter.START;
-import static com.floney.floney.book.dto.constant.AssetType.find;
-import static com.floney.floney.book.entity.BookLineCategory.of;
-import static com.floney.floney.book.dto.constant.CategoryEnum.*;
+import static java.time.LocalDate.parse;
 
 @Service
 @RequiredArgsConstructor
@@ -55,13 +55,19 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional(readOnly = true)
-    public CalendarLinesResponse allExpense(String bookKey, String date) {
+    public MonthLinesResponse showByMonth(String bookKey, String date) {
         Map<String, LocalDate> dates = DateFormatter.getDate(date);
         LocalDate start = dates.get(START);
         LocalDate end = dates.get(END);
 
-        return CalendarLinesResponse.of(daysExpense(bookKey, start, end)
+        return MonthLinesResponse.of(daysExpense(bookKey, start, end)
             , totalExpense(bookKey, start, end));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TotalDayLinesResponse showByDays(String bookKey, String date) {
+        return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)),bookLineRepository.totalExpenseByDay(parse(date),bookKey));
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
@@ -99,7 +105,7 @@ public class BookLineServiceImpl implements BookLineService {
         return bookLineRepository.dayIncomeAndOutcome(bookKey, start, end);
     }
 
-    private List<CalendarTotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
+    private List<TotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
         return bookLineRepository.totalExpense(bookKey, start, end);
     }
 
