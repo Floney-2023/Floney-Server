@@ -90,6 +90,9 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
+    public boolean isSubscribe(){
+        return subscribe;
+    }
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
