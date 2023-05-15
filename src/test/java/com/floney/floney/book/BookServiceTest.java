@@ -1,25 +1,29 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.BookResponse;
+import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
+import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import com.querydsl.core.types.dsl.Expressions;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.floney.floney.book.BookFixture.CODE;
-import static com.floney.floney.book.BookFixture.EMAIL;
+import static com.floney.floney.book.BookFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,8 +54,33 @@ public class BookServiceTest {
         given(bookUserRepository.existBookUser(EMAIL, CODE))
             .willReturn(Expressions.asBoolean(true).isTrue());
 
-        Assertions.assertThat(bookService.joinWithCode(EMAIL, code).getCode())
-            .isEqualTo(BookFixture.bookResponse().getCode());
+        assertThat(bookService.joinWithCode(EMAIL, code).getCode())
+            .isEqualTo(bookResponse().getCode());
+    }
+
+    @Test
+    @DisplayName("구독을 했다면, 참여한 가계부가 2이하일 시 가계부를 만든다")
+    void subscribe_book_create() {
+
+        given(userRepository.findByEmail(EMAIL))
+            .willReturn(Optional.ofNullable(UserFixture.createUser()));
+
+        given(bookRepository.save(ArgumentMatchers.any(Book.class)))
+            .willReturn(createBook());
+
+        int count = 1;
+
+        assertThat(bookService.subscribeCreateBook(count, EMAIL, createBookRequest())
+            .getClass())
+            .isEqualTo(CreateBookResponse.class);
+    }
+
+    @Test
+    @DisplayName("구독을 했다면, 참여한 가계부가 2초과일 시 가계부를 만들 수 없다")
+    void subscribe_book_create_exception() {
+        int count = 3;
+        assertThatThrownBy(() -> bookService.subscribeCreateBook(count, EMAIL, createBookRequest()))
+            .isInstanceOf(LimitRequestException.class);
     }
 
 }
