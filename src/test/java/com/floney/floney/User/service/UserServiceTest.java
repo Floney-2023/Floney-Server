@@ -84,6 +84,7 @@ class UserServiceTest {
                 .nickname(user.getNickname())
                 .marketingAgree(user.isMarketingAgree())
                 .build();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
         assertThatThrownBy(() -> userService.signup(signupRequest))
