@@ -6,10 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.Map;
@@ -31,13 +28,16 @@ public class BookLine extends BaseEntity {
     @OneToMany
     private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
+    @Column(nullable = false)
     private Long money;
 
+    @Column(nullable = false)
     private LocalDate lineDate;
 
     @Lob
     private String description;
 
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     private Boolean exceptStatus;
 
 

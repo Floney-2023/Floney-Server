@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.dto.MyBookInfo;
@@ -31,7 +32,7 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(bookKey)
             .budget(DEFAULT_VALUE)
-            .provider(EMAIL)
+            .providerEmail(EMAIL)
             .code(CODE)
             .initialAsset(DEFAULT_VALUE)
             .build();
@@ -43,7 +44,7 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(BOOK_KEY)
             .budget(DEFAULT_VALUE)
-            .provider(EMAIL)
+            .providerEmail(EMAIL)
             .code(CODE)
             .initialAsset(DEFAULT_VALUE)
             .build();

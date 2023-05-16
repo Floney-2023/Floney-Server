@@ -31,12 +31,16 @@ public class Book extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String name;
 
+    @Column(length = 300)
     private String profileImg;
 
-    private String provider;
+    @Column(length = 20)
+    private String providerEmail;
 
+    @Column(nullable = false, length = 10)
     private String bookKey;
 
+    @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean seeProfile;
 
     private Long initialAsset;
@@ -45,17 +49,19 @@ public class Book extends BaseEntity {
 
     private int weekStartDay;
 
+    @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     private String code;
 
     @Builder
-    private Book(String name, String profileImg, String provider,
+    private Book(String name, String profileImg, String providerEmail,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
                  int weekStartDay, Boolean carryOver, String code) {
         this.name = name;
         this.profileImg = profileImg;
-        this.provider = provider;
+        this.providerEmail = providerEmail;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;

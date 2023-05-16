@@ -92,6 +92,20 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+
+    //SUBSCRIBE
+    @ExceptionHandler(NotSubscribeException.class)
+    protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(LimitRequestException.class)
+    protected ResponseEntity<ErrorResponse> limitOfService(LimitRequestException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     @ExceptionHandler(NoAuthorityException.class)
     protected ResponseEntity<ErrorResponse> notOwner(NoAuthorityException exception) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

@@ -23,8 +23,13 @@ public class BookController {
     private final BookLineService bookLineService;
 
     @PostMapping()
-    public ResponseEntity<?> createBook(@RequestBody CreateBookRequest request) {
+    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request) {
         return new ResponseEntity<>(bookService.createBook(userAuth(), request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request) {
+        return new ResponseEntity<>(bookService.addBook(userAuth(), request), HttpStatus.CREATED);
     }
 
     @PostMapping("/join")

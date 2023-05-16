@@ -1,17 +1,19 @@
 package com.floney.floney.book.dto;
 
-
 import com.floney.floney.book.entity.Book;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class CreateBookResponse {
     private String bookKey;
+
     private String code;
 
     @Builder
-    private CreateBookResponse(String bookKey, String code) {
+    public CreateBookResponse(String bookKey, String code) {
         this.bookKey = bookKey;
         this.code = code;
     }
@@ -22,4 +24,5 @@ public class CreateBookResponse {
             .code(book.getCode())
             .build();
     }
+
 }

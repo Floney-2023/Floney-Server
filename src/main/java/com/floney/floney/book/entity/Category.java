@@ -32,6 +32,7 @@ public abstract class Category {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Column(length = 6)
     private String name;
 
     @OneToMany(mappedBy = "category")
