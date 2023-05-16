@@ -78,9 +78,9 @@ public class UserService {
     @Transactional
     public void signup(SignupRequest signupRequest) {
         try {
-            User user = userRepository.findByEmail(signupRequest.getEmail()).orElseThrow();
+            User user = userRepository.findByEmail(signupRequest.getEmail()).orElseThrow(UserNotFoundException::new);
             throw new UserFoundException(user.getProvider());
-        } catch (NoSuchElementException exception) {
+        } catch (UserNotFoundException exception) {
             User user = signupRequest.to();
             user.encodePassword(bCryptPasswordEncoder);
 
