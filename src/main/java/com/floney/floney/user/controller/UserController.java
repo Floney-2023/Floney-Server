@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<?> authenticateEmail(@RequestBody EmailAuthenticationRequest emailAuthenticationRequest) {
+    public ResponseEntity<?> authenticateEmail(@RequestBody @Valid EmailAuthenticationRequest emailAuthenticationRequest) {
         userService.authenticateEmail(emailAuthenticationRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -64,14 +64,14 @@ public class UserController {
     }
 
     @GetMapping("/nickname/update")
-    public ResponseEntity<?> updateNickname(@RequestParam String nickname) {
-        userService.updateNickname(nickname);
+    public ResponseEntity<?> updateNickname(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetail) {
+        userService.updateNickname(nickname, userDetail.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/password/update")
-    public ResponseEntity<?> updatePassword(@RequestParam String password) {
-        userService.updatePassword(password);
+    public ResponseEntity<?> updatePassword(@RequestParam String password, @AuthenticationPrincipal UserDetails userDetail) {
+        userService.updatePassword(userDetail.getUsername(), password);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -82,8 +82,8 @@ public class UserController {
     }
 
     @GetMapping("/profileimg/update")
-    public ResponseEntity<?> updateProfileImg(@RequestParam String profileImg) {
-        userService.updateProfileImg(profileImg);
+    public ResponseEntity<?> updateProfileImg(@RequestParam String profileImg, @AuthenticationPrincipal UserDetails userDetail) {
+        userService.updateProfileImg(profileImg, userDetail.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

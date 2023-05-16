@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,13 +23,13 @@ public class BookController {
     private final BookLineService bookLineService;
 
     @PostMapping()
-    public ResponseEntity<?> createBook(@RequestBody CreateBookRequest request) {
-        return new ResponseEntity<>(bookService.createBook(userAuth(), request), HttpStatus.CREATED);
+    public ResponseEntity<?> createBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.createBook(userDetail.getUsername(), request), HttpStatus.CREATED);
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestParam("code") String code) {
-        return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
+    public ResponseEntity<?> joinWithCode(@RequestParam("code") String code, @AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.joinWithCode(userDetail.getUsername(), code), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/lines")
@@ -45,14 +47,6 @@ public class BookController {
     public ResponseEntity<?> showByDays(@RequestParam("bookKey") String bookKey,
                                         @RequestParam("date") String date) {
         return new ResponseEntity<>(bookLineService.showByDays(bookKey, date), HttpStatus.OK);
-    }
-
-    private String userAuth() {
-        Authentication authentication = SecurityContextHolder
-            .getContext()
-            .getAuthentication();
-
-        return authentication.getName();
     }
 
 }

@@ -123,36 +123,24 @@ public class UserService {
     }
 
     @Transactional
-    public void updateNickname(String nickname) {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+    public void updateNickname(String nickname, String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
 
         user.updateNickname(nickname);
     }
 
     @Transactional
-    public void updatePassword(String password) {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(UserNotFoundException::new);
-
-        user.updatePassword(password);
-        user.encodePassword(bCryptPasswordEncoder);
-    }
-
-    @Transactional
     public void updatePassword(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
     }
 
     @Transactional
-    public void updateProfileImg(String profileImg) {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(UserNotFoundException::new);
-
+    public void updateProfileImg(String profileImg, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         user.updateProfileImg(profileImg);
     }
 

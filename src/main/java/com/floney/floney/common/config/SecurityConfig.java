@@ -57,8 +57,7 @@ public class SecurityConfig {
                         "/users/login",
                         "/users/logout",
                         "/users/reissue",
-                        "/users/email",
-                        "/users/find-password"
+                        "/users/email"
                 ).permitAll()
                 .anyRequest().authenticated()
 
