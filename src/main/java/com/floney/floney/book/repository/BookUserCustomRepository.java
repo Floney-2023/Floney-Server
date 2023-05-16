@@ -17,4 +17,8 @@ public interface BookUserCustomRepository {
     BooleanExpression existBookUser(String email, String code);
 
     List<MyBookInfo> findMyBooks(User user);
+
+    void countBookUser(Book book);
+
+    BookUser findByEmailAndBook(String email, Book book);
 }
