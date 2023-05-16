@@ -28,7 +28,7 @@ import static com.floney.floney.book.dto.constant.AssetType.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String name;
 
     @Column(length = 300)
@@ -52,7 +52,7 @@ public class Book extends BaseEntity {
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
-    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
+    @Column(nullable = false, length = 8)
     private String code;
 
     @Builder
@@ -87,7 +87,7 @@ public class Book extends BaseEntity {
     }
 
     public void isProvider(String email) {
-        if(!provider.equals(email)){
+        if(!providerEmail.equals(email)){
             throw new NoAuthorityException();
         }
     }
