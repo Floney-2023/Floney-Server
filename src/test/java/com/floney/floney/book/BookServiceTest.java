@@ -1,6 +1,5 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
@@ -11,6 +10,7 @@ import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import com.querydsl.core.types.dsl.Expressions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,7 +85,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("가계부 이름 변경을 요청한다")
-    void change_name(){
+    void change_name() {
         String changeTo = "newName";
         Book book = BookFixture.createBook();
         book.updateName(changeTo);
