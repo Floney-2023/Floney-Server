@@ -6,6 +6,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotSubscribeException;
 import com.floney.floney.user.entity.User;
@@ -24,6 +25,7 @@ public class BookServiceImpl implements BookService {
     private final BookUserRepository bookUserRepository;
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
+
     @Override
     @Transactional
     public CreateBookResponse createBook(String email, CreateBookRequest request) {
@@ -85,7 +87,7 @@ public class BookServiceImpl implements BookService {
         Book book = findBook(bookKey);
         book.isProvider(email);
         bookUserRepository.countBookUser(book);
-        BookUser owner = bookUserRepository.findByEmailAndBook(email,book);
+        BookUser owner = bookUserRepository.findByEmailAndBook(email, book);
 
         book.delete();
         owner.delete();
@@ -98,7 +100,7 @@ public class BookServiceImpl implements BookService {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
-    private Book findBook(String bookKey){
+    private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKey(bookKey)
             .orElseThrow(NotFoundBookException::new);
     }

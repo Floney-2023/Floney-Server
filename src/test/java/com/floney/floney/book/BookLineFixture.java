@@ -39,6 +39,7 @@ public class BookLineFixture {
             .book(book)
             .money(money)
             .lineDate(LOCAL_DATE)
+            .exceptStatus(Boolean.FALSE)
             .build();
 
         return bookline;
@@ -50,6 +51,7 @@ public class BookLineFixture {
             .writer(user)
             .money(money)
             .lineDate(LOCAL_DATE)
+            .exceptStatus(Boolean.FALSE)
             .build();
 
         return bookline;
