@@ -69,12 +69,4 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private String userAuth() {
-        Authentication authentication = SecurityContextHolder
-            .getContext()
-            .getAuthentication();
-
-        return authentication.getName();
-    }
-
 }
