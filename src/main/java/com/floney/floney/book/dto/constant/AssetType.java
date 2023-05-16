@@ -9,6 +9,7 @@ public enum AssetType {
     OUTCOME("지출"),
     INCOME("수입"),
     BANK("이체");
+
     private String kind;
 
     AssetType(String kind) {
