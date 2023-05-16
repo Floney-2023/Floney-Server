@@ -96,5 +96,16 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         }
     }
 
+    @Override
+    public BookUser findByEmailAndBook(String email, Book target) {
+        return jpaQueryFactory.selectFrom(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(book.eq(target))
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(email))
+            .fetchOne();
+
+    }
+
 
 }
