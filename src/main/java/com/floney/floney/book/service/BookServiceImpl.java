@@ -1,13 +1,11 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.BookResponse;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotSubscribeException;
 import com.floney.floney.user.entity.User;
@@ -75,9 +73,35 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(book);
     }
 
+    @Override
+    public void changeBookName(String bookKey, String requestName) {
+        Book book = findBook(bookKey);
+        book.updateName(requestName);
+        bookRepository.save(book);
+    }
+
+    @Override
+    public void deleteBook(String email, String bookKey) {
+        Book book = findBook(bookKey);
+        book.isProvider(email);
+        bookUserRepository.countBookUser(book);
+        BookUser owner = bookUserRepository.findByEmailAndBook(email,book);
+
+        book.delete();
+        owner.delete();
+
+        bookRepository.save(book);
+        bookUserRepository.save(owner);
+    }
 
     private User findUser(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
+
+    private Book findBook(String bookKey){
+        return bookRepository.findBookByBookKey(bookKey)
+            .orElseThrow(NotFoundBookException::new);
+    }
+
 
 }

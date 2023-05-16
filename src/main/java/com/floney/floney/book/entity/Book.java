@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.exception.NoAuthorityException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -79,5 +80,19 @@ public class Book extends BaseEntity {
         } else if (assetType == INCOME) {
             budget += amount;
         }
+    }
+
+    public void updateName(String requestName){
+        this.name = requestName;
+    }
+
+    public void isProvider(String email) {
+        if(!provider.equals(email)){
+            throw new NoAuthorityException();
+        }
+    }
+
+    public void delete() {
+        this.status = false;
     }
 }

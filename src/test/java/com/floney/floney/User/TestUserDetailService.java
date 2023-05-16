@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class TestUserDetailService implements UserDetailsService {
     private static final UserDetail userDetail = UserDetail.of(
             UserResponse.builder()

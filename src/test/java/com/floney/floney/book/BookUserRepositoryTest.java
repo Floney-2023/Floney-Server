@@ -4,6 +4,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.NoAuthorityException;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.entity.User;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -45,5 +48,35 @@ public class BookUserRepositoryTest {
         BookUser find = bookUserRepository.findUserWith(savedUser.getNickname(), savedBook.getBookKey());
         Assertions.assertThat(find.getBook().getName())
             .isEqualTo(savedBook.getName());
+    }
+
+    @Test
+    @DisplayName("가계부 사용자가 2명이상이면 가계부를 삭제할 수 없다")
+    void delete_exception() {
+        User savedUser = userRepository.save(UserFixture.createUser());
+        Book savedBook = bookRepository.save(BookFixture.createBook());
+
+        BookUser owner = BookFixture.createBookUser(savedUser, savedBook);
+        BookUser member = BookFixture.createBookUser(savedUser, savedBook);
+
+        bookUserRepository.save(owner);
+        bookUserRepository.save(member);
+
+        assertThatThrownBy(() -> bookUserRepository.countBookUser(savedBook))
+            .isInstanceOf(NoAuthorityException.class);
+    }
+
+    @Test
+    @DisplayName("email과 Book으로 bookUser를 찾는다")
+    void findUser() {
+        User savedUser = userRepository.save(UserFixture.createUser());
+        Book savedBook = bookRepository.save(BookFixture.createBook());
+
+        BookUser owner = BookFixture.createBookUser(savedUser, savedBook);
+
+        bookUserRepository.save(owner);
+
+        Assertions.assertThat(bookUserRepository.findByEmailAndBook(savedUser.getEmail(), savedBook))
+            .isEqualTo(owner);
     }
 }

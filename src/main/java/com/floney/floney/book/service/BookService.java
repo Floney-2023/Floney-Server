@@ -10,5 +10,8 @@ public interface BookService {
     CreateBookResponse addBook(String email, CreateBookRequest request);
 
     CreateBookResponse joinWithCode(String email, String code);
+    
+    void changeBookName(String requestName, String bookKey);
 
+    void deleteBook(String email, String bookKey);
 }

@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -50,6 +52,21 @@ public class BookController {
     public ResponseEntity<?> showByDays(@RequestParam("bookKey") String bookKey,
                                         @RequestParam("date") String date) {
         return new ResponseEntity<>(bookLineService.showByDays(bookKey, date), HttpStatus.OK);
+    }
+
+    @PostMapping("/name")
+    public ResponseEntity<?> changeName(@RequestParam("bookKey") String bookKey,
+                                        @RequestParam("name") String name) {
+        bookService.changeBookName(bookKey, name);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteBook(
+        @RequestParam("bookKey") String bookKey,
+        @AuthenticationPrincipal UserDetails userDetail) {
+        bookService.deleteBook(userDetail.getUsername(), bookKey);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private String userAuth() {
