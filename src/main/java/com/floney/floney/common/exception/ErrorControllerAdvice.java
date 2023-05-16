@@ -7,9 +7,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -91,6 +89,26 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(OutOfBudgetException.class)
     protected ResponseEntity<ErrorResponse> outOfBudget(OutOfBudgetException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+
+    //SUBSCRIBE
+    @ExceptionHandler(NotSubscribeException.class)
+    protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(LimitRequestException.class)
+    protected ResponseEntity<ErrorResponse> limitOfService(LimitRequestException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(NoAuthorityException.class)
+    protected ResponseEntity<ErrorResponse> notOwner(NoAuthorityException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 }

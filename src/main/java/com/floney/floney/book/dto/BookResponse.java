@@ -3,8 +3,10 @@ package com.floney.floney.book.dto;
 import com.floney.floney.book.entity.Book;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class BookResponse {
 
     private String name;
@@ -52,4 +54,7 @@ public class BookResponse {
             .build();
     }
 
+    public static BookResponse init() {
+        return new BookResponse();
+    }
 }

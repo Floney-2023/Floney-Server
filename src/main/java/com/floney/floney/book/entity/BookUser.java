@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -29,6 +26,7 @@ public class BookUser extends BaseEntity {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @Column(length = 300)
     private String profileImg;
 
     @Builder
@@ -44,6 +42,10 @@ public class BookUser extends BaseEntity {
             .book(book)
             .profileImg(user.getProfileImg())
             .build();
+    }
+
+    public void delete(){
+        this.status = false;
     }
 
     public String getNickName() {

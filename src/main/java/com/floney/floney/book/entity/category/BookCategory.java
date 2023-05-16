@@ -20,7 +20,7 @@ public class BookCategory extends Category {
     private Book book;
 
     public BookCategory(String name, Category parent, Book book) {
-        super(name,parent);
+        super(name, parent);
         this.book = book;
     }
 }
