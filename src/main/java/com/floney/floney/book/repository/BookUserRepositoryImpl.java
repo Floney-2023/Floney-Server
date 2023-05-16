@@ -5,6 +5,7 @@ import com.floney.floney.book.dto.QMyBookInfo;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.exception.MaxMemberException;
+import com.floney.floney.common.exception.NoAuthorityException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,11 +18,13 @@ import java.util.List;
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.user.entity.QUser.user;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 @Repository
 @RequiredArgsConstructor
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
     private static final int MAX_MEMBER = 4;
+    private static final int OWNER = 1;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -78,6 +81,19 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             infos.add(my);
         }
         return infos;
+    }
+
+    @Override
+    public void countBookUser(Book target) {
+        Long count = jpaQueryFactory.select(count(bookUser))
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(book.eq(target), bookUser.status.eq(true))
+            .fetchOne();
+
+        if (count > OWNER) {
+            throw new NoAuthorityException();
+        }
     }
 
 
