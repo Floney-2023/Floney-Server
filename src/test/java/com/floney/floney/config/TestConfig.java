@@ -13,12 +13,9 @@ public class TestConfig {
     @PersistenceContext
     private EntityManager entityManager;
 
-
     @Bean
     public JPAQueryFactory queryFactory() {
         return new JPAQueryFactory(entityManager);
     }
-
-
 
 }
