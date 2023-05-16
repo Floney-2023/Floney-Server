@@ -47,6 +47,13 @@ public class BookController {
         return new ResponseEntity<>(bookLineService.showByDays(bookKey, date), HttpStatus.OK);
     }
 
+    @PostMapping("/name")
+    public ResponseEntity<?> changeName(@RequestParam("bookKey") String bookKey,
+                                        @RequestParam("name") String name) {
+        bookService.changeBookName(bookKey, name);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     private String userAuth() {
         Authentication authentication = SecurityContextHolder
             .getContext()

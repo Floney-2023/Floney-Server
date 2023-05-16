@@ -54,4 +54,13 @@ public class BookServiceTest {
             .isEqualTo(BookFixture.bookResponse().getCode());
     }
 
+    @Test
+    @DisplayName("가계부 이름 변경을 요청한다")
+    void change_name(){
+        String changeTo = "newName";
+        Book book = BookFixture.createBook();
+        book.updateName(changeTo);
+        Assertions.assertThat(book.getName()).isEqualTo(changeTo);
+    }
+
 }

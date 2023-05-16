@@ -75,4 +75,8 @@ public class Book extends BaseEntity {
         }
     }
 
+    public void updateName(String requestName){
+        this.name = requestName;
+    }
+
 }
