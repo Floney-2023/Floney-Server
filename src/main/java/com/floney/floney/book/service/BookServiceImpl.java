@@ -45,14 +45,18 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void changeBookName(String bookKey, String requestName) {
-        Book book = bookRepository.findBookByBookKey(bookKey)
-            .orElseThrow(NotFoundBookException::new);
+        Book book = findBook(bookKey);
         book.updateName(requestName);
         bookRepository.save(book);
     }
 
     private User findUser(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+    }
+
+    private Book findBook(String bookKey){
+        return bookRepository.findBookByBookKey(bookKey)
+            .orElseThrow(NotFoundBookException::new);
     }
 
 }
