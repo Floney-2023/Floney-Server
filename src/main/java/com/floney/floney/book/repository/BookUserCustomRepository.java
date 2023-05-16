@@ -19,4 +19,6 @@ public interface BookUserCustomRepository {
     List<MyBookInfo> findMyBooks(User user);
 
     void countBookUser(Book book);
+
+    BookUser findByEmailAndBook(String email, Book book);
 }

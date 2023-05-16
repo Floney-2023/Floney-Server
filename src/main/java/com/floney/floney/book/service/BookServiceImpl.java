@@ -50,6 +50,20 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
     }
 
+    @Override
+    public void deleteBook(String email, String bookKey) {
+        Book book = findBook(bookKey);
+        book.isProvider(email);
+        bookUserRepository.countBookUser(book);
+        BookUser owner = bookUserRepository.findByEmailAndBook(email,book);
+
+        book.delete();
+        owner.delete();
+
+        bookRepository.save(book);
+        bookUserRepository.save(owner);
+    }
+
     private User findUser(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
@@ -58,5 +72,6 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findBookByBookKey(bookKey)
             .orElseThrow(NotFoundBookException::new);
     }
+
 
 }
