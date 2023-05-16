@@ -23,7 +23,7 @@ public class CreateBookRequest {
             .bookKey(CodeFactory.generateCode())
             .name(name)
             .profileImg(profileImg)
-            .provider(email)
+            .providerEmail(email)
             .code(CodeFactory.generateCode())
             .build();
 
