@@ -23,18 +23,18 @@ public class BookController {
     private final BookLineService bookLineService;
 
     @PostMapping()
-    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request) {
-        return new ResponseEntity<>(bookService.createBook(userAuth(), request), HttpStatus.CREATED);
+    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.createBook(userDetail.getUsername(), request), HttpStatus.CREATED);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request) {
-        return new ResponseEntity<>(bookService.addBook(userAuth(), request), HttpStatus.CREATED);
+    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.addBook(userDetail.getUsername(), request), HttpStatus.CREATED);
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestParam("code") String code) {
-        return new ResponseEntity<>(bookService.joinWithCode(userAuth(), code), HttpStatus.ACCEPTED);
+    public ResponseEntity<?> joinWithCode(@RequestParam("code") String code, @AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.joinWithCode(userDetail.getUsername(), code), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/lines")
@@ -67,14 +67,6 @@ public class BookController {
         @AuthenticationPrincipal UserDetails userDetail) {
         bookService.deleteBook(userDetail.getUsername(), bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private String userAuth() {
-        Authentication authentication = SecurityContextHolder
-            .getContext()
-            .getAuthentication();
-
-        return authentication.getName();
     }
 
 }
