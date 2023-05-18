@@ -33,7 +33,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.addBook(userDetail.getUsername(), request), HttpStatus.CREATED);
     }
 
-    @PostMapping("/join")
+    @GetMapping("/join")
     public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code, @AuthenticationPrincipal UserDetails userDetail) {
         return new ResponseEntity<>(bookService.joinWithCode(userDetail.getUsername(), code), HttpStatus.ACCEPTED);
     }
