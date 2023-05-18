@@ -40,7 +40,6 @@ public class Book extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String bookKey;
 
-    @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean seeProfile;
 
     private Long initialAsset;
@@ -49,10 +48,9 @@ public class Book extends BaseEntity {
 
     private int weekStartDay;
 
-    @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 20)
     private String code;
 
     @Builder

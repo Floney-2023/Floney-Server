@@ -1,9 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.BookResponse;
-import com.floney.floney.book.dto.CreateBookRequest;
-import com.floney.floney.book.dto.CreateBookResponse;
-import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.dto.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
@@ -36,6 +33,10 @@ public class BookFixture {
             .code(CODE)
             .initialAsset(DEFAULT_VALUE)
             .build();
+    }
+
+    public static CodeJoinRequest codeJoinRequest(){
+        return new CodeJoinRequest(CODE);
     }
 
     public static Book createBook() {

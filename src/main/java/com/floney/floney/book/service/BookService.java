@@ -1,5 +1,6 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.dto.CodeJoinRequest;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateBookResponse;
 
@@ -9,7 +10,7 @@ public interface BookService {
 
     CreateBookResponse addBook(String email, CreateBookRequest request);
 
-    CreateBookResponse joinWithCode(String email, String code);
+    CreateBookResponse joinWithCode(String email, CodeJoinRequest code);
     
     void changeBookName(String requestName, String bookKey);
 

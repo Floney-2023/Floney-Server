@@ -1,5 +1,6 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.dto.CodeJoinRequest;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.service.BookLineService;
@@ -33,7 +34,7 @@ public class BookController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestParam("code") String code, @AuthenticationPrincipal UserDetails userDetail) {
+    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code, @AuthenticationPrincipal UserDetails userDetail) {
         return new ResponseEntity<>(bookService.joinWithCode(userDetail.getUsername(), code), HttpStatus.ACCEPTED);
     }
 

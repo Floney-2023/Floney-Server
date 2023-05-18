@@ -1,5 +1,6 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.dto.CodeJoinRequest;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
@@ -65,7 +66,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CreateBookResponse joinWithCode(String email, String code) {
+    public CreateBookResponse joinWithCode(String email, CodeJoinRequest request) {
+        String code = request.getCode();
         Book book = bookRepository.findBookByCode(code)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.existBookUser(email, code);
