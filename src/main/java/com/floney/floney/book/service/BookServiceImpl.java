@@ -1,5 +1,6 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.dto.BookNameChangeRequest;
 import com.floney.floney.book.dto.CodeJoinRequest;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateBookResponse;
@@ -78,9 +79,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void changeBookName(String bookKey, String requestName) {
-        Book book = findBook(bookKey);
-        book.updateName(requestName);
+    public void changeBookName(BookNameChangeRequest request) {
+        Book book = findBook(request.getBookKey());
+        book.updateName(request.getName());
         bookRepository.save(book);
     }
 

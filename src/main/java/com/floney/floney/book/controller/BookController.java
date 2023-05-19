@@ -1,5 +1,6 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.dto.BookNameChangeRequest;
 import com.floney.floney.book.dto.CodeJoinRequest;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateLineRequest;
@@ -56,9 +57,8 @@ public class BookController {
     }
 
     @PostMapping("/name")
-    public ResponseEntity<?> changeName(@RequestParam("bookKey") String bookKey,
-                                        @RequestParam("name") String name) {
-        bookService.changeBookName(bookKey, name);
+    public ResponseEntity<?> changeName(@RequestBody BookNameChangeRequest request) {
+        bookService.changeBookName(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
