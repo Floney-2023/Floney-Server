@@ -42,7 +42,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public CreateBookResponse addBook(String email, CreateBookRequest request) {
         User requestUser = findUser(email);
-        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser,ACTIVE);
+        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, ACTIVE);
         if (requestUser.isSubscribe()) {
             return subscribeCreateBook(count, email, request);
         } else {
@@ -68,7 +68,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public CreateBookResponse joinWithCode(String email, String code) {
-        Book book = bookRepository.findBookByCodeAndStatus(code,ACTIVE)
+        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.existBookUser(email, code);
         bookUserRepository.isMax(book);
@@ -99,14 +99,13 @@ public class BookServiceImpl implements BookService {
     }
 
     private User findUser(String email) {
-        return userRepository.findUserByEmailAndStatus(email,true)
+        return userRepository.findUserByEmailAndStatus(email, ACTIVE)
             .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKey(bookKey)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
-
 
 }

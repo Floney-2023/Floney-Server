@@ -22,6 +22,7 @@ import static com.floney.floney.book.entity.DefaultCategory.rootParent;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final BookRepository bookRepository;
+    private static final boolean ACTIVE = true;
 
     @Override
     @Transactional
@@ -42,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKey(bookKey)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey,ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 

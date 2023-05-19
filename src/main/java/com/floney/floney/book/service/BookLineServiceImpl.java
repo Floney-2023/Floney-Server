@@ -38,6 +38,8 @@ public class BookLineServiceImpl implements BookLineService {
 
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
+    private static final boolean ACTIVE = true;
+
     @Override
     @Transactional
     public BookLineResponse createBookLine(CreateLineRequest request) {
@@ -97,7 +99,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private Book findBook(CreateLineRequest request) {
-        return bookRepository.findBookByBookKey(request.getBookKey())
+        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(),ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 
