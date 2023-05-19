@@ -49,7 +49,6 @@ public class UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
     private final JavaMailSender javaMailSender;
-    private final BookService bookService;
     private final BookUserCustomRepository bookUserRepository;
 
     public Token login(LoginRequest loginRequest) {
@@ -78,7 +77,7 @@ public class UserService {
     @Transactional
     public void signup(SignupRequest signupRequest) {
         try {
-            User user = userRepository.findByEmail(signupRequest.getEmail()).orElseThrow(UserNotFoundException::new);
+            User user = loadUserByEmail(signupRequest.getEmail());
             throw new UserFoundException(user.getProvider());
         } catch (UserNotFoundException exception) {
             User user = signupRequest.to();
@@ -90,8 +89,7 @@ public class UserService {
 
     @Transactional
     public void signout(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+        User user = loadUserByEmail(email);
 
         if(!user.isStatus()) {
             throw new UserSignoutException();
@@ -116,31 +114,27 @@ public class UserService {
     }
 
     public MyPageResponse getUserInfo(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+        User user = loadUserByEmail(email);
         List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
         return MyPageResponse.from(UserResponse.from(user),myBooks);
     }
 
     @Transactional
     public void updateNickname(String nickname, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
-
+        User user = loadUserByEmail(email);
         user.updateNickname(nickname);
     }
 
     @Transactional
     public void updatePassword(String email, String password) {
-        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-
+        User user = loadUserByEmail(email);
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
     }
 
     @Transactional
     public void updateProfileImg(String profileImg, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        User user = loadUserByEmail(email);
         user.updateProfileImg(profileImg);
     }
 
@@ -165,6 +159,10 @@ public class UserService {
 
         sendMail(email, mailSubject, mailText);
         return newPassword;
+    }
+
+    public User loadUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     private void sendMail(String email, String subject, String text) {
