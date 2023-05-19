@@ -124,7 +124,7 @@ public class UserService {
         user.updateProfileImg(profileImg);
     }
 
-    public String sendAuthenticateEmail(String email) {
+    public String sendEmailAuthMail(String email) {
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         String code = String.format("%06d", random.nextInt(1_000_000) % 1_000_000);

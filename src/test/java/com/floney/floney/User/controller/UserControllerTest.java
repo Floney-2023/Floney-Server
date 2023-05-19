@@ -79,7 +79,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_success() throws Exception {
         // given
         String email = "right@email.com";
-        given(userService.sendAuthenticateEmail(email)).willReturn(anyString());
+        given(userService.sendEmailAuthMail(email)).willReturn(anyString());
 
         // when & then
         mockMvc.perform(get("/users/email").queryParam("email", email))
@@ -92,7 +92,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_fail_invalidEmail() throws Exception {
         // given
         String email = "wrong@email.com";
-        given(userService.sendAuthenticateEmail(email)).willThrow(new MailAddressException());
+        given(userService.sendEmailAuthMail(email)).willThrow(new MailAddressException());
 
         // when & then
         mockMvc.perform(get("/users/email").queryParam("email", email))
@@ -105,7 +105,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_fail_mailServerError() throws Exception {
         // given
         String email = "right@email.com";
-        given(userService.sendAuthenticateEmail(email)).willThrow(MailSendException.class);
+        given(userService.sendEmailAuthMail(email)).willThrow(MailSendException.class);
 
         // when & then
         mockMvc.perform(get("/users/email").queryParam("email", email))

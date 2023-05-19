@@ -30,12 +30,12 @@ public class UserController {
         return new ResponseEntity<>(userService.login(userService.signup(signupRequest)), HttpStatus.CREATED);
     }
 
-    @GetMapping("/email")
-    public ResponseEntity<?> sendAuthenticateEmail(@RequestParam String email) {
-        return new ResponseEntity<>(userService.sendAuthenticateEmail(email), HttpStatus.OK);
+    @GetMapping("/email/mail")
+    public ResponseEntity<?> sendEmailAuthMail(@RequestParam String email) {
+        return new ResponseEntity<>(userService.sendEmailAuthMail(email), HttpStatus.OK);
     }
 
-    @PostMapping("/email")
+    @PostMapping("/email/mail")
     public ResponseEntity<?> authenticateEmail(@RequestBody @Valid EmailAuthenticationRequest emailAuthenticationRequest) {
         userService.authenticateEmail(emailAuthenticationRequest);
         return new ResponseEntity<>(HttpStatus.OK);

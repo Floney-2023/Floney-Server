@@ -159,7 +159,7 @@ class UserServiceTest {
         int codeLength = 6;
 
         // when
-        String code = userService.sendAuthenticateEmail("email");
+        String code = userService.sendEmailAuthMail("email");
 
         // then
         assertThat(code.length()).isEqualTo(codeLength);
