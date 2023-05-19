@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-    Optional<Book> findBookByCode(String code);
+    Optional<Book> findBookByCodeAndStatus(String code,boolean status);
 
     Book findBookByProviderEmail(String email);
 

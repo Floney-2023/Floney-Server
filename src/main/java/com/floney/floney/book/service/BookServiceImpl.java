@@ -68,7 +68,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public CreateBookResponse joinWithCode(String email, String code) {
-        Book book = bookRepository.findBookByCode(code)
+        Book book = bookRepository.findBookByCodeAndStatus(code,ACTIVE)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.existBookUser(email, code);
         bookUserRepository.isMax(book);
