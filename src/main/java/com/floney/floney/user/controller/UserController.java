@@ -32,7 +32,8 @@ public class UserController {
 
     @GetMapping("/email/mail")
     public ResponseEntity<?> sendEmailAuthMail(@RequestParam String email) {
-        return new ResponseEntity<>(userService.sendEmailAuthMail(email), HttpStatus.OK);
+        userService.sendEmailAuthMail(email);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/email/mail")
@@ -90,6 +91,12 @@ public class UserController {
     @GetMapping("/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal UserDetails userDetail) {
         return new ResponseEntity<>(userService.getUserInfo(userDetail.getUsername()), HttpStatus.OK);
+    }
+
+    @GetMapping("/email")
+    public ResponseEntity<?> validateIfNewUser(@RequestParam String email) {
+        userService.validateIfNewUser(email);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
