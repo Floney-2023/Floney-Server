@@ -1,10 +1,12 @@
 package com.floney.floney.common.exception;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorType {
 
     USER_FOUND("U001", "이미 존재하는 유저입니다"),

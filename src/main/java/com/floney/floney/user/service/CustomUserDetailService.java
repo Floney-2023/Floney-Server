@@ -1,5 +1,6 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.user.dto.UserResponse;
 import com.floney.floney.user.dto.security.UserDetail;
 import com.floney.floney.user.entity.User;
@@ -17,11 +18,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-
-        return UserDetail.of(
-                UserResponse.from(user)
-        );
+        User user = userRepository.findByEmail(username).orElseThrow(UserNotFoundException::new);
+        return UserDetail.of(UserResponse.from(user));
     }
 }
