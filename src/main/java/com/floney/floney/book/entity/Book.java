@@ -46,17 +46,16 @@ public class Book extends BaseEntity {
 
     private Long budget;
 
-    private int weekStartDay;
 
     private Boolean carryOver;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 10)
     private String code;
 
     @Builder
     private Book(String name, String profileImg, String providerEmail,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
-                 int weekStartDay, Boolean carryOver, String code) {
+                 Boolean carryOver, String code) {
         this.name = name;
         this.profileImg = profileImg;
         this.providerEmail = providerEmail;
@@ -64,7 +63,6 @@ public class Book extends BaseEntity {
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
         this.budget = budget;
-        this.weekStartDay = weekStartDay;
         this.carryOver = carryOver;
         this.code = code;
 
@@ -80,12 +78,12 @@ public class Book extends BaseEntity {
         }
     }
 
-    public void updateName(String requestName){
+    public void updateName(String requestName) {
         this.name = requestName;
     }
 
     public void isProvider(String email) {
-        if(!providerEmail.equals(email)){
+        if (!providerEmail.equals(email)) {
             throw new NoAuthorityException();
         }
     }
