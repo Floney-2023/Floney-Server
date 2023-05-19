@@ -2,16 +2,14 @@ package com.floney.floney.user.service;
 
 import com.floney.floney.book.dto.MyBookInfo;
 import com.floney.floney.book.repository.BookUserCustomRepository;
-import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.MailProvider;
 import com.floney.floney.common.exception.CodeNotSameException;
 import com.floney.floney.common.exception.EmailNotFoundException;
-import com.floney.floney.common.exception.UserSignoutException;
-import com.floney.floney.common.token.RedisProvider;
-import com.floney.floney.common.exception.MailAddressException;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserNotFoundException;
+import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.JwtTokenProvider;
+import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.MyPageResponse;
 import com.floney.floney.user.dto.UserResponse;
@@ -21,21 +19,13 @@ import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
-
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.MailParseException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,23 +66,18 @@ public class UserService {
     }
 
     @Transactional
-    public void signup(SignupRequest signupRequest) {
-        try {
-            User user = loadUserByEmail(signupRequest.getEmail());
-            throw new UserFoundException(user.getProvider());
-        } catch (UserNotFoundException exception) {
-            User user = signupRequest.to();
-            user.encodePassword(bCryptPasswordEncoder);
-
-            userRepository.save(user);
-        }
+    public LoginRequest signup(SignupRequest signupRequest) {
+        User user = signupRequest.to();
+        user.encodePassword(bCryptPasswordEncoder);
+        userRepository.save(user);
+        return signupRequest.toLoginRequest();
     }
 
     @Transactional
     public void signout(String email) {
         User user = loadUserByEmail(email);
 
-        if(!user.isStatus()) {
+        if (!user.isStatus()) {
             throw new UserSignoutException();
         }
 
@@ -117,7 +102,7 @@ public class UserService {
     public MyPageResponse getUserInfo(String email) {
         User user = loadUserByEmail(email);
         List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
-        return MyPageResponse.from(UserResponse.from(user),myBooks);
+        return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 
     @Transactional
@@ -166,10 +151,19 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
+    public void validateIfNewUser(String email) {
+        try {
+            User user = loadUserByEmail(email);
+            throw new UserFoundException(user.getProvider());
+        } catch (UserNotFoundException ignored) {
+        }
+    }
+
     public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
-        if(!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
+        if (!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
             throw new EmailNotFoundException();
-        } else if(!redisProvider.get(emailAuthenticationRequest.getEmail()).equals(emailAuthenticationRequest.getCode())) {
+        } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
+                .equals(emailAuthenticationRequest.getCode())) {
             throw new CodeNotSameException();
         }
     }

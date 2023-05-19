@@ -26,8 +26,8 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
-        userService.signup(signupRequest);
-        return new ResponseEntity<>(userService.login(signupRequest.toLoginRequest()), HttpStatus.CREATED);
+        userService.validateIfNewUser(signupRequest.getEmail());
+        return new ResponseEntity<>(userService.login(userService.signup(signupRequest)), HttpStatus.CREATED);
     }
 
     @GetMapping("/email")
