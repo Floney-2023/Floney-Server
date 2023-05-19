@@ -23,16 +23,19 @@ import static com.querydsl.core.types.ExpressionUtils.count;
 @Repository
 @RequiredArgsConstructor
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
+    private final JPAQueryFactory jpaQueryFactory;
+
     private static final int MAX_MEMBER = 4;
     private static final int OWNER = 1;
-    private final JPAQueryFactory jpaQueryFactory;
+    private static final boolean ACTIVE = true;
 
     @Override
     public void isMax(Book book) {
         int memberCount = jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
-            .where(bookUser.book.eq(book))
+            .where(bookUser.book.eq(book),
+                bookUser.status.eq(ACTIVE))
             .fetch()
             .size();
 
@@ -47,9 +50,11 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .select(bookUser)
             .from(bookUser)
             .innerJoin(bookUser.user, user)
-            .where(user.nickname.eq(nickName))
+            .where(user.nickname.eq(nickName),
+                user.status.eq(ACTIVE))
             .innerJoin(bookUser.book, book)
-            .where(book.bookKey.eq(bookKey))
+            .where(book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE))
             .fetchOne();
     }
 
@@ -59,9 +64,11 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .select(bookUser)
             .from(bookUser)
             .innerJoin(bookUser.user, user)
-            .where(user.email.eq(email))
+            .where(user.email.eq(email),
+                user.status.eq(ACTIVE))
             .innerJoin(bookUser.book, book)
-            .where(book.code.eq(code))
+            .where(book.code.eq(code),
+                book.status.eq(ACTIVE))
             .exists();
     }
 
@@ -69,14 +76,20 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public List<MyBookInfo> findMyBooks(User user) {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
-            .where(bookUser.user.eq(user))
+            .where(bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE))
             .fetch();
 
         List<MyBookInfo> infos = new ArrayList<>();
         for (Book target : books) {
-            MyBookInfo my = jpaQueryFactory.select(new QMyBookInfo(book.profileImg, book.name, bookUser.count(), book.bookKey))
+            MyBookInfo my = jpaQueryFactory.select(
+                new QMyBookInfo(book.profileImg,
+                    book.name,
+                    bookUser.count(),
+                    book.bookKey))
                 .from(bookUser)
-                .where(bookUser.book.eq(target))
+                .where(bookUser.book.eq(target),
+                    bookUser.status.eq(ACTIVE))
                 .fetchOne();
             infos.add(my);
         }
@@ -88,7 +101,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         Long count = jpaQueryFactory.select(count(bookUser))
             .from(bookUser)
             .innerJoin(bookUser.book, book)
-            .where(book.eq(target), bookUser.status.eq(true))
+            .where(book.eq(target),
+                bookUser.status.eq(ACTIVE))
             .fetchOne();
 
         if (count > OWNER) {
@@ -100,9 +114,11 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public BookUser findByEmailAndBook(String email, Book target) {
         return jpaQueryFactory.selectFrom(bookUser)
             .innerJoin(bookUser.book, book)
-            .where(book.eq(target))
+            .where(book.eq(target),
+                book.status.eq(ACTIVE))
             .innerJoin(bookUser.user, user)
-            .where(user.email.eq(email))
+            .where(user.email.eq(email),
+                user.status.eq(ACTIVE))
             .fetchOne();
 
     }

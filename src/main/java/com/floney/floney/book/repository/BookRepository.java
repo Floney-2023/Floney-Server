@@ -8,8 +8,6 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findBookByCodeAndStatus(String code,boolean status);
 
-    Book findBookByProviderEmail(String email);
-
     Optional<Book> findBookByBookKeyAndStatus(String bookKey,boolean status);
 
 }

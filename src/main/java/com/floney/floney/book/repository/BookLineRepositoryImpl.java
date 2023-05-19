@@ -20,6 +20,7 @@ import static com.floney.floney.book.entity.QBookUser.bookUser;
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private static final boolean ACTIVE = true;
 
     @Override
     public List<TotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
@@ -35,7 +36,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .where(
                 bookLine.lineDate.between(start, end),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
-                book.bookKey.eq(bookKey)
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE)
             )
             .groupBy(bookLineCategory.name)
             .orderBy(bookLineCategory.name.asc())
@@ -57,6 +60,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.writer, bookUser)
             .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
                 bookLine.lineDate.eq(date),
                 book.bookKey.eq(bookKey)
             )
@@ -74,8 +79,11 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             )
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.bookLineCategories,
+                bookLineCategory)
             .where(
+                bookLine.status.eq(ACTIVE),
+                book.status.eq(ACTIVE),
                 bookLine.lineDate.eq(date),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey)
@@ -98,8 +106,11 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
+                bookLine.status.eq(ACTIVE),
+                book.status.eq(ACTIVE),
                 bookLine.lineDate.between(start, end),
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
+                bookLineCategory.name.in(INCOME.getKind(),
+                    OUTCOME.getKind()),
                 book.bookKey.eq(bookKey)
             )
             .groupBy(bookLine.lineDate, bookLineCategory.name)
