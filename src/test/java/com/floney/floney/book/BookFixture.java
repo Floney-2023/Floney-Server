@@ -13,7 +13,7 @@ public class BookFixture {
     public static String NAME = "플로니";
     public static String EMAIL = "floney@naver.com";
     public static String URL = "https://fileisHere.com";
-    public static String CODE = "codeExample";
+    public static String CODE = "d";
     public static String BOOK_KEY = "book-key";
     public static Long DEFAULT_VALUE = 0L;
 

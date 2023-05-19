@@ -47,8 +47,6 @@ public class Book extends BaseEntity {
 
     private Long budget;
 
-    private int weekStartDay;
-
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
@@ -58,7 +56,7 @@ public class Book extends BaseEntity {
     @Builder
     private Book(String name, String profileImg, String providerEmail,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
-                 int weekStartDay, Boolean carryOver, String code) {
+                 Boolean carryOver, String code) {
         this.name = name;
         this.profileImg = profileImg;
         this.providerEmail = providerEmail;
@@ -66,7 +64,6 @@ public class Book extends BaseEntity {
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
         this.budget = budget;
-        this.weekStartDay = weekStartDay;
         this.carryOver = carryOver;
         this.code = code;
 

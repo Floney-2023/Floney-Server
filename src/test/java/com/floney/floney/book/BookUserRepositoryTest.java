@@ -79,4 +79,32 @@ public class BookUserRepositoryTest {
         Assertions.assertThat(bookUserRepository.findByEmailAndBook(savedUser.getEmail(), savedBook))
             .isEqualTo(owner);
     }
+
+    @Test
+    @DisplayName("status가 true인 bookUser만 조회한다")
+    void active_user() {
+        User savedUser = userRepository.save(UserFixture.createUser());
+        Book savedBook = bookRepository.save(BookFixture.createBook());
+
+        BookUser owner = BookFixture.createBookUser(savedUser, savedBook);
+
+        bookUserRepository.save(owner);
+
+        Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, true))
+            .isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("status가 false인 bookUser는 조회하지 않는다")
+    void inActive_user() {
+        User savedUser = userRepository.save(UserFixture.createUser());
+        Book savedBook = bookRepository.save(BookFixture.createBook());
+
+        BookUser owner = BookFixture.createBookUser(savedUser, savedBook);
+
+        bookUserRepository.save(owner);
+
+        Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, false))
+            .isEqualTo(0);
+    }
 }

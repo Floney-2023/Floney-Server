@@ -26,6 +26,8 @@ public class BookServiceImpl implements BookService {
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
 
+    private static final boolean ACTIVE = true;
+
     @Override
     @Transactional
     public CreateBookResponse createBook(String email, CreateBookRequest request) {
@@ -40,7 +42,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public CreateBookResponse addBook(String email, CreateBookRequest request) {
         User requestUser = findUser(email);
-        int count = bookUserRepository.countBookUserByUser(requestUser);
+        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser,ACTIVE);
         if (requestUser.isSubscribe()) {
             return subscribeCreateBook(count, email, request);
         } else {
@@ -97,7 +99,8 @@ public class BookServiceImpl implements BookService {
     }
 
     private User findUser(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        return userRepository.findUserByEmailAndStatus(email,true)
+            .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
     private Book findBook(String bookKey) {
