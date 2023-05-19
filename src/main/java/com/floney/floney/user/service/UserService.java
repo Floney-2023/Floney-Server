@@ -3,6 +3,7 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.dto.MyBookInfo;
 import com.floney.floney.book.repository.BookUserCustomRepository;
 import com.floney.floney.book.service.BookService;
+import com.floney.floney.common.MailProvider;
 import com.floney.floney.common.exception.CodeNotSameException;
 import com.floney.floney.common.exception.EmailNotFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
@@ -48,7 +49,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
-    private final JavaMailSender javaMailSender;
+    private final MailProvider mailProvider;
     private final BookUserCustomRepository bookUserRepository;
 
     public Token login(LoginRequest loginRequest) {
@@ -146,7 +147,7 @@ public class UserService {
         String mailSubject = "[Floney] 이메일 인증 코드";
         String mailText = String.format("인증 코드: %s\n앱으로 돌아가서 인증을 완료해주세요.\n", code);
 
-        sendMail(email, mailSubject, mailText);
+        mailProvider.sendMail(email, mailSubject, mailText);
         redisProvider.set(email, code, 1000 * 60 * 5);
         return code;
     }
@@ -157,25 +158,12 @@ public class UserService {
         String mailSubject = "[Floney] 새 비밀번호 안내";
         String mailText = String.format("새 비밀번호: %s\n바뀐 비밀번호로 로그인 해주세요.\n", newPassword);
 
-        sendMail(email, mailSubject, mailText);
+        mailProvider.sendMail(email, mailSubject, mailText);
         return newPassword;
     }
 
     public User loadUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-    }
-
-    private void sendMail(String email, String subject, String text) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(email);
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(text);
-
-        try{
-            javaMailSender.send(simpleMailMessage);
-        } catch (MailParseException | MailAuthenticationException exception) {
-            throw new MailAddressException();
-        }
     }
 
     public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
