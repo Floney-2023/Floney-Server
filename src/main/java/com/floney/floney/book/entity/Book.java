@@ -50,7 +50,7 @@ public class Book extends BaseEntity {
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
-    @Column(nullable = false, length = 8)
+    @Column(nullable = false, length = 10)
     private String code;
 
     @Builder

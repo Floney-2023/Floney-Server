@@ -54,7 +54,7 @@ public class BookServiceTest {
         given(bookUserRepository.existBookUser(EMAIL, CODE))
             .willReturn(Expressions.asBoolean(true).isTrue());
 
-        assertThat(bookService.joinWithCode(EMAIL, code).getCode())
+        assertThat(bookService.joinWithCode(EMAIL, codeJoinRequest()).getCode())
             .isEqualTo(bookResponse().getCode());
     }
 

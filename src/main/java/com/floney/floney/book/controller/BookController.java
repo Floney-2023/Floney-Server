@@ -1,5 +1,7 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.dto.BookNameChangeRequest;
+import com.floney.floney.book.dto.CodeJoinRequest;
 import com.floney.floney.book.dto.CreateBookRequest;
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.service.BookLineService;
@@ -7,9 +9,7 @@ import com.floney.floney.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +33,7 @@ public class BookController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestParam("code") String code, @AuthenticationPrincipal UserDetails userDetail) {
+    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code, @AuthenticationPrincipal UserDetails userDetail) {
         return new ResponseEntity<>(bookService.joinWithCode(userDetail.getUsername(), code), HttpStatus.ACCEPTED);
     }
 
@@ -55,9 +55,8 @@ public class BookController {
     }
 
     @PostMapping("/name")
-    public ResponseEntity<?> changeName(@RequestParam("bookKey") String bookKey,
-                                        @RequestParam("name") String name) {
-        bookService.changeBookName(bookKey, name);
+    public ResponseEntity<?> changeName(@RequestBody BookNameChangeRequest request) {
+        bookService.changeBookName(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

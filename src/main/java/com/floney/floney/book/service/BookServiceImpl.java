@@ -67,7 +67,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CreateBookResponse joinWithCode(String email, String code) {
+    public CreateBookResponse joinWithCode(String email, CodeJoinRequest request) {
+        String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.existBookUser(email, code);
@@ -78,9 +79,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void changeBookName(String bookKey, String requestName) {
-        Book book = findBook(bookKey);
-        book.updateName(requestName);
+    public void changeBookName(BookNameChangeRequest request) {
+        Book book = findBook(request.getBookKey());
+        book.updateName(request.getName());
         bookRepository.save(book);
     }
 
@@ -107,5 +108,6 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
+
 
 }
