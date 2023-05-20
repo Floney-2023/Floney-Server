@@ -80,6 +80,18 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(EmailNotValidException.class)
+    protected ResponseEntity<ErrorResponse> invalidEmail(EmailNotValidException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(OAuthResponseException.class)
+    protected ResponseEntity<ErrorResponse> badOAuthResponse(OAuthResponseException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {

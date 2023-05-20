@@ -4,6 +4,7 @@ import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.service.OAuthUserService;
 import com.floney.floney.user.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
+    private final OAuthUserService oAuthUserService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
@@ -97,6 +99,11 @@ public class UserController {
     public ResponseEntity<?> validateIfNewUser(@RequestParam String email) {
         userService.validateIfNewUser(email);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/login/kakao")
+    public ResponseEntity<?> kakaoLogin(@RequestParam String oAuthToken) {
+        return new ResponseEntity<>(oAuthUserService.kakaoLogin(oAuthToken), HttpStatus.OK);
     }
 
 }
