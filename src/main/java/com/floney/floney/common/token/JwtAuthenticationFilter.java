@@ -16,7 +16,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
@@ -24,14 +24,14 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             throws ServletException, IOException {
         String token = resolveToken((HttpServletRequest) request);
         try{
-            jwtTokenProvider.validateToken(token);
+            jwtProvider.validateToken(token);
         } catch (JwtException exception) {
             chain.doFilter(request, response);
             return;
         }
 
         if(token != null && redisTemplate.opsForValue().get(token) == null) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

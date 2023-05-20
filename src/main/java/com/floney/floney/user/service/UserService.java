@@ -8,11 +8,11 @@ import com.floney.floney.common.exception.EmailNotFoundException;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
-import com.floney.floney.common.token.JwtTokenProvider;
+import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.common.token.dto.Token;
-import com.floney.floney.user.dto.MyPageResponse;
-import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
@@ -36,7 +36,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
@@ -47,19 +47,19 @@ public class UserService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
 
-        return jwtTokenProvider.generateToken(authentication);
+        return jwtProvider.generateToken(authentication);
     }
 
     public String logout(String accessToken) {
-        jwtTokenProvider.validateToken(accessToken);
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        jwtProvider.validateToken(accessToken);
+        Authentication authentication = jwtProvider.getAuthentication(accessToken);
         String email = authentication.getName();
 
         if (redisProvider.get(email) != null) {
             redisProvider.delete(email);
         }
 
-        long expiration = jwtTokenProvider.getExpiration(accessToken);
+        long expiration = jwtProvider.getExpiration(accessToken);
         redisProvider.set(accessToken, "logout", expiration);
 
         return email;
@@ -89,14 +89,14 @@ public class UserService {
         String accessToken = token.getAccessToken();
         String refreshToken = token.getRefreshToken();
 
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        Authentication authentication = jwtProvider.getAuthentication(accessToken);
         String redisRefreshToken = redisProvider.get(authentication.getName());
 
         if (!refreshToken.equals(redisRefreshToken)) {
             throw new MalformedJwtException("");
         }
 
-        return jwtTokenProvider.generateToken(authentication);
+        return jwtProvider.generateToken(authentication);
     }
 
     public MyPageResponse getUserInfo(String email) {

@@ -4,11 +4,11 @@ import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
-import com.floney.floney.common.token.JwtTokenProvider;
+import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.config.UserFixture;
-import com.floney.floney.user.dto.MyPageResponse;
-import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -44,7 +44,7 @@ class UserServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock

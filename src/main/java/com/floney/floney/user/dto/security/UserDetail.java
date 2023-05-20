@@ -1,6 +1,6 @@
 package com.floney.floney.user.dto.security;
 
-import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.constant.Role;
 import java.util.Collection;
 import java.util.HashSet;

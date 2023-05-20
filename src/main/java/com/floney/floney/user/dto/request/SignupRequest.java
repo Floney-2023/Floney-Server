@@ -34,4 +34,5 @@ public class SignupRequest {
                 .provider(Provider.EMAIL)
                 .build();
     }
+
 }
