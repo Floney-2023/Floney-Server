@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,6 +24,18 @@ public class ErrorControllerAdvice {
         body.put("provider", exception.getProvider());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(body);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> notFoundUsername(UserNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> notFoundUser(UserNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(MailAddressException.class)
