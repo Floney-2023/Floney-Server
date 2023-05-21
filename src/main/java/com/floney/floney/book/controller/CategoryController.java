@@ -6,7 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class CategoryController {
 
     @GetMapping("/books/categories")
     public ResponseEntity<?> findAllBy(@RequestParam String bookKey,
-                                    @RequestParam String root) {
+                                       @RequestParam String root) {
         return new ResponseEntity<>(categoryService.findAllBy(root, bookKey), HttpStatus.ACCEPTED);
     }
 

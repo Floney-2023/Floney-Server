@@ -30,7 +30,7 @@ public class BookUser extends BaseEntity {
     private String profileImg;
 
     @Builder
-    private BookUser(User user, Book book,String profileImg) {
+    private BookUser(User user, Book book, String profileImg) {
         this.user = user;
         this.book = book;
         this.profileImg = profileImg;
@@ -44,7 +44,7 @@ public class BookUser extends BaseEntity {
             .build();
     }
 
-    public void delete(){
+    public void delete() {
         this.status = false;
     }
 

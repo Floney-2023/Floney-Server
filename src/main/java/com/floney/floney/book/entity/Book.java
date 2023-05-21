@@ -40,13 +40,14 @@ public class Book extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String bookKey;
 
+    @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean seeProfile;
 
     private Long initialAsset;
 
     private Long budget;
 
-
+    @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
     @Column(nullable = false, length = 10)
@@ -78,12 +79,12 @@ public class Book extends BaseEntity {
         }
     }
 
-    public void updateName(String requestName) {
+    public void updateName(String requestName){
         this.name = requestName;
     }
 
     public void isProvider(String email) {
-        if (!providerEmail.equals(email)) {
+        if(!providerEmail.equals(email)){
             throw new NoAuthorityException();
         }
     }

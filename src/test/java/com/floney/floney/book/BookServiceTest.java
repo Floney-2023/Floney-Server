@@ -45,10 +45,10 @@ public class BookServiceTest {
         Book testBook = BookFixture.createBookWith("1234");
 
         User testUser = UserFixture.createUser();
-        given(bookRepository.findBookByCode(CODE))
+        given(bookRepository.findBookByCodeAndStatus(CODE,true))
             .willReturn(Optional.ofNullable(testBook));
 
-        given(userRepository.findByEmail(EMAIL))
+        given(userRepository.findUserByEmailAndStatus(EMAIL,true))
             .willReturn(Optional.ofNullable(testUser));
 
         given(bookUserRepository.existBookUser(EMAIL, CODE))
@@ -62,7 +62,7 @@ public class BookServiceTest {
     @DisplayName("구독을 했다면, 참여한 가계부가 2이하일 시 가계부를 만든다")
     void subscribe_book_create() {
 
-        given(userRepository.findByEmail(EMAIL))
+        given(userRepository.findUserByEmailAndStatus(EMAIL,true))
             .willReturn(Optional.ofNullable(UserFixture.createUser()));
 
         given(bookRepository.save(ArgumentMatchers.any(Book.class)))
