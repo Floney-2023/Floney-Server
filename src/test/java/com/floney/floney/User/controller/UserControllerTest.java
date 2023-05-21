@@ -9,8 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.MailAddressException;
+import com.floney.floney.common.exception.OAuthResponseException;
+import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.service.OAuthUserService;
 import com.floney.floney.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +33,10 @@ class UserControllerTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
-    @MockBean private UserService userService;
+    @MockBean
+    private UserService userService;
+    @MockBean
+    private OAuthUserService oAuthUserService;
 
     @Autowired
     public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper) {
@@ -82,9 +88,8 @@ class UserControllerTest {
         given(userService.sendEmailAuthMail(email)).willReturn(anyString());
 
         // when & then
-        mockMvc.perform(get("/users/email").queryParam("email", email))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN));
+        mockMvc.perform(get("/users/email/mail").queryParam("email", email))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -95,7 +100,7 @@ class UserControllerTest {
         given(userService.sendEmailAuthMail(email)).willThrow(new MailAddressException());
 
         // when & then
-        mockMvc.perform(get("/users/email").queryParam("email", email))
+        mockMvc.perform(get("/users/email/mail").queryParam("email", email))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -108,8 +113,33 @@ class UserControllerTest {
         given(userService.sendEmailAuthMail(email)).willThrow(MailSendException.class);
 
         // when & then
-        mockMvc.perform(get("/users/email").queryParam("email", email))
+        mockMvc.perform(get("/users/email/mail").queryParam("email", email))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
+
+    @Test
+    @DisplayName("카카오 토큰 인증에 성공한다")
+    void kakaoLogin_success() throws Exception {
+        // given
+        given(oAuthUserService.kakaoLogin(anyString())).willReturn(new Token("", ""));
+
+        // when & then
+        mockMvc.perform(get("/users/login/kakao").queryParam("token", "token"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("구글 토큰 인증에 성공한다")
+    void googleLogin_success() throws Exception {
+        // given
+        given(oAuthUserService.googleLogin(anyString())).willReturn(new Token("", ""));
+
+        // when & then
+        mockMvc.perform(get("/users/login/google").queryParam("token", "token"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
 }

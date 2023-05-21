@@ -102,13 +102,13 @@ public class UserController {
     }
 
     @GetMapping("/login/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestParam String oAuthToken) {
-        return new ResponseEntity<>(oAuthUserService.kakaoLogin(oAuthToken), HttpStatus.OK);
+    public ResponseEntity<?> kakaoLogin(@RequestParam String token) {
+        return new ResponseEntity<>(oAuthUserService.kakaoLogin(token), HttpStatus.OK);
     }
 
     @GetMapping("/login/google")
-    public ResponseEntity<?> googleLogin(@RequestParam String oAuthToken) {
-        return new ResponseEntity<>(oAuthUserService.googleLogin(oAuthToken), HttpStatus.OK);
+    public ResponseEntity<?> googleLogin(@RequestParam String token) {
+        return new ResponseEntity<>(oAuthUserService.googleLogin(token), HttpStatus.OK);
     }
 
 }
