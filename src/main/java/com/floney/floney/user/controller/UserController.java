@@ -106,4 +106,9 @@ public class UserController {
         return new ResponseEntity<>(oAuthUserService.kakaoLogin(oAuthToken), HttpStatus.OK);
     }
 
+    @GetMapping("/login/google")
+    public ResponseEntity<?> googleLogin(@RequestParam String oAuthToken) {
+        return new ResponseEntity<>(oAuthUserService.googleLogin(oAuthToken), HttpStatus.OK);
+    }
+
 }

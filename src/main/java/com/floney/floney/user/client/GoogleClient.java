@@ -1,33 +1,30 @@
 package com.floney.floney.user.client;
 
 import com.floney.floney.common.exception.OAuthResponseException;
-import com.floney.floney.user.dto.response.KakaoUserResponse;
+import com.floney.floney.user.dto.response.GoogleUserResponse;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@Component
-public class KakaoClient implements ClientProxy {
+public class GoogleClient implements ClientProxy {
 
     @Override
     public String getEmail(String authToken) {
         URI uri = UriComponentsBuilder
-                .fromUriString("https://kapi.kakao.com")
-                .path("/v2/user/me")
-                .encode(StandardCharsets.UTF_8)
+                .fromUriString("https://oauth2.googleapis.com")
+                .path("/tokeninfo")
+                .queryParam("id_token", authToken)
                 .build().toUri();
 
         RestTemplate restTemplate = new RestTemplate();
-        KakaoUserResponse result = restTemplate.getForObject(uri, KakaoUserResponse.class);
+        GoogleUserResponse result = restTemplate.getForObject(uri, GoogleUserResponse.class);
 
         if(result == null) {
             throw new OAuthResponseException();
         }
         result.validate();
 
-        return result.getKakaoAccount().getEmail();
+        return result.getEmail();
     }
 
 }
