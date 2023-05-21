@@ -2,6 +2,7 @@ package com.floney.floney.User.service;
 
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.MailProvider;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.JwtProvider;
@@ -50,7 +51,7 @@ class UserServiceTest {
     @Mock
     private RedisProvider redisProvider;
     @Mock
-    private JavaMailSender javaMailSender;
+    private MailProvider mailProvider;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -62,6 +63,7 @@ class UserServiceTest {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .marketingAgree(user.isMarketingAgree())
+                .provider(user.getProvider())
                 .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
@@ -83,11 +85,12 @@ class UserServiceTest {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .marketingAgree(user.isMarketingAgree())
+                .provider(user.getProvider())
                 .build();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
-        assertThatThrownBy(() -> userService.signup(signupRequest))
+        assertThatThrownBy(() -> userService.validateIfNewUser(signupRequest.getEmail()))
                 .isInstanceOf(UserFoundException.class);
     }
 
