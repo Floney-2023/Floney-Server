@@ -45,7 +45,7 @@ public class BookUserRepositoryTest {
             .build();
 
         bookUserRepository.save(newBookUser);
-        BookUser find = bookUserRepository.findUserWith(savedUser.getNickname(), savedBook.getBookKey());
+        BookUser find = bookUserRepository.findUserWith(savedUser.getNickname(), savedBook.getBookKey()).get();
         Assertions.assertThat(find.getBook().getName())
             .isEqualTo(savedBook.getName());
     }

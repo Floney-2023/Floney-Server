@@ -9,6 +9,7 @@ import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFormatter;
 import com.floney.floney.common.exception.NotFoundBookException;
+import com.floney.floney.common.exception.NotFoundBookUserException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
-        return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)),bookLineRepository.totalExpenseByDay(parse(date),bookKey));
+        return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)), bookLineRepository.totalExpenseByDay(parse(date), bookKey));
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
@@ -95,11 +96,12 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookUser findBookUser(CreateLineRequest request) {
-        return bookUserRepository.findUserWith(request.getNickname(), request.getBookKey());
+        return bookUserRepository.findUserWith(request.getNickname(), request.getBookKey())
+            .orElseThrow(NotFoundBookUserException::new);
     }
 
     private Book findBook(CreateLineRequest request) {
-        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(),ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 

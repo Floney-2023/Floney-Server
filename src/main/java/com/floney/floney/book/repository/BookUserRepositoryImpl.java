@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
@@ -45,8 +46,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BookUser findUserWith(String nickName, String bookKey) {
-        return jpaQueryFactory
+    public Optional<BookUser> findUserWith(String nickName, String bookKey) {
+        return Optional.ofNullable(jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
             .innerJoin(bookUser.user, user)
@@ -55,7 +56,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .innerJoin(bookUser.book, book)
             .where(book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE))
-            .fetchOne();
+            .fetchOne());
     }
 
     @Override

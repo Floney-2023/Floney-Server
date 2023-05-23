@@ -7,12 +7,13 @@ import com.floney.floney.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookUserCustomRepository {
 
     void isMax(Book book);
 
-    BookUser findUserWith(String auth, String bookKey);
+    Optional<BookUser> findUserWith(String auth, String bookKey);
 
     List<MyBookInfo> findMyBooks(User user);
 
