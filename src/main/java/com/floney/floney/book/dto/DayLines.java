@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class DayLines {
 
-    private Long money;
-    private String img;
-    private List<String> category;
-    private AssetType assetType;
-    private String content;
+    private final Long money;
+    private final String img;
+    private final List<String> category;
+    private final AssetType assetType;
+    private final String content;
 
     @Builder
     public DayLines(Long money, String img, String content, List<String> category, AssetType assetType) {

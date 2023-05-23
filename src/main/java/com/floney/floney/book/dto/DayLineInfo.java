@@ -9,15 +9,15 @@ import java.util.List;
 
 @Getter
 public class DayLineInfo {
-    private Long money;
+    private final Long money;
 
-    private String content;
+    private final String content;
 
-    private AssetType assetType;
+    private final AssetType assetType;
 
-    private List<String> categories;
+    private final List<String> categories;
 
-    private String img;
+    private final String img;
 
     @Builder
     public DayLineInfo(Long money, String assetType, String content, List<String> categories, String img) {

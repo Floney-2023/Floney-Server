@@ -12,11 +12,11 @@ public class MonthLinesResponse {
 
     private static final int OUTCOME = 1;
 
-    private List<BookLineExpense> expenses;
+    private final List<BookLineExpense> expenses;
 
-    private Long totalIncome;
+    private final Long totalIncome;
 
-    private Long totalOutcome;
+    private final Long totalOutcome;
 
     @Builder
     public MonthLinesResponse(List<BookLineExpense> expenses, Long totalIncome, Long totalOutcome) {

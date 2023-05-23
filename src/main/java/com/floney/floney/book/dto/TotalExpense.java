@@ -10,8 +10,8 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class TotalExpense {
 
-    private Long money;
-    private AssetType assetType;
+    private final Long money;
+    private final AssetType assetType;
 
     @QueryProjection
     @Builder
