@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class EmailAuthenticationRequest {
+
     @NotNull private final String email;
     @NotNull private final String code;
 
@@ -14,4 +15,5 @@ public class EmailAuthenticationRequest {
         this.email = email;
         this.code = code;
     }
+
 }

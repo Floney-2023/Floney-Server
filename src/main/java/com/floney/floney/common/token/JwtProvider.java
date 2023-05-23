@@ -19,16 +19,16 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; // 60분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
     private final Key key;
     private final CustomUserDetailService customUserDetailService;
     private final RedisProvider redisProvider;
 
-    public JwtTokenProvider(@Value("${jwt.token.secret-key}") String secretKey,
-                            CustomUserDetailService customUserDetailService,
-                            RedisProvider redisProvider) {
+    public JwtProvider(@Value("${jwt.token.secret-key}") String secretKey,
+                       CustomUserDetailService customUserDetailService,
+                       RedisProvider redisProvider) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.customUserDetailService = customUserDetailService;
         this.redisProvider = redisProvider;

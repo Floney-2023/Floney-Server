@@ -2,13 +2,14 @@ package com.floney.floney.User.service;
 
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.MailProvider;
 import com.floney.floney.common.exception.UserFoundException;
 import com.floney.floney.common.exception.UserSignoutException;
-import com.floney.floney.common.token.JwtTokenProvider;
+import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.config.UserFixture;
-import com.floney.floney.user.dto.MyPageResponse;
-import com.floney.floney.user.dto.UserResponse;
+import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -44,13 +45,13 @@ class UserServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private RedisProvider redisProvider;
     @Mock
-    private JavaMailSender javaMailSender;
+    private MailProvider mailProvider;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -62,6 +63,7 @@ class UserServiceTest {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .marketingAgree(user.isMarketingAgree())
+                .provider(user.getProvider())
                 .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
@@ -83,11 +85,12 @@ class UserServiceTest {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .marketingAgree(user.isMarketingAgree())
+                .provider(user.getProvider())
                 .build();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
-        assertThatThrownBy(() -> userService.signup(signupRequest))
+        assertThatThrownBy(() -> userService.validateIfNewUser(signupRequest.getEmail()))
                 .isInstanceOf(UserFoundException.class);
     }
 
@@ -159,7 +162,7 @@ class UserServiceTest {
         int codeLength = 6;
 
         // when
-        String code = userService.sendAuthenticateEmail("email");
+        String code = userService.sendEmailAuthMail("email");
 
         // then
         assertThat(code.length()).isEqualTo(codeLength);

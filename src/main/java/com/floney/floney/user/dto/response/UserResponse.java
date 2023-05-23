@@ -1,8 +1,7 @@
-package com.floney.floney.user.dto;
+package com.floney.floney.user.dto.response;
 
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

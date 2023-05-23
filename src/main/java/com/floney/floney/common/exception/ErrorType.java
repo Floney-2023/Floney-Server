@@ -1,10 +1,12 @@
 package com.floney.floney.common.exception;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorType {
 
     USER_FOUND("U001", "이미 존재하는 유저입니다"),
@@ -20,6 +22,8 @@ public enum ErrorType {
     INVALID_PROVIDER("U011", "올바르지 않은 회원 유형입니다"),
     EMAIL_NOT_FOUND("U012", "이메일이 존재하지 않습니다"),
     INVALID_CODE("U013", "올바르지 않은 인증 코드입니다"),
+    INVALID_EMAIL("U014", "올바르지 않은 이메일입니다"),
+    INVALID_OAUTH_RESPONSE("U015", "인증서버에서 받은 응답이 올바르지 않습니다"),
 
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),

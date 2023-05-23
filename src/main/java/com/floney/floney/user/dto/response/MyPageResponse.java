@@ -1,4 +1,4 @@
-package com.floney.floney.user.dto;
+package com.floney.floney.user.dto.response;
 
 import com.floney.floney.book.dto.MyBookInfo;
 import lombok.*;

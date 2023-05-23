@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class LoginRequest {
+
     @NotNull private String email;
     @NotNull private String password;
 
