@@ -11,9 +11,9 @@ import java.time.LocalDate;
 @Getter
 @EqualsAndHashCode
 public class BookLineExpense {
-    private LocalDate date;
-    private Long money;
-    private AssetType assetType;
+    private final LocalDate date;
+    private final Long money;
+    private final AssetType assetType;
 
     @QueryProjection
     @Builder

@@ -30,7 +30,7 @@ public enum ErrorType {
     NOT_FOUND_CATEGORY("B003", "카테고리가 존재하지 않습니다"),
     OUT_OF_BUDGET("B004","자산 범위를 초과하였습니다"),
     NO_AUTHORITY("B005","가계부를 만든 사람만 삭제할 수 있습니다"),
-
+    NOT_FOUND_BOOK_USER ("B006","가계부 멤버를 찾을 수 없습니다"),
     NOT_SUBSCRIBE("S001","멤버쉽 전용 기능입니다"),
     LIMIT("S002","제공하지 않는 서비스입니다");
 

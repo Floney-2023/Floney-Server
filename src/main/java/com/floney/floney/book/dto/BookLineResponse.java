@@ -11,21 +11,21 @@ import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 @Getter
 public class BookLineResponse {
 
-    private Long money;
+    private final Long money;
 
-    private String flow;
+    private final String flow;
 
-    private String asset;
+    private final String asset;
 
-    private String line;
+    private final String line;
 
-    private LocalDate lineDate;
+    private final LocalDate lineDate;
 
-    private String description;
+    private final String description;
 
-    private Boolean except;
+    private final Boolean except;
 
-    private String nickname;
+    private final String nickname;
 
     @Builder
     private BookLineResponse(Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {

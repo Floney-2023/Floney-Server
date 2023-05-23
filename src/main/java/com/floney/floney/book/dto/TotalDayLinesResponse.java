@@ -6,8 +6,8 @@ import java.util.List;
 
 @Getter
 public class TotalDayLinesResponse {
-    private List<DayLines> dayLinesResponse;
-    private List<TotalExpense> totalExpense;
+    private final List<DayLines> dayLinesResponse;
+    private final List<TotalExpense> totalExpense;
 
     private TotalDayLinesResponse(List<DayLines> dayLinesResponse, List<TotalExpense> totalExpense) {
         this.dayLinesResponse = dayLinesResponse;

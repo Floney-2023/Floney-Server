@@ -73,7 +73,6 @@ public class BookServiceImpl implements BookService {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
-        bookUserRepository.existBookUser(email, code);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));
 

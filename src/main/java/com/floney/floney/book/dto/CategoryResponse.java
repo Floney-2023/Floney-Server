@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Getter
 public class CategoryResponse {
 
-    private String name;
+    private final String name;
 
     @Builder
     private CategoryResponse(String name) {
