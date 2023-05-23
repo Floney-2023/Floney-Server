@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-@Disabled
 public class CodeFactoryTest {
     @Test
     @DisplayName("랜덤 초대코드를 발행한다")
