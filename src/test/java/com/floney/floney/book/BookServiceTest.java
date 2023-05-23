@@ -51,9 +51,6 @@ public class BookServiceTest {
         given(userRepository.findUserByEmailAndStatus(EMAIL,true))
             .willReturn(Optional.ofNullable(testUser));
 
-        given(bookUserRepository.existBookUser(EMAIL, CODE))
-            .willReturn(Expressions.asBoolean(true).isTrue());
-
         assertThat(bookService.joinWithCode(EMAIL, codeJoinRequest()).getCode())
             .isEqualTo(bookResponse().getCode());
     }

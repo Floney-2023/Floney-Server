@@ -59,20 +59,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BooleanExpression existBookUser(String email, String code) {
-        return jpaQueryFactory
-            .select(bookUser)
-            .from(bookUser)
-            .innerJoin(bookUser.user, user)
-            .where(user.email.eq(email),
-                user.status.eq(ACTIVE))
-            .innerJoin(bookUser.book, book)
-            .where(book.code.eq(code),
-                book.status.eq(ACTIVE))
-            .exists();
-    }
-
-    @Override
     public List<MyBookInfo> findMyBooks(User user) {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)

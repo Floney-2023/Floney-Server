@@ -38,24 +38,18 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAllBy(String root, String bookKey) {
-        List<Category> categories = categoryRepository.findAllCategory(root,bookKey);
+        List<Category> categories = categoryRepository.findAllCategory(root, bookKey);
         return CategoryResponse.to(categories);
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey,ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 
     private Category findParent(String parent) {
         return categoryRepository.findByName(parent)
             .orElseThrow(NotFoundCategoryException::new);
-    }
-
-    private void isDuplicate(Category root, CreateCategoryRequest request) {
-        if (!categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())) {
-            //에러 던지기
-        }
     }
 
 }
