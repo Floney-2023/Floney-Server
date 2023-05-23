@@ -3,9 +3,11 @@ package com.floney.floney.user.client;
 import com.floney.floney.common.exception.OAuthResponseException;
 import com.floney.floney.user.dto.response.GoogleUserResponse;
 import java.net.URI;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Component
 public class GoogleClient implements ClientProxy {
 
     @Override
