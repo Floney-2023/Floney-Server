@@ -14,4 +14,10 @@ public class DateFormatterTest {
         assertThat(DateFormatter.getDate("2023-05-01").get("start")).isEqualTo("2023-05-01");
         assertThat(DateFormatter.getDate("2023-05-01").get("end")).isEqualTo("2023-05-31");
     }
+
+    @Test
+    @DisplayName("해당 달에 몇일까지 존재하는지 반환한다")
+    void month_length(){
+        assertThat(DateFormatter.countDays("2023-05-01")).isEqualTo(31);
+    }
 }

@@ -21,4 +21,10 @@ public class DateFormatter {
         dates.put(END, lastCurrentDate);
         return dates;
     }
+
+    public static int countDays(String findDate){
+        LocalDate date = LocalDate.parse(findDate, DateTimeFormatter.ISO_DATE);
+        YearMonth yearMonth = YearMonth.from(date);
+        return yearMonth.lengthOfMonth();
+    }
 }
