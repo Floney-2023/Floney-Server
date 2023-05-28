@@ -3,10 +3,12 @@ package com.floney.floney.book.util;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class DateFormatter {
+public class DateFactory {
 
     public static final String START = "start";
     public static final String END = "end";
@@ -22,9 +24,17 @@ public class DateFormatter {
         return dates;
     }
 
-    public static int countDays(String findDate){
-        LocalDate date = LocalDate.parse(findDate, DateTimeFormatter.ISO_DATE);
-        YearMonth yearMonth = YearMonth.from(date);
-        return yearMonth.lengthOfMonth();
+    public static List<LocalDate> generateDatStorage(String targetDate) {
+        Map<String,LocalDate> dates = getDate(targetDate);
+        List<LocalDate> dateList = new ArrayList<>();
+
+        LocalDate currentDate = dates.get(START);
+        while (!currentDate.isAfter(dates.get(END))) {
+            dateList.add(currentDate);
+            currentDate = currentDate.plusDays(1);
+        }
+
+        return dateList;
     }
 }
+
