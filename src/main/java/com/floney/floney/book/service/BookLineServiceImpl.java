@@ -21,8 +21,6 @@ import java.util.Map;
 
 import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 import static com.floney.floney.book.entity.BookLineCategory.of;
-import static com.floney.floney.book.util.DateFactory.END;
-import static com.floney.floney.book.util.DateFactory.START;
 import static java.time.LocalDate.parse;
 
 @Service
@@ -106,8 +104,8 @@ public class BookLineServiceImpl implements BookLineService {
         return bookLineRepository.dayIncomeAndOutcome(bookKey, dates);
     }
 
-    private List<TotalExpense> totalExpense(String bookKey, Map<String, LocalDate> dates) {
-        return bookLineRepository.totalExpense(bookKey, dates);
+    private Map<String, Long> totalExpense(String bookKey, Map<String, LocalDate> dates) {
+        return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
 
 

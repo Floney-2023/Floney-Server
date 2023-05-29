@@ -140,7 +140,7 @@ public class BookLineRepositoryTest {
             .assetType("지출")
             .build();
 
-        Assertions.assertThat(bookLineRepository.totalExpense(BOOK_KEY, dates))
+        Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
             .isEqualTo(Arrays.asList(income, outcome));
 
     }

@@ -17,6 +17,7 @@ import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.book.util.DateFactory.END;
 import static com.floney.floney.book.util.DateFactory.START;
+import static com.querydsl.core.group.GroupBy.groupBy;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,18 +27,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     private static final boolean ACTIVE = true;
 
     @Override
-    public List<TotalExpense> totalExpense(String bookKey, Map<String, LocalDate> dates) {
-        return jpaQueryFactory.select(
-                new QTotalExpense(
-                    bookLine.money.sum(),
-                    bookLineCategory.name
-                )
-            )
+    public Map<String, Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates) {
+        return jpaQueryFactory
             .from(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
-                bookLine.lineDate.between(dates.get(START),dates.get(END)),
+                bookLine.lineDate.between(dates.get(START), dates.get(END)),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE),
@@ -45,7 +41,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             )
             .groupBy(bookLineCategory.name)
             .orderBy(bookLineCategory.name.asc())
-            .fetch();
+            .transform(groupBy(bookLineCategory.name).as(bookLine.money.sum()));
     }
 
     @Override

@@ -18,10 +18,10 @@ public class DateFactoryTest {
 
 
     @Test
-    @DisplayName("날짜를 담은 리스트를 반환한다")
+    @DisplayName("월의 일수만큼 초기화된 총 수입,총 지출을 담은 리스트를 반환한다")
     void date_storage(){
         Assertions.assertThat(DateFactory.initDates("2023-05-01")
                 .size())
-            .isEqualTo(31);
+            .isEqualTo(62);
     }
 }

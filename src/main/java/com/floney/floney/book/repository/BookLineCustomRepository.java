@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface BookLineCustomRepository{
 
-    List<TotalExpense> totalExpense(String bookKey,  Map<String, LocalDate> dates);
+    Map<String,Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates);
 
     List<DayLine> allLinesByDay(LocalDate date, String bookKey);
 
