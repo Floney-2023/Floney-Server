@@ -129,19 +129,11 @@ public class BookLineRepositoryTest {
         Map<String, LocalDate> dates = new HashMap<>();
         dates.put(START, start);
         dates.put(END, end);
-
-        TotalExpense income = TotalExpense.builder()
-            .money(1000L)
-            .assetType("수입")
-            .build();
-
-        TotalExpense outcome = TotalExpense.builder()
-            .money(1000L)
-            .assetType("지출")
-            .build();
-
+        Map<String, Long> totals = new HashMap<>();
+        totals.put("수입", 1000L);
+        totals.put("지출", 1000L);
         Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
-            .isEqualTo(Arrays.asList(income, outcome));
+            .isEqualTo(totals);
 
     }
 
