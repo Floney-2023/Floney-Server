@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class DateFormatterTest {
+public class DateFactoryTest {
 
     @Test
     @DisplayName("YYYY-MM이 들어오면 해당 월의 첫날과 마지막날을 반환한다")
@@ -20,8 +20,8 @@ public class DateFormatterTest {
     @Test
     @DisplayName("날짜를 담은 리스트를 반환한다")
     void date_storage(){
-        Assertions.assertThat(DateFactory.generateDatStorage("2023-05-01")
-                .toString())
+        Assertions.assertThat(DateFactory.initDates("2023-05-01")
+                .size())
             .isEqualTo(31);
     }
 }
