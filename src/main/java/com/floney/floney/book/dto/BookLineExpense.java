@@ -15,12 +15,23 @@ public class BookLineExpense {
     private final Long money;
     private final AssetType assetType;
 
+
+    public BookLineExpense(LocalDate date, AssetType assetType) {
+        this.date = date;
+        this.money = 0L;
+        this.assetType = assetType;
+    }
+
     @QueryProjection
     @Builder
     public BookLineExpense(LocalDate date, Long money, String assetType) {
         this.date = date;
         this.money = money;
         this.assetType = AssetType.find(assetType);
+    }
+
+    public static BookLineExpense initExpense(LocalDate targetDate, AssetType type) {
+        return new BookLineExpense(targetDate,type);
     }
 
 

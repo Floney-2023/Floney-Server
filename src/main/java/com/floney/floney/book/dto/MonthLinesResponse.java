@@ -1,9 +1,11 @@
 package com.floney.floney.book.dto;
 
+import com.floney.floney.book.util.DateFactory;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class MonthLinesResponse {
@@ -25,11 +27,21 @@ public class MonthLinesResponse {
         this.totalOutcome = totalOutcome;
     }
 
-    public static MonthLinesResponse of(List<BookLineExpense> expenses, List<TotalExpense> totalExpenses) {
+    public static MonthLinesResponse of(String monthDate, List<BookLineExpense> expenses, List<TotalExpense> totalExpenses) {
         return MonthLinesResponse.builder()
-            .expenses(expenses)
+            .expenses(reflectDB(monthDate, expenses))
             .totalIncome(totalExpenses.get(INCOME).getMoney())
             .totalOutcome(totalExpenses.get(OUTCOME).getMoney())
             .build();
+    }
+
+    public static List<BookLineExpense> reflectDB(String monthDate, List<BookLineExpense> expenses) {
+        Map<MonthKey, BookLineExpense> dates = DateFactory.initDates(monthDate);
+        for (BookLineExpense dbExpense : expenses) {
+            dates.replace(MonthKey.toMonthKey(dbExpense), dbExpense);
+        }
+        return dates.values()
+            .stream()
+            .toList();
     }
 }
