@@ -51,6 +51,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, updatable = false, length = 10)
     private String provider;
 
+    @Column(updatable = false, unique = true)
+    private Long providerId;
+
     @Builder(builderMethodName = "signupBuilder")
     private User(String email, String nickname, String password, boolean marketingAgree, Provider provider) {
         this.email = email;
@@ -61,9 +64,19 @@ public class User extends BaseEntity {
         this.provider = provider.getName();
     }
 
+    @Builder(builderMethodName = "oAuthBuilder")
+    private User(String email, String nickname, boolean marketingAgree, Provider provider, Long providerId) {
+        this.email = email;
+        this.nickname = nickname;
+        this.marketingAgree = marketingAgree;
+        this.lastAdTime = LocalDateTime.now();
+        this.provider = provider.getName();
+        this.providerId = providerId;
+    }
+
     @Builder
     private User(String email, String nickname, String password, String profileImg, boolean marketingAgree,
-                LocalDateTime lastAdTime, boolean subscribe, Provider provider) {
+                 LocalDateTime lastAdTime, boolean subscribe, Provider provider, Long providerId) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -72,6 +85,7 @@ public class User extends BaseEntity {
         this.lastAdTime = lastAdTime;
         this.subscribe = subscribe;
         this.provider = provider.getName();
+        this.providerId = providerId;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -90,10 +104,12 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public boolean isSubscribe(){
+    public boolean isSubscribe() {
         return subscribe;
     }
+
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
+
 }

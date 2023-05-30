@@ -36,14 +36,4 @@ public class KakaoUserResponse {
         private String nickname;
     }
 
-    public void validate() {
-        try {
-            if (!kakaoAccount.isEmailValid || !kakaoAccount.isEmailVerified) {
-                throw new EmailNotValidException();
-            }
-        } catch (NullPointerException exception) {
-            throw new OAuthResponseException();
-        }
-    }
-
 }
