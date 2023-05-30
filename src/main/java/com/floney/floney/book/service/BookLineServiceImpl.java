@@ -7,7 +7,7 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.util.DateFormatter;
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundBookUserException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
@@ -21,8 +21,6 @@ import java.util.Map;
 
 import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 import static com.floney.floney.book.entity.BookLineCategory.of;
-import static com.floney.floney.book.util.DateFormatter.END;
-import static com.floney.floney.book.util.DateFormatter.START;
 import static java.time.LocalDate.parse;
 
 @Service
@@ -59,12 +57,9 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public MonthLinesResponse showByMonth(String bookKey, String date) {
-        Map<String, LocalDate> dates = DateFormatter.getDate(date);
-        LocalDate start = dates.get(START);
-        LocalDate end = dates.get(END);
-
-        return MonthLinesResponse.of(daysExpense(bookKey, start, end)
-            , totalExpense(bookKey, start, end));
+        Map<String, LocalDate> dates = DateFactory.getDate(date);
+        return MonthLinesResponse.of(date, daysExpense(bookKey, dates)
+            , totalExpense(bookKey, dates));
     }
 
     @Override
@@ -105,12 +100,12 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookException::new);
     }
 
-    private List<BookLineExpense> daysExpense(String bookKey, LocalDate start, LocalDate end) {
-        return bookLineRepository.dayIncomeAndOutcome(bookKey, start, end);
+    private List<BookLineExpense> daysExpense(String bookKey, Map<String, LocalDate> dates) {
+        return bookLineRepository.dayIncomeAndOutcome(bookKey, dates);
     }
 
-    private List<TotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end) {
-        return bookLineRepository.totalExpense(bookKey, start, end);
+    private Map<String, Long> totalExpense(String bookKey, Map<String, LocalDate> dates) {
+        return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
 
 
