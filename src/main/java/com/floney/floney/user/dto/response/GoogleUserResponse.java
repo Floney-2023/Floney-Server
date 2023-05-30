@@ -14,14 +14,9 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GoogleUserResponse {
 
+    private Long sub;
     private String email;
     private boolean emailVerified;
     private String name;
-
-    public void validate() {
-        if (!emailVerified) {
-            throw new EmailNotValidException();
-        }
-    }
 
 }

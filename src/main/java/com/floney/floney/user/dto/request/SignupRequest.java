@@ -36,4 +36,14 @@ public class SignupRequest {
                 .build();
     }
 
+    public User to(Long providerId) {
+        return User.oAuthBuilder()
+                .email(email)
+                .nickname(nickname)
+                .marketingAgree(marketingAgree)
+                .provider(Provider.findByName(provider))
+                .providerId(providerId)
+                .build();
+    }
+
 }

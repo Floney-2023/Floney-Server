@@ -4,7 +4,6 @@ import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
-import com.floney.floney.user.service.OAuthUserService;
 import com.floney.floney.user.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final OAuthUserService oAuthUserService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest signupRequest) {
@@ -93,22 +91,6 @@ public class UserController {
     @GetMapping("/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal UserDetails userDetail) {
         return new ResponseEntity<>(userService.getUserInfo(userDetail.getUsername()), HttpStatus.OK);
-    }
-
-    @GetMapping("/email")
-    public ResponseEntity<?> validateIfNewUser(@RequestParam String email) {
-        userService.validateIfNewUser(email);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/login/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestParam String token) {
-        return new ResponseEntity<>(oAuthUserService.kakaoLogin(token), HttpStatus.OK);
-    }
-
-    @GetMapping("/login/google")
-    public ResponseEntity<?> googleLogin(@RequestParam String token) {
-        return new ResponseEntity<>(oAuthUserService.googleLogin(token), HttpStatus.OK);
     }
 
 }
