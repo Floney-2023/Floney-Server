@@ -1,26 +1,21 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.book.dto.MyBookInfo;
-import com.floney.floney.book.repository.BookUserCustomRepository;
+import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.MailProvider;
-import com.floney.floney.common.exception.CodeNotSameException;
-import com.floney.floney.common.exception.EmailNotFoundException;
-import com.floney.floney.common.exception.UserFoundException;
-import com.floney.floney.common.exception.UserNotFoundException;
-import com.floney.floney.common.exception.UserSignoutException;
+import com.floney.floney.common.exception.*;
 import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.common.token.dto.Token;
-import com.floney.floney.user.dto.response.MyPageResponse;
-import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
-import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +24,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -40,11 +38,11 @@ public class UserService {
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
-    private final BookUserCustomRepository bookUserRepository;
+    private final BookUserRepository bookUserRepository;
 
     public Token login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
 
         return jwtProvider.generateToken(authentication);
@@ -122,6 +120,14 @@ public class UserService {
     public void updateProfileImg(String profileImg, String email) {
         User user = loadUserByEmail(email);
         user.updateProfileImg(profileImg);
+        userRepository.save(user);
+
+        BookUser bookUser = bookUserRepository.findByUser(user)
+            .orElse(null);
+        if (bookUser != null) {
+            bookUser.updateProfileImg(profileImg);
+            bookUserRepository.save(bookUser);
+        }
     }
 
     public String sendEmailAuthMail(String email) {
@@ -163,7 +169,7 @@ public class UserService {
         if (!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
             throw new EmailNotFoundException();
         } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
-                .equals(emailAuthenticationRequest.getCode())) {
+            .equals(emailAuthenticationRequest.getCode())) {
             throw new CodeNotSameException();
         }
     }
