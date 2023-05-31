@@ -27,4 +27,17 @@ public class UserFixture {
                 .provider(Provider.EMAIL)
                 .build();
     }
+
+    public static User createUser2() {
+        return User.builder()
+            .nickname("floney")
+            .email("floney2@naver.com")
+            .password("1234")
+            .profileImg("img")
+            .subscribe(false)
+            .marketingAgree(true)
+            .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
+            .provider(Provider.EMAIL)
+            .build();
+    }
 }
