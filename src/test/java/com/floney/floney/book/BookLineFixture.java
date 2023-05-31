@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.BookLineExpense;
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.entity.*;
 
@@ -55,5 +56,13 @@ public class BookLineFixture {
             .build();
 
         return bookline;
+    }
+
+    public static BookLineExpense createBookLineExpense() {
+        return BookLineExpense.builder()
+            .assetType("수입")
+            .date(LOCAL_DATE)
+            .money(1000L)
+            .build();
     }
 }

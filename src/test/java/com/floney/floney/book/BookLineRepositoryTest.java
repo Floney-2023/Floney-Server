@@ -25,11 +25,15 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.floney.floney.book.BookFixture.BOOK_KEY;
 import static com.floney.floney.book.BookFixture.createBookUser;
 import static com.floney.floney.book.BookLineFixture.*;
 import static com.floney.floney.book.CategoryFixture.*;
+import static com.floney.floney.book.util.DateFactory.END;
+import static com.floney.floney.book.util.DateFactory.START;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -83,6 +87,10 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 21);
         LocalDate end = LOCAL_DATE;
 
+        Map<String, LocalDate> dates = new HashMap<>();
+        dates.put(START, start);
+        dates.put(END, end);
+
         BookLineExpense income = BookLineExpense.builder()
             .money(1000L)
             .assetType("수입")
@@ -95,7 +103,7 @@ public class BookLineRepositoryTest {
             .date(LOCAL_DATE)
             .build();
 
-        Assertions.assertThat(bookLineRepository.dayIncomeAndOutcome(BOOK_KEY, start, end))
+        Assertions.assertThat(bookLineRepository.dayIncomeAndOutcome(BOOK_KEY, dates))
             .isEqualTo(Arrays.asList(income, outcome));
 
     }
@@ -118,18 +126,14 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 1);
         LocalDate end = LOCAL_DATE;
 
-        TotalExpense income = TotalExpense.builder()
-            .money(1000L)
-            .assetType("수입")
-            .build();
-
-        TotalExpense outcome = TotalExpense.builder()
-            .money(1000L)
-            .assetType("지출")
-            .build();
-
-        Assertions.assertThat(bookLineRepository.totalExpense(BOOK_KEY, start, end))
-            .isEqualTo(Arrays.asList(income, outcome));
+        Map<String, LocalDate> dates = new HashMap<>();
+        dates.put(START, start);
+        dates.put(END, end);
+        Map<String, Long> totals = new HashMap<>();
+        totals.put("수입", 1000L);
+        totals.put("지출", 1000L);
+        Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
+            .isEqualTo(totals);
 
     }
 
@@ -160,7 +164,7 @@ public class BookLineRepositoryTest {
             .assetType("지출")
             .build();
 
-        Assertions.assertThat(bookLineRepository.totalExpenseByDay(target,BOOK_KEY))
+        Assertions.assertThat(bookLineRepository.totalExpenseByDay(target, BOOK_KEY))
             .isEqualTo(Arrays.asList(income, outcome));
     }
 

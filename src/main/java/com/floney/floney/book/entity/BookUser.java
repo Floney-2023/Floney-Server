@@ -51,4 +51,8 @@ public class BookUser extends BaseEntity {
     public String getNickName() {
         return this.user.getNickname();
     }
+
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
 }

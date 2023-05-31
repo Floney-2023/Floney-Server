@@ -6,14 +6,15 @@ import com.floney.floney.book.dto.DayLine;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface BookLineCustomRepository{
 
-    List<TotalExpense> totalExpense(String bookKey, LocalDate start, LocalDate end);
+    Map<String,Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates);
 
     List<DayLine> allLinesByDay(LocalDate date, String bookKey);
 
     List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey);
 
-    List<BookLineExpense> dayIncomeAndOutcome(String bookKey, LocalDate start, LocalDate end);
+    List<BookLineExpense> dayIncomeAndOutcome(String bookKey, Map<String, LocalDate> dates);
 }
