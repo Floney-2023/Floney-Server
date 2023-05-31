@@ -35,11 +35,15 @@ public class OurBookUser {
     }
 
 
-    public void isProvider(String providerEmail) {
+    public void checkRole(String providerEmail) {
         if (Objects.equals(this.email, providerEmail)) {
             this.role = PROVIDER;
         } else {
             this.role = MEMBER;
         }
+    }
+
+    public void isMyAccount(String email) {
+        this.isMe = Objects.equals(this.email, email);
     }
 }
