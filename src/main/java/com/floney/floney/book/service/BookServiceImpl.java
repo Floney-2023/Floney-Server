@@ -1,9 +1,6 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.BookNameChangeRequest;
-import com.floney.floney.book.dto.CodeJoinRequest;
-import com.floney.floney.book.dto.CreateBookRequest;
-import com.floney.floney.book.dto.CreateBookResponse;
+import com.floney.floney.book.dto.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
@@ -17,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -100,6 +99,12 @@ public class BookServiceImpl implements BookService {
         bookUserRepository.save(owner);
     }
 
+    @Override
+    public OurBookInfo getBookInfo(String bookKey, String myEmail) {
+        List<OurBookUser> bookUsers = bookUserRepository.findAllUser(bookKey);
+        return OurBookInfo.of(findBook(bookKey), bookUsers, myEmail);
+    }
+
     private User findUser(String email) {
         return userRepository.findUserByEmailAndStatus(email, ACTIVE)
             .orElseThrow(() -> new UsernameNotFoundException(email));
@@ -109,6 +114,4 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
-
-
 }

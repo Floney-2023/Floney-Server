@@ -51,7 +51,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return jpaQueryFactory.select(
                 new QOurBookUser(
                     user.nickname,
-                    user.profileImg
+                    user.profileImg,
+                    user.email
                 ))
             .from(bookUser)
             .innerJoin(bookUser.book, book)

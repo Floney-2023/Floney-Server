@@ -2,12 +2,14 @@ package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static com.floney.floney.book.util.DateFactory.formatToDate;
 
+@Getter
 public class OurBookInfo {
     private String bookImg;
     private String bookName;
@@ -16,16 +18,16 @@ public class OurBookInfo {
     private List<OurBookUser> ourBookUsers;
 
     @Builder
-    public OurBookInfo(String bookImg, String bookName, LocalDate startDay,List<OurBookUser> bookUsers) {
+    public OurBookInfo(String bookImg, String bookName, LocalDate startDay, List<OurBookUser> bookUsers) {
         this.bookImg = bookImg;
         this.bookName = bookName;
         this.startDay = startDay;
         this.ourBookUsers = bookUsers;
     }
 
-    public static OurBookInfo of(Book book, List<OurBookUser> bookUsers,String myEmail) {
-        checkRole(book,bookUsers);
-        iSMyAccount(bookUsers,myEmail);
+    public static OurBookInfo of(Book book, List<OurBookUser> bookUsers, String myEmail) {
+        checkRole(book, bookUsers);
+        iSMyAccount(bookUsers, myEmail);
 
         return OurBookInfo.builder()
             .bookImg(book.getProfileImg())
@@ -35,14 +37,14 @@ public class OurBookInfo {
             .build();
     }
 
-    private static void checkRole(Book book,List<OurBookUser> bookUsers){
-        for(OurBookUser bookUser : bookUsers) {
+    private static void checkRole(Book book, List<OurBookUser> bookUsers) {
+        for (OurBookUser bookUser : bookUsers) {
             bookUser.checkRole(book.getProviderEmail());
         }
     }
 
-    private static void iSMyAccount(List<OurBookUser> bookUsers,String myEmail){
-        for(OurBookUser bookUser : bookUsers) {
+    private static void iSMyAccount(List<OurBookUser> bookUsers, String myEmail) {
+        for (OurBookUser bookUser : bookUsers) {
             bookUser.isMyAccount(myEmail);
         }
     }
