@@ -30,7 +30,7 @@ public class UserResponse {
                 .email(entity.getEmail())
                 .password(entity.getPassword())
                 .profileImg(entity.getProfileImg())
-                .marketingAgree(entity.isMarketingAgree())
+                .marketingAgree(entity.getMarketingAgree())
                 .subscribe(entity.isSubscribe())
                 .lastAdTime(entity.getLastAdTime())
                 .provider(Provider.findByName(entity.getProvider()))

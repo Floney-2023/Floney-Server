@@ -62,8 +62,7 @@ class UserServiceTest {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .marketingAgree(user.isMarketingAgree())
-                .provider(user.getProvider())
+                .marketingAgree(user.getMarketingAgree())
                 .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
@@ -84,8 +83,7 @@ class UserServiceTest {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .marketingAgree(user.isMarketingAgree())
-                .provider(user.getProvider())
+                .marketingAgree(user.getMarketingAgree())
                 .build();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
