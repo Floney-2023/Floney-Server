@@ -43,7 +43,7 @@ public class User extends BaseEntity {
     private String profileImg;
 
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    private boolean marketingAgree;
+    private Boolean marketingAgree;
 
     @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)

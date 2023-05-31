@@ -4,6 +4,7 @@ import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.client.GoogleClient;
+import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -32,7 +33,7 @@ public class GoogleUserService implements OAuthUserService {
     @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
         Long providerId = getProviderId(oAuthToken);
-        userRepository.save(request.to(providerId));
+        userRepository.save(request.to(Provider.GOOGLE.getName(), providerId));
     }
 
     @Override
@@ -41,7 +42,7 @@ public class GoogleUserService implements OAuthUserService {
 
         User user = userRepository.findByProviderId(providerId).orElseThrow(UserNotFoundException::new);
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), null)
+                new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
         );
 
         return jwtProvider.generateToken(authentication);
