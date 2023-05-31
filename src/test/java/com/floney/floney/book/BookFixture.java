@@ -73,4 +73,12 @@ public class BookFixture {
             .build();
     }
 
+    public static OurBookUser createOurBookUser(){
+        return OurBookUser.builder()
+            .name(NAME)
+            .profileImg(URL)
+            .email(EMAIL)
+            .build();
+    }
+
 }
