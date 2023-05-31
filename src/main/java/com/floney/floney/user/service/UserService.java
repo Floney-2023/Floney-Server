@@ -159,11 +159,11 @@ public class UserService {
         }
     }
 
-    public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
-        if (!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
+    public void authenticateEmail(EmailAuthenticationRequest request) {
+        if (!redisProvider.hasKey(request.getEmail())) {
             throw new EmailNotFoundException();
-        } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
-                .equals(emailAuthenticationRequest.getCode())) {
+        } else if (!redisProvider.get(request.getEmail())
+                .equals(request.getCode())) {
             throw new CodeNotSameException();
         }
     }

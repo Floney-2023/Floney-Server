@@ -4,7 +4,6 @@ import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.dto.Token;
 import com.floney.floney.user.client.GoogleClient;
-import com.floney.floney.user.client.KakaoClient;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -13,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +29,7 @@ public class GoogleUserService implements OAuthUserService {
     }
 
     @Override
+    @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
         Long providerId = getProviderId(oAuthToken);
         userRepository.save(request.to(providerId));

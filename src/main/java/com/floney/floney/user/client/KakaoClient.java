@@ -5,6 +5,10 @@ import com.floney.floney.user.dto.response.KakaoUserResponse;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import lombok.Getter;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,16 +29,16 @@ public class KakaoClient implements ClientProxy {
                 .encode(StandardCharsets.UTF_8)
                 .build().toUri();
 
+        HttpHeaders header = new HttpHeaders();
+        header.set("Authorization", "Bearer ".concat(authToken));
+        HttpEntity<String> request = new HttpEntity<>(header);
+
         RestTemplate restTemplate = new RestTemplate();
-        KakaoUserResponse result = restTemplate.getForObject(uri, KakaoUserResponse.class);
+        ResponseEntity<KakaoUserResponse> result = restTemplate.exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
 
-        if(result == null) {
-            throw new OAuthResponseException();
-        }
-
-        this.id = result.getId();
-        this.email = result.getKakaoAccount().getEmail();
-        this.nickname = result.getKakaoAccount().getProfile().getNickname();
+        this.id = result.getBody().getId();
+        this.email = result.getBody().getKakaoAccount().getEmail();
+        this.nickname = result.getBody().getKakaoAccount().getProfile().getNickname();
 
     }
 

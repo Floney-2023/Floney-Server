@@ -27,21 +27,21 @@ public class SignupRequest {
     }
 
     public User to() {
-        return User.signupBuilder()
+        return User.builder()
                 .email(email)
                 .password(password)
                 .nickname(nickname)
                 .marketingAgree(marketingAgree)
-                .provider(Provider.findByName(provider))
+                .provider(provider)
                 .build();
     }
 
     public User to(Long providerId) {
-        return User.oAuthBuilder()
+        return User.builder()
                 .email(email)
                 .nickname(nickname)
                 .marketingAgree(marketingAgree)
-                .provider(Provider.findByName(provider))
+                .provider(provider)
                 .providerId(providerId)
                 .build();
     }

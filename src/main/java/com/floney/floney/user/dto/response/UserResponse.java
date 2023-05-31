@@ -47,7 +47,7 @@ public class UserResponse {
                 .marketingAgree(marketingAgree)
                 .subscribe(subscribe)
                 .lastAdTime(lastAdTime)
-                .provider(provider)
+                .provider(provider.getName())
                 .build();
     }
 }
