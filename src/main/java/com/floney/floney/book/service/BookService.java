@@ -1,6 +1,7 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.*;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface BookService {
 
@@ -9,7 +10,7 @@ public interface BookService {
     CreateBookResponse addBook(String email, CreateBookRequest request);
 
     CreateBookResponse joinWithCode(String email, CodeJoinRequest code);
-    
+
     void changeBookName(BookNameChangeRequest request);
 
     void deleteBook(String email, String bookKey);
@@ -18,4 +19,6 @@ public interface BookService {
 
     void updateBookImg(UpdateBookImgRequest request);
 
+    @Transactional
+    void updateSeeProfile(SeeProfileRequest request);
 }

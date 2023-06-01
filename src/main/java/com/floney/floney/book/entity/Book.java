@@ -97,4 +97,8 @@ public class Book extends BaseEntity {
     public void updateImg(UpdateBookImgRequest request) {
         this.bookImg = request.getNewUrl();
     }
+
+    public void changeSeeProfile(boolean status) {
+        this.seeProfile = status;
+    }
 }

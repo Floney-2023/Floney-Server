@@ -110,9 +110,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void updateBookImg(UpdateBookImgRequest request){
+    public void updateBookImg(UpdateBookImgRequest request) {
         Book savedBook = findBook(request.getBookKey());
         savedBook.updateImg(request);
+        bookRepository.save(savedBook);
+    }
+
+    @Override
+    @Transactional
+    public void updateSeeProfile(SeeProfileRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.changeSeeProfile(request.isSeeProfileStatus());
         bookRepository.save(savedBook);
     }
 

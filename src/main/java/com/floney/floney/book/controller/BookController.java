@@ -78,10 +78,15 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/info/seeProfile")
+    public ResponseEntity<?> changeSeeProfile(@RequestBody SeeProfileRequest request) {
+        bookService.updateSeeProfile(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping("/lines/delete")
     public ResponseEntity<?> deleteAll(String bookKey) {
         bookLineService.deleteAllLine(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }
