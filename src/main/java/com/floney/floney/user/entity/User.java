@@ -58,7 +58,7 @@ public class User extends BaseEntity {
     private String provider;
 
     @Column(updatable = false, unique = true)
-    private Long providerId;
+    private String providerId;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);

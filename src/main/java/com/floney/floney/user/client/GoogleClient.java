@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class GoogleClient implements ClientProxy {
 
-    private Long id;
+    private String id;
 
     @Override
     public void init(String authToken) {
@@ -24,19 +24,14 @@ public class GoogleClient implements ClientProxy {
                 .queryParam("id_token", authToken)
                 .build().toUri();
 
-        RestTemplate restTemplate = new RestTemplate();
-        GoogleUserResponse result;
         try {
-            result = restTemplate.getForObject(uri, GoogleUserResponse.class);
+            GoogleUserResponse result = createRequest().getForObject(uri, GoogleUserResponse.class);
+            this.id = result.getSub();
         } catch (HttpClientErrorException.BadRequest exception) {
             throw new OAuthTokenNotValidException();
-        }
-
-        if(result == null) {
+        } catch (NullPointerException exception) {
             throw new OAuthResponseException();
         }
-
-        this.id = Long.valueOf(result.getSub());
 
     }
 

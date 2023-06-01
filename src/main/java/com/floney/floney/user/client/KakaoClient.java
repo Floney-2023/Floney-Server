@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class KakaoClient implements ClientProxy {
 
-    private Long id;
+    private String id;
 
     @Override
     public void init(String authToken) {
@@ -33,15 +33,15 @@ public class KakaoClient implements ClientProxy {
         header.set("Authorization", "Bearer ".concat(authToken));
         HttpEntity<String> request = new HttpEntity<>(header);
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<KakaoUserResponse> result;
-        try{
-            result = restTemplate.exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
+        try {
+            ResponseEntity<KakaoUserResponse> result = createRequest()
+                    .exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
+            this.id = result.getBody().getId().toString();
         } catch (HttpClientErrorException.Unauthorized exception) {
             throw new OAuthTokenNotValidException();
+        } catch (NullPointerException exception) {
+            throw new OAuthResponseException();
         }
-
-        this.id = result.getBody().getId();
 
     }
 

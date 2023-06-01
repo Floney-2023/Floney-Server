@@ -32,13 +32,13 @@ public class KakaoUserService implements OAuthUserService {
     @Override
     @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
-        Long providerId = getProviderId(oAuthToken);
+        String providerId = getProviderId(oAuthToken);
         userRepository.save(request.to(Provider.KAKAO.getName(), providerId));
     }
 
     @Override
     public Token login(String oAuthToken) {
-        Long providerId = getProviderId(oAuthToken);
+        String providerId = getProviderId(oAuthToken);
 
         User user = userRepository.findByProviderId(providerId).orElseThrow(UserNotFoundException::new);
         Authentication authentication = authenticationManager.authenticate(
@@ -48,7 +48,7 @@ public class KakaoUserService implements OAuthUserService {
         return jwtProvider.generateToken(authentication);
     }
 
-    private Long getProviderId(String oAuthToken) {
+    private String getProviderId(String oAuthToken) {
         kakaoClient.init(oAuthToken);
         return kakaoClient.getId();
     }
