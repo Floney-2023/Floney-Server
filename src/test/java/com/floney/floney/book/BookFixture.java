@@ -19,14 +19,14 @@ public class BookFixture {
     public static CreateBookRequest createBookRequest() {
         return CreateBookRequest.builder()
             .name(NAME)
-            .profileImg(URL)
+            .bookImg(URL)
             .build();
     }
 
     public static Book createBookWith(String bookKey) {
         return Book.builder()
             .name(NAME)
-            .profileImg(URL)
+            .bookImg(URL)
             .bookKey(bookKey)
             .budget(DEFAULT_VALUE)
             .owner(EMAIL)
@@ -42,7 +42,7 @@ public class BookFixture {
     public static Book createBook() {
         return Book.builder()
             .name(NAME)
-            .profileImg(URL)
+            .bookImg(URL)
             .bookKey(BOOK_KEY)
             .budget(DEFAULT_VALUE)
             .owner(EMAIL)

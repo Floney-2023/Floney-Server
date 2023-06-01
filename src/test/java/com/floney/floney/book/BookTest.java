@@ -26,7 +26,7 @@ public class BookTest {
     void update_img(){
         Book book = createBook();
         book.updateImg(updateBookImgRequest());
-        Assertions.assertThat(book.getProfileImg())
+        Assertions.assertThat(book.getBookImg())
             .isEqualTo(UPDATE_URL);
     }
 }
