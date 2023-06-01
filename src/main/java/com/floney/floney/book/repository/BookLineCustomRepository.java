@@ -17,4 +17,6 @@ public interface BookLineCustomRepository{
     List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey);
 
     List<BookLineExpense> dayIncomeAndOutcome(String bookKey, Map<String, LocalDate> dates);
+
+    void deleteAllLines(String bookKey);
 }

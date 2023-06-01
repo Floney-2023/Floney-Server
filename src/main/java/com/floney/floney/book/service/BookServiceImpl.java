@@ -38,8 +38,8 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(savedBook);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public CreateBookResponse addBook(String email, CreateBookRequest request) {
         User requestUser = findUser(email);
         int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, ACTIVE);
@@ -67,6 +67,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CreateBookResponse joinWithCode(String email, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
@@ -78,6 +79,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void changeBookName(BookNameChangeRequest request) {
         Book book = findBook(request.getBookKey());
         book.updateName(request.getName());
@@ -85,6 +87,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteBook(String email, String bookKey) {
         Book book = findBook(bookKey);
         book.isOwner(email);
@@ -99,12 +102,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OurBookInfo getBookInfo(String bookKey, String myEmail) {
         List<OurBookUser> bookUsers = bookUserRepository.findAllUser(bookKey);
         return OurBookInfo.of(findBook(bookKey), bookUsers, myEmail);
     }
 
     @Override
+    @Transactional
     public void updateBookImg(UpdateBookImgRequest request){
         Book savedBook = findBook(request.getBookKey());
         savedBook.updateImg(request);

@@ -9,4 +9,6 @@ public interface BookLineService {
     MonthLinesResponse showByMonth(String bookKey, String date);
 
     TotalDayLinesResponse showByDays(String bookKey, String date);
+
+    void deleteAllLine(String bookKey);
 }

@@ -27,7 +27,7 @@ public class UserFixture {
                 .provider(Provider.EMAIL.getName())
                 .build();
     }
-
+    //수정하고 push
     public static User createUser2() {
         return User.builder()
             .nickname("floney")
@@ -37,7 +37,7 @@ public class UserFixture {
             .subscribe(false)
             .marketingAgree(true)
             .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-            .provider(Provider.EMAIL)
+            .provider(Provider.EMAIL.getName())
             .build();
     }
 }

@@ -17,4 +17,5 @@ public interface BookService {
     OurBookInfo getBookInfo(String bookKey, String myEmail);
 
     void updateBookImg(UpdateBookImgRequest request);
+
 }

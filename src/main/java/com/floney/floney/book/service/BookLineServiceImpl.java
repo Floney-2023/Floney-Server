@@ -68,6 +68,12 @@ public class BookLineServiceImpl implements BookLineService {
         return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)), bookLineRepository.totalExpenseByDay(parse(date), bookKey));
     }
 
+    @Override
+    @Transactional
+    public void deleteAllLine(String bookKey){
+        bookLineRepository.deleteAllLines(bookKey);
+    }
+
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
         bookLine.add(FLOW, saveFlowCategory(bookLine, request));
         bookLine.add(ASSET, saveAssetCategory(bookLine, request));
