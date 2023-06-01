@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignupRequest {
+
     @NotNull private String email;
     @NotNull private String nickname;
     @NotNull private String password;
-    @NotNull private boolean marketingAgree;
-    @NotNull private String provider;
+    @NotNull private Boolean marketingAgree;
 
     public LoginRequest toLoginRequest() {
         return LoginRequest.builder()
@@ -27,21 +27,22 @@ public class SignupRequest {
     }
 
     public User to() {
-        return User.signupBuilder()
+        return User.builder()
                 .email(email)
                 .password(password)
                 .nickname(nickname)
                 .marketingAgree(marketingAgree)
-                .provider(Provider.findByName(provider))
+                .provider(Provider.EMAIL.getName())
                 .build();
     }
 
-    public User to(Long providerId) {
-        return User.oAuthBuilder()
+    public User to(String provider, Long providerId) {
+        return User.builder()
                 .email(email)
+                .password("auth")
                 .nickname(nickname)
                 .marketingAgree(marketingAgree)
-                .provider(Provider.findByName(provider))
+                .provider(provider)
                 .providerId(providerId)
                 .build();
     }

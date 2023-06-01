@@ -1,10 +1,13 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.common.BaseEntity;
-import com.floney.floney.user.dto.constant.Provider;
 import java.time.LocalDateTime;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +25,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 })
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
     @Column(nullable = false, updatable = false, length = 100)
@@ -38,11 +43,12 @@ public class User extends BaseEntity {
     private String profileImg;
 
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    private boolean marketingAgree;
+    private Boolean marketingAgree;
 
     @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime lastAdTime;
+    @Builder.Default
+    private LocalDateTime lastAdTime = LocalDateTime.now();
 
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     @ColumnDefault("0")
@@ -53,40 +59,6 @@ public class User extends BaseEntity {
 
     @Column(updatable = false, unique = true)
     private Long providerId;
-
-    @Builder(builderMethodName = "signupBuilder")
-    private User(String email, String nickname, String password, boolean marketingAgree, Provider provider) {
-        this.email = email;
-        this.nickname = nickname;
-        this.password = password;
-        this.marketingAgree = marketingAgree;
-        this.lastAdTime = LocalDateTime.now();
-        this.provider = provider.getName();
-    }
-
-    @Builder(builderMethodName = "oAuthBuilder")
-    private User(String email, String nickname, boolean marketingAgree, Provider provider, Long providerId) {
-        this.email = email;
-        this.nickname = nickname;
-        this.marketingAgree = marketingAgree;
-        this.lastAdTime = LocalDateTime.now();
-        this.provider = provider.getName();
-        this.providerId = providerId;
-    }
-
-    @Builder
-    private User(String email, String nickname, String password, String profileImg, boolean marketingAgree,
-                 LocalDateTime lastAdTime, boolean subscribe, Provider provider, Long providerId) {
-        this.email = email;
-        this.nickname = nickname;
-        this.password = password;
-        this.profileImg = profileImg;
-        this.marketingAgree = marketingAgree;
-        this.lastAdTime = lastAdTime;
-        this.subscribe = subscribe;
-        this.provider = provider.getName();
-        this.providerId = providerId;
-    }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);

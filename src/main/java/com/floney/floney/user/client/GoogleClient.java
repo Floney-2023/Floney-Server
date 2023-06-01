@@ -31,7 +31,7 @@ public class GoogleClient implements ClientProxy {
             throw new OAuthResponseException();
         }
 
-        this.id = result.getSub();
+        this.id = Long.valueOf(result.getSub());
         this.email = result.getEmail();
         this.nickname = result.getName();
 

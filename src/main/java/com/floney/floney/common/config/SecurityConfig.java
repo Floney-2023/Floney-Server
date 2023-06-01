@@ -48,11 +48,12 @@ public class SecurityConfig {
                         "/",
                         "/users/signup",
                         "/users/signout",
-                        "/users/password",
+                        "/users/password/find",
                         "/users/login",
                         "/users/logout",
                         "/users/reissue",
-                        "/users/email/**"
+                        "/users/email/**",
+                        "/auth/**"
                 ).permitAll()
                 .anyRequest().authenticated()
 
