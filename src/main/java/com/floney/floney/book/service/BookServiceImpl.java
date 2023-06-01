@@ -124,6 +124,22 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(savedBook);
     }
 
+    @Override
+    @Transactional
+    public void updateAsset(UpdateAssetRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.updateAsset(request.getAsset());
+        bookRepository.save(savedBook);
+    }
+
+    @Override
+    @Transactional
+    public void updateBudget(UpdateBudgetRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.updateBudget(request.getBudget());
+        bookRepository.save(savedBook);
+    }
+
     private User findUser(String email) {
         return userRepository.findUserByEmailAndStatus(email, ACTIVE)
             .orElseThrow(() -> new UsernameNotFoundException(email));

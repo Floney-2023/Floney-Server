@@ -101,4 +101,12 @@ public class Book extends BaseEntity {
     public void changeSeeProfile(boolean status) {
         this.seeProfile = status;
     }
+
+    public void updateAsset(Long asset) {
+        this.initialAsset = asset;
+    }
+
+    public void updateBudget(Long budget) {
+        this.budget = budget;
+    }
 }

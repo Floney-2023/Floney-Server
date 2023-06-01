@@ -84,6 +84,18 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/info/asset")
+    public ResponseEntity<?> updateAsset(@RequestBody UpdateAssetRequest request) {
+        bookService.updateAsset(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/info/budget")
+    public ResponseEntity<?> updateBudget(@RequestBody UpdateBudgetRequest request) {
+        bookService.updateBudget(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping("/lines/delete")
     public ResponseEntity<?> deleteAll(String bookKey) {
         bookLineService.deleteAllLine(bookKey);

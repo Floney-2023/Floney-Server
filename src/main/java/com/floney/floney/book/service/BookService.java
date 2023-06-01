@@ -19,6 +19,11 @@ public interface BookService {
 
     void updateBookImg(UpdateBookImgRequest request);
 
-    @Transactional
     void updateSeeProfile(SeeProfileRequest request);
+
+    @Transactional
+    void updateAsset(UpdateAssetRequest request);
+
+    @Transactional
+    void updateBudget(UpdateBudgetRequest request);
 }
