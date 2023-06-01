@@ -15,4 +15,6 @@ public interface BookService {
     void deleteBook(String email, String bookKey);
 
     OurBookInfo getBookInfo(String bookKey, String myEmail);
+
+    void updateBookImg(UpdateBookImgRequest request);
 }

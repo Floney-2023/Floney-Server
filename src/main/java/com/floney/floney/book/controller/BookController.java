@@ -1,9 +1,6 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.BookNameChangeRequest;
-import com.floney.floney.book.dto.CodeJoinRequest;
-import com.floney.floney.book.dto.CreateBookRequest;
-import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.dto.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +70,12 @@ public class BookController {
                                            @AuthenticationPrincipal UserDetails userDetail) {
         return new ResponseEntity<>(bookService.getBookInfo(bookKey, userDetail.getUsername()),
             HttpStatus.OK);
+    }
+
+    @PostMapping("/info/bookImg")
+    public ResponseEntity<?> updateBookImg(@RequestBody UpdateBookImgRequest request) {
+        bookService.updateBookImg(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

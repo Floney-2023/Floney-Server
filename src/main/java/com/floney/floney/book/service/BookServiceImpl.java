@@ -26,7 +26,6 @@ public class BookServiceImpl implements BookService {
     private final BookUserRepository bookUserRepository;
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
-
     private static final boolean ACTIVE = true;
 
     @Override
@@ -103,6 +102,13 @@ public class BookServiceImpl implements BookService {
     public OurBookInfo getBookInfo(String bookKey, String myEmail) {
         List<OurBookUser> bookUsers = bookUserRepository.findAllUser(bookKey);
         return OurBookInfo.of(findBook(bookKey), bookUsers, myEmail);
+    }
+
+    @Override
+    public void updateBookImg(UpdateBookImgRequest request){
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.updateImg(request);
+        bookRepository.save(savedBook);
     }
 
     private User findUser(String email) {
