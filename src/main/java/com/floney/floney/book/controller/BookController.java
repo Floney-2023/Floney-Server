@@ -68,4 +68,11 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<?> getMyBookInfo(@RequestParam("bookKey") String bookKey,
+                                           @AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.getBookInfo(bookKey, userDetail.getUsername()),
+            HttpStatus.OK);
+    }
+
 }

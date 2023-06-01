@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.BookLineExpense;
 import com.floney.floney.book.dto.MonthKey;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -45,6 +46,10 @@ public class DateFactory {
         }
 
         return initDates;
+    }
+
+    public static LocalDate formatToDate(LocalDateTime createdAt) {
+        return createdAt.toLocalDate();
     }
 }
 

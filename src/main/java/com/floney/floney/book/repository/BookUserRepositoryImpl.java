@@ -1,13 +1,14 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.dto.OurBookUser;
 import com.floney.floney.book.dto.QMyBookInfo;
+import com.floney.floney.book.dto.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.exception.MaxMemberException;
 import com.floney.floney.common.exception.NoAuthorityException;
 import com.floney.floney.user.entity.User;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -46,6 +47,22 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
+    public List<OurBookUser> findAllUser(String bookKey) {
+        return jpaQueryFactory.select(
+                new QOurBookUser(
+                    user.nickname,
+                    user.profileImg,
+                    user.email
+                ))
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(book.bookKey.eq(bookKey), book.status.eq(ACTIVE))
+            .innerJoin(bookUser.user, user)
+            .where(user.status.eq(ACTIVE))
+            .fetch();
+    }
+
+    @Override
     public Optional<BookUser> findUserWith(String nickName, String bookKey) {
         return Optional.ofNullable(jpaQueryFactory
             .select(bookUser)
@@ -70,10 +87,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         List<MyBookInfo> infos = new ArrayList<>();
         for (Book target : books) {
             MyBookInfo my = jpaQueryFactory.select(
-                new QMyBookInfo(book.profileImg,
-                    book.name,
-                    bookUser.count(),
-                    book.bookKey))
+                    new QMyBookInfo(book.profileImg,
+                        book.name,
+                        bookUser.count(),
+                        book.bookKey))
                 .from(bookUser)
                 .where(bookUser.book.eq(target),
                     bookUser.status.eq(ACTIVE))

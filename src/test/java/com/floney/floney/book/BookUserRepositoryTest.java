@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -106,5 +107,24 @@ public class BookUserRepositoryTest {
 
         Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, false))
             .isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("가계부의 모든 멤버를 조회한다")
+    void allUser(){
+        Book savedBook = bookRepository.save(BookFixture.createBook());
+
+        User user1 = userRepository.save(UserFixture.createUser());
+        BookUser bookUser1 = BookFixture.createBookUser(user1, savedBook);
+
+        User user2 = userRepository.save(UserFixture.createUser2());
+        BookUser bookUser2 = BookFixture.createBookUser(user2, savedBook);
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
+        assertThat(bookUserRepository.findAllUser(savedBook.getBookKey()).size())
+            .isEqualTo(2);
+
     }
 }

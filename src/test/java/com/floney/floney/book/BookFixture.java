@@ -15,7 +15,6 @@ public class BookFixture {
     public static Long DEFAULT_VALUE = 0L;
 
 
-
     public static CreateBookRequest createBookRequest() {
         return CreateBookRequest.builder()
             .name(NAME)
@@ -35,7 +34,7 @@ public class BookFixture {
             .build();
     }
 
-    public static CodeJoinRequest codeJoinRequest(){
+    public static CodeJoinRequest codeJoinRequest() {
         return new CodeJoinRequest(CODE);
     }
 
@@ -66,10 +65,18 @@ public class BookFixture {
             .build();
     }
 
-    public static BookUser createBookUser(User user, Book book){
+    public static BookUser createBookUser(User user, Book book) {
         return BookUser.builder()
             .book(book)
             .user(user)
+            .build();
+    }
+
+    public static OurBookUser createOurBookUser() {
+        return OurBookUser.builder()
+            .name(NAME)
+            .profileImg(URL)
+            .email(EMAIL)
             .build();
     }
 
