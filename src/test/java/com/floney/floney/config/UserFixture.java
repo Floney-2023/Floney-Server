@@ -27,7 +27,7 @@ public class UserFixture {
                 .provider(Provider.EMAIL.getName())
                 .build();
     }
-    //수정하고 push
+
     public static User createUser2() {
         return User.builder()
             .nickname("floney")
