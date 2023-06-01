@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class GoogleUserService implements OAuthUserService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean checkIfSignup(String oAuthToken) {
@@ -33,7 +35,9 @@ public class GoogleUserService implements OAuthUserService {
     @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
         String providerId = getProviderId(oAuthToken);
-        userRepository.save(request.to(Provider.GOOGLE.getName(), providerId));
+        User user = request.to(Provider.GOOGLE.getName(), providerId);
+        user.encodePassword(passwordEncoder);
+        userRepository.save(user);
     }
 
     @Override
