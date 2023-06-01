@@ -15,7 +15,7 @@ public class BookTest {
         Book book = BookFixture.createBook();
         String other = "sienna011022@naver.com";
 
-        assertThatThrownBy(() -> book.isProvider(other))
+        assertThatThrownBy(() -> book.isOwner(other))
             .isInstanceOf(NoAuthorityException.class);
     }
 }

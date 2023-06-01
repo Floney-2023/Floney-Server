@@ -88,7 +88,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteBook(String email, String bookKey) {
         Book book = findBook(bookKey);
-        book.isProvider(email);
+        book.isOwner(email);
         bookUserRepository.countBookUser(book);
         BookUser owner = bookUserRepository.findByEmailAndBook(email, book);
 

@@ -9,7 +9,7 @@ import java.util.Objects;
 @Getter
 public class OurBookUser {
 
-    private static final String PROVIDER = "방장";
+    private static final String OWNER = "방장";
     private static final String MEMBER = "팀원";
 
     private final String name;
@@ -37,7 +37,7 @@ public class OurBookUser {
 
     public void checkRole(String providerEmail) {
         if (Objects.equals(this.email, providerEmail)) {
-            this.role = PROVIDER;
+            this.role = OWNER;
         } else {
             this.role = MEMBER;
         }

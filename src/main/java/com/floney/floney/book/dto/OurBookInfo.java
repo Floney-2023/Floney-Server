@@ -11,11 +11,10 @@ import static com.floney.floney.book.util.DateFactory.formatToDate;
 
 @Getter
 public class OurBookInfo {
-    private String bookImg;
-    private String bookName;
+    private final String bookImg;
+    private final String bookName;
     private LocalDate startDay;
-
-    private List<OurBookUser> ourBookUsers;
+    private final List<OurBookUser> ourBookUsers;
 
     @Builder
     public OurBookInfo(String bookImg, String bookName, LocalDate startDay, List<OurBookUser> bookUsers) {
@@ -39,7 +38,7 @@ public class OurBookInfo {
 
     private static void checkRole(Book book, List<OurBookUser> bookUsers) {
         for (OurBookUser bookUser : bookUsers) {
-            bookUser.checkRole(book.getProviderEmail());
+            bookUser.checkRole(book.getOwner());
         }
     }
 
