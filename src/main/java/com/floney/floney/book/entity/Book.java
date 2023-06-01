@@ -35,7 +35,7 @@ public class Book extends BaseEntity {
     private String profileImg;
 
     @Column(length = 20)
-    private String providerEmail;
+    private String owner;
 
     @Column(nullable = false, length = 10)
     private String bookKey;
@@ -54,12 +54,12 @@ public class Book extends BaseEntity {
     private String code;
 
     @Builder
-    private Book(String name, String profileImg, String providerEmail,
+    private Book(String name, String profileImg, String owner,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
                  Boolean carryOver, String code) {
         this.name = name;
         this.profileImg = profileImg;
-        this.providerEmail = providerEmail;
+        this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
@@ -79,12 +79,12 @@ public class Book extends BaseEntity {
         }
     }
 
-    public void updateName(String requestName){
+    public void updateName(String requestName) {
         this.name = requestName;
     }
 
-    public void isProvider(String email) {
-        if(!providerEmail.equals(email)){
+    public void isOwner(String email) {
+        if (!owner.equals(email)) {
             throw new NoAuthorityException();
         }
     }

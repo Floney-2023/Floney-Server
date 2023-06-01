@@ -28,7 +28,7 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(bookKey)
             .budget(DEFAULT_VALUE)
-            .providerEmail(EMAIL)
+            .owner(EMAIL)
             .code(CODE)
             .initialAsset(DEFAULT_VALUE)
             .build();
@@ -44,7 +44,7 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(BOOK_KEY)
             .budget(DEFAULT_VALUE)
-            .providerEmail(EMAIL)
+            .owner(EMAIL)
             .code(CODE)
             .initialAsset(DEFAULT_VALUE)
             .build();
