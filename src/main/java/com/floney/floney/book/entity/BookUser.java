@@ -45,10 +45,6 @@ public class BookUser extends BaseEntity {
             .build();
     }
 
-    public void delete() {
-        this.status = Status.INACTIVE;
-    }
-
     public String getNickName() {
         return this.user.getNickname();
     }

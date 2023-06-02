@@ -38,8 +38,6 @@ public class CategoryServiceTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
-    private static final boolean ACTIVE_STATUS = true;
-
     @Test
     @DisplayName("사용자가 루트 카테고리를 생성한다")
     void create_root_category() {

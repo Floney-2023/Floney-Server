@@ -79,7 +79,7 @@ public class UserService {
             throw new UserSignoutException();
         }
 
-        user.signout();
+        user.delete();
         userRepository.save(user);
     }
 

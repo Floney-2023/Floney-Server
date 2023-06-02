@@ -42,7 +42,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public CreateBookResponse addBook(String email, CreateBookRequest request) {
         User requestUser = findUser(email);
-        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, Status.ACTIVE.isStatus());
+        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, Status.ACTIVE);
         if (requestUser.isSubscribe()) {
             return subscribeCreateBook(count, email, request);
         } else {

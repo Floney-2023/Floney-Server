@@ -62,10 +62,6 @@ public class User extends BaseEntity {
         this.password = passwordEncoder.encode(password);
     }
 
-    public void signout() {
-        this.status = Status.INACTIVE;
-    }
-
     public boolean isStatus() {
         return this.status.isStatus();
     }

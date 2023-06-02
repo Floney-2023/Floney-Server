@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import static com.floney.floney.book.BookFixture.EMAIL;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -23,10 +24,10 @@ public class UserRepositoryTest {
     UserRepository userRepository;
 
     @Test
-    @DisplayName("status가 true인 유저만 조회한다")
+    @DisplayName("status가 active인 유저만 조회한다")
     void find() {
         userRepository.save(UserFixture.createUser());
-        User user = userRepository.findUserByEmailAndStatus(EMAIL, true).get();
+        User user = userRepository.findUserByEmailAndStatus(EMAIL, ACTIVE).get();
         Assertions.assertThat(user.getEmail()).isEqualTo(EMAIL);
     }
 }

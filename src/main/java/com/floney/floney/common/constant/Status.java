@@ -8,7 +8,7 @@ public enum Status {
     ACTIVE(true),
     INACTIVE(false);
 
-    private boolean status;
+    private final boolean status;
 
     Status(boolean status) {
         this.status = status;

@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static com.floney.floney.book.BookFixture.*;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -45,10 +46,10 @@ public class BookServiceTest {
         Book testBook = BookFixture.createBookWith("1234");
 
         User testUser = UserFixture.createUser();
-        given(bookRepository.findBookByCodeAndStatus(CODE,true))
+        given(bookRepository.findBookByCodeAndStatus(CODE,ACTIVE))
             .willReturn(Optional.ofNullable(testBook));
 
-        given(userRepository.findUserByEmailAndStatus(EMAIL,true))
+        given(userRepository.findUserByEmailAndStatus(EMAIL,ACTIVE))
             .willReturn(Optional.ofNullable(testUser));
 
         assertThat(bookService.joinWithCode(EMAIL, codeJoinRequest()).getCode())
@@ -59,7 +60,7 @@ public class BookServiceTest {
     @DisplayName("구독을 했다면, 참여한 가계부가 2이하일 시 가계부를 만든다")
     void subscribe_book_create() {
 
-        given(userRepository.findUserByEmailAndStatus(EMAIL,true))
+        given(userRepository.findUserByEmailAndStatus(EMAIL,ACTIVE))
             .willReturn(Optional.ofNullable(UserFixture.createUser()));
 
         given(bookRepository.save(ArgumentMatchers.any(Book.class)))

@@ -89,8 +89,4 @@ public class Book extends BaseEntity {
             throw new NoAuthorityException();
         }
     }
-
-    public void delete() {
-        this.status = Status.INACTIVE;
-    }
 }

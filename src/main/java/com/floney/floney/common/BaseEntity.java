@@ -47,4 +47,8 @@ public abstract class BaseEntity {
     protected BaseEntity(Long id) {
         this.id = id;
     }
+
+    public void delete() {
+        this.status = Status.INACTIVE;
+    }
 }
