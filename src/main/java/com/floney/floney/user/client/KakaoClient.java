@@ -1,6 +1,7 @@
 package com.floney.floney.user.client;
 
 import com.floney.floney.common.exception.OAuthResponseException;
+import com.floney.floney.common.exception.OAuthTokenNotValidException;
 import com.floney.floney.user.dto.response.KakaoUserResponse;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -17,9 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class KakaoClient implements ClientProxy {
 
-    private Long id;
-    private String email;
-    private String nickname;
+    private String id;
 
     @Override
     public void init(String authToken) {
@@ -33,12 +33,15 @@ public class KakaoClient implements ClientProxy {
         header.set("Authorization", "Bearer ".concat(authToken));
         HttpEntity<String> request = new HttpEntity<>(header);
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<KakaoUserResponse> result = restTemplate.exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
-
-        this.id = result.getBody().getId();
-        this.email = result.getBody().getKakaoAccount().getEmail();
-        this.nickname = result.getBody().getKakaoAccount().getProfile().getNickname();
+        try {
+            ResponseEntity<KakaoUserResponse> result = createRequest()
+                    .exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
+            this.id = result.getBody().getId().toString();
+        } catch (HttpClientErrorException.Unauthorized exception) {
+            throw new OAuthTokenNotValidException();
+        } catch (NullPointerException exception) {
+            throw new OAuthResponseException();
+        }
 
     }
 

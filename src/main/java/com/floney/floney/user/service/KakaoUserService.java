@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class KakaoUserService implements OAuthUserService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean checkIfSignup(String oAuthToken) {
@@ -32,13 +34,15 @@ public class KakaoUserService implements OAuthUserService {
     @Override
     @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
-        Long providerId = getProviderId(oAuthToken);
-        userRepository.save(request.to(Provider.KAKAO.getName(), providerId));
+        String providerId = getProviderId(oAuthToken);
+        User user = request.to(Provider.KAKAO.getName(), providerId);
+        user.encodePassword(passwordEncoder);
+        userRepository.save(user);
     }
 
     @Override
     public Token login(String oAuthToken) {
-        Long providerId = getProviderId(oAuthToken);
+        String providerId = getProviderId(oAuthToken);
 
         User user = userRepository.findByProviderId(providerId).orElseThrow(UserNotFoundException::new);
         Authentication authentication = authenticationManager.authenticate(
@@ -48,7 +52,7 @@ public class KakaoUserService implements OAuthUserService {
         return jwtProvider.generateToken(authentication);
     }
 
-    private Long getProviderId(String oAuthToken) {
+    private String getProviderId(String oAuthToken) {
         kakaoClient.init(oAuthToken);
         return kakaoClient.getId();
     }

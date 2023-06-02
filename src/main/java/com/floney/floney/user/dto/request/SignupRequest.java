@@ -36,7 +36,7 @@ public class SignupRequest {
                 .build();
     }
 
-    public User to(String provider, Long providerId) {
+    public User to(String provider, String providerId) {
         return User.builder()
                 .email(email)
                 .password("auth")

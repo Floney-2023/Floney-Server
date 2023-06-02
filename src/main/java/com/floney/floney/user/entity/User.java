@@ -57,8 +57,8 @@ public class User extends BaseEntity {
     @Column(nullable = false, updatable = false, length = 10)
     private String provider;
 
-    @Column(updatable = false, unique = true)
-    private Long providerId;
+    @Column(updatable = false, unique = true, length = 30)
+    private String providerId;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);

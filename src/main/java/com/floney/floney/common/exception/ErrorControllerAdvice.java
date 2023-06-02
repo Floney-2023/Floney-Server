@@ -92,6 +92,12 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(OAuthTokenNotValidException.class)
+    protected ResponseEntity<ErrorResponse> invalidOAuthToken(OAuthTokenNotValidException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {
