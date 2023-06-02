@@ -1,25 +1,30 @@
 package com.floney.floney.book.dto;
 
-import com.floney.floney.book.util.DateFactory;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 public class TotalDayLinesResponse {
     private final List<DayLines> dayLinesResponse;
     private final List<TotalExpense> totalExpense;
+    private final boolean seeProfileImg;
 
-    private TotalDayLinesResponse(List<DayLines> dayLinesResponse, List<TotalExpense> totalExpense) {
+    @Builder
+    private TotalDayLinesResponse(List<DayLines> dayLinesResponse, List<TotalExpense> totalExpense, boolean seeProfileImg) {
         this.dayLinesResponse = dayLinesResponse;
         this.totalExpense = totalExpense;
+        this.seeProfileImg = seeProfileImg;
     }
 
-    public static TotalDayLinesResponse of(List<DayLines> dayLinesResponse, List<TotalExpense> totalExpense){
-        return new TotalDayLinesResponse(dayLinesResponse,totalExpense);
+    public static TotalDayLinesResponse of(List<DayLines> dayLinesResponse, List<TotalExpense> totalExpense, boolean seeProfileImg) {
+        return TotalDayLinesResponse.builder()
+            .dayLinesResponse(dayLinesResponse)
+            .totalExpense(totalExpense)
+            .seeProfileImg(seeProfileImg)
+            .build();
     }
-
 
 
 }

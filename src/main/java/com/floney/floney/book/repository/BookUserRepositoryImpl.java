@@ -87,7 +87,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         List<MyBookInfo> infos = new ArrayList<>();
         for (Book target : books) {
             MyBookInfo my = jpaQueryFactory.select(
-                    new QMyBookInfo(book.profileImg,
+                    new QMyBookInfo(book.bookImg,
                         book.name,
                         bookUser.count(),
                         book.bookKey))

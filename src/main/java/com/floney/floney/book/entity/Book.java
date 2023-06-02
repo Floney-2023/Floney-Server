@@ -1,6 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.dto.UpdateBookImgRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
 import com.floney.floney.common.constant.Status;
@@ -33,7 +34,7 @@ public class Book extends BaseEntity {
     private String name;
 
     @Column(length = 300)
-    private String profileImg;
+    private String bookImg;
 
     @Column(length = 20)
     private String owner;
@@ -55,11 +56,11 @@ public class Book extends BaseEntity {
     private String code;
 
     @Builder
-    private Book(String name, String profileImg, String owner,
+    private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
                  Boolean carryOver, String code) {
         this.name = name;
-        this.profileImg = profileImg;
+        this.bookImg = bookImg;
         this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
@@ -89,4 +90,21 @@ public class Book extends BaseEntity {
             throw new NoAuthorityException();
         }
     }
+
+    public void updateImg(UpdateBookImgRequest request) {
+        this.bookImg = request.getNewUrl();
+    }
+
+    public void changeSeeProfile(boolean status) {
+        this.seeProfile = status;
+    }
+
+    public void updateAsset(Long asset) {
+        this.initialAsset = asset;
+    }
+
+    public void updateBudget(Long budget) {
+        this.budget = budget;
+    }
+
 }

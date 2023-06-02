@@ -41,7 +41,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse createBookLine(CreateLineRequest request) {
-        Book book = findBook(request);
+        Book book = findBook(request.getBookKey());
         if (request.isNotExcept()) {
             book.processTrans(request);
         }
@@ -64,7 +64,16 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
-        return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)), bookLineRepository.totalExpenseByDay(parse(date), bookKey));
+        return TotalDayLinesResponse.of(
+            DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)),
+            bookLineRepository.totalExpenseByDay(parse(date), bookKey),
+            findBook(bookKey).getSeeProfile());
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllLine(String bookKey){
+        bookLineRepository.deleteAllLines(bookKey);
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
@@ -94,8 +103,8 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookUserException::new);
     }
 
-    private Book findBook(CreateLineRequest request) {
-        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), Status.ACTIVE)
+    private Book findBook(String bookKey) {
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 
