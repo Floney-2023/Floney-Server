@@ -75,7 +75,7 @@ public class UserService {
     public void signout(String email) {
         User user = loadUserByEmail(email);
 
-        if (!user.isStatus()) {
+        if (user.isInactive()) {
             throw new UserSignoutException();
         }
 

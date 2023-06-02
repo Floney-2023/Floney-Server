@@ -51,4 +51,8 @@ public abstract class BaseEntity {
     public void delete() {
         this.status = Status.INACTIVE;
     }
+
+    public boolean isInactive() {
+        return this.status == Status.INACTIVE;
+    }
 }

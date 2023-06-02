@@ -1,7 +1,6 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.common.BaseEntity;
-import com.floney.floney.common.constant.Status;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
@@ -60,10 +59,6 @@ public class User extends BaseEntity {
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
-    }
-
-    public boolean isStatus() {
-        return this.status.isStatus();
     }
 
     public void updateNickname(String nickname) {
