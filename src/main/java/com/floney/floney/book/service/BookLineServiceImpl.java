@@ -8,7 +8,6 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundBookUserException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
@@ -22,6 +21,7 @@ import java.util.Map;
 
 import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 import static com.floney.floney.book.entity.BookLineCategory.of;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
 @Service
@@ -72,7 +72,7 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public void deleteAllLine(String bookKey){
+    public void deleteAllLine(String bookKey) {
         bookLineRepository.deleteAllLines(bookKey);
     }
 
