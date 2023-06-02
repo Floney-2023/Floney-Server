@@ -1,6 +1,7 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.*;
+import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,7 +25,6 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private static final boolean ACTIVE = true;
 
     @Override
     public Map<String, Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates) {
@@ -36,8 +36,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.lineDate.between(dates.get(START), dates.get(END)),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE)
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE)
             )
             .groupBy(bookLineCategory.name)
             .orderBy(bookLineCategory.name.asc())
@@ -59,8 +59,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.writer, bookUser)
             .where(
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE),
                 bookLine.lineDate.eq(date),
                 book.bookKey.eq(bookKey)
             )
@@ -81,8 +81,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.bookLineCategories,
                 bookLineCategory)
             .where(
-                bookLine.status.eq(ACTIVE),
-                book.status.eq(ACTIVE),
+                bookLine.status.eq(Status.ACTIVE),
+                book.status.eq(Status.ACTIVE),
                 bookLine.lineDate.eq(date),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey)
@@ -105,8 +105,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
-                bookLine.status.eq(ACTIVE),
-                book.status.eq(ACTIVE),
+                bookLine.status.eq(Status.ACTIVE),
+                book.status.eq(Status.ACTIVE),
                 bookLine.lineDate.between(dates.get(START), dates.get(END)),
                 bookLineCategory.name.in(INCOME.getKind(),
                     OUTCOME.getKind()),

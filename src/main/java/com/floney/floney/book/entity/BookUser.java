@@ -1,6 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class BookUser extends BaseEntity {
     }
 
     public void delete() {
-        this.status = false;
+        this.status = Status.INACTIVE;
     }
 
     public String getNickName() {

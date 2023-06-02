@@ -7,6 +7,7 @@ import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,6 @@ import static com.floney.floney.book.entity.DefaultCategory.rootParent;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final BookRepository bookRepository;
-    private static final boolean ACTIVE = true;
 
     @Override
     @Transactional
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 

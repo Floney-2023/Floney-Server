@@ -1,5 +1,6 @@
 package com.floney.floney.common;
 
+import com.floney.floney.common.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicInsert;
@@ -35,11 +36,12 @@ public abstract class BaseEntity {
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    protected boolean status;
+    @Column
+    @Enumerated(EnumType.STRING)
+    protected Status status;
 
     protected BaseEntity() {
-        this.status = true;
+        this.status = Status.ACTIVE;
     }
 
     protected BaseEntity(Long id) {

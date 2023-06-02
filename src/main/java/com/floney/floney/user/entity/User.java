@@ -1,16 +1,8 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.common.BaseEntity;
-import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.floney.floney.common.constant.Status;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -18,10 +10,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @Table(indexes = {
-        @Index(name = "email", columnList = "email", unique = true)
+    @Index(name = "email", columnList = "email", unique = true)
 })
 @DynamicInsert
 @DynamicUpdate
@@ -65,7 +63,11 @@ public class User extends BaseEntity {
     }
 
     public void signout() {
-        this.status = false;
+        this.status = Status.INACTIVE;
+    }
+
+    public boolean isStatus() {
+        return this.status.isStatus();
     }
 
     public void updateNickname(String nickname) {

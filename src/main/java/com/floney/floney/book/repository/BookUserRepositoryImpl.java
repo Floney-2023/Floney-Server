@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.QMyBookInfo;
 import com.floney.floney.book.dto.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.MaxMemberException;
 import com.floney.floney.common.exception.NoAuthorityException;
 import com.floney.floney.user.entity.User;
@@ -29,7 +30,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     private static final int MAX_MEMBER = 4;
     private static final int OWNER = 1;
-    private static final boolean ACTIVE = true;
 
     @Override
     public void isMax(Book book) {
@@ -37,7 +37,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .select(bookUser)
             .from(bookUser)
             .where(bookUser.book.eq(book),
-                bookUser.status.eq(ACTIVE))
+                bookUser.status.eq(Status.ACTIVE))
             .fetch()
             .size();
 
@@ -56,9 +56,9 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 ))
             .from(bookUser)
             .innerJoin(bookUser.book, book)
-            .where(book.bookKey.eq(bookKey), book.status.eq(ACTIVE))
+            .where(book.bookKey.eq(bookKey), book.status.eq(Status.ACTIVE))
             .innerJoin(bookUser.user, user)
-            .where(user.status.eq(ACTIVE))
+            .where(user.status.eq(Status.ACTIVE))
             .fetch();
     }
 
@@ -69,10 +69,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .innerJoin(bookUser.user, user)
             .where(user.nickname.eq(nickName),
-                user.status.eq(ACTIVE))
+                user.status.eq(Status.ACTIVE))
             .innerJoin(bookUser.book, book)
             .where(book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE))
+                book.status.eq(Status.ACTIVE))
             .fetchOne());
     }
 
@@ -81,7 +81,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .where(bookUser.user.eq(user),
-                bookUser.status.eq(ACTIVE))
+                bookUser.status.eq(Status.ACTIVE))
             .fetch();
 
         List<MyBookInfo> infos = new ArrayList<>();
@@ -93,7 +93,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                         book.bookKey))
                 .from(bookUser)
                 .where(bookUser.book.eq(target),
-                    bookUser.status.eq(ACTIVE))
+                    bookUser.status.eq(Status.ACTIVE))
                 .fetchOne();
             infos.add(my);
         }
@@ -106,7 +106,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
-                bookUser.status.eq(ACTIVE))
+                bookUser.status.eq(Status.ACTIVE))
             .fetchOne();
 
         if (count > OWNER) {
@@ -119,10 +119,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return jpaQueryFactory.selectFrom(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
-                book.status.eq(ACTIVE))
+                book.status.eq(Status.ACTIVE))
             .innerJoin(bookUser.user, user)
             .where(user.email.eq(email),
-                user.status.eq(ACTIVE))
+                user.status.eq(Status.ACTIVE))
             .fetchOne();
 
     }
