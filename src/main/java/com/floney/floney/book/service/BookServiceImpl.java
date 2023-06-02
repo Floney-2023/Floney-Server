@@ -26,7 +26,6 @@ public class BookServiceImpl implements BookService {
     private final BookUserRepository bookUserRepository;
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
-
     private static final boolean ACTIVE = true;
 
     @Override
@@ -39,8 +38,8 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(savedBook);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public CreateBookResponse addBook(String email, CreateBookRequest request) {
         User requestUser = findUser(email);
         int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, ACTIVE);
@@ -68,6 +67,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CreateBookResponse joinWithCode(String email, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
@@ -79,6 +79,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void changeBookName(BookNameChangeRequest request) {
         Book book = findBook(request.getBookKey());
         book.updateName(request.getName());
@@ -86,6 +87,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void deleteBook(String email, String bookKey) {
         Book book = findBook(bookKey);
         book.isOwner(email);
@@ -100,9 +102,42 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OurBookInfo getBookInfo(String bookKey, String myEmail) {
         List<OurBookUser> bookUsers = bookUserRepository.findAllUser(bookKey);
         return OurBookInfo.of(findBook(bookKey), bookUsers, myEmail);
+    }
+
+    @Override
+    @Transactional
+    public void updateBookImg(UpdateBookImgRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.updateImg(request);
+        bookRepository.save(savedBook);
+    }
+
+    @Override
+    @Transactional
+    public void updateSeeProfile(SeeProfileRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.changeSeeProfile(request.isSeeProfileStatus());
+        bookRepository.save(savedBook);
+    }
+
+    @Override
+    @Transactional
+    public void updateAsset(UpdateAssetRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.updateAsset(request.getAsset());
+        bookRepository.save(savedBook);
+    }
+
+    @Override
+    @Transactional
+    public void updateBudget(UpdateBudgetRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        savedBook.updateBudget(request.getBudget());
+        bookRepository.save(savedBook);
     }
 
     private User findUser(String email) {

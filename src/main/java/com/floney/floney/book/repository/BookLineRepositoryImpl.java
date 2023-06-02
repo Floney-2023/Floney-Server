@@ -1,6 +1,8 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.*;
+import com.floney.floney.book.entity.BookLine;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,6 +27,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private static final boolean ACTIVE = true;
+    private static final boolean INACTIVE = false;
 
     @Override
     public Map<String, Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates) {
@@ -116,6 +119,15 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetch();
     }
 
-
+    @Override
+    public void deleteAllLines(String bookKey) {
+         jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .where(bookLine.book.id.eq(
+                JPAExpressions.select(book.id)
+                    .from(book)
+                    .where(book.bookKey.eq(bookKey))
+            ))
+            .execute();
+    }
 }
-
