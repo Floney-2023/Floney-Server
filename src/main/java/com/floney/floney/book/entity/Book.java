@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.CreateLineRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NoAuthorityException;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -87,9 +88,5 @@ public class Book extends BaseEntity {
         if (!owner.equals(email)) {
             throw new NoAuthorityException();
         }
-    }
-
-    public void delete() {
-        this.status = false;
     }
 }

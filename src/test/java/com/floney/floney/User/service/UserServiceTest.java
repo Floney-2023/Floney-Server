@@ -8,9 +8,9 @@ import com.floney.floney.common.exception.UserSignoutException;
 import com.floney.floney.common.token.JwtProvider;
 import com.floney.floney.common.token.RedisProvider;
 import com.floney.floney.config.UserFixture;
+import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
-import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import com.floney.floney.user.service.UserService;
@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.floney.floney.common.constant.Status.INACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
@@ -59,11 +59,11 @@ class UserServiceTest {
         // given
         User user = UserFixture.getUser();
         SignupRequest signupRequest = SignupRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .marketingAgree(user.getMarketingAgree())
-                .build();
+            .email(user.getEmail())
+            .password(user.getPassword())
+            .nickname(user.getNickname())
+            .marketingAgree(user.getMarketingAgree())
+            .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
 
@@ -80,16 +80,16 @@ class UserServiceTest {
         // given
         User user = UserFixture.getUser();
         SignupRequest signupRequest = SignupRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .marketingAgree(user.getMarketingAgree())
-                .build();
+            .email(user.getEmail())
+            .password(user.getPassword())
+            .nickname(user.getNickname())
+            .marketingAgree(user.getMarketingAgree())
+            .build();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
         assertThatThrownBy(() -> userService.validateIfNewUser(signupRequest.getEmail()))
-                .isInstanceOf(UserFoundException.class);
+            .isInstanceOf(UserFoundException.class);
     }
 
     @Test
@@ -103,7 +103,7 @@ class UserServiceTest {
         userService.signout(user.getEmail());
 
         // then
-        assertThat(user.isStatus()).isFalse();
+        assertThat(user.getStatus()).isEqualTo(INACTIVE);
     }
 
     @Test
@@ -111,7 +111,7 @@ class UserServiceTest {
     void signout_fail_throws_userSignoutException() {
         // given
         User user = UserFixture.createUser();
-        user.signout();
+        user.delete();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then

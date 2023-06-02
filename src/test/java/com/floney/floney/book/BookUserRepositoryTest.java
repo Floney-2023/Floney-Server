@@ -4,6 +4,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NoAuthorityException;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.config.UserFixture;
@@ -17,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -91,7 +94,7 @@ public class BookUserRepositoryTest {
 
         bookUserRepository.save(owner);
 
-        Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, true))
+        Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, ACTIVE))
             .isEqualTo(1);
     }
 
@@ -105,7 +108,7 @@ public class BookUserRepositoryTest {
 
         bookUserRepository.save(owner);
 
-        Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, false))
+        Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, INACTIVE))
             .isEqualTo(0);
     }
 

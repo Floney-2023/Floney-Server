@@ -1,13 +1,11 @@
 package com.floney.floney.user.dto.response;
 
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
+import lombok.*;
+
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 @ToString
@@ -22,7 +20,7 @@ public class UserResponse {
     private final boolean subscribe;
     private final LocalDateTime lastAdTime;
     private final Provider provider;
-    private final boolean status;
+    private final Status status;
 
     public static UserResponse from(User entity) {
         return new UserResponseBuilder()
@@ -34,7 +32,7 @@ public class UserResponse {
                 .subscribe(entity.isSubscribe())
                 .lastAdTime(entity.getLastAdTime())
                 .provider(Provider.findByName(entity.getProvider()))
-                .status(entity.isStatus())
+                .status(entity.getStatus())
                 .build();
     }
 

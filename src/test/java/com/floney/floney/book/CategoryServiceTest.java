@@ -7,6 +7,7 @@ import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.service.CategoryServiceImpl;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
 import org.assertj.core.api.Assertions;
@@ -37,15 +38,13 @@ public class CategoryServiceTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
-    private static final boolean ACTIVE_STATUS = true;
-
     @Test
     @DisplayName("사용자가 루트 카테고리를 생성한다")
     void create_root_category() {
         CreateCategoryRequest request = createRootRequest();
         Book savedBook = BookFixture.createBookWith("1234");
 
-        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,ACTIVE_STATUS))
+        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY, Status.ACTIVE))
             .willReturn(ofNullable(savedBook));
 
         BookCategory rootCategory = createRootCategory(savedBook);
@@ -67,7 +66,7 @@ public class CategoryServiceTest {
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
 
-        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,ACTIVE_STATUS))
+        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
             .willReturn(ofNullable(savedBook));
 
         given(categoryRepository.save(any(BookCategory.class)))
@@ -85,7 +84,7 @@ public class CategoryServiceTest {
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
 
-        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,ACTIVE_STATUS))
+        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
             .willReturn(Optional.empty());
 
         CreateCategoryRequest request = createBookCategory();

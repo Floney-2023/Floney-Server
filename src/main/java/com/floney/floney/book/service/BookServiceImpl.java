@@ -5,6 +5,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotSubscribeException;
@@ -27,8 +28,6 @@ public class BookServiceImpl implements BookService {
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
 
-    private static final boolean ACTIVE = true;
-
     @Override
     @Transactional
     public CreateBookResponse createBook(String email, CreateBookRequest request) {
@@ -43,7 +42,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public CreateBookResponse addBook(String email, CreateBookRequest request) {
         User requestUser = findUser(email);
-        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, ACTIVE);
+        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, Status.ACTIVE);
         if (requestUser.isSubscribe()) {
             return subscribeCreateBook(count, email, request);
         } else {
@@ -70,7 +69,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public CreateBookResponse joinWithCode(String email, CodeJoinRequest request) {
         String code = request.getCode();
-        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
+        Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(findUser(email), book));
@@ -106,12 +105,12 @@ public class BookServiceImpl implements BookService {
     }
 
     private User findUser(String email) {
-        return userRepository.findUserByEmailAndStatus(email, ACTIVE)
+        return userRepository.findUserByEmailAndStatus(email,Status.ACTIVE)
             .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 }

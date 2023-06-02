@@ -75,11 +75,11 @@ public class UserService {
     public void signout(String email) {
         User user = loadUserByEmail(email);
 
-        if (!user.isStatus()) {
+        if (user.isInactive()) {
             throw new UserSignoutException();
         }
 
-        user.signout();
+        user.delete();
         userRepository.save(user);
     }
 

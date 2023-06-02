@@ -1,5 +1,6 @@
 package com.floney.floney.config;
 
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.security.UserDetail;
@@ -19,7 +20,7 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
                 .subscribe(false)
                 .marketingAgree(false)
                 .profileImg("imageUrl")
-                .status(true)
+                .status(Status.ACTIVE)
                 .build());
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());

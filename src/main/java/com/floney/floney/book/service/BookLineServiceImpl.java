@@ -8,6 +8,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundBookUserException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
@@ -36,8 +37,6 @@ public class BookLineServiceImpl implements BookLineService {
     private final CategoryRepository categoryRepository;
 
     private final BookLineCategoryRepository bookLineCategoryRepository;
-
-    private static final boolean ACTIVE = true;
 
     @Override
     @Transactional
@@ -96,7 +95,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private Book findBook(CreateLineRequest request) {
-        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 
