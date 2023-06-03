@@ -5,10 +5,10 @@ import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface BookUserRepository extends JpaRepository<BookUser, Long>, BookUserCustomRepository {
     int countBookUserByUserAndStatus(User user, Status status);
 
-    Optional<BookUser> findByUser(User user);
+    List<BookUser> findByUser(User user);
 }
