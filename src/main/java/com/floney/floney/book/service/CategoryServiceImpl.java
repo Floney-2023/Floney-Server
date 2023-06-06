@@ -42,6 +42,13 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryResponse.to(categories);
     }
 
+    @Override
+    @Transactional
+    public void deleteCustomCategory(String categoryName, String bookKey) {
+        categoryRepository.deleteCustomCategory(bookKey, categoryName);
+
+    }
+
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
