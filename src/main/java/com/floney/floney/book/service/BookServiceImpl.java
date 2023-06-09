@@ -140,6 +140,17 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(savedBook);
     }
 
+    @Override
+    public CheckBookValidResponse checkIsBookUser(String userEmail) {
+        List<BookUser> books = bookUserRepository.findByUser(findUser(userEmail));
+        if(books.isEmpty()){
+            return CheckBookValidResponse.noneBook();
+        }
+        else{
+            return CheckBookValidResponse.userBook(books);
+        }
+    }
+
     private User findUser(String email) {
         return userRepository.findUserByEmailAndStatus(email,Status.ACTIVE)
             .orElseThrow(() -> new UsernameNotFoundException(email));

@@ -101,4 +101,9 @@ public class BookController {
         bookLineService.deleteAllLine(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
+    }
 }
