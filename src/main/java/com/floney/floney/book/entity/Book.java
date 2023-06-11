@@ -68,6 +68,10 @@ public class Book extends BaseEntity {
 
     }
 
+    public static Book initBook() {
+        return new Book();
+    }
+
     public void processTrans(CreateLineRequest request) {
         AssetType assetType = find(request.getFlow());
         Long amount = request.getMoney();
