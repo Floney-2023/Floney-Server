@@ -132,7 +132,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return Optional.ofNullable(jpaQueryFactory.select(bookUser.book)
             .from(bookUser)
             .innerJoin(bookUser.user, user)
-            .where(user.email.eq(userEmail))
+            .where(bookUser.status.eq(Status.ACTIVE),
+                user.email.eq(userEmail))
             .orderBy(bookUser.updatedAt.desc())
             .fetchFirst());
     }
