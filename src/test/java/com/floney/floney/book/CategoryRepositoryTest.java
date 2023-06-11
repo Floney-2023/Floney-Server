@@ -72,7 +72,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("커스텀 카테로리를 삭제한다")
+    @DisplayName("커스텀 카테고리를 삭제한다")
     void delete_custom() {
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         categoryRepository.deleteCustomCategory(savedBook.getBookKey(),CHILD);
