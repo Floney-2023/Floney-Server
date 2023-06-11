@@ -5,7 +5,6 @@ import com.floney.floney.book.dto.OurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
-import com.querydsl.core.types.dsl.BooleanExpression;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,4 +22,6 @@ public interface BookUserCustomRepository {
     void countBookUser(Book book);
 
     BookUser findByEmailAndBook(String email, Book book);
+
+    Optional<Book> findMyExistsBook(String userEmail);
 }

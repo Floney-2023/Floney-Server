@@ -127,5 +127,13 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     }
 
-
+    @Override
+    public Optional<Book> findMyExistsBook(String userEmail) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookUser.book)
+            .from(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(userEmail))
+            .orderBy(bookUser.updatedAt.desc())
+            .fetchFirst());
+    }
 }
