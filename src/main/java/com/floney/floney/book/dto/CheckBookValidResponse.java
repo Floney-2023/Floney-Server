@@ -2,13 +2,12 @@ package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class CheckBookValidResponse {
     private String bookKey;
-
-    private CheckBookValidResponse() {
-    }
 
     private CheckBookValidResponse(String bookKey) {
         this.bookKey = bookKey;
