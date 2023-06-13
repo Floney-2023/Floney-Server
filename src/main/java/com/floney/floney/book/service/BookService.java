@@ -21,9 +21,9 @@ public interface BookService {
 
     void updateSeeProfile(SeeProfileRequest request);
 
-    @Transactional
     void updateAsset(UpdateAssetRequest request);
 
-    @Transactional
     void updateBudget(UpdateBudgetRequest request);
+
+    CheckBookValidResponse checkIsBookUser(String username);
 }

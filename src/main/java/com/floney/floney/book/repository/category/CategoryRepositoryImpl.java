@@ -94,7 +94,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public void deleteCustomCategory(String targetName, String bookKey) {
+    public void deleteCustomCategory(String bookKey,String targetName) {
         jpaQueryFactory.delete(bookCategory)
             .where(bookCategory.name.eq(targetName),
                 bookCategory.book.id.eq(
