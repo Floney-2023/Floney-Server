@@ -1,11 +1,12 @@
 package com.floney.floney.book.dto;
 
 import com.floney.floney.book.entity.Book;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CheckBookValidResponse {
     private String bookKey;
 
