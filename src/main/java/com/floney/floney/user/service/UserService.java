@@ -80,7 +80,7 @@ public class UserService {
         }
 
         user.delete();
-        deleteAllMyBookAccounts(user);
+        deleteAllBookAccountsBy(user);
     }
 
     public Token reissueToken(Token token) {
@@ -173,7 +173,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteAllMyBookAccounts(User user) {
+    public void deleteAllBookAccountsBy(User user) {
         userRepository.save(user);
         List<BookUser> myBookAccounts = bookUserRepository.findByUser(user);
         for (BookUser myAccounts : myBookAccounts) {

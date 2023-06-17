@@ -63,7 +63,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public Optional<BookUser> findUserWith(String nickName, String bookKey) {
+    public Optional<BookUser> findBookUserByKey(String nickName, String bookKey) {
         return Optional.ofNullable(jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
@@ -115,7 +115,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BookUser findByEmailAndBook(String email, Book target) {
+    public BookUser findBookUserBy(String email, Book target) {
         return jpaQueryFactory.selectFrom(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
@@ -128,7 +128,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public Optional<Book> findMyExistsBook(String userEmail) {
+    public Optional<Book> findBookBy(String userEmail) {
         return Optional.ofNullable(jpaQueryFactory.select(bookUser.book)
             .from(bookUser)
             .innerJoin(bookUser.user, user)

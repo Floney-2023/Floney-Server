@@ -99,7 +99,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookUser findBookUser(CreateLineRequest request) {
-        return bookUserRepository.findUserWith(request.getNickname(), request.getBookKey())
+        return bookUserRepository.findBookUserByKey(request.getNickname(), request.getBookKey())
             .orElseThrow(NotFoundBookUserException::new);
     }
 

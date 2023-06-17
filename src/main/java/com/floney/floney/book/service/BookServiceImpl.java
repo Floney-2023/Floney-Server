@@ -92,7 +92,7 @@ public class BookServiceImpl implements BookService {
         Book book = findBook(bookKey);
         book.isOwner(email);
         bookUserRepository.countBookUser(book);
-        BookUser owner = bookUserRepository.findByEmailAndBook(email, book);
+        BookUser owner = bookUserRepository.findBookUserBy(email, book);
 
         book.delete();
         owner.delete();
@@ -142,7 +142,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public CheckBookValidResponse checkIsBookUser(String userEmail) {
-        Book books = bookUserRepository.findMyExistsBook(userEmail)
+        Book books = bookUserRepository.findBookBy(userEmail)
             .orElse(Book.initBook());
         return CheckBookValidResponse.userBook(books);
     }

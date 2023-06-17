@@ -50,7 +50,7 @@ public class BookUserRepositoryTest {
             .build();
 
         bookUserRepository.save(newBookUser);
-        BookUser find = bookUserRepository.findUserWith(savedUser.getNickname(), savedBook.getBookKey()).get();
+        BookUser find = bookUserRepository.findBookUserByKey(savedUser.getNickname(), savedBook.getBookKey()).get();
         Assertions.assertThat(find.getBook().getName())
             .isEqualTo(savedBook.getName());
     }
@@ -81,7 +81,7 @@ public class BookUserRepositoryTest {
 
         bookUserRepository.save(owner);
 
-        Assertions.assertThat(bookUserRepository.findByEmailAndBook(savedUser.getEmail(), savedBook))
+        Assertions.assertThat(bookUserRepository.findBookUserBy(savedUser.getEmail(), savedBook))
             .isEqualTo(owner);
     }
 
@@ -145,7 +145,7 @@ public class BookUserRepositoryTest {
 
         bookUserRepository.save(bookUser1);
         bookUserRepository.save(bookUser2);
-        Assertions.assertThat(bookUserRepository.findMyExistsBook(user1.getEmail()).get())
+        Assertions.assertThat(bookUserRepository.findBookBy(user1.getEmail()).get())
             .isEqualTo(savedBook2);
 
     }
@@ -155,7 +155,7 @@ public class BookUserRepositoryTest {
     void my_non_exist_book() {
         User user1 = userRepository.save(UserFixture.createUser());
 
-        Assertions.assertThat(bookUserRepository.findMyExistsBook(user1.getEmail()))
+        Assertions.assertThat(bookUserRepository.findBookBy(user1.getEmail()))
             .isEqualTo(Optional.empty());
 
     }
