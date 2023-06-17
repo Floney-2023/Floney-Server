@@ -4,7 +4,6 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NoAuthorityException;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.config.UserFixture;
@@ -17,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
+import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
@@ -49,7 +50,7 @@ public class BookUserRepositoryTest {
             .build();
 
         bookUserRepository.save(newBookUser);
-        BookUser find = bookUserRepository.findUserWith(savedUser.getNickname(), savedBook.getBookKey()).get();
+        BookUser find = bookUserRepository.findBookUserByKey(savedUser.getNickname(), savedBook.getBookKey()).get();
         Assertions.assertThat(find.getBook().getName())
             .isEqualTo(savedBook.getName());
     }
@@ -80,7 +81,7 @@ public class BookUserRepositoryTest {
 
         bookUserRepository.save(owner);
 
-        Assertions.assertThat(bookUserRepository.findByEmailAndBook(savedUser.getEmail(), savedBook))
+        Assertions.assertThat(bookUserRepository.findBookUserBy(savedUser.getEmail(), savedBook))
             .isEqualTo(owner);
     }
 
@@ -114,7 +115,7 @@ public class BookUserRepositoryTest {
 
     @Test
     @DisplayName("가계부의 모든 멤버를 조회한다")
-    void allUser(){
+    void allUser() {
         Book savedBook = bookRepository.save(BookFixture.createBook());
 
         User user1 = userRepository.save(UserFixture.createUser());
@@ -128,6 +129,34 @@ public class BookUserRepositoryTest {
 
         assertThat(bookUserRepository.findAllUser(savedBook.getBookKey()).size())
             .isEqualTo(2);
+
+    }
+
+    @Test
+    @DisplayName("내가 속한 가계부 중 가장 최근에 업데이트를 한 가계부를 조회한다")
+    void my_exist_book() {
+        Book savedBook = bookRepository.save(BookFixture.createBook());
+        Book savedBook2 = bookRepository.save(BookFixture.createBookWith("BOOK2"));
+
+        User user1 = userRepository.save(UserFixture.createUser());
+
+        BookUser bookUser1 = BookFixture.createBookUser(user1, savedBook);
+        BookUser bookUser2 = BookFixture.createBookUser(user1, savedBook2);
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+        Assertions.assertThat(bookUserRepository.findBookBy(user1.getEmail()).get())
+            .isEqualTo(savedBook2);
+
+    }
+
+    @Test
+    @DisplayName("내가 속한 가계부가 없을 경우 optional empty를 반환한다")
+    void my_non_exist_book() {
+        User user1 = userRepository.save(UserFixture.createUser());
+
+        Assertions.assertThat(bookUserRepository.findBookBy(user1.getEmail()))
+            .isEqualTo(Optional.empty());
 
     }
 }

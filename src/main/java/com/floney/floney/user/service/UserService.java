@@ -80,7 +80,7 @@ public class UserService {
         }
 
         user.delete();
-        userRepository.save(user);
+        deleteAllBookAccountsBy(user);
     }
 
     public Token reissueToken(Token token) {
@@ -121,10 +121,8 @@ public class UserService {
         User user = loadUserByEmail(email);
         user.updateProfileImg(profileImg);
         userRepository.save(user);
-
-        BookUser bookUser = bookUserRepository.findByUser(user)
-            .orElse(null);
-        if (bookUser != null) {
+        List<BookUser> bookUsers = bookUserRepository.findByUser(user);
+        for (BookUser bookUser : bookUsers) {
             bookUser.updateProfileImg(profileImg);
             bookUserRepository.save(bookUser);
         }
@@ -171,6 +169,16 @@ public class UserService {
         } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
             .equals(emailAuthenticationRequest.getCode())) {
             throw new CodeNotSameException();
+        }
+    }
+
+    @Transactional
+    public void deleteAllBookAccountsBy(User user) {
+        userRepository.save(user);
+        List<BookUser> myBookAccounts = bookUserRepository.findByUser(user);
+        for (BookUser myAccounts : myBookAccounts) {
+            myAccounts.delete();
+            bookUserRepository.save(myAccounts);
         }
     }
 }

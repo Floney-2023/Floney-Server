@@ -10,19 +10,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CreateBookRequest {
     private String name;
-    private String profileImg;
+    private String bookImg;
 
     @Builder
-    private CreateBookRequest(String name, String profileImg) {
+    private CreateBookRequest(String name, String bookImg) {
         this.name = name;
-        this.profileImg = profileImg;
+        this.bookImg = bookImg;
     }
 
     public Book of(String email) {
         return Book.builder()
             .bookKey(CodeFactory.generateCode())
             .name(name)
-            .profileImg(profileImg)
+            .bookImg(bookImg)
             .owner(email)
             .code(CodeFactory.generateCode())
             .build();

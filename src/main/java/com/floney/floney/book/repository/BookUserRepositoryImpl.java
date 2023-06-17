@@ -63,7 +63,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public Optional<BookUser> findUserWith(String nickName, String bookKey) {
+    public Optional<BookUser> findBookUserByKey(String nickName, String bookKey) {
         return Optional.ofNullable(jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
@@ -87,7 +87,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         List<MyBookInfo> infos = new ArrayList<>();
         for (Book target : books) {
             MyBookInfo my = jpaQueryFactory.select(
-                    new QMyBookInfo(book.profileImg,
+                    new QMyBookInfo(book.bookImg,
                         book.name,
                         bookUser.count(),
                         book.bookKey))
@@ -115,7 +115,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BookUser findByEmailAndBook(String email, Book target) {
+    public BookUser findBookUserBy(String email, Book target) {
         return jpaQueryFactory.selectFrom(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
@@ -127,5 +127,14 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     }
 
-
+    @Override
+    public Optional<Book> findBookBy(String userEmail) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookUser.book)
+            .from(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(bookUser.status.eq(Status.ACTIVE),
+                user.email.eq(userEmail))
+            .orderBy(bookUser.updatedAt.desc())
+            .fetchFirst());
+    }
 }

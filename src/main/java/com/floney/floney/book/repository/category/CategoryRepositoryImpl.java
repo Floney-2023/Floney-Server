@@ -1,8 +1,9 @@
 package com.floney.floney.book.repository.category;
 
-import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.category.BookCategory;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -90,5 +91,17 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .fetch();
 
         return categories.size() == 1;
+    }
+
+    @Override
+    public void deleteCustomCategory(String bookKey,String targetName) {
+        jpaQueryFactory.delete(bookCategory)
+            .where(bookCategory.name.eq(targetName),
+                bookCategory.book.id.eq(
+                    JPAExpressions.select(book.id)
+                        .from(book)
+                        .where(book.bookKey.eq(bookKey))
+                ))
+            .execute();
     }
 }

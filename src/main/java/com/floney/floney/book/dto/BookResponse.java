@@ -11,7 +11,7 @@ public class BookResponse {
 
     private String name;
 
-    private String profileImg;
+    private String bookImg;
 
     private Boolean seeProfile;
 
@@ -26,9 +26,9 @@ public class BookResponse {
     private String code;
 
     @Builder
-    private BookResponse(String name, String profileImg, Boolean seeProfile, Long initialAsset, String bookKey, Long budget, Boolean carryOver, String code) {
+    private BookResponse(String name, String bookImg, Boolean seeProfile, Long initialAsset, String bookKey, Long budget, Boolean carryOver, String code) {
         this.name = name;
-        this.profileImg = profileImg;
+        this.bookImg = bookImg;
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
         this.bookKey = bookKey;
@@ -40,7 +40,7 @@ public class BookResponse {
     public static BookResponse of(Book newBook) {
         return BookResponse.builder()
             .name(newBook.getName())
-            .profileImg(newBook.getProfileImg())
+            .bookImg(newBook.getBookImg())
             .seeProfile(newBook.getSeeProfile())
             .initialAsset(newBook.getInitialAsset())
             .bookKey(newBook.getBookKey())

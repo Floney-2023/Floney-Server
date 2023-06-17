@@ -2,6 +2,7 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.*;
 import com.floney.floney.common.constant.Status;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,7 @@ import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.book.util.DateFactory.END;
 import static com.floney.floney.book.util.DateFactory.START;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
 @Repository
@@ -116,6 +118,15 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetch();
     }
 
-
+    @Override
+    public void deleteAllLines(String bookKey) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .where(bookLine.book.id.eq(
+                JPAExpressions.select(book.id)
+                    .from(book)
+                    .where(book.bookKey.eq(bookKey))
+            ))
+            .execute();
+    }
 }
-

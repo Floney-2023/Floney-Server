@@ -33,14 +33,14 @@ public class CategoryRepositoryTest {
 
     @BeforeEach
     void init() {
-        savedBook = bookRepository.save(BookFixture.createBookWith( "1234"));
+        savedBook = bookRepository.save(BookFixture.createBookWith("1234"));
         savedRoot = categoryRepository.save(CategoryFixture.createDefaultRoot("ROOT"));
     }
 
     @Test
     @DisplayName("가게부만의 카테고리를 추가할 수 있다")
     void save_category() {
-        Book savedBook2 = bookRepository.save(BookFixture.createBookWith( "2222"));
+        Book savedBook2 = bookRepository.save(BookFixture.createBookWith("2222"));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook.getBookKey())
@@ -57,20 +57,27 @@ public class CategoryRepositoryTest {
         categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD1"));
         categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD2"));
 
-        Assertions.assertThat(categoryRepository.findAllCategory("ROOT1","book").size())
+        Assertions.assertThat(categoryRepository.findAllCategory("ROOT1", "book").size())
             .isEqualTo(2);
     }
 
     @Test
     @DisplayName("가계부만의 카테고리 추가 시 중복을 체크한다")
-    void is_duplicate(){
+    void is_duplicate() {
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
 
-        Assertions.assertThat(categoryRepository.findCustomTarget(savedRoot,savedBook.getBookKey(),CHILD))
+        Assertions.assertThat(categoryRepository.findCustomTarget(savedRoot, savedBook.getBookKey(), CHILD))
             .isFalse();
     }
 
+    @Test
+    @DisplayName("커스텀 카테고리를 삭제한다")
+    void delete_custom() {
+        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        categoryRepository.deleteCustomCategory(savedBook.getBookKey(),CHILD);
+        Assertions.assertThat(categoryRepository.findByName(CHILD).isEmpty()).isTrue();
+    }
 
 
 }

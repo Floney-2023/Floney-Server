@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,7 +21,14 @@ public class CategoryController {
     @GetMapping("/books/categories")
     public ResponseEntity<?> findAllBy(@RequestParam String bookKey,
                                        @RequestParam String root) {
-        return new ResponseEntity<>(categoryService.findAllBy(root, bookKey), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(categoryService.findAllBy(root, bookKey), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/books/categories")
+    public ResponseEntity<?> deleteCategory(@RequestParam String bookKey,
+                                            @RequestParam String name) {
+        categoryService.deleteCustomCategory(bookKey, name);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

@@ -29,7 +29,7 @@ public class OurBookInfo {
         iSMyAccount(bookUsers, myEmail);
 
         return OurBookInfo.builder()
-            .bookImg(book.getProfileImg())
+            .bookImg(book.getBookImg())
             .bookName(book.getName())
             .startDay(formatToDate(book.getCreatedAt()))
             .bookUsers(bookUsers)

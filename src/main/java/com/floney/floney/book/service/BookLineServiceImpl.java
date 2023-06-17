@@ -8,7 +8,6 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotFoundBookUserException;
 import com.floney.floney.common.exception.NotFoundCategoryException;
@@ -22,6 +21,7 @@ import java.util.Map;
 
 import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 import static com.floney.floney.book.entity.BookLineCategory.of;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
 @Service
@@ -41,7 +41,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse createBookLine(CreateLineRequest request) {
-        Book book = findBook(request);
+        Book book = findBook(request.getBookKey());
         if (request.isNotExcept()) {
             book.processTrans(request);
         }
@@ -64,7 +64,16 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
-        return TotalDayLinesResponse.of(DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)), bookLineRepository.totalExpenseByDay(parse(date), bookKey));
+        return TotalDayLinesResponse.of(
+            DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)),
+            bookLineRepository.totalExpenseByDay(parse(date), bookKey),
+            findBook(bookKey).getSeeProfile());
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllLine(String bookKey) {
+        bookLineRepository.deleteAllLines(bookKey);
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
@@ -90,12 +99,12 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookUser findBookUser(CreateLineRequest request) {
-        return bookUserRepository.findUserWith(request.getNickname(), request.getBookKey())
+        return bookUserRepository.findBookUserByKey(request.getNickname(), request.getBookKey())
             .orElseThrow(NotFoundBookUserException::new);
     }
 
-    private Book findBook(CreateLineRequest request) {
-        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), Status.ACTIVE)
+    private Book findBook(String bookKey) {
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
 

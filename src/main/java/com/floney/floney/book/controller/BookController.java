@@ -1,9 +1,6 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.BookNameChangeRequest;
-import com.floney.floney.book.dto.CodeJoinRequest;
-import com.floney.floney.book.dto.CreateBookRequest;
-import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.dto.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -75,4 +72,38 @@ public class BookController {
             HttpStatus.OK);
     }
 
+    @PostMapping("/info/bookImg")
+    public ResponseEntity<?> updateBookImg(@RequestBody UpdateBookImgRequest request) {
+        bookService.updateBookImg(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/info/seeProfile")
+    public ResponseEntity<?> changeSeeProfile(@RequestBody SeeProfileRequest request) {
+        bookService.updateSeeProfile(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/info/asset")
+    public ResponseEntity<?> updateAsset(@RequestBody UpdateAssetRequest request) {
+        bookService.updateAsset(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/info/budget")
+    public ResponseEntity<?> updateBudget(@RequestBody UpdateBudgetRequest request) {
+        bookService.updateBudget(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/lines/delete")
+    public ResponseEntity<?> deleteAll(String bookKey) {
+        bookLineService.deleteAllLine(bookKey);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal UserDetails userDetail) {
+        return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
+    }
 }
