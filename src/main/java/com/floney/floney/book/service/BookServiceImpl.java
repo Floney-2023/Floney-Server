@@ -12,22 +12,20 @@ import com.floney.floney.common.exception.NotSubscribeException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final UserRepository userRepository;
-    private final BookRepository bookRepository;
-    private final BookUserRepository bookUserRepository;
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
+
+    private final BookRepository bookRepository;
+    private final BookUserRepository bookUserRepository;
 
     @Override
     @Transactional
@@ -147,11 +145,6 @@ public class BookServiceImpl implements BookService {
             .orElse(Book.initBook());
         return CheckBookValidResponse.userBook(books);
     }
-
-//    private User findUser(String email) {
-//        return userRepository.findByEmailAndStatus(email, Status.ACTIVE)
-//            .orElseThrow(() -> new UsernameNotFoundException(email));
-//    }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
