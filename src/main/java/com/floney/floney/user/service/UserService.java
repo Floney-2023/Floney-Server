@@ -13,6 +13,7 @@ import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
+import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +42,9 @@ public class UserService {
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
 
-    public Token login(LoginRequest loginRequest) {
+    public Token login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
         return jwtProvider.generateToken(authentication);
@@ -64,11 +66,11 @@ public class UserService {
     }
 
     @Transactional
-    public LoginRequest signup(SignupRequest signupRequest) {
-        User user = signupRequest.to();
+    public LoginRequest signup(SignupRequest request) {
+        User user = request.to();
         user.encodePassword(bCryptPasswordEncoder);
         userRepository.save(user);
-        return signupRequest.toLoginRequest();
+        return request.toLoginRequest();
     }
 
     @Transactional
@@ -97,30 +99,36 @@ public class UserService {
         return jwtProvider.generateToken(authentication);
     }
 
-    public MyPageResponse getUserInfo(String email) {
-        User user = loadUserByEmail(email);
+    public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
         List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
         return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 
     @Transactional
-    public void updateNickname(String nickname, String email) {
-        User user = loadUserByEmail(email);
+    public void updateNickname(String nickname, CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
         user.updateNickname(nickname);
+        userRepository.save(user);
     }
 
     @Transactional
-    public void updatePassword(String email, String password) {
-        User user = loadUserByEmail(email);
+    public void updatePassword(String password, User user) {
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
+        userRepository.save(user);
+    }
+
+    public void updatePassword(String password, String email) {
+        updatePassword(password, loadUserByEmail(email));
     }
 
     @Transactional
-    public void updateProfileImg(String profileImg, String email) {
-        User user = loadUserByEmail(email);
+    public void updateProfileImg(String profileImg, CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
         user.updateProfileImg(profileImg);
         userRepository.save(user);
+
         List<BookUser> bookUsers = bookUserRepository.findByUser(user);
         for (BookUser bookUser : bookUsers) {
             bookUser.updateProfileImg(profileImg);
@@ -151,7 +159,7 @@ public class UserService {
         return newPassword;
     }
 
-    public User loadUserByEmail(String email) {
+    private User loadUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
@@ -167,7 +175,7 @@ public class UserService {
         if (!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
             throw new EmailNotFoundException();
         } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
-            .equals(emailAuthenticationRequest.getCode())) {
+                .equals(emailAuthenticationRequest.getCode())) {
             throw new CodeNotSameException();
         }
     }

@@ -1,5 +1,6 @@
 package com.floney.floney.User.controller;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,8 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.MailAddressException;
+import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.common.token.dto.Token;
+import com.floney.floney.config.UserFixture;
+import com.floney.floney.config.WithMockCustomUser;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.entity.User;
 import com.floney.floney.user.service.KakaoUserService;
 import com.floney.floney.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +29,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
@@ -31,10 +39,7 @@ class UserControllerTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
-    @MockBean
-    private UserService userService;
-    @MockBean
-    private KakaoUserService kakaoUserService;
+    @MockBean private UserService userService;
 
     @Autowired
     public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper) {
@@ -113,6 +118,19 @@ class UserControllerTest {
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))
                 .andExpect(status().isInternalServerError())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("회원정보 얻기에 실패한다 - 존재하지 않는 회원")
+    @WithAnonymousUser
+    void getUserInfo_fail_throws_userNotFoundException() throws Exception {
+        // given
+        given(userService.getUserInfo(any(CustomUserDetails.class))).willThrow(new UserNotFoundException());
+
+        // when & then
+        mockMvc.perform(get("/users/mypage"))
+                .andExpect(status().is4xxClientError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
