@@ -35,6 +35,7 @@ public class UserController {
 
     @GetMapping("/email/mail")
     public ResponseEntity<?> sendEmailAuthMail(@RequestParam String email) {
+        customUserDetailsService.validateIfNewUser(email);
         userService.sendEmailAuthMail(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
