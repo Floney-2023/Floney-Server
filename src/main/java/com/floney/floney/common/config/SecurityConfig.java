@@ -1,9 +1,8 @@
 package com.floney.floney.common.config;
 
-import com.floney.floney.common.CustomAuthenticationEntryPoint;
-import com.floney.floney.common.token.JwtAuthenticationFilter;
-import com.floney.floney.common.token.JwtExceptionFilter;
-import com.floney.floney.common.token.JwtProvider;
+import com.floney.floney.common.filter.JwtAuthenticationFilter;
+import com.floney.floney.common.filter.JwtExceptionFilter;
+import com.floney.floney.common.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

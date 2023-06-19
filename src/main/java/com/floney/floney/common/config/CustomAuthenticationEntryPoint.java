@@ -1,4 +1,4 @@
-package com.floney.floney.common;
+package com.floney.floney.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.ErrorType;

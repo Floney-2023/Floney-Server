@@ -8,15 +8,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 @Getter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignupRequest {
 
-    @NotNull private String email;
-    @NotNull private String nickname;
-    @NotNull private String password;
+    @NotNull
+    private String email;
+    @NotNull
+    private String nickname;
+    @NotNull
+    private String password;
 
     public LoginRequest toLoginRequest() {
         return LoginRequest.builder()
@@ -30,11 +34,11 @@ public class SignupRequest {
                 .email(email)
                 .password(password)
                 .nickname(nickname)
-                .provider(Provider.EMAIL.getName())
+                .provider(Provider.EMAIL)
                 .build();
     }
 
-    public User to(String provider, String providerId) {
+    public User to(Provider provider, String providerId) {
         return User.builder()
                 .email(email)
                 .password("auth")

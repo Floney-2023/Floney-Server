@@ -13,7 +13,7 @@ public class TestUserDetailService implements UserDetailsService {
             User.builder()
                     .email("floney@naver.com")
                     .password("1234")
-                    .provider(Provider.EMAIL.getName())
+                    .provider(Provider.EMAIL)
                     .subscribe(false)
                     .profileImg("imageUrl")
                     .build());

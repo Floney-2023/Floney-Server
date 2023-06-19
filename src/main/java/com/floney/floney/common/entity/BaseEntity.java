@@ -1,4 +1,4 @@
-package com.floney.floney.common;
+package com.floney.floney.common.entity;
 
 import com.floney.floney.common.constant.Status;
 import lombok.AllArgsConstructor;

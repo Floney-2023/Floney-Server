@@ -1,4 +1,4 @@
-package com.floney.floney.common;
+package com.floney.floney.common.util;
 
 import com.floney.floney.common.exception.MailAddressException;
 import lombok.RequiredArgsConstructor;

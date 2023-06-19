@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.common.token.dto.Token;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.SignupRequest;
 
 public interface OAuthUserService {

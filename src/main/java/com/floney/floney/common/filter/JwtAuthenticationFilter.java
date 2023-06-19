@@ -1,5 +1,6 @@
-package com.floney.floney.common.token;
+package com.floney.floney.common.filter;
 
+import com.floney.floney.common.util.JwtProvider;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

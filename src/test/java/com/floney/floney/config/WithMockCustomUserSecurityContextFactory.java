@@ -12,12 +12,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
 public class WithMockCustomUserSecurityContextFactory implements WithSecurityContextFactory<WithMockCustomUser> {
+
     @Override
     public SecurityContext createSecurityContext(WithMockCustomUser customUser) {
         CustomUserDetails principal = CustomUserDetails.of(User.builder()
                 .email(customUser.username())
                 .password(customUser.password())
-                .provider(Provider.EMAIL.getName())
+                .provider(Provider.EMAIL)
                 .subscribe(false)
                 .profileImg("imageUrl")
                 .build());

@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class UserResponse {
     private final String nickname;
     private final String email;
-    private final String password;
     private final String profileImg;
     private final boolean subscribe;
     private final LocalDateTime lastAdTime;
@@ -25,11 +24,10 @@ public class UserResponse {
         return new UserResponseBuilder()
                 .nickname(entity.getNickname())
                 .email(entity.getEmail())
-                .password(entity.getPassword())
                 .profileImg(entity.getProfileImg())
                 .subscribe(entity.isSubscribe())
                 .lastAdTime(entity.getLastAdTime())
-                .provider(Provider.findByName(entity.getProvider()))
+                .provider(entity.getProvider())
                 .status(entity.getStatus())
                 .build();
     }
@@ -38,11 +36,10 @@ public class UserResponse {
         return User.builder()
                 .nickname(nickname)
                 .email(email)
-                .password(password)
                 .profileImg(profileImg)
                 .subscribe(subscribe)
                 .lastAdTime(lastAdTime)
-                .provider(provider.getName())
+                .provider(provider)
                 .build();
     }
 }

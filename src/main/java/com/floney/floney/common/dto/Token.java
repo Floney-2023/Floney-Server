@@ -1,4 +1,4 @@
-package com.floney.floney.common.token.dto;
+package com.floney.floney.common.dto;
 
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

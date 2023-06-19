@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Role {
+
     USER("ROLE_USER", 0),
     SUBSCRIBER("ROLE_SUBSCRIBER", 1),
     ADMIN("ROLE_ADMIN", 2);

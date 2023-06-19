@@ -1,6 +1,6 @@
 package com.floney.floney.user.controller;
 
-import com.floney.floney.common.token.dto.Token;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;

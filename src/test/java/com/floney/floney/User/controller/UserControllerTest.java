@@ -11,13 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.MailAddressException;
 import com.floney.floney.common.exception.UserNotFoundException;
-import com.floney.floney.common.token.dto.Token;
-import com.floney.floney.config.UserFixture;
-import com.floney.floney.config.WithMockCustomUser;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import com.floney.floney.user.entity.User;
-import com.floney.floney.user.service.KakaoUserService;
 import com.floney.floney.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +25,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 

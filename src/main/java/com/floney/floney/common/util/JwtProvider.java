@@ -1,6 +1,6 @@
-package com.floney.floney.common.token;
+package com.floney.floney.common.util;
 
-import com.floney.floney.common.token.dto.Token;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;

@@ -1,6 +1,6 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

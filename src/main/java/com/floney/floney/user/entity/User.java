@@ -1,6 +1,9 @@
 package com.floney.floney.user.entity;
 
-import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.user.dto.constant.Provider;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
@@ -49,7 +52,8 @@ public class User extends BaseEntity {
     private boolean subscribe;
 
     @Column(nullable = false, updatable = false, length = 10)
-    private String provider;
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     @Column(updatable = false, unique = true, length = 30)
     private String providerId;
