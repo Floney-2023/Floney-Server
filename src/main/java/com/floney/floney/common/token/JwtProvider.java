@@ -5,7 +5,6 @@ import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -20,8 +19,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtProvider {
+
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; // 60분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
+
     private final Key key;
     private final CustomUserDetailsService customUserDetailsService;
     private final RedisProvider redisProvider;
@@ -88,8 +89,7 @@ public class JwtProvider {
     public void validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-        } catch (IllegalArgumentException exception) {
-            throw new JwtException("");
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
