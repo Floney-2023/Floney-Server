@@ -5,6 +5,7 @@ import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/users")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
-        userService.validateIfNewUser(request.getEmail());
+        customUserDetailsService.validateIfNewUser(request.getEmail());
         return new ResponseEntity<>(userService.login(userService.signup(request)), HttpStatus.CREATED);
     }
 

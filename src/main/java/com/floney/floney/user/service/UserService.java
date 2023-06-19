@@ -41,6 +41,7 @@ public class UserService {
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     public Token login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -75,12 +76,7 @@ public class UserService {
 
     @Transactional
     public void signout(String email) {
-        User user = loadUserByEmail(email);
-
-        if (user.isInactive()) {
-            throw new UserSignoutException();
-        }
-
+        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
         user.delete();
         deleteAllBookAccountsBy(user);
     }
@@ -120,7 +116,8 @@ public class UserService {
     }
 
     public void updatePassword(String password, String email) {
-        updatePassword(password, loadUserByEmail(email));
+        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        updatePassword(password, user);
     }
 
     @Transactional
@@ -157,18 +154,6 @@ public class UserService {
 
         mailProvider.sendMail(email, mailSubject, mailText);
         return newPassword;
-    }
-
-    private User loadUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-    }
-
-    public void validateIfNewUser(String email) {
-        try {
-            User user = loadUserByEmail(email);
-            throw new UserFoundException(user.getProvider());
-        } catch (UserNotFoundException ignored) {
-        }
     }
 
     public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
