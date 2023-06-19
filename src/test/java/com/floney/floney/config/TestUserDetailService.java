@@ -15,7 +15,6 @@ public class TestUserDetailService implements UserDetailsService {
                     .password("1234")
                     .provider(Provider.EMAIL.getName())
                     .subscribe(false)
-                    .marketingAgree(false)
                     .profileImg("imageUrl")
                     .build());
 

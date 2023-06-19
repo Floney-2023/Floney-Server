@@ -17,7 +17,6 @@ public class SignupRequest {
     @NotNull private String email;
     @NotNull private String nickname;
     @NotNull private String password;
-    @NotNull private Boolean marketingAgree;
 
     public LoginRequest toLoginRequest() {
         return LoginRequest.builder()
@@ -31,7 +30,6 @@ public class SignupRequest {
                 .email(email)
                 .password(password)
                 .nickname(nickname)
-                .marketingAgree(marketingAgree)
                 .provider(Provider.EMAIL.getName())
                 .build();
     }
@@ -41,7 +39,6 @@ public class SignupRequest {
                 .email(email)
                 .password("auth")
                 .nickname(nickname)
-                .marketingAgree(marketingAgree)
                 .provider(provider)
                 .providerId(providerId)
                 .build();

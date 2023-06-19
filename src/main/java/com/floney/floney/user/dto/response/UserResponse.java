@@ -16,7 +16,6 @@ public class UserResponse {
     private final String email;
     private final String password;
     private final String profileImg;
-    private final boolean marketingAgree;
     private final boolean subscribe;
     private final LocalDateTime lastAdTime;
     private final Provider provider;
@@ -28,7 +27,6 @@ public class UserResponse {
                 .email(entity.getEmail())
                 .password(entity.getPassword())
                 .profileImg(entity.getProfileImg())
-                .marketingAgree(entity.getMarketingAgree())
                 .subscribe(entity.isSubscribe())
                 .lastAdTime(entity.getLastAdTime())
                 .provider(Provider.findByName(entity.getProvider()))
@@ -42,7 +40,6 @@ public class UserResponse {
                 .email(email)
                 .password(password)
                 .profileImg(profileImg)
-                .marketingAgree(marketingAgree)
                 .subscribe(subscribe)
                 .lastAdTime(lastAdTime)
                 .provider(provider.getName())

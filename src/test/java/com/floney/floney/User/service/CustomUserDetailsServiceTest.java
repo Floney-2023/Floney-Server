@@ -39,7 +39,6 @@ class CustomUserDetailsServiceTest {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .marketingAgree(user.getMarketingAgree())
                 .build();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 

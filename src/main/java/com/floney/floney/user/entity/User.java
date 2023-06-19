@@ -39,9 +39,6 @@ public class User extends BaseEntity {
     @Column(length = 300)
     private String profileImg;
 
-    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    private Boolean marketingAgree;
-
     @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)
     @Builder.Default

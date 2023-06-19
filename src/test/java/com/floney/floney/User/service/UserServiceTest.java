@@ -69,7 +69,6 @@ class UserServiceTest {
             .email(user.getEmail())
             .password(user.getPassword())
             .nickname(user.getNickname())
-            .marketingAgree(user.getMarketingAgree())
             .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
