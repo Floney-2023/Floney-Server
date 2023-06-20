@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserResponse {
+
     private final String nickname;
     private final String email;
     private final String profileImg;
@@ -20,15 +21,15 @@ public class UserResponse {
     private final Provider provider;
     private final Status status;
 
-    public static UserResponse from(User entity) {
+    public static UserResponse from(User user) {
         return new UserResponseBuilder()
-                .nickname(entity.getNickname())
-                .email(entity.getEmail())
-                .profileImg(entity.getProfileImg())
-                .subscribe(entity.isSubscribe())
-                .lastAdTime(entity.getLastAdTime())
-                .provider(entity.getProvider())
-                .status(entity.getStatus())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .profileImg(user.getProfileImg())
+                .subscribe(user.isSubscribe())
+                .lastAdTime(user.getLastAdTime())
+                .provider(user.getProvider())
+                .status(user.getStatus())
                 .build();
     }
 
