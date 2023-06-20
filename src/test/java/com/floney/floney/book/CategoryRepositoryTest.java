@@ -3,6 +3,7 @@ package com.floney.floney.book;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.config.TestConfig;
@@ -28,7 +29,7 @@ public class CategoryRepositoryTest {
     private BookRepository bookRepository;
 
     Book savedBook;
-    DefaultCategory savedRoot;
+    RootCategory savedRoot;
 
 
     @BeforeEach
