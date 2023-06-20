@@ -2,6 +2,7 @@ package com.floney.floney.book.repository.category;
 
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,7 +26,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     public List<Category> findAllCategory(String name, String bookKey) {
         Category targetRoot = jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
-                category.instanceOf(DefaultCategory.class))
+                category.instanceOf(RootCategory.class))
             .fetchOne();
 
         List<Category> children = jpaQueryFactory.selectFrom(category)
@@ -46,7 +47,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     public Category findFlowCategory(String name) {
         return jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
-                category.instanceOf(DefaultCategory.class),
+                category.instanceOf(RootCategory.class),
                 category.parent.isNull())
             .fetchOne();
     }

@@ -19,8 +19,8 @@ public class CategoryFixture {
             .build();
     }
 
-    public static DefaultCategory createDefaultRoot(String name) {
-        return DefaultCategory.builder()
+    public static RootCategory createDefaultRoot(String name) {
+        return RootCategory.builder()
             .name(name)
             .build();
     }

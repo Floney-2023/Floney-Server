@@ -2,6 +2,7 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.repository.BookRepository;
@@ -61,7 +62,7 @@ public class CategoryServiceTest {
     @DisplayName("사용자가 자식 카테고리를 추가한다")
     void custom_category() {
         Book savedBook = BookFixture.createBookWith("1234");
-        DefaultCategory rootCategory = createDefaultRoot("ROOT");
+        RootCategory rootCategory = createDefaultRoot("ROOT");
 
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
@@ -79,7 +80,7 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("가계부를 찾을 수 없으면 NotFoundBookException을 발생한다")
     void not_found_book() {
-        DefaultCategory rootCategory = createDefaultRoot("ROOT");
+        RootCategory rootCategory = createDefaultRoot("ROOT");
 
         given(categoryRepository.findByName(ROOT))
             .willReturn(ofNullable(rootCategory));
