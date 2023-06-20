@@ -1,19 +1,28 @@
 package com.floney.floney.User.service;
 
+import static com.floney.floney.common.constant.Status.INACTIVE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.MailProvider;
-import com.floney.floney.common.exception.UserFoundException;
+import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.exception.UserSignoutException;
-import com.floney.floney.common.token.JwtProvider;
-import com.floney.floney.common.token.RedisProvider;
+import com.floney.floney.common.util.JwtProvider;
+import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
+import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.UserService;
+import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +32,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Arrays;
-import java.util.Optional;
-
-import static com.floney.floney.common.constant.Status.INACTIVE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -52,6 +53,8 @@ class UserServiceTest {
     private RedisProvider redisProvider;
     @Mock
     private MailProvider mailProvider;
+    @Mock
+    private CustomUserDetailsService customUserDetailsService;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -62,7 +65,6 @@ class UserServiceTest {
             .email(user.getEmail())
             .password(user.getPassword())
             .nickname(user.getNickname())
-            .marketingAgree(user.getMarketingAgree())
             .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
@@ -75,29 +77,12 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입에 실패한다 - 이미 가입된 회원")
-    void signup_fail_throws_userFoundException() {
-        // given
-        User user = UserFixture.getUser();
-        SignupRequest signupRequest = SignupRequest.builder()
-            .email(user.getEmail())
-            .password(user.getPassword())
-            .nickname(user.getNickname())
-            .marketingAgree(user.getMarketingAgree())
-            .build();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
-        // when & then
-        assertThatThrownBy(() -> userService.validateIfNewUser(signupRequest.getEmail()))
-            .isInstanceOf(UserFoundException.class);
-    }
-
-    @Test
     @DisplayName("회원탈퇴에 성공한다")
     void signout_success() {
         // given
         User user = UserFixture.createUser();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(customUserDetailsService.loadUserByUsername(user.getEmail()))
+                .willReturn(new CustomUserDetails(user, null));
 
         // when
         userService.signout(user.getEmail());
@@ -112,7 +97,7 @@ class UserServiceTest {
         // given
         User user = UserFixture.createUser();
         user.delete();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(customUserDetailsService.loadUserByUsername(user.getEmail())).willThrow(UserSignoutException.class);
 
         // when & then
         assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserSignoutException.class);
@@ -123,7 +108,7 @@ class UserServiceTest {
     void signout_fail_throws_usernameNotFoundException() {
         // given
         User user = UserFixture.createUser();
-        given(userRepository.findByEmail(user.getEmail())).willThrow(UsernameNotFoundException.class);
+        given(customUserDetailsService.loadUserByUsername(user.getEmail())).willThrow(UsernameNotFoundException.class);
 
         // when & then
         assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UsernameNotFoundException.class);
@@ -134,23 +119,11 @@ class UserServiceTest {
     void getUserInfo_success() {
         // given
         User user = UserFixture.getUser();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-        given(bookUserRepository.findMyBooks(user))
-            .willReturn(Arrays.asList(BookFixture.myBookInfo()));
-        // when & then
-        assertThat(userService.getUserInfo(user.getEmail())).isEqualTo(MyPageResponse.from(UserResponse.from(user),
-            Arrays.asList(BookFixture.myBookInfo())));
-    }
-
-    @Test
-    @DisplayName("회원정보 얻기에 실패한다 - 존재하지 않는 회원")
-    void getUserInfo_fail_throws_userNotFoundException() {
-        // given
-        User user = UserFixture.getUser();
-        given(userRepository.findByEmail(user.getEmail())).willThrow(UsernameNotFoundException.class);
+        given(bookUserRepository.findMyBooks(user)).willReturn(Collections.singletonList(BookFixture.myBookInfo()));
 
         // when & then
-        assertThatThrownBy(() -> userService.getUserInfo(user.getEmail())).isInstanceOf(UsernameNotFoundException.class);
+        assertThat(userService.getUserInfo(CustomUserDetails.of(user)))
+                .isEqualTo(MyPageResponse.from(UserResponse.from(user), Collections.singletonList(BookFixture.myBookInfo())));
     }
 
     @Test

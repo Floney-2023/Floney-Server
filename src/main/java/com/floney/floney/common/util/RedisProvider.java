@@ -1,4 +1,4 @@
-package com.floney.floney.common.token;
+package com.floney.floney.common.util;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;

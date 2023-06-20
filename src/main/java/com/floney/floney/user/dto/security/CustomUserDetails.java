@@ -1,33 +1,31 @@
 package com.floney.floney.user.dto.security;
 
-import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.constant.Role;
+import com.floney.floney.user.entity.User;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Getter
 @AllArgsConstructor
-public class UserDetail implements UserDetails {
-    private final UserResponse userResponse;
+public class CustomUserDetails implements UserDetails {
+    private final User user;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public static UserDetail of(UserResponse userResponse) {
+    public static CustomUserDetails of(User user) {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
 
-        if(userResponse.isSubscribe()) {
+        if(user.isSubscribe()) {
             roles.add(Role.SUBSCRIBER);
         }
 
-        return new UserDetail(
-                userResponse,
+        return new CustomUserDetails(
+                user,
                 roles.stream()
                         .map(Role::getName)
                         .map(SimpleGrantedAuthority::new)
@@ -42,12 +40,12 @@ public class UserDetail implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userResponse.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userResponse.getEmail();
+        return user.getEmail();
     }
 
     @Override
@@ -68,6 +66,10 @@ public class UserDetail implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User getUser() {
+        return user;
     }
 
 }

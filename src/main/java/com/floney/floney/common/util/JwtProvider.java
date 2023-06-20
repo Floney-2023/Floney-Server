@@ -1,11 +1,10 @@
-package com.floney.floney.common.token;
+package com.floney.floney.common.util;
 
-import com.floney.floney.common.token.dto.Token;
-import com.floney.floney.user.dto.security.UserDetail;
-import com.floney.floney.user.service.CustomUserDetailService;
+import com.floney.floney.common.dto.Token;
+import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -20,17 +19,19 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtProvider {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; // 60분
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
+
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
+
     private final Key key;
-    private final CustomUserDetailService customUserDetailService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final RedisProvider redisProvider;
 
     public JwtProvider(@Value("${jwt.token.secret-key}") String secretKey,
-                       CustomUserDetailService customUserDetailService,
+                       CustomUserDetailsService customUserDetailsService,
                        RedisProvider redisProvider) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-        this.customUserDetailService = customUserDetailService;
+        this.customUserDetailsService = customUserDetailsService;
         this.redisProvider = redisProvider;
     }
 
@@ -72,9 +73,9 @@ public class JwtProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
-        UserDetail userDetail = (UserDetail) customUserDetailService.loadUserByUsername(claims.getSubject());
+        CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(claims.getSubject());
 
-        return new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
     }
 
     public Claims parseClaims(String token) {
@@ -88,8 +89,7 @@ public class JwtProvider {
     public void validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-        } catch (IllegalArgumentException exception) {
-            throw new JwtException("");
+        } catch (IllegalArgumentException ignored) {
         }
     }
 

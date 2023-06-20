@@ -1,7 +1,6 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.common.BaseEntity;
-import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;

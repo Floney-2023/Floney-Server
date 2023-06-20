@@ -3,16 +3,17 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.dto.MyBookInfo;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.MailProvider;
+import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.exception.*;
-import com.floney.floney.common.token.JwtProvider;
-import com.floney.floney.common.token.RedisProvider;
-import com.floney.floney.common.token.dto.Token;
+import com.floney.floney.common.util.JwtProvider;
+import com.floney.floney.common.util.RedisProvider;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
+import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
@@ -39,10 +40,11 @@ public class UserService {
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public Token login(LoginRequest loginRequest) {
+    public Token login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
 
         return jwtProvider.generateToken(authentication);
@@ -64,21 +66,16 @@ public class UserService {
     }
 
     @Transactional
-    public LoginRequest signup(SignupRequest signupRequest) {
-        User user = signupRequest.to();
+    public LoginRequest signup(SignupRequest request) {
+        User user = request.to();
         user.encodePassword(bCryptPasswordEncoder);
         userRepository.save(user);
-        return signupRequest.toLoginRequest();
+        return request.toLoginRequest();
     }
 
     @Transactional
     public void signout(String email) {
-        User user = loadUserByEmail(email);
-
-        if (user.isInactive()) {
-            throw new UserSignoutException();
-        }
-
+        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
         user.delete();
         deleteAllBookAccountsBy(user);
     }
@@ -97,30 +94,37 @@ public class UserService {
         return jwtProvider.generateToken(authentication);
     }
 
-    public MyPageResponse getUserInfo(String email) {
-        User user = loadUserByEmail(email);
+    public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
         List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
         return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 
     @Transactional
-    public void updateNickname(String nickname, String email) {
-        User user = loadUserByEmail(email);
+    public void updateNickname(String nickname, CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
         user.updateNickname(nickname);
+        userRepository.save(user);
     }
 
     @Transactional
-    public void updatePassword(String email, String password) {
-        User user = loadUserByEmail(email);
+    public void updatePassword(String password, User user) {
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
+        userRepository.save(user);
+    }
+
+    public void updatePassword(String password, String email) {
+        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        updatePassword(password, user);
     }
 
     @Transactional
-    public void updateProfileImg(String profileImg, String email) {
-        User user = loadUserByEmail(email);
+    public void updateProfileImg(String profileImg, CustomUserDetails userDetails) {
+        User user = userDetails.getUser();
         user.updateProfileImg(profileImg);
         userRepository.save(user);
+
         List<BookUser> bookUsers = bookUserRepository.findByUser(user);
         for (BookUser bookUser : bookUsers) {
             bookUser.updateProfileImg(profileImg);
@@ -151,23 +155,11 @@ public class UserService {
         return newPassword;
     }
 
-    public User loadUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-    }
-
-    public void validateIfNewUser(String email) {
-        try {
-            User user = loadUserByEmail(email);
-            throw new UserFoundException(user.getProvider());
-        } catch (UserNotFoundException ignored) {
-        }
-    }
-
     public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
         if (!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
             throw new EmailNotFoundException();
         } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
-            .equals(emailAuthenticationRequest.getCode())) {
+                .equals(emailAuthenticationRequest.getCode())) {
             throw new CodeNotSameException();
         }
     }

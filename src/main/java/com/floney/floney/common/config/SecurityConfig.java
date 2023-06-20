@@ -1,8 +1,8 @@
 package com.floney.floney.common.config;
 
-import com.floney.floney.common.CustomAuthenticationEntryPoint;
-import com.floney.floney.common.token.JwtAuthenticationFilter;
-import com.floney.floney.common.token.JwtProvider;
+import com.floney.floney.common.filter.JwtAuthenticationFilter;
+import com.floney.floney.common.filter.JwtExceptionFilter;
+import com.floney.floney.common.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtProvider jwtProvider;
     private final RedisTemplate<String, String> redisTemplate;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -63,7 +64,8 @@ public class SecurityConfig {
 
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, redisTemplate),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }

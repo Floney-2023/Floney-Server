@@ -22,9 +22,8 @@ public class UserFixture {
                 .password("1234")
                 .profileImg("img")
                 .subscribe(false)
-                .marketingAgree(true)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-                .provider(Provider.EMAIL.getName())
+                .provider(Provider.EMAIL)
                 .build();
     }
 
@@ -35,9 +34,8 @@ public class UserFixture {
             .password("1234")
             .profileImg("img")
             .subscribe(false)
-            .marketingAgree(true)
             .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-            .provider(Provider.EMAIL.getName())
+            .provider(Provider.EMAIL)
             .build();
     }
 

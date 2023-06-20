@@ -9,71 +9,70 @@ import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotSubscribeException;
+import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private final UserRepository userRepository;
-    private final BookRepository bookRepository;
-    private final BookUserRepository bookUserRepository;
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
 
+    private final BookRepository bookRepository;
+    private final BookUserRepository bookUserRepository;
+
     @Override
     @Transactional
-    public CreateBookResponse createBook(String email, CreateBookRequest request) {
-        Book newBook = request.of(email);
+    public CreateBookResponse createBook(CustomUserDetails userDetails, CreateBookRequest request) {
+        Book newBook = request.of(userDetails.getUsername());
         Book savedBook = bookRepository.save(newBook);
 
-        bookUserRepository.save(BookUser.of(findUser(email), savedBook));
+        bookUserRepository.save(BookUser.of(userDetails.getUser(), savedBook));
         return CreateBookResponse.of(savedBook);
     }
 
     @Override
     @Transactional
-    public CreateBookResponse addBook(String email, CreateBookRequest request) {
-        User requestUser = findUser(email);
-        int count = bookUserRepository.countBookUserByUserAndStatus(requestUser, Status.ACTIVE);
-        if (requestUser.isSubscribe()) {
-            return subscribeCreateBook(count, email, request);
+    public CreateBookResponse addBook(CustomUserDetails userDetails, CreateBookRequest request) {
+        User user = userDetails.getUser();
+        int count = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
+        if (user.isSubscribe()) {
+            return subscribeCreateBook(count, userDetails, request);
         } else {
-            return notSubscribeCreateBook(count, email, request);
+            return notSubscribeCreateBook(count, userDetails, request);
         }
     }
 
     @Transactional
-    public CreateBookResponse subscribeCreateBook(int count, String email, CreateBookRequest request) {
+    public CreateBookResponse subscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
         if (count >= SUBSCRIBE_MAX) {
             throw new LimitRequestException();
         }
-        return createBook(email, request);
+        return createBook(userDetails, request);
     }
 
     @Transactional
-    public CreateBookResponse notSubscribeCreateBook(int count, String email, CreateBookRequest request) {
+    public CreateBookResponse notSubscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
         if (count >= DEFAULT_MAX) {
             throw new NotSubscribeException();
         }
-        return createBook(email, request);
+        return createBook(userDetails, request);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public CreateBookResponse joinWithCode(String email, CodeJoinRequest request) {
+    public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
-        bookUserRepository.save(BookUser.of(findUser(email), book));
+        bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
         return CreateBookResponse.of(book);
     }
@@ -141,15 +140,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CheckBookValidResponse checkIsBookUser(String userEmail) {
-        Book books = bookUserRepository.findBookBy(userEmail)
+    public CheckBookValidResponse checkIsBookUser(String email) {
+        Book books = bookUserRepository.findBookBy(email)
             .orElse(Book.initBook());
         return CheckBookValidResponse.userBook(books);
-    }
-
-    private User findUser(String email) {
-        return userRepository.findUserByEmailAndStatus(email, Status.ACTIVE)
-            .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
     private Book findBook(String bookKey) {

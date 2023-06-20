@@ -3,6 +3,7 @@ package com.floney.floney.book.controller;
 import com.floney.floney.book.dto.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
+import com.floney.floney.user.dto.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +21,18 @@ public class BookController {
     private final BookLineService bookLineService;
 
     @PostMapping()
-    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal UserDetails userDetail) {
-        return new ResponseEntity<>(bookService.createBook(userDetail.getUsername(), request), HttpStatus.CREATED);
+    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.createBook(userDetails, request), HttpStatus.CREATED);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal UserDetails userDetail) {
-        return new ResponseEntity<>(bookService.addBook(userDetail.getUsername(), request), HttpStatus.CREATED);
+    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.addBook(userDetails, request), HttpStatus.CREATED);
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code, @AuthenticationPrincipal UserDetails userDetail) {
-        return new ResponseEntity<>(bookService.joinWithCode(userDetail.getUsername(), code), HttpStatus.ACCEPTED);
+    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.joinWithCode(userDetails, code), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/lines")
@@ -58,18 +59,16 @@ public class BookController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteBook(
-        @RequestParam("bookKey") String bookKey,
-        @AuthenticationPrincipal UserDetails userDetail) {
-        bookService.deleteBook(userDetail.getUsername(), bookKey);
+    public ResponseEntity<?> deleteBook(@RequestParam("bookKey") String bookKey,
+                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        bookService.deleteBook(userDetails.getUsername(), bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/info")
     public ResponseEntity<?> getMyBookInfo(@RequestParam("bookKey") String bookKey,
-                                           @AuthenticationPrincipal UserDetails userDetail) {
-        return new ResponseEntity<>(bookService.getBookInfo(bookKey, userDetail.getUsername()),
-            HttpStatus.OK);
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.getBookInfo(bookKey, userDetails.getUsername()), HttpStatus.OK);
     }
 
     @PostMapping("/info/bookImg")
@@ -103,7 +102,7 @@ public class BookController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal UserDetails userDetail) {
+    public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
     }
 }

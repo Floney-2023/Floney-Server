@@ -1,7 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
-import com.floney.floney.common.BaseEntity;
+import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -15,7 +15,6 @@ import java.util.Map;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 
@@ -40,7 +39,6 @@ public class BookLine extends BaseEntity {
     @Column(nullable = false, length = 1)
     private Boolean exceptStatus;
 
-
     @Builder
     public BookLine(BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
         this.writer = writer;
@@ -58,6 +56,4 @@ public class BookLine extends BaseEntity {
     public String getTargetCategory(CategoryEnum key) {
         return this.bookLineCategories.get(key).getName();
     }
-
-
 }
