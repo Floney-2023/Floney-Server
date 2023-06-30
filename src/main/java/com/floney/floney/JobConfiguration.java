@@ -1,10 +1,13 @@
 package com.floney.floney;
 
 import com.floney.floney.book.dto.CarryOverInfo;
+import com.floney.floney.book.dto.CategoryCreator;
+import com.floney.floney.book.dto.constant.CategoryEnum;
+import com.floney.floney.book.entity.BookLine;
+import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,8 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
@@ -26,14 +31,13 @@ import java.util.HashMap;
 @Configuration
 public class JobConfiguration {
     private final BookLineCategoryRepository bookLineCategoryRepository;
-    private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final CategoryRepository categoryRepository;
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
 
-    private int chunkSize = 10;
+    private final int CHUNK_SIZE = 10;
 
     @Bean
     public Job jpaPagingItemReaderJob() {
@@ -44,9 +48,11 @@ public class JobConfiguration {
 
     @Bean
     public Step jpaPagingItemReaderStep() {
-        return stepBuilderFactory.get("carrssyOver")
-            .<CarryOver, CarryOverInfo>chunk(chunkSize)
+        return stepBuilderFactory.get("carryOvser")
+            .<CarryOver, CarryOverInfo>chunk(CHUNK_SIZE)
             .reader(jpaPagingItemReader())
+            .processor(jpaProcessor())
+            .writer(jpaPagingItemWriter())
             .build();
     }
 
@@ -57,7 +63,7 @@ public class JobConfiguration {
         return new JpaPagingItemReaderBuilder<CarryOver>()
             .name("jpaPagingItemReader")
             .entityManagerFactory(entityManagerFactory)
-            .pageSize(chunkSize)
+            .pageSize(CHUNK_SIZE)
             .queryString("select new com.floney.floney.book.entity.CarryOver(book , sum(case when blc.name = '수입' then bl.money else 0 end), " +
                 "sum(case when blc.name = '지출' then bl.money else 0 end))" +
                 "from BookLine bl " +
@@ -70,4 +76,24 @@ public class JobConfiguration {
             .build();
     }
 
+    @Bean
+    public ItemProcessor<CarryOver, CarryOverInfo> jpaProcessor() {
+        return CarryOver::calculateValue;
+    }
+
+    private ItemWriter<CarryOverInfo> jpaPagingItemWriter() {
+        CategoryCreator categoryCreator = new CategoryCreator(categoryRepository);
+
+        return CarryOverInfos -> {
+            for (CarryOverInfo carryOverInfo : CarryOverInfos) {
+                BookLine line = bookLineRepository.save(carryOverInfo.getBookLine());
+
+                BookLineCategory lineCategory = categoryCreator.create(carryOverInfo);
+                bookLineCategoryRepository.save(lineCategory);
+                line.add(CategoryEnum.ASSET, lineCategory);
+
+                bookLineRepository.save(line);
+            }
+        };
+    }
 }
