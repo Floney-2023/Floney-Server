@@ -48,7 +48,7 @@ public class JobConfiguration {
 
     @Bean
     public Step jpaPagingItemReaderStep() {
-        return stepBuilderFactory.get("carryOvser")
+        return stepBuilderFactory.get("carryOverStep")
             .<CarryOver, CarryOverInfo>chunk(CHUNK_SIZE)
             .reader(jpaPagingItemReader())
             .processor(jpaProcessor())
