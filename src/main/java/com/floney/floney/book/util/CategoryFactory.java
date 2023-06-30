@@ -18,13 +18,13 @@ public class CategoryFactory {
 
     public BookLineCategory create(CarryOverInfo info) {
         if (info.getAssetType() == INCOME) {
-            return inComeCategory(info.getBookLine());
+            return incomeCategory(info.getBookLine());
         } else {
-            return outComeCategory(info.getBookLine());
+            return outcomeCategory(info.getBookLine());
         }
     }
 
-    private BookLineCategory inComeCategory(BookLine line) {
+    private BookLineCategory incomeCategory(BookLine line) {
         return BookLineCategory.builder()
             .bookLine(line)
             .name(INCOME.name())
@@ -33,7 +33,7 @@ public class CategoryFactory {
     }
 
 
-    private BookLineCategory outComeCategory(BookLine line) {
+    private BookLineCategory outcomeCategory(BookLine line) {
         return BookLineCategory.builder()
             .bookLine(line)
             .name(OUTCOME.name())
