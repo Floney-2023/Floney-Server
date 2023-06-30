@@ -1,7 +1,7 @@
 package com.floney.floney;
 
 import com.floney.floney.book.dto.CarryOverInfo;
-import com.floney.floney.book.dto.CategoryCreator;
+import com.floney.floney.book.util.CategoryFactory;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
@@ -30,9 +30,10 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 @Configuration
 public class JobConfiguration {
+
+    private final CategoryFactory categoryCreator;
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final BookLineRepository bookLineRepository;
-    private final CategoryRepository categoryRepository;
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
@@ -82,7 +83,6 @@ public class JobConfiguration {
     }
 
     private ItemWriter<CarryOverInfo> jpaPagingItemWriter() {
-        CategoryCreator categoryCreator = new CategoryCreator(categoryRepository);
 
         return CarryOverInfos -> {
             for (CarryOverInfo carryOverInfo : CarryOverInfos) {

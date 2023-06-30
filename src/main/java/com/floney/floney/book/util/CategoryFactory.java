@@ -1,16 +1,19 @@
-package com.floney.floney.book.dto;
+package com.floney.floney.book.util;
 
+import com.floney.floney.book.dto.CarryOverInfo;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @RequiredArgsConstructor
-public class CategoryCreator {
+@Component
+public class CategoryFactory {
     private final CategoryRepository categoryRepository;
 
     public BookLineCategory create(CarryOverInfo info) {
