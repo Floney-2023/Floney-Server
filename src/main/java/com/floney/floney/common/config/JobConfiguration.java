@@ -64,7 +64,7 @@ public class JobConfiguration {
             .name("jpaPagingItemReader")
             .entityManagerFactory(entityManagerFactory)
             .pageSize(CHUNK_SIZE)
-            .queryString("select new com.floney.floney.book.entity.CarryOver(book,sum(case when blc.name = '수입' then bl.money else 0 end), " +
+            .queryString("select new com.floney.floney.book.entity.CarryOver(book , sum(case when blc.name = '수입' then bl.money else 0 end), " +
                 "sum(case when blc.name = '지출' then bl.money else 0 end))" +
                 "from BookLine bl " +
                 "inner join bl.book book " +
