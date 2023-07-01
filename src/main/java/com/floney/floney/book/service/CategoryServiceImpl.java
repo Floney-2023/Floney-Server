@@ -29,7 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createUserCategory(CreateCategoryRequest request) {
         Category parent = rootParent();
         if (request.hasParent()) {
-            parent = findParent(request.getParent());
+            parent = categoryRepository.findParentCategory(request.getParent())
+                .orElseThrow(NotFoundCategoryException::new);
         }
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
         return CategoryResponse.of(newCategory);
@@ -52,11 +53,6 @@ public class CategoryServiceImpl implements CategoryService {
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
-    }
-
-    private Category findParent(String parent) {
-        return categoryRepository.findByName(parent)
-            .orElseThrow(NotFoundCategoryException::new);
     }
 
 }

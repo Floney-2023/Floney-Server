@@ -105,4 +105,14 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                 ))
             .execute();
     }
+
+    @Override
+    public Optional<Category> findParentCategory(String parentName){
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(parentName),
+                category.instanceOf(RootCategory.class))
+            .innerJoin(category)
+            .fetchOne());
+    }
+
 }
