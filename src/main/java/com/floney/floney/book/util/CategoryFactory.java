@@ -27,8 +27,8 @@ public class CategoryFactory {
     private BookLineCategory incomeCategory(BookLine line) {
         return BookLineCategory.builder()
             .bookLine(line)
-            .name(INCOME.name())
-            .category(findCategory(INCOME.name()))
+            .name(INCOME.getKind())
+            .category(findCategory(INCOME.getKind()))
             .build();
     }
 
@@ -36,13 +36,13 @@ public class CategoryFactory {
     private BookLineCategory outcomeCategory(BookLine line) {
         return BookLineCategory.builder()
             .bookLine(line)
-            .name(OUTCOME.name())
-            .category(findCategory(OUTCOME.name()))
+            .name(OUTCOME.getKind())
+            .category(findCategory(OUTCOME.getKind()))
             .build();
 
     }
 
     private Category findCategory(String category) {
-        return categoryRepository.findAssetCategory(category);
+        return categoryRepository.findFlowCategory(category);
     }
 }
