@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
@@ -42,10 +42,6 @@ public abstract class BaseEntity {
 
     protected BaseEntity() {
         this.status = Status.ACTIVE;
-    }
-
-    protected BaseEntity(Long id) {
-        this.id = id;
     }
 
     public void delete() {
