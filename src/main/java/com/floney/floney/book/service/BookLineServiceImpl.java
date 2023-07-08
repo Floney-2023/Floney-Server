@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +55,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public MonthLinesResponse showByMonth(String bookKey, String date) {
-        Map<String, LocalDate> dates = DateFactory.getDate(date);
+        DatesRequest dates = DateFactory.getDate(date);
         return MonthLinesResponse.of(date, daysExpense(bookKey, dates)
             , totalExpense(bookKey, dates));
     }
@@ -115,11 +114,11 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookException::new);
     }
 
-    private List<BookLineExpense> daysExpense(String bookKey, Map<String, LocalDate> dates) {
+    private List<BookLineExpense> daysExpense(String bookKey, DatesRequest dates) {
         return bookLineRepository.dayIncomeAndOutcome(bookKey, dates);
     }
 
-    private Map<String, Long> totalExpense(String bookKey, Map<String, LocalDate> dates) {
+    private Map<String, Long> totalExpense(String bookKey, DatesRequest dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
 

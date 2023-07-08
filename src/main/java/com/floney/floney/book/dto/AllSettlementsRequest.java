@@ -2,7 +2,6 @@ package com.floney.floney.book.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,11 +22,15 @@ public class AllSettlementsRequest {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-    public List<String> users(){
+
+    public List<String> users() {
         return usersEmails;
     }
 
     public void datesTo() {
-        this.dates = new DatesRequest(startDate,endDate);
+        this.dates = DatesRequest.builder()
+            .startDate(startDate)
+            .endDate(endDate)
+            .build();
     }
 }

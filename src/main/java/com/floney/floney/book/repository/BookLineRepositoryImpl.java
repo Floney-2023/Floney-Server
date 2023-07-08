@@ -1,7 +1,6 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.*;
-import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,12 +17,9 @@ import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookLine.bookLine;
 import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
-import static com.floney.floney.book.util.DateFactory.END;
-import static com.floney.floney.book.util.DateFactory.START;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.types.dsl.Expressions.list;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,13 +28,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Map<String, Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates) {
+    public Map<String, Long> totalExpenseByMonth(String bookKey, DatesRequest dates) {
         return jpaQueryFactory
             .from(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
-                bookLine.lineDate.between(dates.get(START), dates.get(END)),
+                bookLine.lineDate.between(dates.start(), dates.end()),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey),
                 book.status.eq(Status.ACTIVE),
@@ -98,7 +94,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, Map<String, LocalDate> dates) {
+    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesRequest dates) {
         return jpaQueryFactory.select(
                 new QBookLineExpense(
                     bookLine.lineDate,
@@ -112,7 +108,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .where(
                 bookLine.status.eq(Status.ACTIVE),
                 book.status.eq(Status.ACTIVE),
-                bookLine.lineDate.between(dates.get(START), dates.get(END)),
+                bookLine.lineDate.between(dates.start(), dates.end()),
                 bookLineCategory.name.in(INCOME.getKind(),
                     OUTCOME.getKind()),
                 book.bookKey.eq(bookKey)
