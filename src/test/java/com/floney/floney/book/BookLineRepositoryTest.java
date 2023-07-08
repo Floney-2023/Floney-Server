@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.AllSettlementsRequest;
 import com.floney.floney.book.dto.BookLineExpense;
 import com.floney.floney.book.dto.TotalExpense;
 import com.floney.floney.book.dto.constant.CategoryEnum;
@@ -22,15 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.floney.floney.book.BookFixture.BOOK_KEY;
-import static com.floney.floney.book.BookFixture.createBookUser;
+import static com.floney.floney.book.BookFixture.*;
 import static com.floney.floney.book.BookLineFixture.*;
 import static com.floney.floney.book.CategoryFixture.*;
 import static com.floney.floney.book.util.DateFactory.END;
@@ -191,6 +190,26 @@ public class BookLineRepositoryTest {
         Assertions.assertThat(bookLineRepository.allLinesByDay(targetDate, BOOK_KEY).size())
             .isEqualTo(3);
 
+    }
+
+    @Test
+    @DisplayName("정산에 참여하는 유저가 사용한 내역만 기간 내에 조회")
+    void all_dates_with_bookUsers() {
+        BookUser bookUser = bookUserRepository.save(BookFixture.createBookUser(user, book));
+
+        BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000L, bookUser));
+        BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000L, bookUser));
+
+        bookLineRepository.save(bookLine);
+        bookLineRepository.save(bookLine2);
+
+        LocalDate start = LocalDate.of(2023, 10, 21);
+        LocalDate end = LOCAL_DATE;
+
+        AllSettlementsRequest request = new AllSettlementsRequest(Arrays.asList(EMAIL), start, end);
+        request.datesTo();
+        Assertions.assertThat(bookLineRepository.allSettlement(request).size())
+            .isEqualTo(2);
     }
 
 }

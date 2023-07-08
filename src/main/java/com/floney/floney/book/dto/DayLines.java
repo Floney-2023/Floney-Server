@@ -29,20 +29,38 @@ public class DayLines {
         this.content = content;
     }
 
-    public static List<DayLines> of(List<DayLine> dayLines) {
-        Map<Long, DayLineInfo> InfosByDay = new HashMap<>();
-        for (DayLine dayLine : dayLines) {
-            if (InfosByDay.get(dayLine.getId()) == null) {
-                InfosByDay.put(dayLine.getId(), DayLineInfo.toDayInfos(dayLine));
+    public static List<DayLines> forDayView(List<DayLineByDayView> dayLines) {
+        Map<Long, DayLineInfo> infosByDay = new HashMap<>();
+        for (DayLineByDayView dayLine : dayLines) {
+            if (infosByDay.get(dayLine.getId()) == null) {
+                infosByDay.put(dayLine.getId(), DayLineInfo.toDayViewInfos(dayLine));
             } else {
-                InfosByDay.get(dayLine.getId()).addCategory(dayLine.getCategories());
+                infosByDay.get(dayLine.getId()).addCategory(dayLine.getCategories());
             }
         }
-        return InfosByDay.values()
+
+        return infosByDay.values()
             .stream()
             .map(DayLines::toDayLineResponse)
             .collect(Collectors.toList());
     }
+
+    public static List<DayLines> forSettlementView(List<DayLine> dayLines) {
+        Map<Long, DayLineInfo> infosByDay = new HashMap<>();
+
+        for (DayLine dayLine : dayLines) {
+            DayLineInfo info = infosByDay.computeIfAbsent(dayLine.getId(), id -> DayLineInfo.toDayInfos(dayLine));
+            info.addCategory(dayLine.getCategories());
+        }
+
+        return infosByDay.values()
+            .stream()
+            .filter(dayLineInfo -> dayLineInfo.getAssetType() == AssetType.OUTCOME)
+            .map(DayLines::toDayLineResponse)
+            .collect(Collectors.toList());
+
+    }
+
 
     private static DayLines toDayLineResponse(DayLineInfo dayInfo) {
         return DayLines.builder()

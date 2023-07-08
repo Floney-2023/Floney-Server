@@ -28,17 +28,37 @@ public class DayLineInfo {
         this.img = img;
     }
 
-    public void addCategory(String category){
+    public DayLineInfo(Long money, String content, List<String> categories) {
+        this.money = money;
+        this.content = content;
+        this.assetType = null;
+        this.categories = categories;
+        this.img = null;
+    }
+
+    public void addCategory(String category) {
+        if (AssetType.isAssetType(category)) {
+            return;
+        }
         this.categories.add(category);
     }
 
-    public static DayLineInfo toDayInfos(DayLine dayLine){
+    public static DayLineInfo toDayViewInfos(DayLineByDayView dayLine) {
         return DayLineInfo.builder()
             .assetType(dayLine.getCategories())
             .categories(new ArrayList<>())
             .money(dayLine.getMoney())
             .content(dayLine.getContent())
             .img(dayLine.getProfileImg())
+            .build();
+    }
+
+    public static DayLineInfo toDayInfos(DayLine dayLine) {
+        return DayLineInfo.builder()
+            .assetType(dayLine.getCategories())
+            .categories(new ArrayList<>())
+            .money(dayLine.getMoney())
+            .content(dayLine.getContent())
             .build();
     }
 }
