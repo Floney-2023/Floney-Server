@@ -107,8 +107,6 @@ public class BookController {
 
     @GetMapping("/settlements")
     public ResponseEntity<?> allSettlement(@RequestBody AllSettlementsRequest allSettlements) {
-        //카테고리 exceptikn
-
         return new ResponseEntity<>(bookLineService.allSettlement(allSettlements), HttpStatus.OK);
     }
 }
