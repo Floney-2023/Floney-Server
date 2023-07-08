@@ -1,6 +1,7 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.*;
+import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,7 +21,9 @@ import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.book.util.DateFactory.END;
 import static com.floney.floney.book.util.DateFactory.START;
 import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.types.dsl.Expressions.list;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,9 +50,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> allLinesByDay(LocalDate date, String bookKey) {
+    public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
         return jpaQueryFactory.select(
-                new QDayLine(
+                new QDayLineByDayView(
                     bookLine.id,
                     bookLine.money,
                     bookLine.description,
@@ -128,5 +131,28 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     .where(book.bookKey.eq(bookKey))
             ))
             .execute();
+    }
+
+    @Override
+    public List<DayLine> allSettlement(AllSettlementsRequest request) {
+        DatesRequest dates = request.getDates();
+        return jpaQueryFactory
+            .select(new QDayLine(
+                bookLine.id,
+                bookLine.description,
+                bookLine.money,
+                bookLineCategory.name)
+            )
+            .from(bookLine)
+            .innerJoin(bookLine.writer, bookUser)
+            .innerJoin(bookUser.user, user)
+            .leftJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(dates.start(), dates.end()),
+                user.email.in(request.users()),
+                bookLine.status.eq(Status.ACTIVE)
+            )
+            .groupBy(bookLine.id, bookLineCategory.name)
+            .fetch();
     }
 }

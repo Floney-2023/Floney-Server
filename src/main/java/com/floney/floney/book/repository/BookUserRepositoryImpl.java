@@ -137,4 +137,5 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .orderBy(bookUser.updatedAt.desc())
             .fetchFirst());
     }
+
 }
