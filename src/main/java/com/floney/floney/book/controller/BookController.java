@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -104,5 +103,12 @@ public class BookController {
     @GetMapping("/users")
     public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
+    }
+
+    @GetMapping("/settlements")
+    public ResponseEntity<?> allSettlement(@RequestBody AllSettlementsRequest allSettlements) {
+        //카테고리 exceptikn
+
+        return new ResponseEntity<>(bookLineService.allSettlement(allSettlements), HttpStatus.OK);
     }
 }

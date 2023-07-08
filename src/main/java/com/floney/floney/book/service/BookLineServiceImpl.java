@@ -65,7 +65,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
         return TotalDayLinesResponse.of(
-            DayLines.of(bookLineRepository.allLinesByDay(parse(date), bookKey)),
+            DayLines.forDayView(bookLineRepository.allLinesByDay(parse(date), bookKey)),
             bookLineRepository.totalExpenseByDay(parse(date), bookKey),
             findBook(bookKey).getSeeProfile());
     }
@@ -74,6 +74,13 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public void deleteAllLine(String bookKey) {
         bookLineRepository.deleteAllLines(bookKey);
+    }
+
+    @Override
+    @Transactional
+    public List<DayLines> allSettlement(AllSettlementsRequest allSettlements) {
+        allSettlements.datesTo();
+        return DayLines.forSettlementView(bookLineRepository.allSettlement(allSettlements));
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {
