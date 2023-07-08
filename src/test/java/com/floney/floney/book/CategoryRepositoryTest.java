@@ -2,7 +2,6 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
@@ -75,9 +74,11 @@ public class CategoryRepositoryTest {
     @Test
     @DisplayName("커스텀 카테고리를 삭제한다")
     void delete_custom() {
-        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        categoryRepository.deleteCustomCategory(savedBook.getBookKey(),CHILD);
-        Assertions.assertThat(categoryRepository.findByName(CHILD).isEmpty()).isTrue();
+        Category custom = categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
+        categoryRepository.deleteCustomCategory(savedBook.getBookKey(), CHILD);
+        Assertions.assertThat(categoryRepository.findAllCategory(savedRoot.getName(), savedBook.getBookKey())
+                .contains(custom))
+            .isFalse();
     }
 
 

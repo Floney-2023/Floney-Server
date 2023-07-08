@@ -17,4 +17,6 @@ public interface CategoryCustomRepository {
     boolean findCustomTarget(Category targetRoot, String bookKey, String target);
 
     void deleteCustomCategory(String bookKey, String targetName);
+
+    Optional<Category> findParentCategory(String parentName);
 }

@@ -1,14 +1,13 @@
-package com.floney.floney;
+package com.floney.floney.common.config;
 
 import com.floney.floney.book.dto.CarryOverInfo;
-import com.floney.floney.book.util.CategoryFactory;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.util.CategoryFactory;
 import com.floney.floney.common.constant.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +82,6 @@ public class JobConfiguration {
     }
 
     private ItemWriter<CarryOverInfo> jpaPagingItemWriter() {
-
         return CarryOverInfos -> {
             for (CarryOverInfo carryOverInfo : CarryOverInfos) {
                 BookLine line = bookLineRepository.save(carryOverInfo.getBookLine());

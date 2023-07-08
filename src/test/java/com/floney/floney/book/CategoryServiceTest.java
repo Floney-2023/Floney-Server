@@ -64,7 +64,7 @@ public class CategoryServiceTest {
         Book savedBook = BookFixture.createBookWith("1234");
         RootCategory rootCategory = createDefaultRoot("ROOT");
 
-        given(categoryRepository.findByName(ROOT))
+        given(categoryRepository.findParentCategory(ROOT))
             .willReturn(ofNullable(rootCategory));
 
         given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
@@ -82,7 +82,7 @@ public class CategoryServiceTest {
     void not_found_book() {
         RootCategory rootCategory = createDefaultRoot("ROOT");
 
-        given(categoryRepository.findByName(ROOT))
+        given(categoryRepository.findParentCategory(ROOT))
             .willReturn(ofNullable(rootCategory));
 
         given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
@@ -96,7 +96,7 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("루트 카테고리를 찾을 수 없으면 NotFoundCategoryException을 발생한다")
     void not_found_root() {
-        given(categoryRepository.findByName(ROOT))
+        given(categoryRepository.findParentCategory(ROOT))
             .willReturn(Optional.empty());
 
         CreateCategoryRequest request = createBookCategory();
