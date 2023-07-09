@@ -2,6 +2,7 @@ package com.floney.floney.settlement.service;
 
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.service.BookService;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.settlement.dto.OutcomesWithUser;
 import com.floney.floney.settlement.dto.request.SettlementRequest;
@@ -15,6 +16,7 @@ import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,14 @@ public class SettlementService {
     private final SettlementUserRepository settlementUserRepository;
     private final UserRepository userRepository;
     private final BookService bookService;
+
+    public List<SettlementResponse> findAll(Long bookId) {
+        final Book book = bookService.findBook(bookId);
+        return settlementRepository.findAllByBookAndStatus(book, Status.ACTIVE)
+                .stream()
+                .map(SettlementResponse::from)
+                .toList();
+    }
 
     @Transactional
     public SettlementResponse create(SettlementRequest request, CustomUserDetails userDetails) {

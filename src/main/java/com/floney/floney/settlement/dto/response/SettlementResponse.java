@@ -1,5 +1,7 @@
 package com.floney.floney.settlement.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.floney.floney.settlement.entity.Settlement;
 import com.floney.floney.settlement.entity.SettlementUser;
 import java.time.LocalDate;
@@ -10,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@JsonInclude(Include.NON_NULL)
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SettlementResponse {
@@ -20,6 +23,16 @@ public class SettlementResponse {
     private Long totalOutcome;
     private Long outcome;
     private List<DetailResponse> details;
+
+    public static SettlementResponse from(Settlement settlement) {
+        return SettlementResponse.builder()
+                .startDate(settlement.getStartDate())
+                .endDate(settlement.getEndDate())
+                .userCount(settlement.getUserCount())
+                .totalOutcome(settlement.getTotalOutcome())
+                .outcome(settlement.getAvgOutcome())
+                .build();
+    }
 
     public static SettlementResponse of(Settlement settlement, List<SettlementUser> settlementUsers) {
         return SettlementResponse.builder()

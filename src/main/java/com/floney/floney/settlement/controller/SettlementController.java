@@ -27,4 +27,9 @@ public class SettlementController {
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(settlementService.create(request, userDetails), HttpStatus.CREATED);
     }
+
+    @GetMapping("")
+    public ResponseEntity<?> getSettlementsByBook(@RequestParam Long bookId) {
+        return new ResponseEntity<>(settlementService.findAll(bookId), HttpStatus.OK);
+    }
 }
