@@ -3,6 +3,7 @@ package com.floney.floney.settlement.service;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.exception.SettlementNotFoundException;
 import com.floney.floney.common.exception.UserNotFoundException;
 import com.floney.floney.settlement.dto.OutcomesWithUser;
 import com.floney.floney.settlement.dto.request.SettlementRequest;
@@ -30,12 +31,20 @@ public class SettlementService {
     private final UserRepository userRepository;
     private final BookService bookService;
 
+    @Transactional(readOnly = true)
     public List<SettlementResponse> findAll(Long bookId) {
         final Book book = bookService.findBook(bookId);
         return settlementRepository.findAllByBookAndStatus(book, Status.ACTIVE)
                 .stream()
                 .map(SettlementResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SettlementResponse find(Long id) {
+        final Settlement settlement = settlementRepository.findById(id).orElseThrow(SettlementNotFoundException::new);
+        final List<SettlementUser> settlementUsers = settlementUserRepository.findAllBySettlementAndStatus(settlement, Status.ACTIVE);
+        return SettlementResponse.of(settlement, settlementUsers);
     }
 
     @Transactional
