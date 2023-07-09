@@ -7,5 +7,5 @@ import lombok.Getter;
 public class OutcomeRequest {
 
     @NotNull private Long outcome;
-    @NotNull private Long userId;
+    @NotNull private String userEmail;
 }

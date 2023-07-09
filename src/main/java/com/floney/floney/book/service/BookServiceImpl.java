@@ -146,11 +146,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book findBook(Long bookId) {
-        return bookRepository.findBookByIdAndStatus(bookId, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
-    }
-
-    private Book findBook(String bookKey) {
+    public Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
     }
 }

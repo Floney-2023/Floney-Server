@@ -30,8 +30,8 @@ public class SettlementController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getSettlementsByBook(@RequestParam Long bookId) {
-        return new ResponseEntity<>(settlementService.findAll(bookId), HttpStatus.OK);
+    public ResponseEntity<?> getSettlementsByBook(@RequestParam String bookKey) {
+        return new ResponseEntity<>(settlementService.findAll(bookKey), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

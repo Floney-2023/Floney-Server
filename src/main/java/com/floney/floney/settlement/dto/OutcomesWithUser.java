@@ -9,24 +9,24 @@ import java.util.stream.Collectors;
 
 public class OutcomesWithUser {
 
-    private final Map<Long, Long> outcomesWithUser;
+    private final Map<String, Long> outcomesWithUser;
 
-    private OutcomesWithUser(Set<Long> userIds, Long leaderUserId) {
-        this.outcomesWithUser = userIds.stream().collect(Collectors.toMap(key -> key, value -> 0L));
-        this.outcomesWithUser.put(leaderUserId, 0L);
+    private OutcomesWithUser(Set<String> userEmails, String leaderUserEmail) {
+        this.outcomesWithUser = userEmails.stream().collect(Collectors.toMap(key -> key, value -> 0L));
+        this.outcomesWithUser.put(leaderUserEmail, 0L);
     }
 
-    public static OutcomesWithUser init(Set<Long> userIds, Long leaderUserId) {
-        return new OutcomesWithUser(userIds, leaderUserId);
+    public static OutcomesWithUser init(Set<String> userEmails, String leaderUserEmail) {
+        return new OutcomesWithUser(userEmails, leaderUserEmail);
     }
 
     public void fillOutcomes(List<OutcomeRequest> outcomeRequests) {
         outcomeRequests.forEach(outcome -> outcomesWithUser.put(
-                outcome.getUserId(), outcomesWithUser.get(outcome.getUserId()) + outcome.getOutcome()
+                outcome.getUserEmail(), outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
         ));
     }
 
-    public Map<Long, Long> getOutcomesWithUser() {
+    public Map<String, Long> getOutcomesWithUser() {
         return Collections.unmodifiableMap(outcomesWithUser);
     }
 }

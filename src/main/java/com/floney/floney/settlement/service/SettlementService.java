@@ -17,7 +17,6 @@ import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +31,8 @@ public class SettlementService {
     private final BookService bookService;
 
     @Transactional(readOnly = true)
-    public List<SettlementResponse> findAll(Long bookId) {
-        final Book book = bookService.findBook(bookId);
+    public List<SettlementResponse> findAll(String bookKey) {
+        final Book book = bookService.findBook(bookKey);
         return settlementRepository.findAllByBookAndStatus(book, Status.ACTIVE)
                 .stream()
                 .map(SettlementResponse::from)
@@ -56,8 +55,8 @@ public class SettlementService {
 
     @Transactional
     public Settlement createSettlement(SettlementRequest request, User leaderUser) {
-        final Book book = bookService.findBook(request.getBookId());
-        return settlementRepository.save(Settlement.of(book, request, leaderUser.getId()));
+        final Book book = bookService.findBook(request.getBookKey());
+        return settlementRepository.save(Settlement.of(book, request, leaderUser.getEmail()));
     }
 
     public List<SettlementUser> createSettlementUsers(SettlementRequest request, Settlement settlement, User leaderUser) {
@@ -70,8 +69,8 @@ public class SettlementService {
         final Long avgOutcome = settlement.getAvgOutcome();
         List<SettlementUser> settlementUsers = new ArrayList<>();
 
-        outcomesWithUser.getOutcomesWithUser().forEach((userId, outcome) -> {
-            User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        outcomesWithUser.getOutcomesWithUser().forEach((userEmail, outcome) -> {
+            User user = userRepository.findByEmail(userEmail).orElseThrow(UserNotFoundException::new);
             settlementUsers.add(createSettlementUser(settlement, user, outcome - avgOutcome));
         });
 
@@ -79,7 +78,7 @@ public class SettlementService {
     }
 
     private static OutcomesWithUser createOutcomesWithUser(SettlementRequest request, User leaderUser) {
-        OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserIds(), leaderUser.getId());
+        OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserEmails(), leaderUser.getEmail());
         outcomesWithUser.fillOutcomes(request.getOutcomes());
         return outcomesWithUser;
     }

@@ -29,5 +29,5 @@ public interface BookService {
 
     CheckBookValidResponse checkIsBookUser(String email);
 
-    Book findBook(Long bookId);
+    Book findBook(String bookKey);
 }
