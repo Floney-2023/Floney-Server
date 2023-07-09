@@ -11,8 +11,11 @@ import com.floney.floney.book.dto.UpdateAssetRequest;
 import com.floney.floney.book.dto.UpdateBookImgRequest;
 import com.floney.floney.book.dto.UpdateBudgetRequest;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import java.time.LocalDate;
+import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface BookService {
 
@@ -41,4 +44,7 @@ public interface BookService {
     Book findBook(String bookKey);
 
     void updateLastSettlementDate(String bookKey, LocalDate settlementDate);
+
+    @Transactional(readOnly = true)
+    List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey);
 }

@@ -19,6 +19,7 @@ import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.LimitRequestException;
 import com.floney.floney.common.exception.NotFoundBookException;
 import com.floney.floney.common.exception.NotSubscribeException;
+import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import java.time.LocalDate;
@@ -167,5 +168,15 @@ public class BookServiceImpl implements BookService {
         final Book book = findBook(bookKey);
         book.updateLastSettlementDate(settlementDate);
         bookRepository.save(book);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey) {
+        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE)
+                .stream()
+                .map(bookUser -> UserResponse.from(bookUser.getUser()))
+                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+                .toList();
     }
 }
