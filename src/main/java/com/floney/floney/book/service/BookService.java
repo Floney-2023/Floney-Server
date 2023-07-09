@@ -1,9 +1,18 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.*;
+import com.floney.floney.book.dto.BookNameChangeRequest;
+import com.floney.floney.book.dto.CheckBookValidResponse;
+import com.floney.floney.book.dto.CodeJoinRequest;
+import com.floney.floney.book.dto.CreateBookRequest;
+import com.floney.floney.book.dto.CreateBookResponse;
+import com.floney.floney.book.dto.OurBookInfo;
+import com.floney.floney.book.dto.SeeProfileRequest;
+import com.floney.floney.book.dto.UpdateAssetRequest;
+import com.floney.floney.book.dto.UpdateBookImgRequest;
+import com.floney.floney.book.dto.UpdateBudgetRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 
 public interface BookService {
 
@@ -30,4 +39,6 @@ public interface BookService {
     CheckBookValidResponse checkIsBookUser(String email);
 
     Book findBook(String bookKey);
+
+    void updateLastSettlementDate(String bookKey, LocalDate settlementDate);
 }

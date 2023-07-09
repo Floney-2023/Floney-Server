@@ -50,6 +50,7 @@ public class SettlementService {
     public SettlementResponse create(SettlementRequest request, CustomUserDetails userDetails) {
         Settlement settlement = createSettlement(request, userDetails.getUser());
         List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement, userDetails.getUser());
+        bookService.updateLastSettlementDate(settlement.getBook().getBookKey(), settlement.getCreatedAt().toLocalDate());
         return SettlementResponse.of(settlement, settlementUsers);
     }
 
