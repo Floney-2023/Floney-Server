@@ -17,6 +17,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SettlementResponse {
 
+    private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer userCount;
@@ -26,6 +27,7 @@ public class SettlementResponse {
 
     public static SettlementResponse from(Settlement settlement) {
         return SettlementResponse.builder()
+                .id(settlement.getId())
                 .startDate(settlement.getStartDate())
                 .endDate(settlement.getEndDate())
                 .userCount(settlement.getUserCount())
@@ -36,6 +38,7 @@ public class SettlementResponse {
 
     public static SettlementResponse of(Settlement settlement, List<SettlementUser> settlementUsers) {
         return SettlementResponse.builder()
+                .id(settlement.getId())
                 .startDate(settlement.getStartDate())
                 .endDate(settlement.getEndDate())
                 .userCount(settlement.getUserCount())
