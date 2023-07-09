@@ -1,22 +1,20 @@
 package com.floney.floney.settlement.service;
 
-import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.NotFoundBookException;
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.UserNotFoundException;
-import com.floney.floney.settlement.dto.SettlementsPerUser;
-import com.floney.floney.settlement.dto.request.OutcomeRequest;
+import com.floney.floney.settlement.dto.OutcomesWithUser;
 import com.floney.floney.settlement.dto.request.SettlementRequest;
 import com.floney.floney.settlement.dto.response.SettlementResponse;
 import com.floney.floney.settlement.entity.Settlement;
 import com.floney.floney.settlement.entity.SettlementUser;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.settlement.repository.SettlementUserRepository;
+import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,63 +25,51 @@ public class SettlementService {
 
     private final SettlementRepository settlementRepository;
     private final SettlementUserRepository settlementUserRepository;
-    private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final BookService bookService;
 
     @Transactional
-    public SettlementResponse create(SettlementRequest request) {
-        Settlement settlement = createSettlement(request);
-        Map<Long, Long> outcomePerUserId = createOutcomePerUserId(request);
-        SettlementsPerUser settlementsPerUser = createSettlementUsers(settlement, outcomePerUserId);
-        return SettlementResponse.from(settlement, settlementsPerUser);
+    public SettlementResponse create(SettlementRequest request, CustomUserDetails userDetails) {
+        Settlement settlement = createSettlement(request, userDetails.getUser());
+        List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement, userDetails.getUser());
+        return SettlementResponse.of(settlement, settlementUsers);
     }
 
     @Transactional
-    public Settlement createSettlement(SettlementRequest request) {
-        Settlement settlement = Settlement.builder()
-                .book(bookRepository.findBookByIdAndStatus(request.getBookId(), Status.ACTIVE).orElseThrow(NotFoundBookException::new))
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .totalOutcome(calculateTotalMoney(request.getOutcomes()))
-                .userCount(request.getUserIds().size())
-                .build();
-        return settlementRepository.save(settlement);
+    public Settlement createSettlement(SettlementRequest request, User leaderUser) {
+        final Book book = bookService.findBook(request.getBookId());
+        return settlementRepository.save(Settlement.of(book, request, leaderUser.getId()));
+    }
+
+    public List<SettlementUser> createSettlementUsers(SettlementRequest request, Settlement settlement, User leaderUser) {
+        OutcomesWithUser outcomesWithUser = createOutcomesWithUser(request, leaderUser);
+        return createSettlementUsers(settlement, outcomesWithUser);
     }
 
     @Transactional
-    public SettlementsPerUser createSettlementUsers(Settlement settlement, Map<Long, Long> outcomePerUserId) {
-        SettlementsPerUser settlementsPerUser = SettlementsPerUser.init();
-        Long outcomeAvg = settlement.getTotalOutcome() / settlement.getUserCount();
+    public List<SettlementUser> createSettlementUsers(Settlement settlement, OutcomesWithUser outcomesWithUser) {
+        final Long avgOutcome = settlement.getAvgOutcome();
+        List<SettlementUser> settlementUsers = new ArrayList<>();
 
-        for (Long userId : outcomePerUserId.keySet()) {
+        outcomesWithUser.getOutcomesWithUser().forEach((userId, outcome) -> {
             User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-            Long money = outcomePerUserId.get(userId) - outcomeAvg;
-            settlementsPerUser.add(createSettlementUser(settlement, user, money));
-        }
+            settlementUsers.add(createSettlementUser(settlement, user, outcome - avgOutcome));
+        });
 
-        return settlementsPerUser;
+        return settlementUserRepository.saveAll(settlementUsers);
     }
 
-    @Transactional
-    public SettlementUser createSettlementUser(Settlement settlement, User user, Long money) {
-        SettlementUser settlementUser = SettlementUser.builder()
+    private static OutcomesWithUser createOutcomesWithUser(SettlementRequest request, User leaderUser) {
+        OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserIds(), leaderUser.getId());
+        outcomesWithUser.fillOutcomes(request.getOutcomes());
+        return outcomesWithUser;
+    }
+
+    private SettlementUser createSettlementUser(Settlement settlement, User user, Long money) {
+        return SettlementUser.builder()
                 .settlement(settlement)
                 .user(user)
                 .money(money)
                 .build();
-        return settlementUserRepository.save(settlementUser);
-    }
-
-    private Map<Long, Long> createOutcomePerUserId(SettlementRequest request) {
-        Map<Long, Long> outcomePerUserId = request.getUserIds().stream().collect(Collectors.toMap(key -> key, value -> 0L));
-        for (OutcomeRequest outcomeRequest : request.getOutcomes()) {
-            Long outcome = outcomeRequest.getOutcome() + outcomePerUserId.get(outcomeRequest.getUserId());
-            outcomePerUserId.put(outcomeRequest.getUserId(), outcome);
-        }
-        return outcomePerUserId;
-    }
-
-    private Long calculateTotalMoney(List<OutcomeRequest> outcomes) {
-        return outcomes.stream().mapToLong(OutcomeRequest::getOutcome).sum();
     }
 }

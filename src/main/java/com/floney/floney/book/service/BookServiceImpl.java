@@ -70,7 +70,7 @@ public class BookServiceImpl implements BookService {
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+                .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -141,13 +141,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public CheckBookValidResponse checkIsBookUser(String email) {
-        Book books = bookUserRepository.findBookBy(email)
-            .orElse(Book.initBook());
+        Book books = bookUserRepository.findBookBy(email).orElse(Book.initBook());
         return CheckBookValidResponse.userBook(books);
     }
 
+    @Override
+    public Book findBook(Long bookId) {
+        return bookRepository.findBookByIdAndStatus(bookId, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
+    }
+
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
     }
 }

@@ -1,6 +1,7 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.*;
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,4 +28,6 @@ public interface BookService {
     void updateBudget(UpdateBudgetRequest request);
 
     CheckBookValidResponse checkIsBookUser(String email);
+
+    Book findBook(Long bookId);
 }

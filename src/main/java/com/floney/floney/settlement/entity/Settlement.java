@@ -2,12 +2,19 @@ package com.floney.floney.settlement.entity;
 
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.settlement.dto.request.OutcomeRequest;
+import com.floney.floney.settlement.dto.request.SettlementRequest;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +27,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Settlement extends BaseEntity {
@@ -28,6 +35,10 @@ public class Settlement extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "settlement_id")
+    private List<SettlementUser> details;
 
     @Column(nullable = false, updatable = false)
     private LocalDate startDate;
@@ -40,4 +51,49 @@ public class Settlement extends BaseEntity {
 
     @Column(nullable = false, updatable = false)
     private Long totalOutcome;
+
+    @Column(nullable = false, updatable = false)
+    private Long avgOutcome;
+
+    public static Settlement of(Book book, SettlementRequest request, Long leaderUserId) {
+        // TODO: 유저 유효성 검증 로직 User로 이동
+        validateUsers(request.getUserIds(), leaderUserId);
+
+        final Integer userCount = calculateUserCount(request.getUserIds());
+        final Long totalOutcome = calculateTotalOutcome(request.getOutcomes());
+        final Long avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
+
+        return Settlement.builder()
+                .book(book)
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .userCount(userCount)
+                .totalOutcome(totalOutcome)
+                .avgOutcome(avgOutcome)
+                .build();
+    }
+
+    private static void validateUsers(Set<Long> userIds, Long leaderUserId) {
+        userIds.forEach(userId -> {
+            if (userId.equals(leaderUserId)) {
+                throw new IllegalArgumentException();
+            }
+        });
+    }
+
+    private static Integer calculateUserCount(Set<Long> userIds) {
+        return userIds.size() + 1;
+    }
+
+    private static Long calculateTotalOutcome(List<OutcomeRequest> request) {
+        return request.stream()
+                .mapToLong(OutcomeRequest::getOutcome)
+                .sum();
+    }
+
+    private static Long calculateAvgOutcome(Long totalOutcome, Integer userCount) {
+        final BigDecimal dividend = BigDecimal.valueOf(totalOutcome);
+        final BigDecimal divisor = BigDecimal.valueOf(userCount);
+        return dividend.divide(divisor, RoundingMode.HALF_UP).longValue();
+    }
 }
