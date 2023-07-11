@@ -7,8 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
+
     Optional<Book> findBookByCodeAndStatus(String code, Status status);
 
-    Optional<Book> findBookByBookKeyAndStatus(String bookKey,Status status);
+    Optional<Book> findBookByBookKeyAndStatus(String bookKey, Status status);
+
+    Optional<Book> findBookByIdAndStatus(Long id, Status status);
 
 }

@@ -3,11 +3,12 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.dto.MyBookInfo;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.util.MailProvider;
-import com.floney.floney.common.exception.*;
-import com.floney.floney.common.util.JwtProvider;
-import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.CodeNotSameException;
+import com.floney.floney.common.exception.EmailNotFoundException;
+import com.floney.floney.common.util.JwtProvider;
+import com.floney.floney.common.util.MailProvider;
+import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
@@ -17,6 +18,8 @@ import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,9 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
