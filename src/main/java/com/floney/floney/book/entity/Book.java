@@ -5,6 +5,7 @@ import com.floney.floney.book.dto.UpdateBookImgRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.NoAuthorityException;
+import java.time.LocalDate;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -50,6 +51,8 @@ public class Book extends BaseEntity {
 
     @Column(nullable = false, length = 10)
     private String code;
+
+    private LocalDate lastSettlementDate;
 
     @Builder
     private Book(String name, String bookImg, String owner,
@@ -107,4 +110,7 @@ public class Book extends BaseEntity {
         this.budget = budget;
     }
 
+    public void updateLastSettlementDate(LocalDate lastSettlementDate) {
+        this.lastSettlementDate = lastSettlementDate;
+    }
 }

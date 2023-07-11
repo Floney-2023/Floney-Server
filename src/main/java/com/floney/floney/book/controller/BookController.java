@@ -20,17 +20,20 @@ public class BookController {
     private final BookLineService bookLineService;
 
     @PostMapping()
-    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request,
+                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.createBook(userDetails, request), HttpStatus.CREATED);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
+                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.addBook(userDetails, request), HttpStatus.CREATED);
     }
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code,
+                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.joinWithCode(userDetails, code), HttpStatus.ACCEPTED);
     }
 
@@ -100,7 +103,7 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/users")
+    @GetMapping("/users/check")
     public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
     }
@@ -108,5 +111,10 @@ public class BookController {
     @GetMapping("/outcomes")
     public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesReqeust allOutcomesReqeust) {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
+
+    @GetMapping("/users")
+    public ResponseEntity<?> findUsersByBookExceptCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                              @RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
     }
 }
