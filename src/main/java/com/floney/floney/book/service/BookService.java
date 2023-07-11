@@ -45,6 +45,5 @@ public interface BookService {
 
     void updateLastSettlementDate(String bookKey, LocalDate settlementDate);
 
-    @Transactional(readOnly = true)
     List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey);
 }
