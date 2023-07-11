@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -108,6 +107,10 @@ public class BookController {
     public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
     }
+
+    @GetMapping("/outcomes")
+    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesReqeust allOutcomesReqeust) {
+        return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
 
     @GetMapping("/users")
     public ResponseEntity<?> findUsersByBookExceptCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails,
