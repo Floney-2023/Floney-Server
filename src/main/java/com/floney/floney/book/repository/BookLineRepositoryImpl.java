@@ -17,8 +17,9 @@ import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookLine.bookLine;
 import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.book.util.DateFactory.END;
+import static com.floney.floney.book.util.DateFactory.START;
 import static com.floney.floney.common.constant.Status.INACTIVE;
-import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
 @Repository
@@ -28,13 +29,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Map<String, Long> totalExpenseByMonth(String bookKey, DatesRequest dates) {
+    public Map<String, Long> totalExpenseByMonth(String bookKey, Map<String, LocalDate> dates) {
         return jpaQueryFactory
             .from(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
-                bookLine.lineDate.between(dates.start(), dates.end()),
+                bookLine.lineDate.between(dates.get(START), dates.get(END)),
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey),
                 book.status.eq(Status.ACTIVE),
@@ -46,9 +47,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
+    public List<DayLine> allLinesByDay(LocalDate date, String bookKey) {
         return jpaQueryFactory.select(
-                new QDayLineByDayView(
+                new QDayLine(
                     bookLine.id,
                     bookLine.money,
                     bookLine.description,
@@ -94,7 +95,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesRequest dates) {
+    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, Map<String, LocalDate> dates) {
         return jpaQueryFactory.select(
                 new QBookLineExpense(
                     bookLine.lineDate,
@@ -108,7 +109,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .where(
                 bookLine.status.eq(Status.ACTIVE),
                 book.status.eq(Status.ACTIVE),
-                bookLine.lineDate.between(dates.start(), dates.end()),
+                bookLine.lineDate.between(dates.get(START), dates.get(END)),
                 bookLineCategory.name.in(INCOME.getKind(),
                     OUTCOME.getKind()),
                 book.bookKey.eq(bookKey)
@@ -127,28 +128,5 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     .where(book.bookKey.eq(bookKey))
             ))
             .execute();
-    }
-
-    @Override
-    public List<DayLine> allOutcomes(AllOutcomesReqeust request) {
-        DatesRequest dates = request.getDates();
-        return jpaQueryFactory
-            .select(new QDayLine(
-                bookLine.id,
-                bookLine.description,
-                bookLine.money,
-                bookLineCategory.name)
-            )
-            .from(bookLine)
-            .innerJoin(bookLine.writer, bookUser)
-            .innerJoin(bookUser.user, user)
-            .leftJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLine.lineDate.between(dates.start(), dates.end()),
-                user.email.in(request.users()),
-                bookLine.status.eq(Status.ACTIVE)
-            )
-            .groupBy(bookLine.id, bookLineCategory.name)
-            .fetch();
     }
 }

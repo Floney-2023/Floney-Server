@@ -2,8 +2,6 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.*;
 
-import java.util.List;
-
 public interface BookLineService {
 
     BookLineResponse createBookLine(CreateLineRequest request);
@@ -13,8 +11,4 @@ public interface BookLineService {
     TotalDayLinesResponse showByDays(String bookKey, String date);
 
     void deleteAllLine(String bookKey);
-
-    List<DayLines> allOutcomes(AllOutcomesReqeust allSettlements);
-
-
 }

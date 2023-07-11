@@ -1,7 +1,6 @@
 package com.floney.floney.book.util;
 
 import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.DatesRequest;
 import com.floney.floney.book.dto.MonthKey;
 
 import java.time.LocalDate;
@@ -16,25 +15,27 @@ import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 public class DateFactory {
+
+    public static final String START = "start";
+    public static final String END = "end";
     public static final int NEXT_DAY = 1;
+    public static Map<String, LocalDate> getDate(String targetDate) {
+        LocalDate date = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
+        Map<String, LocalDate> dates = new HashMap<>();
+        YearMonth yearMonth = YearMonth.from(date);
+        LocalDate lastCurrentDate = yearMonth.atEndOfMonth();
 
-    public static DatesRequest getDate(String targetDate) {
-        LocalDate startDate = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
-        YearMonth yearMonth = YearMonth.from(startDate);
-        LocalDate endDate = yearMonth.atEndOfMonth();
-
-        return DatesRequest.builder()
-            .startDate(startDate)
-            .endDate(endDate)
-            .build();
+        dates.put(START, date);
+        dates.put(END, lastCurrentDate);
+        return dates;
     }
 
     public static Map<MonthKey, BookLineExpense> initDates(String targetDate) {
-        DatesRequest dates = getDate(targetDate);
+        Map<String, LocalDate> dates = getDate(targetDate);
         Map<MonthKey, BookLineExpense> initDates = new LinkedHashMap<>();
 
-        LocalDate currentDate = dates.start();
-        while (!currentDate.isAfter(dates.end())) {
+        LocalDate currentDate = dates.get(START);
+        while (!currentDate.isAfter(dates.get(END))) {
             initDates.put(MonthKey.of(currentDate, INCOME),
                 BookLineExpense.initExpense(currentDate, INCOME));
 

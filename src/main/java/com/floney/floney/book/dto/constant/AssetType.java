@@ -25,13 +25,4 @@ public enum AssetType {
         throw new NotFoundCategoryException();
     }
 
-    public static boolean isAssetType(String name) {
-        for (AssetType assetType : AssetType.values()) {
-            if (assetType.kind.equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
