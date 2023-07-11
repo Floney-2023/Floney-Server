@@ -45,7 +45,7 @@ public class DayLines {
             .collect(Collectors.toList());
     }
 
-    public static List<DayLines> forSettlementView(List<DayLine> dayLines) {
+    public static List<DayLines> forOutcomes(List<DayLine> dayLines) {
         Map<Long, DayLineInfo> infosByDay = new HashMap<>();
 
         for (DayLine dayLine : dayLines) {

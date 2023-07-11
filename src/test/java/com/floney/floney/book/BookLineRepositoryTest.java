@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.AllSettlementsRequest;
+import com.floney.floney.book.dto.AllOutcomesReqeust;
 import com.floney.floney.book.dto.BookLineExpense;
 import com.floney.floney.book.dto.DatesRequest;
 import com.floney.floney.book.dto.TotalExpense;
@@ -213,9 +213,9 @@ public class BookLineRepositoryTest {
             .startDate(start)
             .endDate(end)
             .build();
-        AllSettlementsRequest request = new AllSettlementsRequest(Arrays.asList(EMAIL),datesRequest);
+        AllOutcomesReqeust request = new AllOutcomesReqeust(Arrays.asList(EMAIL),datesRequest);
 
-        Assertions.assertThat(bookLineRepository.allSettlement(request).size())
+        Assertions.assertThat(bookLineRepository.allOutcomes(request).size())
             .isEqualTo(2);
     }
 

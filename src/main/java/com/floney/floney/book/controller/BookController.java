@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -107,8 +105,8 @@ public class BookController {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
     }
 
-    @GetMapping("/settlements")
-    public ResponseEntity<?> allSettlement(@RequestBody @Valid AllSettlementsRequest allSettlements) {
-        return new ResponseEntity<>(bookLineService.allSettlement(allSettlements), HttpStatus.OK);
+    @GetMapping("/outcomes")
+    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesReqeust allOutcomesReqeust) {
+        return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
     }
 }

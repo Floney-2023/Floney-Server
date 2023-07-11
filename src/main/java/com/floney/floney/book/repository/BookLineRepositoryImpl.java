@@ -130,7 +130,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> allSettlement(AllSettlementsRequest request) {
+    public List<DayLine> allOutcomes(AllOutcomesReqeust request) {
         DatesRequest dates = request.getDates();
         return jpaQueryFactory
             .select(new QDayLine(

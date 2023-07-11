@@ -1,7 +1,6 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.*;
-import com.floney.floney.book.entity.BookLine;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,5 +18,5 @@ public interface BookLineCustomRepository {
 
     void deleteAllLines(String bookKey);
 
-    List<DayLine> allSettlement(AllSettlementsRequest request);
+    List<DayLine> allOutcomes(AllOutcomesReqeust request);
 }
