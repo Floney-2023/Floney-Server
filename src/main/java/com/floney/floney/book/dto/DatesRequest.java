@@ -1,18 +1,20 @@
 package com.floney.floney.book.dto;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
+@Getter
 public class DatesRequest {
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     @Builder
-    public DatesRequest(LocalDate startDate, LocalDate endDate) {
+    private DatesRequest(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

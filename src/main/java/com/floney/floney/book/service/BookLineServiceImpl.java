@@ -78,7 +78,6 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public List<DayLines> allSettlement(AllSettlementsRequest allSettlements) {
-        allSettlements.datesTo();
         return DayLines.forSettlementView(bookLineRepository.allSettlement(allSettlements));
     }
 

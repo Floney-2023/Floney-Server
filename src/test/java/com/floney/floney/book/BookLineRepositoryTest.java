@@ -209,8 +209,12 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 21);
         LocalDate end = LOCAL_DATE;
 
-        AllSettlementsRequest request = new AllSettlementsRequest(Arrays.asList(EMAIL), start, end);
-        request.datesTo();
+        DatesRequest datesRequest = DatesRequest.builder()
+            .startDate(start)
+            .endDate(end)
+            .build();
+        AllSettlementsRequest request = new AllSettlementsRequest(Arrays.asList(EMAIL),datesRequest);
+
         Assertions.assertThat(bookLineRepository.allSettlement(request).size())
             .isEqualTo(2);
     }
