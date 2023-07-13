@@ -1,6 +1,7 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.CategoryResponse;
+import com.floney.floney.book.dto.CategoryInfo;
+import com.floney.floney.book.dto.CreateCategoryResponse;
 import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
@@ -26,21 +27,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponse createUserCategory(CreateCategoryRequest request) {
+    public CreateCategoryResponse createUserCategory(CreateCategoryRequest request) {
         Category parent = rootParent();
         if (request.hasParent()) {
             parent = categoryRepository.findParentCategory(request.getParent())
                 .orElseThrow(NotFoundCategoryException::new);
         }
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
-        return CategoryResponse.of(newCategory);
+        return CreateCategoryResponse.of(newCategory);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryResponse> findAllBy(String root, String bookKey) {
-        List<Category> categories = categoryRepository.findAllCategory(root, bookKey);
-        return CategoryResponse.to(categories);
+    public List<CategoryInfo> findAllBy(String root, String bookKey) {
+        return categoryRepository.findAllCategory(root, bookKey);
     }
 
     @Override
