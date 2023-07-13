@@ -1,12 +1,11 @@
 package com.floney.floney.book.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 @RequiredArgsConstructor
+@Getter
 public class DayLine {
 
     private Long id;
@@ -17,15 +16,12 @@ public class DayLine {
 
     private String categories;
 
-    private String profileImg;
-
     @QueryProjection
-    @Builder
-    public DayLine(Long id, Long money, String content, String categories, String profileImg) {
+    public DayLine(Long id,String content, Long money, String categories) {
         this.id = id;
-        this.money = money;
         this.content = content;
+        this.money = money;
         this.categories = categories;
-        this.profileImg = profileImg;
     }
+
 }

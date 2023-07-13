@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.DayLine;
+import com.floney.floney.book.dto.DayLineByDayView;
 import com.floney.floney.book.dto.DayLines;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.entity.Book;
@@ -48,7 +48,7 @@ public class BookLineTest {
     @Test
     @DisplayName("아이디가 동일한 내역은 중복된 내용은 합치고, 카테고리는 리스트 형태로 반환한다")
     void format_response() {
-        DayLine dayLine = DayLine.builder()
+        DayLineByDayView dayLine = DayLineByDayView.builder()
             .id(1L)
             .categories("수입")
             .content("내용")
@@ -56,7 +56,7 @@ public class BookLineTest {
             .profileImg("img")
             .build();
 
-        DayLine dayLine2 = DayLine.builder()
+        DayLineByDayView dayLine2 = DayLineByDayView.builder()
             .id(1L)
             .categories("급여")
             .content("내용")
@@ -73,7 +73,7 @@ public class BookLineTest {
             .build());
 
 
-        Assertions.assertThat(DayLines.of(Arrays.asList(dayLine, dayLine2))).isEqualTo(result);
+        Assertions.assertThat(DayLines.forDayView(Arrays.asList(dayLine, dayLine2))).isEqualTo(result);
     }
 
 }

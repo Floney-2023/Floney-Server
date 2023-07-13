@@ -46,6 +46,19 @@ public class BookLineFixture {
         return bookline;
     }
 
+    public static BookLine createBookLineWithWriter(Book book, Long money,BookUser writer) {
+        BookLine bookline = BookLine.builder()
+            .book(book)
+            .money(money)
+            .lineDate(LOCAL_DATE)
+            .writer(writer)
+            .exceptStatus(Boolean.FALSE)
+            .build();
+
+        return bookline;
+    }
+
+
     public static BookLine createBookLineWith(BookUser user,Book book, Long money) {
         BookLine bookline = BookLine.builder()
             .book(book)

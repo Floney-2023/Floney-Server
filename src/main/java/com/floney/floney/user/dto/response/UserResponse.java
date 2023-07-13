@@ -1,5 +1,7 @@
 package com.floney.floney.user.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
@@ -8,8 +10,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@ToString
-@Builder
+@JsonInclude(Include.NON_NULL)
+@Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserResponse {
 
