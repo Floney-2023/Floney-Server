@@ -54,12 +54,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLine.money,
                     bookLine.description,
                     bookLineCategory.name,
-                    bookUser.profileImg
+                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg)
                 ))
             .from(bookLine)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.writer, bookUser)
+            .leftJoin(bookLine.writer, bookUser)
             .where(
                 book.status.eq(Status.ACTIVE),
                 bookLine.status.eq(Status.ACTIVE),
