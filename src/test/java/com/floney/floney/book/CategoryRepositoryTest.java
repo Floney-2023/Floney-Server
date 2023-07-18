@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.RootCategory;
@@ -75,7 +76,7 @@ public class CategoryRepositoryTest {
     @DisplayName("커스텀 카테고리를 삭제한다")
     void delete_custom() {
         Category custom = categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        categoryRepository.deleteCustomCategory(savedBook.getBookKey(), CHILD);
+        categoryRepository.deleteCustomCategory(new DeleteCategoryRequest(savedBook.getBookKey(),savedRoot.getName(), CHILD));
         Assertions.assertThat(categoryRepository.findAllCategory(savedRoot.getName(), savedBook.getBookKey())
                 .contains(custom))
             .isFalse();

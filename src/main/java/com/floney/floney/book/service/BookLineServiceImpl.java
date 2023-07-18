@@ -77,8 +77,8 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public List<DayLines> allOutcomes(AllOutcomesReqeust allOutcomesReqeust) {
-        return DayLines.forOutcomes(bookLineRepository.allOutcomes(allOutcomesReqeust));
+    public List<DayLines> allOutcomes(AllOutcomesRequest allOutcomesRequest) {
+        return DayLines.forOutcomes(bookLineRepository.allOutcomes(allOutcomesRequest));
     }
 
     private void findCategories(BookLine bookLine, CreateLineRequest request) {

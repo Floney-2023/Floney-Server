@@ -1,18 +1,15 @@
 package com.floney.floney.book.repository.category;
 
-import com.floney.floney.book.dto.CategoryInfo;
-import com.floney.floney.book.dto.QCategoryInfo;
+import com.floney.floney.book.dto.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.beans.Expression;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,32 +22,25 @@ import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
 public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private static final boolean DEFAULT = true;
-    private static final boolean CUSTOM = false;
 
     @Override
-    public List<CategoryInfo> findAllCategory(String name, String bookKey) {
+    public List<Category> findAllCategory(String name, String bookKey) {
         Category targetRoot = jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
                 category.instanceOf(RootCategory.class))
             .fetchOne();
 
-        List<CategoryInfo> children = jpaQueryFactory.select(
-                new QCategoryInfo(Expressions.constant(DEFAULT), category.name))
-            .from(category)
+        List<Category> children = jpaQueryFactory.selectFrom(category)
             .where(category.parent.eq(targetRoot),
                 category.instanceOf(DefaultCategory.class))
             .fetch();
 
-        children.addAll(jpaQueryFactory.select(
-                new QCategoryInfo(Expressions.constant(CUSTOM), bookCategory.name))
-            .from(bookCategory)
+        children.addAll(jpaQueryFactory.selectFrom(bookCategory)
             .innerJoin(bookCategory.parent, category)
             .where(category.eq(targetRoot))
             .innerJoin(bookCategory.book, book)
             .where(book.bookKey.eq(bookKey))
             .fetch());
-
         return children;
     }
 
@@ -106,14 +96,20 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public void deleteCustomCategory(String bookKey, String targetName) {
+    public void deleteCustomCategory(DeleteCategoryRequest request) {
+        Category targetRoot = jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(request.getRoot()),
+                category.instanceOf(RootCategory.class))
+            .fetchOne();
+
         jpaQueryFactory.delete(bookCategory)
-            .where(bookCategory.name.eq(targetName),
+            .where(bookCategory.name.eq(request.getName()),
                 bookCategory.book.id.eq(
                     JPAExpressions.select(book.id)
                         .from(book)
-                        .where(book.bookKey.eq(bookKey))
-                ))
+                        .where(book.bookKey.eq(request.getBookKey()))
+                ),
+                bookCategory.parent.eq(targetRoot))
             .execute();
     }
 

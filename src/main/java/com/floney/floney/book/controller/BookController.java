@@ -108,8 +108,8 @@ public class BookController {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
     }
 
-    @GetMapping("/outcomes")
-    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesReqeust allOutcomesReqeust) {
+    @PostMapping("/outcomes")
+    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesReqeust) {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
     }
 

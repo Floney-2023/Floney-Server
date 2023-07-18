@@ -3,6 +3,7 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.CategoryInfo;
 import com.floney.floney.book.dto.CreateCategoryResponse;
 import com.floney.floney.book.dto.CreateCategoryRequest;
+import com.floney.floney.book.dto.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.category.BookCategory;
@@ -45,8 +46,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deleteCustomCategory(String categoryName, String bookKey) {
-        categoryRepository.deleteCustomCategory(bookKey, categoryName);
+    public void deleteCustomCategory(DeleteCategoryRequest request) {
+        categoryRepository.deleteCustomCategory(request);
 
     }
 
