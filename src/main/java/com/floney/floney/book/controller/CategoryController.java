@@ -1,6 +1,7 @@
 package com.floney.floney.book.controller;
 
 import com.floney.floney.book.dto.CreateCategoryRequest;
+import com.floney.floney.book.dto.DeleteCategoryRequest;
 import com.floney.floney.book.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,8 @@ public class CategoryController {
     }
 
     @DeleteMapping("/books/categories")
-    public ResponseEntity<?> deleteCategory(@RequestParam String bookKey,
-                                            @RequestParam String name) {
-        categoryService.deleteCustomCategory(bookKey, name);
+    public ResponseEntity<?> deleteCategory(@RequestBody DeleteCategoryRequest request) {
+        categoryService.deleteCustomCategory(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

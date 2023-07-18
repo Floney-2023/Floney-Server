@@ -1,5 +1,6 @@
 package com.floney.floney.book.repository.category;
 
+import com.floney.floney.book.dto.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
@@ -95,19 +96,25 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public void deleteCustomCategory(String bookKey,String targetName) {
+    public void deleteCustomCategory(DeleteCategoryRequest request) {
+        Category targetRoot = jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(request.getRoot()),
+                category.instanceOf(RootCategory.class))
+            .fetchOne();
+
         jpaQueryFactory.delete(bookCategory)
-            .where(bookCategory.name.eq(targetName),
+            .where(bookCategory.name.eq(request.getName()),
                 bookCategory.book.id.eq(
                     JPAExpressions.select(book.id)
                         .from(book)
-                        .where(book.bookKey.eq(bookKey))
-                ))
+                        .where(book.bookKey.eq(request.getBookKey()))
+                ),
+                bookCategory.parent.eq(targetRoot))
             .execute();
     }
 
     @Override
-    public Optional<Category> findParentCategory(String parentName){
+    public Optional<Category> findParentCategory(String parentName) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(parentName),
                 category.instanceOf(RootCategory.class))
