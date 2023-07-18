@@ -4,29 +4,21 @@ import com.floney.floney.book.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 @Getter
-public class CategoryResponse {
+public class CreateCategoryResponse {
 
     private final String name;
 
     @Builder
-    private CategoryResponse(String name) {
+    private CreateCategoryResponse(String name) {
         this.name = name;
     }
 
-    public static List<CategoryResponse> to(List<Category> categories) {
-        return categories.stream()
-            .map(CategoryResponse::of)
-            .collect(Collectors.toList());
-    }
-
-    public static CategoryResponse of(Category category) {
-        return CategoryResponse.builder()
+    public static CreateCategoryResponse of(Category category) {
+        return CreateCategoryResponse.builder()
             .name(category.getName())
             .build();
     }
@@ -35,7 +27,7 @@ public class CategoryResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CategoryResponse that = (CategoryResponse) o;
+        CreateCategoryResponse that = (CreateCategoryResponse) o;
         return Objects.equals(name, that.name);
     }
 

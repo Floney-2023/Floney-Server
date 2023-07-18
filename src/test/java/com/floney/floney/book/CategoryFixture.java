@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.CategoryResponse;
+import com.floney.floney.book.dto.CreateCategoryResponse;
 import com.floney.floney.book.dto.CreateCategoryRequest;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
@@ -78,14 +78,14 @@ public class CategoryFixture {
             .build();
     }
 
-    public static CategoryResponse categoryRootResponse() {
-        return CategoryResponse.builder()
+    public static CreateCategoryResponse categoryRootResponse() {
+        return CreateCategoryResponse.builder()
             .name(ROOT)
             .build();
     }
 
-    public static CategoryResponse categoryChildResponse() {
-        return CategoryResponse.builder()
+    public static CreateCategoryResponse categoryChildResponse() {
+        return CreateCategoryResponse.builder()
             .name(CHILD)
             .build();
     }

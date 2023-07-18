@@ -111,6 +111,7 @@ public class BookController {
     @PostMapping("/outcomes")
     public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesReqeust) {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
+    }
 
     }
 
