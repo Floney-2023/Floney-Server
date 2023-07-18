@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.common.exception.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.client.GoogleClient;

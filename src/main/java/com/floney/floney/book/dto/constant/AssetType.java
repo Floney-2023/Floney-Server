@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.constant;
 
-import com.floney.floney.common.exception.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.Getter;
 
 @Getter

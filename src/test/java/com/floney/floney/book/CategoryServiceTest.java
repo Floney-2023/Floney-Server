@@ -1,16 +1,15 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.CreateCategoryRequest;
+import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.service.CategoryServiceImpl;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.NotFoundBookException;
-import com.floney.floney.common.exception.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,15 +1,11 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.OurBookInfo;
-import com.floney.floney.book.dto.OurBookUser;
+import com.floney.floney.book.dto.process.OurBookUser;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static com.floney.floney.book.BookFixture.EMAIL;
-import static org.assertj.core.util.Arrays.asList;
 
 public class OurBookUserTest {
 

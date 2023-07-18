@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.floney.floney.common.exception.MailAddressException;
-import com.floney.floney.common.exception.UserNotFoundException;
+import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;

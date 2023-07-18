@@ -1,6 +1,13 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.*;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.DayLines;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.DatesRequest;
+import com.floney.floney.book.dto.response.BookLineResponse;
+import com.floney.floney.book.dto.response.MonthLinesResponse;
+import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
@@ -8,9 +15,9 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.exception.NotFoundBookException;
-import com.floney.floney.common.exception.NotFoundBookUserException;
-import com.floney.floney.common.exception.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

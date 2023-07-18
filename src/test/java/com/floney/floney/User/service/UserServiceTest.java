@@ -10,7 +10,7 @@ import static org.mockito.BDDMockito.then;
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.util.MailProvider;
-import com.floney.floney.common.exception.UserSignoutException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.config.UserFixture;

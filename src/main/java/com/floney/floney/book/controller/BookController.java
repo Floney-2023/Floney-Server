@@ -1,6 +1,6 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.*;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;

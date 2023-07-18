@@ -1,12 +1,9 @@
 package com.floney.floney.User.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
-import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.UserFoundException;
-import com.floney.floney.common.exception.UserSignoutException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;

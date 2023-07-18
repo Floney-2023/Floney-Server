@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.CreateLineRequest;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.*;
 
 import java.time.LocalDate;

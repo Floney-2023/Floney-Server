@@ -1,23 +1,19 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.CreateBookResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
-import com.floney.floney.common.exception.LimitRequestException;
+import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.config.UserFixture;
-import com.floney.floney.config.WithMockCustomUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

@@ -1,6 +1,6 @@
 package com.floney.floney.user.dto.response;
 
-import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.dto.process.MyBookInfo;
 import lombok.*;
 
 import java.time.LocalDateTime;

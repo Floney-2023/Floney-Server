@@ -1,9 +1,9 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.CategoryInfo;
-import com.floney.floney.book.dto.CreateCategoryRequest;
-import com.floney.floney.book.dto.CreateCategoryResponse;
-import com.floney.floney.book.dto.DeleteCategoryRequest;
+import com.floney.floney.book.dto.process.CategoryInfo;
+import com.floney.floney.book.dto.request.CreateCategoryRequest;
+import com.floney.floney.book.dto.response.CreateCategoryResponse;
+import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 
 import java.util.List;
 

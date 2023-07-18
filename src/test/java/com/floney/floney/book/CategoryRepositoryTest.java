@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.DeleteCategoryRequest;
+import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.RootCategory;

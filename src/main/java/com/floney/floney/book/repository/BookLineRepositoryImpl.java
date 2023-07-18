@@ -1,6 +1,8 @@
 package com.floney.floney.book.repository;
 
-import com.floney.floney.book.dto.*;
+import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.DatesRequest;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;

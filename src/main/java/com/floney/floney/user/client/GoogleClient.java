@@ -1,13 +1,12 @@
 package com.floney.floney.user.client;
 
-import com.floney.floney.common.exception.OAuthResponseException;
-import com.floney.floney.common.exception.OAuthTokenNotValidException;
+import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.dto.response.GoogleUserResponse;
 import java.net.URI;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Getter

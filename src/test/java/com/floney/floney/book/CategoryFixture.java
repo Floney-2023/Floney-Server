@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.CreateCategoryResponse;
-import com.floney.floney.book.dto.CreateCategoryRequest;
+import com.floney.floney.book.dto.response.CreateCategoryResponse;
+import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
 

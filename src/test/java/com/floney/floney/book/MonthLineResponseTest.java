@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.MonthLinesResponse;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.response.MonthLinesResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

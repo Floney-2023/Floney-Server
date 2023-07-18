@@ -1,7 +1,7 @@
 package com.floney.floney.common.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.floney.floney.common.exception.ErrorType;
+import com.floney.floney.common.exception.common.ErrorType;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
