@@ -1,9 +1,9 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.AllOutcomesRequest;
-import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.DatesRequest;
-import com.floney.floney.book.dto.TotalExpense;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.request.DatesRequest;
+import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;

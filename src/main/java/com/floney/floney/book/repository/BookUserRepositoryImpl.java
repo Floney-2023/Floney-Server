@@ -1,7 +1,7 @@
 package com.floney.floney.book.repository;
 
-import com.floney.floney.book.dto.MyBookInfo;
-import com.floney.floney.book.dto.OurBookUser;
+import com.floney.floney.book.dto.process.MyBookInfo;
+import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.QMyBookInfo;
 import com.floney.floney.book.dto.QOurBookUser;
 import com.floney.floney.book.entity.Book;

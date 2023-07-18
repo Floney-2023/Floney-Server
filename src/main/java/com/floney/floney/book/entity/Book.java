@@ -1,7 +1,7 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.book.dto.CreateLineRequest;
-import com.floney.floney.book.dto.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.NoAuthorityException;

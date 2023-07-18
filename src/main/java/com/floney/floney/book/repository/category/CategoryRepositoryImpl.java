@@ -1,7 +1,7 @@
 package com.floney.floney.book.repository.category;
 
-import com.floney.floney.book.dto.CategoryInfo;
-import com.floney.floney.book.dto.DeleteCategoryRequest;
+import com.floney.floney.book.dto.process.CategoryInfo;
+import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.dto.QCategoryInfo;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;

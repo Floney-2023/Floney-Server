@@ -1,14 +1,13 @@
 package com.floney.floney.book.util;
 
-import com.floney.floney.book.dto.BookLineExpense;
-import com.floney.floney.book.dto.DatesRequest;
-import com.floney.floney.book.dto.MonthKey;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.request.DatesRequest;
+import com.floney.floney.book.dto.process.MonthKey;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

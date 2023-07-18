@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.DayLineByDayView;
-import com.floney.floney.book.dto.DayLines;
+import com.floney.floney.book.dto.process.DayLineByDayView;
+import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.entity.Book;
 import org.assertj.core.api.Assertions;

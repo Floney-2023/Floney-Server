@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.book.dto.MyBookInfo;
+import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;

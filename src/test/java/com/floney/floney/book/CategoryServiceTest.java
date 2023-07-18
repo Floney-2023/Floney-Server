@@ -1,10 +1,9 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.CreateCategoryRequest;
+import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.service.CategoryServiceImpl;

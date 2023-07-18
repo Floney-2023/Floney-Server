@@ -1,6 +1,6 @@
 package com.floney.floney.book.util;
 
-import com.floney.floney.book.dto.CarryOverInfo;
+import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.Category;

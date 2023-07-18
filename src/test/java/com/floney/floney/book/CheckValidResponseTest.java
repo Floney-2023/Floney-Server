@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.CheckBookValidResponse;
 import com.floney.floney.book.entity.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
