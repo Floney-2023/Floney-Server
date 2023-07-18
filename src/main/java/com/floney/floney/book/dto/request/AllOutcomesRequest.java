@@ -25,4 +25,7 @@ public class AllOutcomesRequest {
         return usersEmails;
     }
 
+    public void addCurrentUser(String currentUser) {
+        this.usersEmails.add(currentUser);
+    }
 }

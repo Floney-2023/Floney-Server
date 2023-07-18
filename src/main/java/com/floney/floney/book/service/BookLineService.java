@@ -19,7 +19,7 @@ public interface BookLineService {
 
     void deleteAllLine(String bookKey);
 
-    List<DayLines> allOutcomes(AllOutcomesRequest allSettlements);
+    List<DayLines> allOutcomes(String currentUser,AllOutcomesRequest allSettlements);
 
 
 }

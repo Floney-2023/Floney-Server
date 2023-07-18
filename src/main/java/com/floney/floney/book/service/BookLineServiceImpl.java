@@ -84,7 +84,8 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public List<DayLines> allOutcomes(AllOutcomesRequest allOutcomesRequest) {
+    public List<DayLines> allOutcomes(String currentUser, AllOutcomesRequest allOutcomesRequest) {
+        allOutcomesRequest.addCurrentUser(currentUser);
         return DayLines.forOutcomes(bookLineRepository.allOutcomes(allOutcomesRequest));
     }
 
