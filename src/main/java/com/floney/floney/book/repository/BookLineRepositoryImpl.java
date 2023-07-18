@@ -130,7 +130,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> allOutcomes(AllOutcomesReqeust request) {
+    public List<DayLine> allOutcomes(AllOutcomesRequest request) {
         DatesRequest dates = request.getDates();
         return jpaQueryFactory
             .select(new QDayLine(
@@ -140,10 +140,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.name)
             )
             .from(bookLine)
+            .innerJoin(bookLine.book,book)
             .innerJoin(bookLine.writer, bookUser)
             .innerJoin(bookUser.user, user)
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
+                book.bookKey.eq(request.getBookKey()),
                 bookLine.lineDate.between(dates.start(), dates.end()),
                 user.email.in(request.users()),
                 bookLine.status.eq(Status.ACTIVE)

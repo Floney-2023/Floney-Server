@@ -6,13 +6,17 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
-public class AllOutcomesReqeust {
+public class AllOutcomesRequest {
+
+    private String bookKey;
+
     private List<String> usersEmails;
 
     @NotNull
     private DatesRequest dates;
 
-    public AllOutcomesReqeust(List<String> usersEmails, DatesRequest dates) {
+    public AllOutcomesRequest(String bookKey, List<String> usersEmails, DatesRequest dates) {
+        this.bookKey = bookKey;
         this.usersEmails = usersEmails;
         this.dates = dates;
     }

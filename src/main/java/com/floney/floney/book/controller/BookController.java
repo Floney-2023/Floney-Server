@@ -109,7 +109,7 @@ public class BookController {
     }
 
     @GetMapping("/outcomes")
-    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesReqeust allOutcomesReqeust) {
+    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesReqeust) {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
 
     }

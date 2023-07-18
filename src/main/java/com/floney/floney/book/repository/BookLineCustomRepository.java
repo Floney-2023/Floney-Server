@@ -18,5 +18,5 @@ public interface BookLineCustomRepository {
 
     void deleteAllLines(String bookKey);
 
-    List<DayLine> allOutcomes(AllOutcomesReqeust request);
+    List<DayLine> allOutcomes(AllOutcomesRequest request);
 }

@@ -14,7 +14,7 @@ public interface BookLineService {
 
     void deleteAllLine(String bookKey);
 
-    List<DayLines> allOutcomes(AllOutcomesReqeust allSettlements);
+    List<DayLines> allOutcomes(AllOutcomesRequest allSettlements);
 
 
 }
