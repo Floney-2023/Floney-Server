@@ -8,6 +8,7 @@ import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.util.CategoryFactory;
+import com.floney.floney.book.util.CodeFactory;
 import com.floney.floney.common.constant.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
