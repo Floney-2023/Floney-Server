@@ -1,5 +1,7 @@
-package com.floney.floney.common.exception;
+package com.floney.floney.common.exception.common;
 
+import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.user.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.util.HashMap;

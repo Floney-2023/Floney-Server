@@ -1,7 +1,7 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.common.exception.NoAuthorityException;
+import com.floney.floney.common.exception.common.NoAuthorityException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

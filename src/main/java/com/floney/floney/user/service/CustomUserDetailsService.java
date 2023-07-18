@@ -1,9 +1,8 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.UserFoundException;
-import com.floney.floney.common.exception.UserNotFoundException;
-import com.floney.floney.common.exception.UserSignoutException;
+import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;

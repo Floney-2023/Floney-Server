@@ -1,8 +1,7 @@
 package com.floney.floney.common.util;
 
-import com.floney.floney.common.exception.MailAddressException;
+import com.floney.floney.common.exception.user.MailAddressException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

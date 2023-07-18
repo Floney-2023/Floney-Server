@@ -2,13 +2,13 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.QMyBookInfo;
-import com.floney.floney.book.dto.QOurBookUser;
+import com.floney.floney.book.dto.process.QMyBookInfo;
+import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.MaxMemberException;
-import com.floney.floney.common.exception.NoAuthorityException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

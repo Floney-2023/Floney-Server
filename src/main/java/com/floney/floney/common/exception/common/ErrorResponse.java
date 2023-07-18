@@ -1,4 +1,4 @@
-package com.floney.floney.common.exception;
+package com.floney.floney.common.exception.common;
 
 
 import lombok.Getter;

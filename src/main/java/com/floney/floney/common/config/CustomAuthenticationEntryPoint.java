@@ -1,10 +1,8 @@
 package com.floney.floney.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.floney.floney.common.exception.ErrorType;
+import com.floney.floney.common.exception.common.ErrorType;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

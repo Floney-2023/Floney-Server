@@ -1,5 +1,6 @@
-package com.floney.floney.common.exception;
+package com.floney.floney.common.exception.common;
 
+import com.floney.floney.common.exception.common.ErrorType;
 import lombok.Getter;
 
 @Getter

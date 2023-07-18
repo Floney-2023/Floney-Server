@@ -5,7 +5,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
-import com.floney.floney.common.exception.LimitRequestException;
+import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
