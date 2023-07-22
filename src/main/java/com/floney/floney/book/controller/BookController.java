@@ -38,8 +38,9 @@ public class BookController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request) {
-        return new ResponseEntity<>(bookLineService.createBookLine(request), HttpStatus.CREATED);
+    public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(),request), HttpStatus.CREATED);
     }
 
     @GetMapping("/month")

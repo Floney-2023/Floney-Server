@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface BookLineService {
 
-    BookLineResponse createBookLine(CreateLineRequest request);
+    BookLineResponse createBookLine(String currentUser, CreateLineRequest request);
 
     MonthLinesResponse showByMonth(String bookKey, String date);
 
