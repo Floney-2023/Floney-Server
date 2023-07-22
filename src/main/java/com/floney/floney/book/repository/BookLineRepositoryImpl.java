@@ -139,7 +139,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.id,
                 bookLine.description,
                 bookLine.money,
-                bookLineCategory.name)
+                bookLineCategory.name,
+                user.nickname)
             )
             .from(bookLine)
             .innerJoin(bookLine.book,book)
