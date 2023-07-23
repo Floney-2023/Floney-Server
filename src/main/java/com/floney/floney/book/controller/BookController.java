@@ -118,4 +118,9 @@ public class BookController {
                                                               @RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
     }
+
+    @GetMapping("/code")
+    public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
+    }
 }
