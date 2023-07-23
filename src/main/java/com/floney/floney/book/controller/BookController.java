@@ -118,4 +118,11 @@ public class BookController {
                                                               @RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
     }
+
+    @PostMapping("/out")
+    public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                              @RequestBody BookUserOutRequest request) {
+        bookService.bookUserOut(request, userDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
