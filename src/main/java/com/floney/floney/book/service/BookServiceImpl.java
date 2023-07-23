@@ -98,12 +98,18 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteBook(String email, String bookKey) {
         Book book = findBook(bookKey);
-        book.isOwner(email);
-        bookUserRepository.countBookUser(book);
-        BookUser owner = bookUserRepository.findBookUserBy(email, book);
-        deleteBookUser(owner);
+        isValidToDeleteBook(book, email);
+
+        BookUser bookUser = findBookUserByKey(email,bookKey);
+        deleteBookUser(bookUser);
+
         book.delete();
         bookRepository.save(book);
+    }
+
+    private void isValidToDeleteBook(Book book, String email) {
+        book.isOwner(email);
+        bookUserRepository.countBookUser(book);
     }
 
     @Override
@@ -177,16 +183,20 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void bookUserOut(BookUserOutRequest request, String username) {
-        BookUser bookUser = bookUserRepository.findBookUserByKey(username, request.getBookKey())
-            .orElseThrow(NotFoundBookUserException::new);
-        deleteBookUser(bookUser);
+    public void bookUserOut(BookUserOutRequest request, String userEmail) {
+        BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
         deleteBookLineBy(bookUser, request.getBookKey());
+        deleteBookUser(bookUser);
     }
 
-    private void deleteBookUser(BookUser bookuser) {
-        bookuser.delete();
-        bookUserRepository.save(bookuser);
+    private BookUser deleteBookUser(BookUser bookUser) {
+        bookUser.delete();
+        return bookUserRepository.save(bookUser);
+    }
+
+    private BookUser findBookUserByKey(String userEmail, String bookKey) {
+        return bookUserRepository.findBookUserByKey(userEmail, bookKey)
+            .orElseThrow(NotFoundBookUserException::new);
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
