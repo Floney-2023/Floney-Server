@@ -119,7 +119,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
     }
 
-    @PostMapping("/out")
+    @PostMapping("/users/out")
     public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                               @RequestBody BookUserOutRequest request) {
         bookService.bookUserOut(request, userDetails.getUsername());
