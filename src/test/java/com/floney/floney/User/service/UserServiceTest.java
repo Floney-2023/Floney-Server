@@ -152,4 +152,15 @@ class UserServiceTest {
         assertThat(newPassword.length()).isEqualTo(passwordLength);
     }
 
+    @Test
+    @DisplayName("현재 비밀번호와 같은 비밀번호로 변경 시도 시 실패한다")
+    void updatePassword_fail_samePasswordException() {
+        // given
+        final String password = "1234567890";
+
+        given(passwordEncoder.matches(any(String.class), any(String.class))).willReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> userService.updatePassword(password, User.builder().build()));
+    }
 }
