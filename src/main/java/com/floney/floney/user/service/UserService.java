@@ -6,6 +6,7 @@ import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
+import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -109,9 +110,16 @@ public class UserService {
 
     @Transactional
     public void updatePassword(String password, User user) {
+        validatePassword(password, user.getPassword());
         user.updatePassword(password);
         user.encodePassword(bCryptPasswordEncoder);
         userRepository.save(user);
+    }
+
+    private void validatePassword(String newPassword, String oldPassword) {
+        if (bCryptPasswordEncoder.matches(newPassword, oldPassword)) {
+            throw new PasswordSameException();
+        }
     }
 
     public void updatePassword(String password, String email) {
