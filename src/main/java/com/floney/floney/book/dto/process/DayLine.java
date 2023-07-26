@@ -16,7 +16,7 @@ public class DayLine {
 
     private String categories;
 
-    private String userNickName;
+    private String userEmail;
 
     public DayLine(Long id, String content, Long money, String categories) {
         this.id = id;
@@ -26,12 +26,12 @@ public class DayLine {
     }
 
     @QueryProjection
-    public DayLine(Long id, String content, Long money, String categories, String userNickName) {
+    public DayLine(Long id, String content, Long money, String categories, String userEmail) {
         this.id = id;
         this.content = content;
         this.money = money;
         this.categories = categories;
-        this.userNickName = userNickName;
+        this.userEmail = userEmail;
     }
 
 }

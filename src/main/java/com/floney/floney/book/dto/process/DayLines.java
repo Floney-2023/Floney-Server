@@ -19,16 +19,16 @@ public class DayLines {
     private final List<String> category;
     private final AssetType assetType;
     private final String content;
-    private final String userNickName;
+    private final String userEmail;
 
     @Builder
-    public DayLines(Long money, String img, String content, List<String> category, AssetType assetType,String userNickName) {
+    public DayLines(Long money, String img, String content, List<String> category, AssetType assetType,String userEmail) {
         this.money = money;
         this.img = img;
         this.assetType = assetType;
         this.category = category;
         this.content = content;
-        this.userNickName = userNickName;
+        this.userEmail = userEmail;
     }
 
     public static List<DayLines> forDayView(List<DayLineByDayView> dayLines) {
@@ -71,7 +71,7 @@ public class DayLines {
             .content(dayInfo.getContent())
             .category(dayInfo.getCategories())
             .img(dayInfo.getImg())
-            .userNickName(dayInfo.getUserNickName())
+            .userEmail(dayInfo.getUserEmail())
             .build();
     }
 

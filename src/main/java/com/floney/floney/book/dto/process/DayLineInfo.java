@@ -19,16 +19,16 @@ public class DayLineInfo {
 
     private final String img;
 
-    private final String userNickName;
+    private final String userEmail;
 
     @Builder
-    public DayLineInfo(Long money, String assetType, String content, List<String> categories, String img, String userNickName) {
+    public DayLineInfo(Long money, String assetType, String content, List<String> categories, String img, String userEmail) {
         this.money = money;
         this.content = content;
         this.assetType = AssetType.find(assetType);
         this.categories = categories;
         this.img = img;
-        this.userNickName = userNickName;
+        this.userEmail = userEmail;
     }
 
     public void addCategory(String category) {
@@ -54,7 +54,7 @@ public class DayLineInfo {
             .categories(new ArrayList<>())
             .money(dayLine.getMoney())
             .content(dayLine.getContent())
-            .userNickName(dayLine.getUserNickName())
+            .userEmail(dayLine.getUserEmail())
             .build();
     }
 }
