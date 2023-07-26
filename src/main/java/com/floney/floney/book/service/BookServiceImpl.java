@@ -11,6 +11,7 @@ import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateAssetRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
@@ -178,5 +179,10 @@ public class BookServiceImpl implements BookService {
                 .map(bookUser -> UserResponse.from(bookUser.getUser()))
                 .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
                 .toList();
+    }
+
+    @Override
+    public InviteCodeResponse inviteCode(String bookKey) {
+        return new InviteCodeResponse(findBook(bookKey));
     }
 }
