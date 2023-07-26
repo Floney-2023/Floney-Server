@@ -125,6 +125,7 @@ public class BookController {
                                                               @RequestBody BookUserOutRequest request) {
         bookService.bookUserOut(request, userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/code")
     public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {

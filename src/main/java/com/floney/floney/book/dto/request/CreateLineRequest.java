@@ -29,10 +29,9 @@ public class CreateLineRequest {
 
     private Boolean except;
 
-    private String nickname;
 
     @Builder
-    public CreateLineRequest(String bookKey, Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
+    public CreateLineRequest(String bookKey, Long money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
         this.bookKey = bookKey;
         this.money = money;
         this.flow = flow;
@@ -41,7 +40,6 @@ public class CreateLineRequest {
         this.lineDate = lineDate;
         this.description = description;
         this.except = except;
-        this.nickname = nickname;
     }
 
     public BookLine to(BookUser bookUser, Book book) {
