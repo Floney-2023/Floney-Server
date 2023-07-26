@@ -16,12 +16,22 @@ public class DayLine {
 
     private String categories;
 
-    @QueryProjection
-    public DayLine(Long id,String content, Long money, String categories) {
+    private String userNickName;
+
+    public DayLine(Long id, String content, Long money, String categories) {
         this.id = id;
         this.content = content;
         this.money = money;
         this.categories = categories;
+    }
+
+    @QueryProjection
+    public DayLine(Long id, String content, Long money, String categories, String userNickName) {
+        this.id = id;
+        this.content = content;
+        this.money = money;
+        this.categories = categories;
+        this.userNickName = userNickName;
     }
 
 }
