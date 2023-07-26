@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.then;
 
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
@@ -152,4 +153,17 @@ class UserServiceTest {
         assertThat(newPassword.length()).isEqualTo(passwordLength);
     }
 
+    @Test
+    @DisplayName("현재 비밀번호와 같은 비밀번호로 변경 시도 시 실패한다")
+    void updatePassword_fail_samePasswordException() {
+        // given
+        final String password = "1234567890";
+        final User user = User.builder().password(password).build();
+
+        given(passwordEncoder.matches(any(String.class), any(String.class))).willReturn(true);
+
+        // when & then
+        assertThatThrownBy(() -> userService.updatePassword(password, user))
+                .isInstanceOf(PasswordSameException.class);
+    }
 }
