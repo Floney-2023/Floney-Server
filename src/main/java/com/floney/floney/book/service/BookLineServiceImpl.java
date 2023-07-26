@@ -46,12 +46,12 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse createBookLine(CreateLineRequest request) {
+    public BookLineResponse createBookLine(String currentUser,CreateLineRequest request) {
         Book book = findBook(request.getBookKey());
         if (request.isNotExcept()) {
             book.processTrans(request);
         }
-        BookLine requestLine = request.to(findBookUser(request), book);
+        BookLine requestLine = request.to(findBookUser(currentUser,request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         findCategories(savedLine, request);
 
@@ -110,8 +110,8 @@ public class BookLineServiceImpl implements BookLineService {
         return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
-    private BookUser findBookUser(CreateLineRequest request) {
-        return bookUserRepository.findBookUserByKey(request.getNickname(), request.getBookKey())
+    private BookUser findBookUser(String currentUser, CreateLineRequest request) {
+        return bookUserRepository.findBookUserByKey(currentUser,request.getBookKey())
             .orElseThrow(NotFoundBookUserException::new);
     }
 

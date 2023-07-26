@@ -24,5 +24,4 @@ public class AllOutcomesRequest {
     public List<String> users() {
         return usersEmails;
     }
-
 }

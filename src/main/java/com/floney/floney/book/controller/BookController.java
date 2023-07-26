@@ -38,8 +38,9 @@ public class BookController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request) {
-        return new ResponseEntity<>(bookLineService.createBookLine(request), HttpStatus.CREATED);
+    public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(), request), HttpStatus.CREATED);
     }
 
     @GetMapping("/month")
@@ -109,8 +110,8 @@ public class BookController {
     }
 
     @PostMapping("/outcomes")
-    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesReqeust) {
-        return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesReqeust), HttpStatus.OK);
+    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesRequest) {
+        return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesRequest), HttpStatus.OK);
     }
 
     @GetMapping("/users")
@@ -124,5 +125,9 @@ public class BookController {
                                                               @RequestBody BookUserOutRequest request) {
         bookService.bookUserOut(request, userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
+
+    @GetMapping("/code")
+    public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
 }
