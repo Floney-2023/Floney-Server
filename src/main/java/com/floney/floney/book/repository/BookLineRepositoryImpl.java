@@ -3,6 +3,7 @@ package com.floney.floney.book.repository;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.DatesRequest;
+import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -155,5 +156,19 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             )
             .groupBy(bookLine.id, bookLineCategory.name)
             .fetch();
+    }
+
+    @Override
+    public void deleteAllLinesByUser(BookUser bookUser, String bookKey) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .where(bookLine.book.id.eq(
+                JPAExpressions.select(book.id)
+                    .from(book)
+                    .where(book.bookKey.eq(bookKey))
+            ),bookLine.writer.id.eq(
+                bookUser.getId()
+            ))
+            .execute();
     }
 }

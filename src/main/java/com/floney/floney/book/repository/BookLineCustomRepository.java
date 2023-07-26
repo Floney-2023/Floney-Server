@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.process.DayLineByDayView;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.DatesRequest;
+import com.floney.floney.book.entity.BookUser;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,4 +25,6 @@ public interface BookLineCustomRepository {
     void deleteAllLines(String bookKey);
 
     List<DayLine> allOutcomes(AllOutcomesRequest request);
+
+    void deleteAllLinesByUser(BookUser bookUser, String bookKey);
 }

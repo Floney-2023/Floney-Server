@@ -76,6 +76,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetchOne());
     }
 
+
     @Override
     public List<MyBookInfo> findMyBooks(User user) {
         List<Book> books = jpaQueryFactory.select(book)

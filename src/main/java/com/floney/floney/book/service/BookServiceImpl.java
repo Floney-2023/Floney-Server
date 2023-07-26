@@ -1,12 +1,10 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
+import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateAssetRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
@@ -14,20 +12,23 @@ import com.floney.floney.book.dto.request.UpdateBudgetRequest;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
+    private final BookLineCustomRepository bookLineRepository;
 
     @Override
     @Transactional
@@ -82,7 +84,7 @@ public class BookServiceImpl implements BookService {
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-                .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -101,15 +103,18 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteBook(String email, String bookKey) {
         Book book = findBook(bookKey);
-        book.isOwner(email);
-        bookUserRepository.countBookUser(book);
-        BookUser owner = bookUserRepository.findBookUserBy(email, book);
+        isValidToDeleteBook(book, email);
+
+        BookUser bookUser = findBookUserByKey(email,bookKey);
+        deleteBookUser(bookUser);
 
         book.delete();
-        owner.delete();
-
         bookRepository.save(book);
-        bookUserRepository.save(owner);
+    }
+
+    private void isValidToDeleteBook(Book book, String email) {
+        book.isOwner(email);
+        bookUserRepository.countBookUser(book);
     }
 
     @Override
@@ -175,10 +180,32 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey) {
         return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE)
-                .stream()
-                .map(bookUser -> UserResponse.from(bookUser.getUser()))
-                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-                .toList();
+            .stream()
+            .map(bookUser -> UserResponse.from(bookUser.getUser()))
+            .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+            .toList();
+    }
+
+    @Override
+    @Transactional
+    public void bookUserOut(BookUserOutRequest request, String userEmail) {
+        BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
+        deleteBookLineBy(bookUser, request.getBookKey());
+        deleteBookUser(bookUser);
+    }
+
+    private BookUser deleteBookUser(BookUser bookUser) {
+        bookUser.delete();
+        return bookUserRepository.save(bookUser);
+    }
+
+    private BookUser findBookUserByKey(String userEmail, String bookKey) {
+        return bookUserRepository.findBookUserByKey(userEmail, bookKey)
+            .orElseThrow(NotFoundBookUserException::new);
+    }
+
+    private void deleteBookLineBy(BookUser bookUser, String bookKey) {
+        bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
 
     @Override
