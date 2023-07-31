@@ -8,13 +8,13 @@ import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Getter
-public class DatesRequest {
+public class DatesDuration {
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     @Builder
-    private DatesRequest(LocalDate startDate, LocalDate endDate) {
+    private DatesDuration(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

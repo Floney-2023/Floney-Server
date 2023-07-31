@@ -13,12 +13,12 @@ public class AllOutcomesRequest {
     private List<String> usersEmails;
 
     @NotNull
-    private DatesRequest dates;
+    private DatesDuration duration;
 
-    public AllOutcomesRequest(String bookKey, List<String> usersEmails, DatesRequest dates) {
+    public AllOutcomesRequest(String bookKey, List<String> usersEmails, DatesDuration duration) {
         this.bookKey = bookKey;
         this.usersEmails = usersEmails;
-        this.dates = dates;
+        this.duration = duration;
     }
 
     public List<String> users() {
