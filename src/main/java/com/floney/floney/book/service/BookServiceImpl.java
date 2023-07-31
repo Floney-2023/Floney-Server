@@ -184,13 +184,15 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey) {
-        // TODO: 자신의 가계부가 아니면 예외처리
+        findBookUserByKey(userDetails.getUsername(), bookKey);
+
         final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
         users.addAll(findAllByBookAndStatus(bookKey)
                 .stream()
                 .map(BookUser::getUser)
                 .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
                 .toList());
+
         return userToResponse(users);
     }
 
