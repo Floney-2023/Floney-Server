@@ -1,6 +1,7 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.CheckBookValidResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
@@ -43,7 +44,7 @@ public interface BookService {
 
     void updateLastSettlementDate(String bookKey, LocalDate settlementDate);
 
-    List<UserResponse> findUsersByBook(CustomUserDetails userDetails, String bookKey);
+    List<BookUserResponse> findUsersByBook(CustomUserDetails userDetails, String bookKey);
 
     void bookUserOut(BookUserOutRequest request, String username);
 

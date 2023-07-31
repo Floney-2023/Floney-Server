@@ -3,6 +3,7 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.CheckBookValidResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.request.SeeProfileRequest;
@@ -182,7 +183,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey) {
+    public List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey) {
         // TODO: 자신의 가계부가 아니면 예외처리
         final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
         users.addAll(findAllByBookAndStatus(bookKey)
@@ -193,9 +194,9 @@ public class BookServiceImpl implements BookService {
         return userToResponse(users);
     }
 
-    private List<UserResponse> userToResponse(final List<User> users) {
+    private List<BookUserResponse> userToResponse(final List<User> users) {
         return users.stream()
-                .map(UserResponse::from)
+                .map(BookUserResponse::from)
                 .toList();
     }
 
