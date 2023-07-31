@@ -43,7 +43,7 @@ public interface BookService {
 
     void updateLastSettlementDate(String bookKey, LocalDate settlementDate);
 
-    List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey);
+    List<UserResponse> findUsersByBook(CustomUserDetails userDetails, String bookKey);
 
     void bookUserOut(BookUserOutRequest request, String username);
 

@@ -115,9 +115,9 @@ public class BookController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> findUsersByBookExceptCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                              @RequestParam String bookKey) {
-        return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
+    public ResponseEntity<?> findUsersByBook(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                             @RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.findUsersByBook(userDetails, bookKey), HttpStatus.OK);
     }
 
     @PostMapping("/users/out")
