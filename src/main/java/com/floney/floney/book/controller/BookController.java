@@ -131,4 +131,9 @@ public class BookController {
     public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
+
+    @GetMapping("/analyze/category")
+    public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
+        return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
+    }
 }
