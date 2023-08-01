@@ -132,7 +132,7 @@ public class BookController {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
 
-    @GetMapping("/analyze/category")
+    @PostMapping("/analyze/category")
     public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
         return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
     }
