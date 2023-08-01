@@ -33,7 +33,7 @@ jobs:
         
       # 압축
       - name: Make zip file
-        run: zip -r -qq -j Floney-0.0.1-SNAPSHOT.zip deploy
+        run: zip -r -qq -j floney-server-build.zip deploy
         
       # AWS 인증
       - name: AWS credentials
@@ -45,7 +45,7 @@ jobs:
           
       # S3에 빌드된 파일 업로드
       - name: Upload to AWS S3
-        run: aws s3 cp --region ap-northeast-2 Floney-0.0.1-SNAPSHOT.zip s3://floney-dev-deploy/Floney-0.0.1-SNAPSHOT.zip
+        run: aws s3 cp --region ap-northeast-2 floney-server-build.zip s3://floney-dev-deploy/floney-server-build.zip
         
       # Deploy
       - name: Code Deploy
@@ -54,4 +54,4 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce 
           --file-exists-behavior OVERWRITE 
           --deployment-group-name floney-dev --s3-location bucket=floney-dev-deploy,
-          bundleType=zip,key=Floney-0.0.1-SNAPSHOT.zip
+          bundleType=zip,key=floney-server-build.zip
