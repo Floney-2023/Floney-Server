@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source:  /
-    destination: /home/ubuntu/floney-deploy
+    destination: /home/ubuntu/floney-dev-deploy
     overwrite: yes
 
 permissions:
