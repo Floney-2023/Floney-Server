@@ -3,8 +3,6 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
 
 permissions:
   contents: read
@@ -20,20 +18,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Run chmod to make gradlew executable
+      - name: gradlew에 실행 권한 부여
         run: chmod +x ./gradlew
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: build
-          
-      # 전송할 파일을 담을 디렉토리 생성
-      - name: Make Directory for deliver
-        run: mkdir deploy && cp build/libs/*.jar deploy/ && cp appspec.yml deploy/ && cp script/deploy.sh deploy/
-        
-      # 압축
-      - name: Make zip file
-        run: zip -r -qq -j floney-server-build.zip deploy
+      - name: 프로젝트 빌드
+        run: ./gradlew clean build -x test
         
       # AWS 인증
       - name: AWS credentials
@@ -43,15 +31,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
           aws-region: ap-northeast-2
           
-      # S3에 빌드된 파일 업로드
-      - name: Upload to AWS S3
-        run: aws s3 cp --region ap-northeast-2 floney-server-build.zip s3://floney-dev-deploy/floney-server-build.zip
-        
-      # Deploy
-      - name: Code Deploy
+      - name: S3에 업로드
+        run: aws deploy push --application-name floney-dev
+             --ignore-hidden-files 
+             --s3-location s3://$AWS_S3_BUCKET/cicdtest/$GITHUB_SHA.zip --source .
+             
+      - name: EC2에 배포
         run: aws deploy create-deployment 
-          --application-name floney-dev
-          --deployment-config-name CodeDeployDefault.AllAtOnce 
-          --file-exists-behavior OVERWRITE 
-          --deployment-group-name floney-dev --s3-location bucket=floney-dev-deploy,
-          bundleType=zip,key=floney-server-build.zip
+             --application-name floney-dev
+             --deployment-config-name CodeDeployDefault.AllAtOnce 
+             --deployment-group-name floney-dev
+             --s3-location bucket=$AWS_S3_BUCKET,key=cicdtest/$GITHUB_SHA.zip,bundleType=zip
