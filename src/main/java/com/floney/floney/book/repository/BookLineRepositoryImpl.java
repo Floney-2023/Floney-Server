@@ -1,9 +1,13 @@
 package com.floney.floney.book.repository;
 
+import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.DatesRequest;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.response.QAnalyzeByCategory;
+import com.floney.floney.book.entity.*;
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,6 +24,8 @@ import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookLine.bookLine;
 import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.book.entity.QCategory.category;
+import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -31,7 +37,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Map<String, Long> totalExpenseByMonth(String bookKey, DatesRequest dates) {
+    public Map<String, Long> totalExpenseByMonth(String bookKey, DatesDuration dates) {
         return jpaQueryFactory
             .from(bookLine)
             .innerJoin(bookLine.book, book)
@@ -45,7 +51,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             )
             .groupBy(bookLineCategory.name)
             .orderBy(bookLineCategory.name.asc())
-            .transform(groupBy(bookLineCategory.name).as(bookLine.money.sum()));
+            .transform(groupBy(bookLineCategory.name)
+                .as(bookLine.money.sum()));
     }
 
     @Override
@@ -97,7 +104,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesRequest dates) {
+    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesDuration dates) {
         return jpaQueryFactory.select(
                 new QBookLineExpense(
                     bookLine.lineDate,
@@ -134,7 +141,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     public List<DayLine> allOutcomes(AllOutcomesRequest request) {
-        DatesRequest dates = request.getDates();
+        DatesDuration duration = request.getDuration();
         return jpaQueryFactory
             .select(new QDayLine(
                 bookLine.id,
@@ -144,13 +151,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 user.email)
             )
             .from(bookLine)
-            .innerJoin(bookLine.book,book)
+            .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.writer, bookUser)
             .innerJoin(bookUser.user, user)
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
                 book.bookKey.eq(request.getBookKey()),
-                bookLine.lineDate.between(dates.start(), dates.end()),
+                bookLine.lineDate.between(duration.start(), duration.end()),
                 user.email.in(request.users()),
                 bookLine.status.eq(Status.ACTIVE)
             )
@@ -166,9 +173,64 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 JPAExpressions.select(book.id)
                     .from(book)
                     .where(book.bookKey.eq(bookKey))
-            ),bookLine.writer.id.eq(
+            ), bookLine.writer.id.eq(
                 bookUser.getId()
             ))
             .execute();
     }
+
+    @Override
+    public Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request){
+        DatesDuration duration = DateFactory.getBeforeDateDuration(request.getLocalDate());
+        return jpaQueryFactory
+            .select(bookLine.money.sum().coalesce(0L))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.eq(request.getRoot()),
+                book.bookKey.eq(request.getBookKey()),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE)
+            )
+            .fetchOne();
+
+    }
+    @Override
+    public List<AnalyzeByCategory> analyzeByCategory(AnalyzeByCategoryRequest request) {
+        DatesDuration datesRequest = DateFactory.getDateDuration(request.getDate());
+
+        Category targetRoot = jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(request.getRoot()),
+                category.instanceOf(RootCategory.class))
+            .fetchOne();
+
+        List<String> children = jpaQueryFactory.select(category.name)
+            .from(category)
+            .where(category.parent.eq(targetRoot),
+                category.instanceOf(DefaultCategory.class))
+            .fetch();
+
+        children.addAll(jpaQueryFactory.select(bookCategory.name)
+            .from(bookCategory)
+            .innerJoin(bookCategory.parent, category)
+            .where(category.eq(targetRoot))
+            .innerJoin(bookCategory.book, book)
+            .where(book.bookKey.eq(request.getBookKey()))
+            .fetch());
+
+        return jpaQueryFactory.select(
+                new QAnalyzeByCategory(bookLineCategory.name,
+                    bookLine.money.sum()))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .where(book.bookKey.eq(request.getBookKey()))
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(bookLineCategory.name.in(children))
+            .where(bookLine.lineDate.between(datesRequest.getStartDate(),datesRequest.getEndDate()))
+            .groupBy(bookLineCategory.name)
+            .fetch();
+    }
+
 }

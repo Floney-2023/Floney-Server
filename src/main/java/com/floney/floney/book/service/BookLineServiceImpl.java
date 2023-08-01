@@ -4,7 +4,7 @@ import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.DatesRequest;
+import com.floney.floney.book.dto.request.DatesDuration;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
@@ -62,7 +62,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public MonthLinesResponse showByMonth(String bookKey, String date) {
-        DatesRequest dates = DateFactory.getDate(date);
+        DatesDuration dates = DateFactory.getDateDuration(date);
         return MonthLinesResponse.of(date, daysExpense(bookKey, dates)
             , totalExpense(bookKey, dates));
     }
@@ -120,11 +120,11 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookException::new);
     }
 
-    private List<BookLineExpense> daysExpense(String bookKey, DatesRequest dates) {
+    private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.dayIncomeAndOutcome(bookKey, dates);
     }
 
-    private Map<String, Long> totalExpense(String bookKey, DatesRequest dates) {
+    private Map<String, Long> totalExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
 
