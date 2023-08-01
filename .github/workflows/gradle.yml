@@ -1,0 +1,55 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
+          
+      # 전송할 파일을 담을 디렉토리 생성
+      - name: Make Directory for deliver
+        run: mkdir deploy && cp build/libs/*.jar deploy/ && cp appspec.yml deploy/ && cp script/deploy.sh deploy/
+        
+      # 압축
+      - name: Make zip file
+        run: zip -r -qq -j Floney-0.0.1-SNAPSHOT.zip deploy
+        
+      # AWS 인증
+      - name: AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
+          aws-region: ap-northeast-2
+          
+      # S3에 빌드된 파일 업로드
+      - name: Upload to AWS S3
+        run: aws s3 cp --region ap-northeast-2 Floney-0.0.1-SNAPSHOT.zip s3://floney-dev-deploy/Floney-0.0.1-SNAPSHOT.zip
+        
+      # Deploy
+      - name: Code Deploy
+        run: aws deploy create-deployment 
+          --application-name floney-dev
+          --deployment-config-name CodeDeployDefault.AllAtOnce 
+          --file-exists-behavior OVERWRITE 
+          --deployment-group-name floney-dev --s3-location bucket=floney-dev-deploy,
+          bundleType=zip,key=Floney-0.0.1-SNAPSHOT.zip
