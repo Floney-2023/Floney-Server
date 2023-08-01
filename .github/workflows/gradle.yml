@@ -34,11 +34,11 @@ jobs:
       - name: S3에 업로드
         run: aws deploy push --application-name floney-dev
              --ignore-hidden-files 
-             --s3-location s3://$AWS_S3_BUCKET/cicdtest/$GITHUB_SHA.zip --source .
+             --s3-location s3://$AWS_S3_BUCKET/floney-dev-build/$GITHUB_SHA.zip --source .
              
       - name: EC2에 배포
         run: aws deploy create-deployment 
              --application-name floney-dev
              --deployment-config-name CodeDeployDefault.AllAtOnce 
              --deployment-group-name floney-dev
-             --s3-location bucket=$AWS_S3_BUCKET,key=cicdtest/$GITHUB_SHA.zip,bundleType=zip
+             --s3-location bucket=$AWS_S3_BUCKET,key=floney-dev-build/$GITHUB_SHA.zip,bundleType=zip
