@@ -19,30 +19,31 @@ public class BookLineTest {
     @DisplayName("지출 내역을 예산에서 포함 시킬 시 예산에서 해당 값을 뺀다")
     void outcome() {
         Long outcome = 1000L;
-        Long initialAsset = 2000L;
+        Long assetMoney = 2000L;
         Book book = Book.builder()
             .bookKey(BOOK_KEY)
-            .initialAsset(initialAsset)
+            .asset(assetMoney)
+            .initialAsset(assetMoney)
             .build();
 
         book.calculateAssetAndBudget(BookLineFixture.createOutcomeRequest());
-        Assertions.assertThat(book.getInitialAsset())
-            .isEqualTo(initialAsset - outcome);
+        Assertions.assertThat(book.getAsset())
+            .isEqualTo(assetMoney - outcome);
     }
 
     @Test
     @DisplayName("수입 내역을 자산에서 포함 시킬 시 해당 값을 더한다")
     void income() {
         Long income = 1000L;
-        Long budget = 2000L;
+        Long budgetMoney = 2000L;
         Book book = Book.builder()
             .bookKey(BOOK_KEY)
-            .budget(budget)
+            .budget(budgetMoney)
             .build();
 
         book.calculateAssetAndBudget(BookLineFixture.createIncomeRequest());
         Assertions.assertThat(book.getBudget())
-            .isEqualTo(budget + income);
+            .isEqualTo(budgetMoney + income);
     }
 
     @Test
