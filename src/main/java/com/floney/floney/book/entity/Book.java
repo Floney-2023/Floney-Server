@@ -46,6 +46,10 @@ public class Book extends BaseEntity {
 
     private Long budget;
 
+    private Long initialBudget;
+
+    private Long asset;
+
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOver;
 
@@ -56,7 +60,7 @@ public class Book extends BaseEntity {
 
     @Builder
     private Book(String name, String bookImg, String owner,
-                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
+                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget,Long asset, Long initialBudget,
                  Boolean carryOver, String code) {
         this.name = name;
         this.bookImg = bookImg;
@@ -65,6 +69,8 @@ public class Book extends BaseEntity {
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
         this.budget = budget;
+        this.asset = asset;
+        this.initialBudget = initialBudget;
         this.carryOver = carryOver;
         this.code = code;
 
@@ -104,9 +110,11 @@ public class Book extends BaseEntity {
 
     public void updateAsset(Long asset) {
         this.initialAsset = asset;
+        this.asset = asset;
     }
 
     public void updateBudget(Long budget) {
+        this.initialBudget = budget;
         this.budget = budget;
     }
 
