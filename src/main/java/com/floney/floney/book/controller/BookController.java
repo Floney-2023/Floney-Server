@@ -19,48 +19,88 @@ public class BookController {
 
     private final BookLineService bookLineService;
 
+    /**
+     * 최초 가계부 생성
+     * @body CreateBookRequest 가계부 생성 요청용 기본 정보
+     * @return CreateBookResponse 생성된 가게부 정보
+     */
     @PostMapping()
     public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request,
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.createBook(userDetails, request), HttpStatus.CREATED);
     }
 
+    /**
+     * 가계부 추가
+     * @body CreateBootRequest 가계부 생성 요청용 기본 정보
+     * @return CreateBookResponse 생성된 가게부 정보
+     */
     @PostMapping("/add")
     public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.addBook(userDetails, request), HttpStatus.CREATED);
     }
 
+    /**
+     * 초대코드로 가계부 참여
+     * @body CodeJoinRequest 초대 코드
+     * @return CreateBookResponse 참여한 가게부 정보
+     */
     @PostMapping("/join")
     public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code,
                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.joinWithCode(userDetails, code), HttpStatus.ACCEPTED);
     }
 
+    /**
+     * 가계부 내역 생성
+     * @body CreateLineRequest 가계부 내역
+     * @return CreateBookResponse 추가된 가계부 내역
+     */
     @PostMapping("/lines")
     public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request,
                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(), request), HttpStatus.CREATED);
     }
 
+    /**
+     * 월별 가계부 내역 조회
+     * @param bookKey 가계부 식별 키
+     * @param date 조회 요청 월(YYYY-MM-DD)
+     * @return MonthLinesResponse 해당 월 전체 가계부 내역
+     */
     @GetMapping("/month")
     public ResponseEntity<?> showByMonth(@RequestParam("bookKey") String bookKey,
                                          @RequestParam("date") String date) {
         return new ResponseEntity<>(bookLineService.showByMonth(bookKey, date), HttpStatus.OK);
     }
 
+    /**
+     * 일별 가계부 내역 조회
+     * @param bookKey 가계부 식별 키
+     * @param date 조회 요청 일자(YYYY-MM-DD)
+     * @return TotalDayLinesResponse 해당 일자 전체 가계부 내역
+     */
     @GetMapping("/days")
     public ResponseEntity<?> showByDays(@RequestParam("bookKey") String bookKey,
                                         @RequestParam("date") String date) {
         return new ResponseEntity<>(bookLineService.showByDays(bookKey, date), HttpStatus.OK);
     }
 
+    /**
+     * 가계부 이름 변경
+     * @body BookNameChangeRequest 변경하고자 하는 가계부 이름
+     */
     @PostMapping("/name")
     public ResponseEntity<?> changeName(@RequestBody BookNameChangeRequest request) {
         bookService.changeBookName(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 가계부 삭제하기(팀장만 호출 가능)
+     * @param bookKey 가계부 식별자
+     */
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteBook(@RequestParam("bookKey") String bookKey,
                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -68,47 +108,83 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 가계부 설정
+     * @param bookKey 가계부 식별자
+     * @return OurBookInfo 가계부 설정 정보
+     */
     @GetMapping("/info")
     public ResponseEntity<?> getMyBookInfo(@RequestParam("bookKey") String bookKey,
                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.getBookInfo(bookKey, userDetails.getUsername()), HttpStatus.OK);
     }
 
+    /**
+     * 가계부 이미지 변경
+     * @body UpdateBookImgRequest 변경하고자 하는 가계부 이미지
+     */
     @PostMapping("/info/bookImg")
     public ResponseEntity<?> updateBookImg(@RequestBody UpdateBookImgRequest request) {
         bookService.updateBookImg(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 내역 조회 시 유저 이미지 공개 여부 변경
+     * @body SeeProfileRequest 공개 여부
+     */
     @PostMapping("/info/seeProfile")
     public ResponseEntity<?> changeSeeProfile(@RequestBody SeeProfileRequest request) {
         bookService.updateSeeProfile(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 자산 변경
+     * @body UpdateAssetRequest 자산 변경 정보
+     */
     @PostMapping("/info/asset")
     public ResponseEntity<?> updateAsset(@RequestBody UpdateAssetRequest request) {
         bookService.updateAsset(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 예산 변경
+     * @body UpdateBudgetRequest 예산 변경 정보
+     */
     @PostMapping("/info/budget")
     public ResponseEntity<?> updateBudget(@RequestBody UpdateBudgetRequest request) {
         bookService.updateBudget(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 가계부 내역 전체 삭제
+     * @param bookKey 가계부 식별자
+     */
     @DeleteMapping("/lines/delete")
     public ResponseEntity<?> deleteAll(String bookKey) {
         bookLineService.deleteAllLine(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 유저 가계부 유효 확인
+     * @return CheckBookValidResponse 참여하는 가계부 식별키
+     * 유저가 참여하는 가계부가 있다면
+     * 가장 최근에 접근한 가계부의 식별 키를 전송
+     */
     @GetMapping("/users/check")
     public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
         return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
     }
 
+    /**
+     * 기간 내의 모든 지출 내역 조회
+     * @body AllOutcomesRequest 기간,가계부 식별키 정보
+     * @return List<DayLines> 지출 내역
+     */
     @PostMapping("/outcomes")
     public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesRequest) {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesRequest), HttpStatus.OK);
@@ -120,6 +196,10 @@ public class BookController {
         return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
     }
 
+    /**
+     * 가계부 나가기(팀원만 호출 가능)
+     * @body BookUserOutRequest 가계부 식별키 정보
+     */
     @PostMapping("/users/out")
     public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                               @RequestBody BookUserOutRequest request) {
@@ -127,6 +207,11 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 가계부 초대코드 조회
+     * @param bookKey 가계부 식별키
+     * @return InviteCodeResponse 가계부 초대코드
+     */
     @GetMapping("/code")
     public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
