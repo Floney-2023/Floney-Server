@@ -80,11 +80,11 @@ public class Book extends BaseEntity {
         return new Book();
     }
 
-    public void processTrans(CreateLineRequest request) {
+    public void calculateAssetAndBudget(CreateLineRequest request) {
         AssetType assetType = find(request.getFlow());
         Long amount = request.getMoney();
         if (assetType == OUTCOME) {
-            initialAsset -= amount;
+            asset -= amount;
         } else if (assetType == INCOME) {
             budget += amount;
         }

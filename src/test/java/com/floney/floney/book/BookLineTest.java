@@ -25,7 +25,7 @@ public class BookLineTest {
             .initialAsset(initialAsset)
             .build();
 
-        book.processTrans(BookLineFixture.createOutcomeRequest());
+        book.calculateAssetAndBudget(BookLineFixture.createOutcomeRequest());
         Assertions.assertThat(book.getInitialAsset())
             .isEqualTo(initialAsset - outcome);
     }
@@ -40,7 +40,7 @@ public class BookLineTest {
             .budget(budget)
             .build();
 
-        book.processTrans(BookLineFixture.createIncomeRequest());
+        book.calculateAssetAndBudget(BookLineFixture.createIncomeRequest());
         Assertions.assertThat(book.getBudget())
             .isEqualTo(budget + income);
     }

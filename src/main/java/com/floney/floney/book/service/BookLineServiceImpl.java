@@ -49,7 +49,7 @@ public class BookLineServiceImpl implements BookLineService {
     public BookLineResponse createBookLine(String currentUser,CreateLineRequest request) {
         Book book = findBook(request.getBookKey());
         if (request.isNotExcept()) {
-            book.processTrans(request);
+            book.calculateAssetAndBudget(request);
         }
         BookLine requestLine = request.to(findBookUser(currentUser,request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
