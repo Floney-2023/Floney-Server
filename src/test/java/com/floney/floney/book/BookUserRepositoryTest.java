@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
@@ -135,28 +136,11 @@ public class BookUserRepositoryTest {
     @Test
     @DisplayName("내가 속한 가계부 중 가장 최근에 업데이트를 한 가계부를 조회한다")
     void my_exist_book() {
-        Book savedBook = bookRepository.save(BookFixture.createBook());
-        Book savedBook2 = bookRepository.save(BookFixture.createBookWith("BOOK2"));
-
-        User user1 = userRepository.save(UserFixture.createUser());
-
-        BookUser bookUser1 = BookFixture.createBookUser(user1, savedBook);
-        BookUser bookUser2 = BookFixture.createBookUser(user1, savedBook2);
-
-        bookUserRepository.save(bookUser1);
-        bookUserRepository.save(bookUser2);
-        Assertions.assertThat(bookUserRepository.findBookBy(user1.getEmail()).get())
-            .isEqualTo(savedBook2);
-
+        User user = UserFixture.createUser();
+        SaveRecentBookKeyRequest request = new SaveRecentBookKeyRequest("book-key");
+        user.saveRecentBookKey(request);
+        User savedUser = userRepository.save(user);
+        Assertions.assertThat(savedUser.getRecentBookKey()).isEqualTo("book-key");
     }
 
-    @Test
-    @DisplayName("내가 속한 가계부가 없을 경우 optional empty를 반환한다")
-    void my_non_exist_book() {
-        User user1 = userRepository.save(UserFixture.createUser());
-
-        Assertions.assertThat(bookUserRepository.findBookBy(user1.getEmail()))
-            .isEqualTo(Optional.empty());
-
-    }
 }

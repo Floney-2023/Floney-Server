@@ -5,7 +5,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.ValidBookResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
@@ -45,6 +45,7 @@ public class BookServiceImpl implements BookService {
     private final BookLineCustomRepository bookLineRepository;
     private final BookAnalyzeRepository analyzeRepository;
     private final CategoryCustomRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -162,9 +163,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CheckBookValidResponse checkIsBookUser(String email) {
-        Book books = bookUserRepository.findBookBy(email).orElse(Book.initBook());
-        return CheckBookValidResponse.userBook(books);
+    public ValidBookResponse checkIsBookUser(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+        return ValidBookResponse.of(user.getRecentBookKey());
     }
 
     @Override
