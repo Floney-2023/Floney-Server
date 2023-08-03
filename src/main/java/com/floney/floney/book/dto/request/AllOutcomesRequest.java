@@ -1,5 +1,6 @@
 package com.floney.floney.book.dto.request;
 
+import com.floney.floney.book.dto.process.DatesDuration;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;

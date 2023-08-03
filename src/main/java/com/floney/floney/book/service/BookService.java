@@ -48,4 +48,5 @@ public interface BookService {
     InviteCodeResponse inviteCode(String bookKey);
 
     AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request);
+
 }

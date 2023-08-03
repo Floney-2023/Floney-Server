@@ -136,4 +136,5 @@ public class BookController {
     public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
         return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
     }
+
 }

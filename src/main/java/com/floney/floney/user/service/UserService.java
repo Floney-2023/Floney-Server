@@ -1,12 +1,14 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.book.dto.process.MyBookInfo;
+import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.PasswordSameException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -180,5 +182,13 @@ public class UserService {
             myAccounts.delete();
             bookUserRepository.save(myAccounts);
         }
+    }
+
+    @Transactional
+    public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
+        User user = userRepository.findByEmail(username)
+            .orElseThrow(UserNotFoundException::new);
+        user.saveRecentBookKey(request);
+        userRepository.save(user);
     }
 }

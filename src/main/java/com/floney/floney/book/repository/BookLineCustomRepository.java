@@ -7,7 +7,7 @@ import com.floney.floney.book.dto.process.DayLine;
 import com.floney.floney.book.dto.process.DayLineByDayView;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.BookUser;
 
 import java.time.LocalDate;

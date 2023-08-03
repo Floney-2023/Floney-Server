@@ -4,7 +4,7 @@ import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
