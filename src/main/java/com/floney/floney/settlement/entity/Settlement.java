@@ -55,9 +55,7 @@ public class Settlement extends BaseEntity {
     @Column(nullable = false, updatable = false)
     private Long avgOutcome;
 
-    public static Settlement of(Book book, SettlementRequest request, String leaderUserEmail) {
-        validateUsers(request.getUserEmails(), leaderUserEmail);
-
+    public static Settlement of(Book book, SettlementRequest request) {
         final Integer userCount = calculateUserCount(request.getUserEmails());
         final Long totalOutcome = calculateTotalOutcome(request.getOutcomes());
         final Long avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
@@ -72,16 +70,8 @@ public class Settlement extends BaseEntity {
                 .build();
     }
 
-    private static void validateUsers(Set<String> userEmails, String leaderUserEmail) {
-        userEmails.forEach(userId -> {
-            if (userId.equals(leaderUserEmail)) {
-                throw new IllegalArgumentException();
-            }
-        });
-    }
-
     private static Integer calculateUserCount(Set<String> userEmails) {
-        return userEmails.size() + 1;
+        return userEmails.size();
     }
 
     private static Long calculateTotalOutcome(List<OutcomeRequest> request) {

@@ -11,18 +11,19 @@ public class OutcomesWithUser {
 
     private final Map<String, Long> outcomesWithUser;
 
-    private OutcomesWithUser(Set<String> userEmails, String leaderUserEmail) {
-        this.outcomesWithUser = userEmails.stream().collect(Collectors.toMap(key -> key, value -> 0L));
-        this.outcomesWithUser.put(leaderUserEmail, 0L);
+    private OutcomesWithUser(Set<String> userEmails) {
+        this.outcomesWithUser = userEmails.stream()
+                .collect(Collectors.toMap(key -> key, value -> 0L));
     }
 
-    public static OutcomesWithUser init(Set<String> userEmails, String leaderUserEmail) {
-        return new OutcomesWithUser(userEmails, leaderUserEmail);
+    public static OutcomesWithUser init(Set<String> userEmails) {
+        return new OutcomesWithUser(userEmails);
     }
 
     public void fillOutcomes(List<OutcomeRequest> outcomeRequests) {
         outcomeRequests.forEach(outcome -> outcomesWithUser.put(
-                outcome.getUserEmail(), outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
+                outcome.getUserEmail(),
+                outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
         ));
     }
 
