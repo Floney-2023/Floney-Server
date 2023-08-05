@@ -20,6 +20,7 @@ import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -321,6 +322,122 @@ class SettlementServiceTest {
         // when & then
         assertThatThrownBy(() -> settlementService.create(request))
                 .isInstanceOf(NotFoundBookUserException.class);
+    }
+
+    @Test
+    @DisplayName("해당 가계부의 모든 정산 내역을 불러오는데 성공한다")
+    void findSettlements_success() throws JsonProcessingException {
+        // given
+        final String json = "{\"bookKey\":\"abcdefgh\"," +
+                "\"startDate\":\"2000-01-01\"," +
+                "\"endDate\":\"2000-01-02\"," +
+                "\"userEmails\":[\"test01@email.com\",\"test02@email.com\"]," +
+                "\"outcomes\":[{" +
+                "\"outcome\":10000," +
+                "\"userEmail\":\"test01@email.com\"}]}";
+
+        final SettlementRequest request = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(json, SettlementRequest.class);
+
+        final Book book = Book.builder()
+                .bookKey(request.getBookKey())
+                .code("code")
+                .name("name")
+                .build();
+
+        bookRepository.save(book);
+
+        final User user1 = User.builder()
+                .email("test01@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+        final User user2 = User.builder()
+                .email("test02@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
+        settlementService.create(request);
+
+        // when
+        final List<SettlementResponse> responses = settlementService.findAll(request.getBookKey());
+
+        // then
+        assertThat(responses).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("해당 정산 내역을 불러오는데 성공한다")
+    void findSettlement_success() throws JsonProcessingException {
+        // given
+        final String json = "{\"bookKey\":\"abcdefgh\"," +
+                "\"startDate\":\"2000-01-01\"," +
+                "\"endDate\":\"2000-01-02\"," +
+                "\"userEmails\":[\"test01@email.com\",\"test02@email.com\"]," +
+                "\"outcomes\":[{" +
+                "\"outcome\":10000," +
+                "\"userEmail\":\"test01@email.com\"}]}";
+
+        final SettlementRequest request = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(json, SettlementRequest.class);
+
+        final Book book = Book.builder()
+                .bookKey(request.getBookKey())
+                .code("code")
+                .name("name")
+                .build();
+
+        bookRepository.save(book);
+
+        final User user1 = User.builder()
+                .email("test01@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+        final User user2 = User.builder()
+                .email("test02@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
+        final SettlementResponse settlementResponse = settlementService.create(request);
+
+        // when
+        final SettlementResponse response = settlementService.find(settlementResponse.getId());
+
+        // then
+        assertThat(response.getId()).isEqualTo(settlementResponse.getId());
     }
 
     private Book findBookByBookKey(final SettlementRequest request) {

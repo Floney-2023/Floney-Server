@@ -24,7 +24,6 @@ public class SettlementController {
     /**
      * 정산 내역 생성
      * @param request 정산 내역 생성 요청
-     * @param userDetails 요청한 유저 정보
      * @return 생성한 정산 내역 응답
      */
     @PostMapping("")
