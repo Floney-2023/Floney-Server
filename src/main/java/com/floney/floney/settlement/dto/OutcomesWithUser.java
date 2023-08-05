@@ -1,5 +1,6 @@
 package com.floney.floney.settlement.dto;
 
+import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
 import com.floney.floney.settlement.dto.request.OutcomeRequest;
 import java.util.Collections;
 import java.util.List;
@@ -21,10 +22,14 @@ public class OutcomesWithUser {
     }
 
     public void fillOutcomes(List<OutcomeRequest> outcomeRequests) {
-        outcomeRequests.forEach(outcome -> outcomesWithUser.put(
-                outcome.getUserEmail(),
-                outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
-        ));
+        try {
+            outcomeRequests.forEach(outcome -> outcomesWithUser.put(
+                    outcome.getUserEmail(),
+                    outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
+            ));
+        } catch (NullPointerException exception) {
+            throw new OutcomeUserNotFoundException();
+        }
     }
 
     public Map<String, Long> getOutcomesWithUser() {
