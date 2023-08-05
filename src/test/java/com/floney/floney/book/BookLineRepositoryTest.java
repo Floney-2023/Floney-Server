@@ -1,10 +1,10 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.request.DatesRequest;
-import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.constant.CategoryEnum;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.TotalExpense;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.DatesDuration;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineCategoryRepository;
@@ -57,7 +57,7 @@ public class BookLineRepositoryTest {
     private Category incomeCategory;
     private Category outcomeCategory;
 
-    private BookCategory childCategory;
+    private BookCategory childIncomeCategory;
 
     @BeforeEach
     void init() {
@@ -65,7 +65,7 @@ public class BookLineRepositoryTest {
         book = bookRepository.save(BookFixture.createBook());
         incomeCategory = categoryRepository.save(incomeBookCategory());
         outcomeCategory = categoryRepository.save(outComeBookCategory());
-        childCategory = categoryRepository.save(createChildCategory(incomeCategory, book));
+        childIncomeCategory = categoryRepository.save(createChildCategory(incomeCategory, book));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 21);
         LocalDate end = LOCAL_DATE;
 
-        DatesRequest dates = DatesRequest.builder()
+        DatesDuration dates = DatesDuration.builder()
             .startDate(start)
             .endDate(end)
             .build();
@@ -126,7 +126,7 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 1);
         LocalDate end = LOCAL_DATE;
 
-        DatesRequest dates = DatesRequest.builder()
+        DatesDuration dates = DatesDuration.builder()
             .startDate(start)
             .endDate(end)
             .build();
@@ -178,9 +178,9 @@ public class BookLineRepositoryTest {
         BookLine bookLine = bookLineRepository.save(createBookLineWith(bookUser, book, 1000L));
         BookLine bookLine2 = bookLineRepository.save(createBookLineWith(bookUser, book, 1000L));
 
-        BookLineCategory bookLineCategory1 = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
-        BookLineCategory childLineCategory = bookLineCategoryRepository.save(createChildLineCategory(childCategory, bookLine));
-        bookLine.add(CategoryEnum.FLOW, bookLineCategory1);
+        BookLineCategory incomeBookLineCategory = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
+        BookLineCategory childLineCategory = bookLineCategoryRepository.save(createChildLineCategory(childIncomeCategory, bookLine));
+        bookLine.add(CategoryEnum.FLOW, incomeBookLineCategory);
         bookLine.add(CategoryEnum.FLOW_LINE, childLineCategory);
 
         BookLineCategory bookLineCategory2 = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) outcomeCategory, bookLine2));
@@ -209,16 +209,15 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 21);
         LocalDate end = LOCAL_DATE;
 
-        DatesRequest datesRequest = DatesRequest.builder()
+        DatesDuration datesRequest = DatesDuration.builder()
             .startDate(start)
             .endDate(end)
             .build();
-        AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY,Arrays.asList(EMAIL),datesRequest);
+        AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY, Arrays.asList(EMAIL), datesRequest);
 
         Assertions.assertThat(bookLineRepository.allOutcomes(request).size())
             .isEqualTo(2);
     }
-
 }
 
 
