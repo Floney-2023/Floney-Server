@@ -1,9 +1,10 @@
 package com.floney.floney.settlement.service;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.settlement.SettlementNotFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
@@ -30,13 +31,14 @@ public class SettlementService {
     private final SettlementRepository settlementRepository;
     private final SettlementUserRepository settlementUserRepository;
     private final UserRepository userRepository;
-    private final BookService bookService;
+    private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
 
     @Transactional(readOnly = true)
     public List<SettlementResponse> findAll(String bookKey) {
-        final Book book = bookService.findBook(bookKey);
-        return settlementRepository.findAllByBookAndStatus(book, Status.ACTIVE)
+        final Book book = findBookByBookKey(bookKey);
+
+        return findSettlementsByBook(book)
                 .stream()
                 .map(SettlementResponse::from)
                 .toList();
@@ -46,7 +48,7 @@ public class SettlementService {
     public SettlementResponse find(Long id) {
         final Settlement settlement = settlementRepository.findById(id)
                 .orElseThrow(SettlementNotFoundException::new);
-        final List<SettlementUser> settlementUsers = settlementUserRepository.findAllBySettlementAndStatus(settlement, Status.ACTIVE);
+        final List<SettlementUser> settlementUsers = findSettlementUsersBySettlement(settlement);
         return SettlementResponse.of(settlement, settlementUsers);
     }
 
@@ -57,16 +59,26 @@ public class SettlementService {
         validateBookUsers(request.getUserEmails(), settlement.getBook());
         List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement);
 
-        bookService.updateLastSettlementDate(
-                settlement.getBook().getBookKey(),
-                settlement.getCreatedAt().toLocalDate()
-        );
+        settlement.updateBookLastSettlementDate();
 
         return SettlementResponse.of(settlement, settlementUsers);
     }
 
+    private List<Settlement> findSettlementsByBook(final Book book) {
+        return settlementRepository.findAllByBookAndStatus(book, Status.ACTIVE);
+    }
+
+    private List<SettlementUser> findSettlementUsersBySettlement(final Settlement settlement) {
+        return settlementUserRepository.findAllBySettlementAndStatus(settlement, Status.ACTIVE);
+    }
+
+    private Book findBookByBookKey(final String bookKey) {
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+                .orElseThrow(NotFoundBookException::new);
+    }
+
     private void validateBookUsers(final Set<String> emails, final Book book) {
-        if(checkBookUsers(emails, book)) {
+        if (checkBookUsers(emails, book)) {
             throw new NotFoundBookUserException();
         }
     }
@@ -83,7 +95,7 @@ public class SettlementService {
     }
 
     private Settlement createSettlement(SettlementRequest request) {
-        final Book book = bookService.findBook(request.getBookKey());
+        final Book book = findBookByBookKey(request.getBookKey());
         return settlementRepository.save(Settlement.of(book, request));
     }
 
@@ -97,12 +109,16 @@ public class SettlementService {
         List<SettlementUser> settlementUsers = new ArrayList<>();
 
         outcomesWithUser.getOutcomesWithUser().forEach((userEmail, outcome) -> {
-            User user = userRepository.findByEmail(userEmail)
-                    .orElseThrow(UserNotFoundException::new);
+            User user = findUserByEmail(userEmail);
             settlementUsers.add(SettlementUser.of(settlement, user, outcome - avgOutcome));
         });
 
         return settlementUserRepository.saveAll(settlementUsers);
+    }
+
+    private User findUserByEmail(final String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private static OutcomesWithUser createOutcomesWithUser(SettlementRequest request) {

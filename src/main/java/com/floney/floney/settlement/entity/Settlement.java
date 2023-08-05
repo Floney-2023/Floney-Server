@@ -85,4 +85,8 @@ public class Settlement extends BaseEntity {
         final BigDecimal divisor = BigDecimal.valueOf(userCount);
         return dividend.divide(divisor, RoundingMode.HALF_UP).longValue();
     }
+
+    public void updateBookLastSettlementDate() {
+        book.updateLastSettlementDate(getCreatedAt().toLocalDate());
+    }
 }

@@ -3,7 +3,15 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.AnalyzeResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.response.CheckBookValidResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
@@ -24,12 +32,10 @@ import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -165,18 +171,10 @@ public class BookServiceImpl implements BookService {
         return CheckBookValidResponse.userBook(books);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
-    }
-
-    @Override
-    @Transactional
-    public void updateLastSettlementDate(String bookKey, LocalDate settlementDate) {
-        final Book book = findBook(bookKey);
-        book.updateLastSettlementDate(settlementDate);
-        bookRepository.save(book);
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+                .orElseThrow(NotFoundBookException::new);
     }
 
     @Override
