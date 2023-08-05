@@ -1,4 +1,4 @@
-package com.floney.floney.settlement.dto;
+package com.floney.floney.settlement.domain;
 
 import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
 import com.floney.floney.settlement.dto.request.OutcomeRequest;

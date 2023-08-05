@@ -2,8 +2,8 @@ package com.floney.floney.settlement.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.floney.floney.settlement.entity.Settlement;
-import com.floney.floney.settlement.entity.SettlementUser;
+import com.floney.floney.settlement.domain.entity.Settlement;
+import com.floney.floney.settlement.domain.entity.SettlementUser;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AccessLevel;

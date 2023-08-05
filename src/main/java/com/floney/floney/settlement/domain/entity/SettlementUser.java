@@ -1,4 +1,4 @@
-package com.floney.floney.settlement.entity;
+package com.floney.floney.settlement.domain.entity;
 
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.entity.User;
