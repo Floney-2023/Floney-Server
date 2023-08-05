@@ -46,8 +46,7 @@ public class SettlementService {
 
     @Transactional(readOnly = true)
     public SettlementResponse find(Long id) {
-        final Settlement settlement = settlementRepository.findById(id)
-                .orElseThrow(SettlementNotFoundException::new);
+        final Settlement settlement = findSettlementById(id);
         final List<SettlementUser> settlementUsers = findSettlementUsersBySettlement(settlement);
         return SettlementResponse.of(settlement, settlementUsers);
     }
@@ -62,6 +61,11 @@ public class SettlementService {
         settlement.updateBookLastSettlementDate();
 
         return SettlementResponse.of(settlement, settlementUsers);
+    }
+
+    private Settlement findSettlementById(final Long id) {
+        return settlementRepository.findById(id)
+                .orElseThrow(SettlementNotFoundException::new);
     }
 
     private List<Settlement> findSettlementsByBook(final Book book) {
