@@ -54,10 +54,10 @@ public class SettlementService {
 
     @Transactional
     public SettlementResponse create(SettlementRequest request) {
-        Settlement settlement = createSettlement(request);
+        final Settlement settlement = createSettlement(request);
 
         validateBookUsers(request.getUserEmails(), settlement.getBook());
-        List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement);
+        final List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement);
 
         settlement.updateBookLastSettlementDate();
 
@@ -100,13 +100,13 @@ public class SettlementService {
     }
 
     private List<SettlementUser> createSettlementUsers(SettlementRequest request, Settlement settlement) {
-        OutcomesWithUser outcomesWithUser = createOutcomesWithUser(request);
+        final OutcomesWithUser outcomesWithUser = createOutcomesWithUser(request);
         return createSettlementUsers(settlement, outcomesWithUser);
     }
 
     private List<SettlementUser> createSettlementUsers(Settlement settlement, OutcomesWithUser outcomesWithUser) {
         final Long avgOutcome = settlement.getAvgOutcome();
-        List<SettlementUser> settlementUsers = new ArrayList<>();
+        final List<SettlementUser> settlementUsers = new ArrayList<>();
 
         outcomesWithUser.getOutcomesWithUser().forEach((userEmail, outcome) -> {
             User user = findUserByEmail(userEmail);
@@ -122,7 +122,7 @@ public class SettlementService {
     }
 
     private static OutcomesWithUser createOutcomesWithUser(SettlementRequest request) {
-        OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserEmails());
+        final OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserEmails());
         outcomesWithUser.fillOutcomes(request.getOutcomes());
         return outcomesWithUser;
     }
