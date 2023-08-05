@@ -1,7 +1,7 @@
 package com.floney.floney.book.util;
 
 import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.MonthKey;
 
 import java.time.LocalDate;

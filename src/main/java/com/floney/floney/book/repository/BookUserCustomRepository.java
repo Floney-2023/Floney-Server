@@ -22,6 +22,4 @@ public interface BookUserCustomRepository {
     void countBookUser(Book book);
 
     BookUser findBookUserBy(String email, Book book);
-
-    Optional<Book> findBookBy(String userEmail);
 }

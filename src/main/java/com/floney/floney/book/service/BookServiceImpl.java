@@ -6,7 +6,7 @@ import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
@@ -22,9 +22,11 @@ import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,7 @@ public class BookServiceImpl implements BookService {
     private final BookLineCustomRepository bookLineRepository;
     private final BookAnalyzeRepository analyzeRepository;
     private final CategoryCustomRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -164,9 +167,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CheckBookValidResponse checkIsBookUser(String email) {
-        Book books = bookUserRepository.findBookBy(email).orElse(Book.initBook());
-        return CheckBookValidResponse.userBook(books);
+    public InvolveBookResponse findInvolveBook(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+        return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
     @Override

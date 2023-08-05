@@ -4,7 +4,7 @@ import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
