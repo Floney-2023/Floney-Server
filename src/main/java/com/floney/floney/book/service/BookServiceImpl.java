@@ -5,7 +5,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.ValidBookResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
@@ -163,10 +163,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ValidBookResponse checkIsBookUser(String email) {
+    public InvolveBookResponse findInvolveBook(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(UserNotFoundException::new);
-        return ValidBookResponse.of(user.getRecentBookKey());
+        return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
     @Override

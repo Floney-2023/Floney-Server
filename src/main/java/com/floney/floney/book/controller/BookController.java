@@ -105,8 +105,8 @@ public class BookController {
     }
 
     @GetMapping("/users/check")
-    public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
+    public ResponseEntity<?> findInvolveBook(@AuthenticationPrincipal CustomUserDetails userDetail) {
+        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUsername()), HttpStatus.OK);
     }
 
     @PostMapping("/outcomes")

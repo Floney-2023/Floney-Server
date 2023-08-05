@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ValidBookResponse {
+public class InvolveBookResponse {
     private String bookKey;
 
-    private ValidBookResponse(String bookKey) {
+    private InvolveBookResponse(String bookKey) {
         this.bookKey = bookKey;
     }
 
-    public static ValidBookResponse of(String recentBookKey) {
-        return new ValidBookResponse(recentBookKey);
+    public static InvolveBookResponse of(String recentBookKey) {
+        return new InvolveBookResponse(recentBookKey);
     }
 }
