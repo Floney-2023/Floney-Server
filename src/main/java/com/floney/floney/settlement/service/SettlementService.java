@@ -1,8 +1,10 @@
 package com.floney.floney.settlement.service;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.settlement.SettlementNotFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.settlement.dto.OutcomesWithUser;
@@ -16,6 +18,7 @@ import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ public class SettlementService {
     private final SettlementUserRepository settlementUserRepository;
     private final UserRepository userRepository;
     private final BookService bookService;
+    private final BookUserRepository bookUserRepository;
 
     @Transactional(readOnly = true)
     public List<SettlementResponse> findAll(String bookKey) {
@@ -49,6 +53,8 @@ public class SettlementService {
     @Transactional
     public SettlementResponse create(SettlementRequest request) {
         Settlement settlement = createSettlement(request);
+
+        validateBookUsers(request.getUserEmails(), settlement.getBook());
         List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement);
 
         bookService.updateLastSettlementDate(
@@ -57,6 +63,23 @@ public class SettlementService {
         );
 
         return SettlementResponse.of(settlement, settlementUsers);
+    }
+
+    private void validateBookUsers(final Set<String> emails, final Book book) {
+        if(checkBookUsers(emails, book)) {
+            throw new NotFoundBookUserException();
+        }
+    }
+
+    private boolean checkBookUsers(final Set<String> emails, final Book book) {
+        return emails.stream()
+                .filter(email -> findBookUserByBookAndUserEmail(book, email))
+                .findAny()
+                .isEmpty();
+    }
+
+    private boolean findBookUserByBookAndUserEmail(final Book book, final String email) {
+        return bookUserRepository.existsByBookAndUser_EmailAndStatus(book, email, Status.ACTIVE);
     }
 
     private Settlement createSettlement(SettlementRequest request) {
