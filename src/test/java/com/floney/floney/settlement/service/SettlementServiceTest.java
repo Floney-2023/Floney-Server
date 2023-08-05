@@ -7,7 +7,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
+import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
@@ -16,6 +19,7 @@ import com.floney.floney.settlement.dto.response.SettlementResponse;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +33,17 @@ class SettlementServiceTest {
     private final SettlementService settlementService;
 
     private final BookRepository bookRepository;
+    private final BookUserRepository bookUserRepository;
     private final UserRepository userRepository;
 
     @Autowired
     public SettlementServiceTest(final SettlementService settlementService,
                                  final BookRepository bookRepository,
+                                 final BookUserRepository bookUserRepository,
                                  final UserRepository userRepository) {
         this.settlementService = settlementService;
         this.bookRepository = bookRepository;
+        this.bookUserRepository = bookUserRepository;
         this.userRepository = userRepository;
     }
 
@@ -77,6 +84,18 @@ class SettlementServiceTest {
         userRepository.save(user1);
         userRepository.save(user2);
 
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
         // when
         SettlementResponse response = settlementService.create(request);
 
@@ -87,6 +106,7 @@ class SettlementServiceTest {
         assertThat(response.getTotalOutcome()).isEqualTo(10000);
         assertThat(response.getOutcome()).isEqualTo(5000);
         assertThat(response.getDetails()).hasSize(2);
+        assertThat(findBookByBookKey(request).getLastSettlementDate()).isEqualTo(LocalDate.now());
     }
 
     @Test
@@ -134,6 +154,23 @@ class SettlementServiceTest {
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
+
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+        final BookUser bookUser3 = BookUser.builder()
+                .book(book)
+                .user(user3)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+        bookUserRepository.save(bookUser3);
 
         // when
         SettlementResponse response = settlementService.create(request);
@@ -184,6 +221,18 @@ class SettlementServiceTest {
         userRepository.save(user1);
         userRepository.save(user2);
 
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
         // when & then
         assertThatThrownBy(() -> settlementService.create(request))
                 .isInstanceOf(OutcomeUserNotFoundException.class);
@@ -219,6 +268,13 @@ class SettlementServiceTest {
                 .build();
 
         userRepository.save(user1);
+
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+
+        bookUserRepository.save(bookUser1);
 
         // when & then
         assertThatThrownBy(() -> settlementService.create(request))
@@ -265,5 +321,9 @@ class SettlementServiceTest {
         // when & then
         assertThatThrownBy(() -> settlementService.create(request))
                 .isInstanceOf(NotFoundBookUserException.class);
+    }
+
+    private Book findBookByBookKey(final SettlementRequest request) {
+        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), Status.ACTIVE).orElseThrow();
     }
 }
