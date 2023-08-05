@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.settlement.dto.request.SettlementRequest;
 import com.floney.floney.settlement.dto.response.SettlementResponse;
 import com.floney.floney.user.dto.constant.Provider;
@@ -185,5 +186,41 @@ class SettlementServiceTest {
         // when & then
         assertThatThrownBy(() -> settlementService.create(request))
                 .isInstanceOf(OutcomeUserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("정산 내역을 생성하는데 실패한다 - 존재하지 않는 유저")
+    void createSettlement_fail_UserNotFoundException() throws JsonProcessingException {
+        // given
+        final String json = "{\"bookKey\":\"abcdefgh\"," +
+                "\"startDate\":\"2000-01-01\"," +
+                "\"endDate\":\"2000-01-02\"," +
+                "\"userEmails\":[\"test01@email.com\",\"test05@email.com\"]," +
+                "\"outcomes\":[{" +
+                "\"outcome\":10000," +
+                "\"userEmail\":\"test01@email.com\"}]}";
+
+        final SettlementRequest request = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(json, SettlementRequest.class);
+
+        final Book book = Book.builder()
+                .bookKey(request.getBookKey())
+                .code("code")
+                .name("name")
+                .build();
+
+        bookRepository.save(book);
+
+        final User user1 = User.builder()
+                .email("test01@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+
+        userRepository.save(user1);
+
+        // when & then
+        assertThatThrownBy(() -> settlementService.create(request))
+                .isInstanceOf(UserNotFoundException.class);
     }
 }
