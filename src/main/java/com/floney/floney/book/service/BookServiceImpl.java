@@ -1,6 +1,5 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.AnalyzeResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
@@ -217,11 +216,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
-        List<AnalyzeByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
+    public com.floney.floney.book.dto.process.AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
+        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
         BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
 
-        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
+        return com.floney.floney.book.dto.process.AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
             calculateDifference(request, savedAnalyze));
     }
 
@@ -230,7 +229,7 @@ public class BookServiceImpl implements BookService {
         return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
     }
 
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeByCategory> analyzeResult) {
+    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeResponseByCategory> analyzeResult) {
         BookAnalyze analyze = BookAnalyze.builder()
             .analyzeDate(request.getLocalDate())
             .book(findBook(request.getBookKey()))
@@ -242,8 +241,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BudgetAnalyzeResponse analyzeByBudget(AnalyzeRequest request){
+    @Transactional(readOnly = true)
+    public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
         DatesDuration duration = DateFactory.getDateDuration(request.getDate());
-        return bookLineRepository.totalOutcomeByMonth(request.getBookKey(),duration);
+        return bookLineRepository.totalIncomeForBudget(request, duration);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request){
+        Long initAsset = findBook(request.getBookKey()).getInitAsset();
+        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+
+        return AnalyzeResponseByAsset.of(
+            bookLineRepository.totalExpensesForBudget(request, duration), initAsset);
     }
 }

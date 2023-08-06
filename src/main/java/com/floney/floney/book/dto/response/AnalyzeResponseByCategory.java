@@ -6,11 +6,12 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class AnalyzeByCategory {
+public class AnalyzeResponseByCategory {
     private String category;
     private Long money;
+
     @QueryProjection
-    public AnalyzeByCategory(String category, Long money) {
+    public AnalyzeResponseByCategory(String category, Long money) {
         this.category = category;
         this.money = money;
     }

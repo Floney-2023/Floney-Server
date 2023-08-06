@@ -1,13 +1,9 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.process.*;
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.request.DatesDuration;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.BudgetAnalyzeResponse;
-import com.floney.floney.book.dto.response.QAnalyzeByCategory;
-import com.floney.floney.book.dto.response.QBudgetAnalyzeResponse;
+import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
@@ -204,7 +200,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<AnalyzeByCategory> analyzeByCategory(AnalyzeByCategoryRequest request) {
+    public List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request) {
         DatesDuration datesRequest = DateFactory.getDateDuration(request.getDate());
 
         Category targetRoot = jpaQueryFactory.selectFrom(category)
@@ -227,7 +223,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetch());
 
         return jpaQueryFactory.select(
-                new QAnalyzeByCategory(bookLineCategory.name,
+                new QAnalyzeResponseByCategory(bookLineCategory.name,
                     bookLine.money.sum()))
             .from(bookLine)
             .innerJoin(bookLine.book, book)
@@ -240,23 +236,43 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public BudgetAnalyzeResponse totalOutcomeByMonth(String bookKey, DatesDuration duration) {
+    public AnalyzeResponseByBudget totalIncomeForBudget(AnalyzeRequestByBudget request, DatesDuration duration) {
         return jpaQueryFactory
             .select(
-                new QBudgetAnalyzeResponse(
+                new QAnalyzeResponseByBudget(
                     bookLine.money.sum().coalesce(0L),
-                    book.initBudget))
+                    book.initAsset
+                ))
             .from(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
                 bookLine.lineDate.between(duration.start(), duration.end()),
-                bookLineCategory.name.eq(OUTCOME.getKind()),
-                book.bookKey.eq(bookKey),
+                bookLineCategory.name.eq(INCOME.getKind()),
+                book.bookKey.eq(request.getBookKey()),
                 book.status.eq(Status.ACTIVE),
                 bookLine.status.eq(Status.ACTIVE)
             )
             .fetchOne();
+    }
+
+    @Override
+    public Map<String, Long> totalExpensesForBudget(AnalyzeRequestByAsset request, DatesDuration duration) {
+        return jpaQueryFactory
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
+                book.bookKey.eq(request.getBookKey()),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE)
+            )
+            .groupBy(bookLineCategory.name)
+            .orderBy(bookLineCategory.name.asc())
+            .transform(groupBy(bookLineCategory.name)
+                .as(bookLine.money.sum().coalesce(0L)));
     }
 
 }

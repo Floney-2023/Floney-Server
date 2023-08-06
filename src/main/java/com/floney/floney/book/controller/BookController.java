@@ -137,9 +137,14 @@ public class BookController {
         return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
     }
 
-    @GetMapping("/analyze/budget")
-    public ResponseEntity<?> analyzeByBudget(@RequestBody AnalyzeRequest request) {
+    @PostMapping("/analyze/budget")
+    public ResponseEntity<?> analyzeByBudget(@RequestBody AnalyzeRequestByBudget request) {
         return new ResponseEntity<>(bookService.analyzeByBudget(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/analyze/asset")
+    public ResponseEntity<?> analyzeByAsset(@RequestBody AnalyzeRequestByAsset request) {
+        return new ResponseEntity<>(bookService.analyzeByAsset(request), HttpStatus.OK);
     }
 
 }
