@@ -253,6 +253,6 @@ public class BookServiceImpl implements BookService {
         DatesDuration duration = DateFactory.getDateDuration(request.getDate());
 
         return AnalyzeResponseByAsset.of(
-            bookLineRepository.totalExpensesForBudget(request, duration), initAsset);
+            bookLineRepository.totalExpensesForAsset(request, duration), initAsset);
     }
 }

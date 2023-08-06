@@ -10,12 +10,14 @@ import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -251,28 +253,49 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.name.eq(INCOME.getKind()),
                 book.bookKey.eq(request.getBookKey()),
                 book.status.eq(Status.ACTIVE),
-                bookLine.status.eq(Status.ACTIVE)
+                bookLine.status.eq(Status.ACTIVE),
+                bookLine.exceptStatus.eq(false)
             )
             .fetchOne();
     }
 
     @Override
-    public Map<String, Long> totalExpensesForBudget(AnalyzeRequestByAsset request, DatesDuration duration) {
-        return jpaQueryFactory
+    public Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request, DatesDuration duration) {
+        Map<String, Long> totalExpenses = new HashMap<>();
+
+        Long totalIncomeMoney = jpaQueryFactory
+            .select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
                 bookLine.lineDate.between(duration.start(), duration.end()),
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
+                bookLineCategory.name.eq(INCOME.getKind()),
+                book.bookKey.eq(request.getBookKey()),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE),
+                bookLine.exceptStatus.eq(false)
+            )
+            .fetchOne();
+
+        Long totalOutcomeMoney = jpaQueryFactory
+            .select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.eq(OUTCOME.getKind()),
                 book.bookKey.eq(request.getBookKey()),
                 book.status.eq(Status.ACTIVE),
                 bookLine.status.eq(Status.ACTIVE)
             )
-            .groupBy(bookLineCategory.name)
-            .orderBy(bookLineCategory.name.asc())
-            .transform(groupBy(bookLineCategory.name)
-                .as(bookLine.money.sum().coalesce(0L)));
+            .fetchOne();
+
+        totalExpenses.put(INCOME.getKind(),totalIncomeMoney);
+        totalExpenses.put(OUTCOME.getKind(),totalOutcomeMoney);
+        return totalExpenses;
+
     }
 
 }
