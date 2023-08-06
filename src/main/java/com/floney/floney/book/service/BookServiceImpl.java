@@ -3,16 +3,14 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookAnalyze;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.BookAnalyzeRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryCustomRepository;
-import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -38,8 +36,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
-    private final BookAnalyzeRepository analyzeRepository;
-    private final CategoryCustomRepository categoryRepository;
 
     @Override
     @Transactional
@@ -214,45 +210,4 @@ public class BookServiceImpl implements BookService {
         return new InviteCodeResponse(findBook(bookKey));
     }
 
-    @Override
-    @Transactional
-    public com.floney.floney.book.dto.process.AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
-        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
-        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
-
-        return com.floney.floney.book.dto.process.AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
-            calculateDifference(request, savedAnalyze));
-    }
-
-    private Long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
-        Long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
-        return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
-    }
-
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeResponseByCategory> analyzeResult) {
-        BookAnalyze analyze = BookAnalyze.builder()
-            .analyzeDate(request.getLocalDate())
-            .book(findBook(request.getBookKey()))
-            .category(categoryRepository.findFlowCategory(request.getRoot()))
-            .analyzeResult(analyzeResult)
-            .build();
-
-        return analyzeRepository.save(analyze);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
-        return bookLineRepository.totalIncomeForBudget(request, duration);
-    }
-    @Override
-    @Transactional(readOnly = true)
-    public AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request){
-        Long initAsset = findBook(request.getBookKey()).getInitAsset();
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
-
-        return AnalyzeResponseByAsset.of(
-            bookLineRepository.totalExpensesForAsset(request, duration), initAsset);
-    }
 }

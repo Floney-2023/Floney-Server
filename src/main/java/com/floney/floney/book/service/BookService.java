@@ -45,9 +45,5 @@ public interface BookService {
 
     InviteCodeResponse inviteCode(String bookKey);
 
-    com.floney.floney.book.dto.process.AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request);
 
-    AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request);
-
-    AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request);
 }
