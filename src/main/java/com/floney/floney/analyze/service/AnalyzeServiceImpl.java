@@ -70,7 +70,6 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
     }
 
-
     private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeResponseByCategory> analyzeResult) {
         BookAnalyze analyze = BookAnalyze.builder()
             .analyzeDate(request.getLocalDate())
