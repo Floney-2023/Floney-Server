@@ -3,6 +3,7 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.AnalyzeResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.BudgetAnalyzeResponse;
 import com.floney.floney.book.dto.response.CheckBookValidResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
@@ -48,4 +49,6 @@ public interface BookService {
     InviteCodeResponse inviteCode(String bookKey);
 
     AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request);
+
+    BudgetAnalyzeResponse analyzeByBudget(AnalyzeRequest request);
 }

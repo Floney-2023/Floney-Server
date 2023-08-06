@@ -1,12 +1,17 @@
 package com.floney.floney.book.repository;
 
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.response.AnalyzeByCategory;
+import com.floney.floney.book.dto.response.BudgetAnalyzeResponse;
 import com.floney.floney.book.dto.response.QAnalyzeByCategory;
-import com.floney.floney.book.entity.*;
+import com.floney.floney.book.dto.response.QBudgetAnalyzeResponse;
+import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
@@ -180,7 +185,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request){
+    public Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
         DatesDuration duration = DateFactory.getBeforeDateDuration(request.getLocalDate());
         return jpaQueryFactory
             .select(bookLine.money.sum().coalesce(0L))
@@ -197,6 +202,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetchOne();
 
     }
+
     @Override
     public List<AnalyzeByCategory> analyzeByCategory(AnalyzeByCategoryRequest request) {
         DatesDuration datesRequest = DateFactory.getDateDuration(request.getDate());
@@ -228,9 +234,29 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .where(book.bookKey.eq(request.getBookKey()))
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(bookLineCategory.name.in(children))
-            .where(bookLine.lineDate.between(datesRequest.getStartDate(),datesRequest.getEndDate()))
+            .where(bookLine.lineDate.between(datesRequest.getStartDate(), datesRequest.getEndDate()))
             .groupBy(bookLineCategory.name)
             .fetch();
+    }
+
+    @Override
+    public BudgetAnalyzeResponse totalOutcomeByMonth(String bookKey, DatesDuration duration) {
+        return jpaQueryFactory
+            .select(
+                new QBudgetAnalyzeResponse(
+                    bookLine.money.sum().coalesce(0L),
+                    book.initBudget))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.eq(OUTCOME.getKind()),
+                book.bookKey.eq(bookKey),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE)
+            )
+            .fetchOne();
     }
 
 }

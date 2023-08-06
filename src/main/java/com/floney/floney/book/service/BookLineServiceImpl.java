@@ -48,9 +48,6 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public BookLineResponse createBookLine(String currentUser,CreateLineRequest request) {
         Book book = findBook(request.getBookKey());
-        if (request.isNotExcept()) {
-            book.calculateAssetAndBudget(request);
-        }
         BookLine requestLine = request.to(findBookUser(currentUser,request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         findCategories(savedLine, request);

@@ -122,7 +122,7 @@ public class BookController {
 
     @PostMapping("/users/out")
     public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                              @RequestBody BookUserOutRequest request) {
+                                         @RequestBody BookUserOutRequest request) {
         bookService.bookUserOut(request, userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -133,7 +133,13 @@ public class BookController {
     }
 
     @GetMapping("/analyze/category")
-    public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
+    public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request) {
         return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
     }
+
+    @GetMapping("/analyze/budget")
+    public ResponseEntity<?> analyzeByBudget(@RequestBody AnalyzeRequest request) {
+        return new ResponseEntity<>(bookService.analyzeByBudget(request), HttpStatus.OK);
+    }
+
 }

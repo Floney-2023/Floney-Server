@@ -4,10 +4,7 @@ import com.floney.floney.book.dto.process.AnalyzeResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
-import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookAnalyze;
 import com.floney.floney.book.entity.BookUser;
@@ -16,6 +13,7 @@ import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -241,5 +239,11 @@ public class BookServiceImpl implements BookService {
             .build();
 
         return analyzeRepository.save(analyze);
+    }
+
+    @Override
+    public BudgetAnalyzeResponse analyzeByBudget(AnalyzeRequest request){
+        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        return bookLineRepository.totalOutcomeByMonth(request.getBookKey(),duration);
     }
 }
