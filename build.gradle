@@ -40,6 +40,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     // QueryDsl
     implementation 'com.h2database:h2'
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
