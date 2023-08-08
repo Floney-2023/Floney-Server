@@ -1,5 +1,6 @@
 package com.floney.floney.user.controller;
 
+import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
@@ -151,6 +152,13 @@ public class UserController {
     @GetMapping("/mypage")
     public ResponseEntity<?> getMyPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(userService.getUserInfo(userDetails), HttpStatus.OK);
+    }
+
+    @PostMapping("/bookKey")
+    public ResponseEntity<?> recentBookKey(@RequestBody SaveRecentBookKeyRequest request ,
+                                           @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        userService.saveRecentBookKey(request, customUserDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

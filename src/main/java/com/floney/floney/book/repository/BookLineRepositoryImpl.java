@@ -4,7 +4,7 @@ import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.response.QAnalyzeByCategory;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.util.DateFactory;

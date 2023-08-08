@@ -40,7 +40,7 @@ public interface BookService {
 
     void updateBudget(UpdateBudgetRequest request);
 
-    CheckBookValidResponse checkIsBookUser(String email);
+    InvolveBookResponse findInvolveBook(String email);
 
     List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey);
 
@@ -49,4 +49,5 @@ public interface BookService {
     InviteCodeResponse inviteCode(String bookKey);
 
     AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request);
+
 }

@@ -176,8 +176,8 @@ public class BookController {
      * 가장 최근에 접근한 가계부의 식별 키를 전송
      */
     @GetMapping("/users/check")
-    public ResponseEntity<?> checkIsBookUser(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        return new ResponseEntity<>(bookService.checkIsBookUser(userDetail.getUsername()), HttpStatus.OK);
+    public ResponseEntity<?> findInvolveBook(@AuthenticationPrincipal CustomUserDetails userDetail) {
+        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUsername()), HttpStatus.OK);
     }
 
     /**
@@ -191,9 +191,9 @@ public class BookController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> findUsersByBookExceptCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                              @RequestParam String bookKey) {
-        return new ResponseEntity<>(bookService.findUsersByBookExceptCurrentUser(userDetails, bookKey), HttpStatus.OK);
+    public ResponseEntity<?> findUsersByBook(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                             @RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.findUsersByBook(userDetails, bookKey), HttpStatus.OK);
     }
 
     /**
@@ -221,4 +221,5 @@ public class BookController {
     public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
         return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
     }
+
 }

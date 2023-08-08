@@ -13,7 +13,7 @@ import com.floney.floney.book.dto.request.UpdateAssetRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.request.UpdateBudgetRequest;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.entity.Book;
@@ -29,6 +29,7 @@ import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -49,6 +50,7 @@ public class BookServiceImpl implements BookService {
     private final BookLineCustomRepository bookLineRepository;
     private final BookAnalyzeRepository analyzeRepository;
     private final CategoryCustomRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -81,7 +83,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Transactional
-    public CreateBookResponse notSubscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
+    public CreateBookResponse notSubscribeCreateBook(int count, CustomUserDetails userDetails,
+                                                     CreateBookRequest request) {
         if (count >= DEFAULT_MAX) {
             throw new NotSubscribeException();
         }
@@ -93,7 +96,7 @@ public class BookServiceImpl implements BookService {
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+                .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -166,9 +169,10 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CheckBookValidResponse checkIsBookUser(String email) {
-        Book books = bookUserRepository.findBookBy(email).orElse(Book.initBook());
-        return CheckBookValidResponse.userBook(books);
+    public InvolveBookResponse findInvolveBook(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+        return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
     @Transactional(readOnly = true)
@@ -179,12 +183,23 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey) {
-        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE)
-            .stream()
-            .map(bookUser -> UserResponse.from(bookUser.getUser()))
-            .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-            .toList();
+    public List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey) {
+        findBookUserByKey(userDetails.getUsername(), bookKey);
+
+        final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
+        users.addAll(findAllByBookAndStatus(bookKey)
+                .stream()
+                .map(BookUser::getUser)
+                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+                .toList());
+
+        return userToResponse(users);
+    }
+
+    private List<BookUserResponse> userToResponse(final List<User> users) {
+        return users.stream()
+                .map(BookUserResponse::from)
+                .toList();
     }
 
     @Override
@@ -195,6 +210,10 @@ public class BookServiceImpl implements BookService {
         deleteBookUser(bookUser);
     }
 
+    private List<BookUser> findAllByBookAndStatus(String bookKey) {
+        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE);
+    }
+
     private BookUser deleteBookUser(BookUser bookUser) {
         bookUser.delete();
         return bookUserRepository.save(bookUser);
@@ -202,7 +221,7 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-            .orElseThrow(NotFoundBookUserException::new);
+                .orElseThrow(NotFoundBookUserException::new);
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
