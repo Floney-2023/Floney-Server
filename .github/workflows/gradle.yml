@@ -13,15 +13,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+          
+      - name: 환경변수 복사
+        env:
+          OCCUPY_SECRET: ${{ secrets.SECRET_YAML }}
+          OCCUPY_SECRET_DIR: src/main/resources
+          OCCUPY_SECRET_DIR_FILE_NAME: application-secret.yml
+        run: echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
+        
       - name: gradlew에 실행 권한 부여
         run: chmod +x ./gradlew
+        
       - name: 프로젝트 빌드
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build
         
       # AWS 인증
       - name: AWS credentials
