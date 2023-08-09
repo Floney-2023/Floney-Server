@@ -1,6 +1,6 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.book.dto.process.BookAnalyzer;
+import com.floney.floney.analyze.dto.process.BookAnalyzer;
 import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;

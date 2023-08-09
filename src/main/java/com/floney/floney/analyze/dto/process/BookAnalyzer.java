@@ -1,4 +1,4 @@
-package com.floney.floney.book.dto.process;
+package com.floney.floney.analyze.dto.process;
 
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
@@ -6,6 +6,7 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import java.util.Map;
 
 public class BookAnalyzer {
+    private static final int STANDARD = 0;
     private final Map<String, Long> totalExpenses;
 
     public BookAnalyzer(Map<String, Long> totalExpenses) {
@@ -17,7 +18,7 @@ public class BookAnalyzer {
     }
 
     public long calculateCurrentAsset(long initAsset, long difference) {
-        if (difference < 0) {
+        if (difference < STANDARD) {
             return initAsset - Math.abs(difference);
         }
         return initAsset + difference;
