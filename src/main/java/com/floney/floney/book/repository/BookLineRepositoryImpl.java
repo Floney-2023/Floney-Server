@@ -260,7 +260,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request, DatesDuration duration) {
+    public Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request) {
+        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+
         Map<String, Long> totalExpenses = new HashMap<>();
 
         Long totalIncomeMoney = jpaQueryFactory

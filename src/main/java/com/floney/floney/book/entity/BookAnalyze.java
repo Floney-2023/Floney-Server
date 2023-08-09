@@ -2,7 +2,10 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.common.entity.BaseEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -37,13 +40,13 @@ public class BookAnalyze extends BaseEntity {
         this.analyzeDate = analyzeDate;
     }
 
+    public Long calculateDifferenceWith(Long beforeMonthMoney) {
+        return this.totalMoney - beforeMonthMoney;
+    }
+
     private Long calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
         return result.stream()
             .mapToLong(AnalyzeResponseByCategory::getMoney)
             .sum();
-    }
-
-    public Long calculateDifferenceWith(Long beforeMonthMoney) {
-        return this.totalMoney - beforeMonthMoney;
     }
 }

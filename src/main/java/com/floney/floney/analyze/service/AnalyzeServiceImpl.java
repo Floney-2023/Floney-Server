@@ -1,6 +1,7 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.book.dto.process.AnalyzeResponse;
+import com.floney.floney.book.dto.process.BookAnalyzer;
+import com.floney.floney.book.dto.response.AnalyzeResponse;
 import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.book.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.book.dto.request.AnalyzeRequestByBudget;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +38,11 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Transactional
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
         List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
-        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
+        Book savedBook = findBook(request.getBookKey());
+        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory, savedBook);
+        long difference = calculateDifference(request, savedAnalyze);
 
-        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
-            calculateDifference(request, savedAnalyze));
+        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze, difference);
     }
 
     @Override
@@ -52,28 +55,30 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Override
     @Transactional(readOnly = true)
     public AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request) {
-        Long initAsset = findBook(request.getBookKey()).getInitAsset();
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        Book savedBook = findBook(request.getBookKey());
+        long initAsset = savedBook.getInitAsset();
 
-        return AnalyzeResponseByAsset.of(
-            bookLineRepository.totalExpensesForAsset(request, duration), initAsset);
+        Map<String, Long> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
+        return bookAnalyzer.analyzeAsset(initAsset);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+            .orElseThrow(NotFoundBookException::new);
     }
 
-    private Long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
-        Long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
+    private long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
+        long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
         return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
     }
 
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeResponseByCategory> analyzeResult) {
+    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeResponseByCategory> analyzeResult, Book book) {
         BookAnalyze analyze = BookAnalyze.builder()
             .analyzeDate(request.getLocalDate())
-            .book(findBook(request.getBookKey()))
+            .book(book)
             .category(categoryRepository.findFlowCategory(request.getRoot()))
             .analyzeResult(analyzeResult)
             .build();

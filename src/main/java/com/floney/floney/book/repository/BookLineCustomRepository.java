@@ -35,5 +35,5 @@ public interface BookLineCustomRepository {
 
     AnalyzeResponseByBudget totalIncomeForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 
-    Map<String,Long> totalExpensesForAsset(AnalyzeRequestByAsset request, DatesDuration duration);
+    Map<String,Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
 }

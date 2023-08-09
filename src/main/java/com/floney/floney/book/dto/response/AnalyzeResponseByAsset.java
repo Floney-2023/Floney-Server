@@ -11,24 +11,17 @@ public class AnalyzeResponseByAsset {
     private final long initAsset;
     private final long currentAsset;
 
-    private AnalyzeResponseByAsset(Map<String, Long> totalExpenses, long initAsset) {
-        this.difference = differenceInAndOut(totalExpenses);
-        this.currentAsset = calculateCurrentAsset(initAsset, difference);
+    private AnalyzeResponseByAsset(long difference, long initAsset,long currentAsset) {
+        this.difference = difference;
+        this.currentAsset = currentAsset;
         this.initAsset = initAsset;
     }
 
-    public static AnalyzeResponseByAsset of(Map<String, Long> totalExpenses, long initAsset) {
-        return new AnalyzeResponseByAsset(totalExpenses, initAsset);
+    public static AnalyzeResponseByAsset of(long difference, long initAsset,long currentAsset) {
+        return new AnalyzeResponseByAsset(difference, initAsset,currentAsset);
     }
 
-    private long differenceInAndOut(Map<String, Long> totalExpenses) {
-        return totalExpenses.get(AssetType.INCOME.getKind()) - totalExpenses.get(AssetType.OUTCOME.getKind());
-    }
 
-    private long calculateCurrentAsset(long initAsset, long difference) {
-        if (difference < 0) {
-            return initAsset - Math.abs(difference);
-        }
-        return initAsset + difference;
-    }
+
+
 }
