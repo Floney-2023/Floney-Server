@@ -1,6 +1,16 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -8,7 +18,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +32,6 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     private final BookService bookService;
-
     private final BookLineService bookLineService;
 
     /**
@@ -182,7 +197,7 @@ public class BookController {
 
     /**
      * 기간 내의 모든 지출 내역 조회
-     * @body AllOutcomesRequest 기간,가계부 식별키 정보
+     * @body AllOutcomesRequest 기간, 가계부 식별키 정보
      * @return List<DayLines> 지출 내역
      */
     @PostMapping("/outcomes")
@@ -190,6 +205,12 @@ public class BookController {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesRequest), HttpStatus.OK);
     }
 
+    /**
+     * 가계부의 모든 유저들 조회
+     * @param userDetails 현재 접속한 유저 정보
+     * @param bookKey 가계부 키
+     * @return 가계부 유저들 리스트
+     */
     @GetMapping("/users")
     public ResponseEntity<?> findUsersByBook(@AuthenticationPrincipal CustomUserDetails userDetails,
                                              @RequestParam String bookKey) {
@@ -221,5 +242,4 @@ public class BookController {
     public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
         return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
     }
-
 }

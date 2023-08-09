@@ -14,7 +14,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@EqualsAndHashCode
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
