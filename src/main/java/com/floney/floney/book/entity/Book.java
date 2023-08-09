@@ -128,4 +128,8 @@ public class Book extends BaseEntity {
             carryOverMoney += request.getMoney();
         }
     }
+
+    public boolean isCarryOver() {
+        return this.carryOver;
+    }
 }
