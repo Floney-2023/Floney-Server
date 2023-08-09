@@ -5,16 +5,16 @@ import lombok.Getter;
 
 @Getter
 public class AnalyzeResponseByBudget {
-    private final Long leftMoney;
-    private final Long totalMoney;
+    private final long leftMoney;
+    private final long totalMoney;
 
     @QueryProjection
-    public AnalyzeResponseByBudget(Long totalMoney, Long initMoney) {
+    public AnalyzeResponseByBudget(long totalMoney, long initMoney) {
         this.totalMoney = totalMoney;
         this.leftMoney = calculateLeftMoney(totalMoney, initMoney);
     }
 
-    private Long calculateLeftMoney(Long totalMoney, Long initMoney) {
+    private long calculateLeftMoney(long totalMoney, long initMoney) {
         return initMoney - totalMoney;
     }
 }

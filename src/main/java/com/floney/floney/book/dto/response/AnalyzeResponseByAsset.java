@@ -7,25 +7,25 @@ import java.util.Map;
 
 @Getter
 public class AnalyzeResponseByAsset {
-    private final Long difference;
-    private final Long initAsset;
-    private final Long currentAsset;
+    private final long difference;
+    private final long initAsset;
+    private final long currentAsset;
 
-    private AnalyzeResponseByAsset(Map<String, Long> totalExpenses, Long initAsset) {
+    private AnalyzeResponseByAsset(Map<String, Long> totalExpenses, long initAsset) {
         this.difference = differenceInAndOut(totalExpenses);
         this.currentAsset = calculateCurrentAsset(initAsset, difference);
         this.initAsset = initAsset;
     }
 
-    public static AnalyzeResponseByAsset of(Map<String, Long> totalExpenses, Long initAsset) {
+    public static AnalyzeResponseByAsset of(Map<String, Long> totalExpenses, long initAsset) {
         return new AnalyzeResponseByAsset(totalExpenses, initAsset);
     }
 
-    private Long differenceInAndOut(Map<String, Long> totalExpenses) {
+    private long differenceInAndOut(Map<String, Long> totalExpenses) {
         return totalExpenses.get(AssetType.INCOME.getKind()) - totalExpenses.get(AssetType.OUTCOME.getKind());
     }
 
-    private Long calculateCurrentAsset(Long initAsset, Long difference) {
+    private long calculateCurrentAsset(long initAsset, long difference) {
         if (difference < 0) {
             return initAsset - Math.abs(difference);
         }
