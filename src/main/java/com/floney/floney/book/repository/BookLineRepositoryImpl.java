@@ -1,16 +1,21 @@
 package com.floney.floney.book.repository;
 
+import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.dto.response.QAnalyzeResponseByBudget;
+import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.dto.process.*;
-import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.dto.response.AnalyzeResponseByBudget;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.DatesDuration;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -294,8 +299,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             )
             .fetchOne();
 
-        totalExpenses.put(INCOME.getKind(),totalIncomeMoney);
-        totalExpenses.put(OUTCOME.getKind(),totalOutcomeMoney);
+        totalExpenses.put(INCOME.getKind(), totalIncomeMoney);
+        totalExpenses.put(OUTCOME.getKind(), totalOutcomeMoney);
         return totalExpenses;
 
     }

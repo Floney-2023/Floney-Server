@@ -1,6 +1,6 @@
-package com.floney.floney.book.dto.response;
+package com.floney.floney.analyze.dto.response;
 
-import com.floney.floney.book.entity.BookAnalyze;
+import com.floney.floney.analyze.entity.BookAnalyze;
 import lombok.Builder;
 import lombok.Getter;
 

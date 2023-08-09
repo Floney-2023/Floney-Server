@@ -1,4 +1,4 @@
-package com.floney.floney.book.dto.request;
+package com.floney.floney.analyze.dto.request;
 
 import lombok.Getter;
 

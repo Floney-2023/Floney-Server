@@ -1,9 +1,6 @@
-package com.floney.floney.book.dto.response;
+package com.floney.floney.analyze.dto.response;
 
-import com.floney.floney.book.dto.constant.AssetType;
 import lombok.Getter;
-
-import java.util.Map;
 
 @Getter
 public class AnalyzeResponseByAsset {

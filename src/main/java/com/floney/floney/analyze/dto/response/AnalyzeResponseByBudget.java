@@ -1,4 +1,4 @@
-package com.floney.floney.book.dto.response;
+package com.floney.floney.analyze.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

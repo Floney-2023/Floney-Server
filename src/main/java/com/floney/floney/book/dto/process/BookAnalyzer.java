@@ -1,7 +1,7 @@
 package com.floney.floney.book.dto.process;
 
 import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.dto.response.AnalyzeResponseByAsset;
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 
 import java.util.Map;
 

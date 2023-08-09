@@ -1,11 +1,9 @@
 package com.floney.floney.analyze.controller;
 
 import com.floney.floney.analyze.service.AnalyzeService;
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.request.AnalyzeRequestByAsset;
-import com.floney.floney.book.dto.request.AnalyzeRequestByBudget;
-import com.floney.floney.book.service.BookLineService;
-import com.floney.floney.book.service.BookService;
+import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
