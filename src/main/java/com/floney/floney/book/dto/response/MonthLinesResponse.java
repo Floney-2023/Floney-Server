@@ -1,6 +1,7 @@
 package com.floney.floney.book.dto.response;
 
 import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.MonthKey;
 import com.floney.floney.book.util.DateFactory;
 import lombok.Builder;
@@ -24,22 +25,22 @@ public class MonthLinesResponse {
 
     private final long totalOutcome;
 
-    private final long carryOverMoney;
+    private final CarryOverInfo carryOverInfo;
 
     @Builder
-    public MonthLinesResponse(List<BookLineExpense> expenses, Long totalIncome, Long totalOutcome,Long carryOverMoney) {
+    public MonthLinesResponse(List<BookLineExpense> expenses, Long totalIncome, Long totalOutcome, CarryOverInfo carryOverInfo) {
         this.expenses = expenses;
         this.totalIncome = totalIncome;
         this.totalOutcome = totalOutcome;
-        this.carryOverMoney = carryOverMoney;
+        this.carryOverInfo = carryOverInfo;
     }
 
-    public static MonthLinesResponse of(String monthDate, List<BookLineExpense> dayExpenses, Map<String, Long> totalExpenses,long carryOverMoney) {
+    public static MonthLinesResponse of(String monthDate, List<BookLineExpense> dayExpenses, Map<String, Long> totalExpenses, CarryOverInfo carryOverInfo) {
         return MonthLinesResponse.builder()
             .expenses(reflectDB(monthDate, dayExpenses))
             .totalIncome(totalExpenses.getOrDefault(INCOME, DEFAULT_MONEY))
             .totalOutcome(totalExpenses.getOrDefault(OUTCOME, DEFAULT_MONEY))
-            .carryOverMoney(carryOverMoney)
+            .carryOverInfo(carryOverInfo)
             .build();
     }
 

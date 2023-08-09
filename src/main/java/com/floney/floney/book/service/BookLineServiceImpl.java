@@ -1,9 +1,6 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.dto.process.DayLines;
-import com.floney.floney.book.dto.process.TotalExpense;
+import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -66,11 +63,11 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional(readOnly = true)
     public MonthLinesResponse showByMonth(String bookKey, String date) {
         DatesDuration dates = DateFactory.getDateDuration(date);
-
+        Book book = findBook(bookKey);
         return MonthLinesResponse.of(date
             , daysExpense(bookKey, dates)
             , totalExpense(bookKey, dates)
-            , findCarryOverMoney(bookKey));
+            , CarryOverInfo.of(book));
     }
 
     @Override
@@ -80,12 +77,13 @@ public class BookLineServiceImpl implements BookLineService {
         List<DayLines> dayLines = DayLines.forDayView(bookLineRepository.allLinesByDay(parse(date), bookKey));
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
-        if (DateFactory.isFirstDay(date)) {
-            return TotalDayLinesResponse.firstDayOf(dayLines, totalExpenses, book);
-        } else {
-            return TotalDayLinesResponse.of(dayLines, totalExpenses, book);
-        }
+        return TotalDayLinesResponse.of(dayLines,
+            totalExpenses,
+            book.getSeeProfile(),
+            CarryOverInfo.createIfFirstDay(book, date));
     }
+
+
 
     @Override
     @Transactional
@@ -129,10 +127,6 @@ public class BookLineServiceImpl implements BookLineService {
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(NotFoundBookException::new);
-    }
-
-    private long findCarryOverMoney(String bookKey) {
-        return findBook(bookKey).getCarryOverMoney();
     }
 
     private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {
