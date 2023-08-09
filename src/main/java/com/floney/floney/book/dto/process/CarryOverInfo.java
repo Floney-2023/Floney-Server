@@ -23,20 +23,20 @@ public class CarryOverInfo {
     }
 
     public static CarryOverInfo of(Book book) {
-        if (book.isCarryOver()) {
-            return new CarryOverInfo(book.isCarryOver(), book.getCarryOverMoney());
+        if (book.getCarryOverStatus()) {
+            return new CarryOverInfo(book.getCarryOverStatus(), book.getCarryOverMoney());
         } else {
-            return new CarryOverInfo(book.isCarryOver());
+            return new CarryOverInfo(book.getCarryOverStatus());
         }
 
     }
 
     public static CarryOverInfo createIfFirstDay(Book book,String date) {
-        if(DateFactory.isFirstDay(date) && book.isCarryOver()){
-            return new CarryOverInfo(book.isCarryOver(), book.getCarryOverMoney());
+        if(DateFactory.isFirstDay(date) && book.getCarryOverStatus()){
+            return new CarryOverInfo(book.getCarryOverStatus(), book.getCarryOverMoney());
         }
         else {
-            return new CarryOverInfo(book.isCarryOver());
+            return new CarryOverInfo(book.getCarryOverStatus());
         }
     }
 }

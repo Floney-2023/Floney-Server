@@ -47,7 +47,7 @@ public class BookLineServiceImpl implements BookLineService {
             book.processTrans(request);
         }
 
-        if (book.getCarryOver()) {
+        if (book.getCarryOverStatus()) {
             book.addCarryOverMoney(request);
         }
 

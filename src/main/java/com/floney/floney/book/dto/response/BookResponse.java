@@ -21,19 +21,19 @@ public class BookResponse {
 
     private Long budget;
 
-    private Boolean carryOver;
+    private Boolean carryOverStatus;
 
     private String code;
 
     @Builder
-    private BookResponse(String name, String bookImg, Boolean seeProfile, Long initialAsset, String bookKey, Long budget, Boolean carryOver, String code) {
+    private BookResponse(String name, String bookImg, Boolean seeProfile, Long initialAsset, String bookKey, Long budget, Boolean carryOverStatus, String code) {
         this.name = name;
         this.bookImg = bookImg;
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
         this.bookKey = bookKey;
         this.budget = budget;
-        this.carryOver = carryOver;
+        this.carryOverStatus = carryOverStatus;
         this.code = code;
     }
 
@@ -45,7 +45,7 @@ public class BookResponse {
             .initialAsset(newBook.getInitialAsset())
             .bookKey(newBook.getBookKey())
             .budget(newBook.getBudget())
-            .carryOver(newBook.getCarryOver())
+            .carryOverStatus(newBook.getCarryOverStatus())
             .code(newBook.getCode())
             .build();
     }

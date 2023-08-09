@@ -11,7 +11,6 @@ import java.util.Objects;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.validator.constraints.ru.INN;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,7 +49,7 @@ public class Book extends BaseEntity {
     private Long budget;
 
     @Column(columnDefinition = "TINYINT", length = 1)
-    private Boolean carryOver;
+    private Boolean carryOverStatus;
 
     @Column(nullable = false, length = 10)
     private String code;
@@ -62,7 +61,7 @@ public class Book extends BaseEntity {
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
-                 Boolean carryOver, String code,Long carryOverMoney) {
+                 Boolean carryOverStatus, String code, Long carryOverMoney) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -70,7 +69,7 @@ public class Book extends BaseEntity {
         this.seeProfile = seeProfile;
         this.initialAsset = initialAsset;
         this.budget = budget;
-        this.carryOver = carryOver;
+        this.carryOverStatus = carryOverStatus;
         this.code = code;
         this.carryOverMoney = carryOverMoney;
 
@@ -129,7 +128,7 @@ public class Book extends BaseEntity {
         }
     }
 
-    public boolean isCarryOver() {
-        return this.carryOver;
+    public boolean getCarryOverStatus() {
+        return this.carryOverStatus;
     }
 }
