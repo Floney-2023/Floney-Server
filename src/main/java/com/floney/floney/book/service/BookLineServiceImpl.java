@@ -51,6 +51,11 @@ public class BookLineServiceImpl implements BookLineService {
         if (request.isNotExcept()) {
             book.processTrans(request);
         }
+
+        if(book.getCarryOver()){
+            book.addCarryOverMoney(request);
+        }
+
         BookLine requestLine = request.to(findBookUser(currentUser,request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         findCategories(savedLine, request);

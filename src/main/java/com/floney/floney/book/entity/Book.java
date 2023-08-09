@@ -6,9 +6,12 @@ import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import java.time.LocalDate;
+import java.util.Objects;
+
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.validator.constraints.ru.INN;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -115,5 +118,14 @@ public class Book extends BaseEntity {
 
     public void updateLastSettlementDate(LocalDate lastSettlementDate) {
         this.lastSettlementDate = lastSettlementDate;
+    }
+
+    public void addCarryOverMoney(CreateLineRequest request) {
+        if(Objects.equals(request.getFlow(), OUTCOME.getKind())){
+            carryOverMoney -= request.getMoney();
+        }
+        else if(Objects.equals(request.getFlow(), INCOME.getKind())){
+            carryOverMoney += request.getMoney();
+        }
     }
 }
