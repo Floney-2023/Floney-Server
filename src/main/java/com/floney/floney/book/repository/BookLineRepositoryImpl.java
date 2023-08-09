@@ -1,12 +1,14 @@
 package com.floney.floney.book.repository;
 
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.response.QAnalyzeByCategory;
-import com.floney.floney.book.entity.*;
+import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
