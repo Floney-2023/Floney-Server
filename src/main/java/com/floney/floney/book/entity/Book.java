@@ -54,10 +54,12 @@ public class Book extends BaseEntity {
 
     private LocalDate lastSettlementDate;
 
+    private Long carryOverMoney;
+
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
-                 Boolean carryOver, String code) {
+                 Boolean carryOver, String code,Long carryOverMoney) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -67,6 +69,7 @@ public class Book extends BaseEntity {
         this.budget = budget;
         this.carryOver = carryOver;
         this.code = code;
+        this.carryOverMoney = carryOverMoney;
 
     }
 
