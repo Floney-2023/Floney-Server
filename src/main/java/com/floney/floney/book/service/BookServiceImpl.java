@@ -1,17 +1,10 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.AnalyzeResponse;
+import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.AnalyzeByCategory;
 import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
@@ -34,8 +27,11 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,7 +98,7 @@ public class BookServiceImpl implements BookService {
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-                .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -154,6 +150,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public void updateCarryOver(CarryOverRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        changeMoney(request,savedBook);
+        savedBook.changeCarryOverStatus(request.isStatus());
+        bookRepository.save(savedBook);
+    }
+
+    @Override
     @Transactional
     public void updateAsset(UpdateAssetRequest request) {
         Book savedBook = findBook(request.getBookKey());
@@ -184,10 +188,10 @@ public class BookServiceImpl implements BookService {
 
         final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
         users.addAll(findAllByBookAndStatus(bookKey)
-                .stream()
-                .map(BookUser::getUser)
-                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-                .toList());
+            .stream()
+            .map(BookUser::getUser)
+            .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+            .toList());
 
         return userToResponse(users);
     }
@@ -213,12 +217,12 @@ public class BookServiceImpl implements BookService {
         BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
 
         return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
-                calculateDifference(request, savedAnalyze));
+            calculateDifference(request, savedAnalyze));
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-                .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(NotFoundBookException::new);
     }
 
     private void isValidToDeleteBook(Book book, String email) {
@@ -228,8 +232,8 @@ public class BookServiceImpl implements BookService {
 
     private List<BookUserResponse> userToResponse(final List<User> users) {
         return users.stream()
-                .map(BookUserResponse::from)
-                .toList();
+            .map(BookUserResponse::from)
+            .toList();
     }
 
     private List<BookUser> findAllByBookAndStatus(String bookKey) {
@@ -243,7 +247,7 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-                .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(NotFoundBookUserException::new);
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
@@ -264,5 +268,15 @@ public class BookServiceImpl implements BookService {
             .build();
 
         return analyzeRepository.save(analyze);
+    }
+
+    private void changeMoney(CarryOverRequest request, Book savedBook) {
+        if (request.isStatus()) {
+            Map<String, Long> totalExpenses = bookLineRepository.totalExpenseByAll(request.getBookKey());
+            long carryOverMoney = CarryOverInfo.calculateMoney(totalExpenses);
+            savedBook.initCarryOverMoney(carryOverMoney);
+        } else {
+            savedBook.resetCarryOverMoney();
+        }
     }
 }

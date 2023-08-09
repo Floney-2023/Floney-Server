@@ -1,16 +1,9 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.process.CarryOverInfo;
+import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.repository.BookLineCustomRepository;
+import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -26,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -33,6 +28,8 @@ public class BookController {
 
     private final BookService bookService;
     private final BookLineService bookLineService;
+    private final BookRepository bookRepository;
+    private final BookLineCustomRepository bookLineRepository;
 
     /**
      * 최초 가계부 생성
@@ -151,6 +148,16 @@ public class BookController {
     @PostMapping("/info/seeProfile")
     public ResponseEntity<?> changeSeeProfile(@RequestBody SeeProfileRequest request) {
         bookService.updateSeeProfile(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 이월 내역 설정 변경
+     * @body CarryOverRequest 이월 내역 기능 ON/OFF 여부
+     */
+    @PostMapping("/info/carryOver")
+    public ResponseEntity<?> changeCarryOver(@RequestBody CarryOverRequest request) {
+        bookService.updateCarryOver(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

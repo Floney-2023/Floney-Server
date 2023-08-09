@@ -29,6 +29,8 @@ import static com.floney.floney.book.dto.constant.AssetType.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
+    private static final long DEFAULT = 0L;
+
     @Column(nullable = false)
     private String name;
 
@@ -128,7 +130,19 @@ public class Book extends BaseEntity {
         }
     }
 
+    public void initCarryOverMoney(long carryOverMoney){
+        this.carryOverMoney = carryOverMoney;
+    }
+
     public boolean getCarryOverStatus() {
         return this.carryOverStatus;
+    }
+
+    public void changeCarryOverStatus(boolean status) {
+        this.carryOverStatus = status;
+    }
+
+    public void resetCarryOverMoney() {
+        this.carryOverMoney = DEFAULT;
     }
 }

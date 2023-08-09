@@ -6,6 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
+import static com.floney.floney.book.dto.constant.AssetType.INCOME;
+import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
+
 @RequiredArgsConstructor
 @Getter
 public class CarryOverInfo {
@@ -38,5 +43,9 @@ public class CarryOverInfo {
         else {
             return new CarryOverInfo(book.getCarryOverStatus());
         }
+    }
+
+    public static long calculateMoney(Map<String,Long> totalExpenses){
+        return totalExpenses.get(INCOME.getKind()) - totalExpenses.get(OUTCOME.getKind());
     }
 }
