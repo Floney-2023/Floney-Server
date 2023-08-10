@@ -1,7 +1,6 @@
 package com.floney.floney.book.controller;
 
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.book.dto.request.BookNameChangeRequest;
 import com.floney.floney.book.dto.request.BookUserOutRequest;
 import com.floney.floney.book.dto.request.CodeJoinRequest;
@@ -223,7 +222,7 @@ public class BookController {
      */
     @PostMapping("/users/out")
     public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                              @RequestBody BookUserOutRequest request) {
+                                         @RequestBody BookUserOutRequest request) {
         bookService.bookUserOut(request, userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -238,8 +237,4 @@ public class BookController {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
 
-    @PostMapping("/analyze/category")
-    public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
-        return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
-    }
 }

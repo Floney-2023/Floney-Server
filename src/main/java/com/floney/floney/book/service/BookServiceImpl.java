@@ -1,30 +1,17 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.AnalyzeResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookAnalyze;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.BookAnalyzeRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -34,11 +21,12 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -51,8 +39,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
-    private final BookAnalyzeRepository analyzeRepository;
-    private final CategoryCustomRepository categoryRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -102,7 +88,7 @@ public class BookServiceImpl implements BookService {
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-                .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(NotFoundBookException::new);
         bookUserRepository.isMax(book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -184,10 +170,10 @@ public class BookServiceImpl implements BookService {
 
         final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
         users.addAll(findAllByBookAndStatus(bookKey)
-                .stream()
-                .map(BookUser::getUser)
-                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-                .toList());
+            .stream()
+            .map(BookUser::getUser)
+            .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+            .toList());
 
         return userToResponse(users);
     }
@@ -206,19 +192,9 @@ public class BookServiceImpl implements BookService {
         return new InviteCodeResponse(findBook(bookKey));
     }
 
-    @Override
-    @Transactional
-    public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
-        List<AnalyzeByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
-        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
-
-        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
-                calculateDifference(request, savedAnalyze));
-    }
-
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-                .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(NotFoundBookException::new);
     }
 
     private void isValidToDeleteBook(Book book, String email) {
@@ -228,8 +204,8 @@ public class BookServiceImpl implements BookService {
 
     private List<BookUserResponse> userToResponse(final List<User> users) {
         return users.stream()
-                .map(BookUserResponse::from)
-                .toList();
+            .map(BookUserResponse::from)
+            .toList();
     }
 
     private List<BookUser> findAllByBookAndStatus(String bookKey) {
@@ -243,26 +219,10 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-                .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(NotFoundBookUserException::new);
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
-    }
-
-    private Long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
-        Long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
-        return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
-    }
-
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeByCategory> analyzeResult) {
-        BookAnalyze analyze = BookAnalyze.builder()
-            .analyzeDate(request.getLocalDate())
-            .book(findBook(request.getBookKey()))
-            .category(categoryRepository.findFlowCategory(request.getRoot()))
-            .analyzeResult(analyzeResult)
-            .build();
-
-        return analyzeRepository.save(analyze);
     }
 }
