@@ -1,15 +1,6 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -17,15 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,13 +17,12 @@ public class BookController {
 
     private final BookService bookService;
     private final BookLineService bookLineService;
-    private final BookRepository bookRepository;
-    private final BookLineCustomRepository bookLineRepository;
 
     /**
      * 최초 가계부 생성
-     * @body CreateBookRequest 가계부 생성 요청용 기본 정보
+     *
      * @return CreateBookResponse 생성된 가게부 정보
+     * @body CreateBookRequest 가계부 생성 요청용 기본 정보
      */
     @PostMapping()
     public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request,
@@ -50,8 +32,9 @@ public class BookController {
 
     /**
      * 가계부 추가
-     * @body CreateBootRequest 가계부 생성 요청용 기본 정보
+     *
      * @return CreateBookResponse 생성된 가게부 정보
+     * @body CreateBootRequest 가계부 생성 요청용 기본 정보
      */
     @PostMapping("/add")
     public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
@@ -61,8 +44,9 @@ public class BookController {
 
     /**
      * 초대코드로 가계부 참여
-     * @body CodeJoinRequest 초대 코드
+     *
      * @return CreateBookResponse 참여한 가게부 정보
+     * @body CodeJoinRequest 초대 코드
      */
     @PostMapping("/join")
     public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code,
@@ -72,8 +56,9 @@ public class BookController {
 
     /**
      * 가계부 내역 생성
-     * @body CreateLineRequest 가계부 내역
+     *
      * @return CreateBookResponse 추가된 가계부 내역
+     * @body CreateLineRequest 가계부 내역
      */
     @PostMapping("/lines")
     public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request,
@@ -83,8 +68,9 @@ public class BookController {
 
     /**
      * 월별 가계부 내역 조회
+     *
      * @param bookKey 가계부 식별 키
-     * @param date 조회 요청 월(YYYY-MM-DD)
+     * @param date    조회 요청 월(YYYY-MM-DD)
      * @return MonthLinesResponse 해당 월 전체 가계부 내역
      */
     @GetMapping("/month")
@@ -95,8 +81,9 @@ public class BookController {
 
     /**
      * 일별 가계부 내역 조회
+     *
      * @param bookKey 가계부 식별 키
-     * @param date 조회 요청 일자(YYYY-MM-DD)
+     * @param date    조회 요청 일자(YYYY-MM-DD)
      * @return TotalDayLinesResponse 해당 일자 전체 가계부 내역
      */
     @GetMapping("/days")
@@ -107,6 +94,7 @@ public class BookController {
 
     /**
      * 가계부 이름 변경
+     *
      * @body BookNameChangeRequest 변경하고자 하는 가계부 이름
      */
     @PostMapping("/name")
@@ -117,6 +105,7 @@ public class BookController {
 
     /**
      * 가계부 삭제하기(팀장만 호출 가능)
+     *
      * @param bookKey 가계부 식별자
      */
     @DeleteMapping("/delete")
@@ -128,6 +117,7 @@ public class BookController {
 
     /**
      * 가계부 설정
+     *
      * @param bookKey 가계부 식별자
      * @return OurBookInfo 가계부 설정 정보
      */
@@ -139,6 +129,7 @@ public class BookController {
 
     /**
      * 가계부 이미지 변경
+     *
      * @body UpdateBookImgRequest 변경하고자 하는 가계부 이미지
      */
     @PostMapping("/info/bookImg")
@@ -149,6 +140,7 @@ public class BookController {
 
     /**
      * 내역 조회 시 유저 이미지 공개 여부 변경
+     *
      * @body SeeProfileRequest 공개 여부
      */
     @PostMapping("/info/seeProfile")
@@ -159,6 +151,7 @@ public class BookController {
 
     /**
      * 이월 내역 설정 변경
+     *
      * @body CarryOverRequest 이월 내역 기능 ON/OFF 여부
      */
     @PostMapping("/info/carryOver")
@@ -169,6 +162,7 @@ public class BookController {
 
     /**
      * 자산 변경
+     *
      * @body UpdateAssetRequest 자산 변경 정보
      */
     @PostMapping("/info/asset")
@@ -179,6 +173,7 @@ public class BookController {
 
     /**
      * 예산 변경
+     *
      * @body UpdateBudgetRequest 예산 변경 정보
      */
     @PostMapping("/info/budget")
@@ -189,6 +184,7 @@ public class BookController {
 
     /**
      * 가계부 내역 전체 삭제
+     *
      * @param bookKey 가계부 식별자
      */
     @DeleteMapping("/lines/delete")
@@ -199,6 +195,7 @@ public class BookController {
 
     /**
      * 유저 가계부 유효 확인
+     *
      * @return CheckBookValidResponse 참여하는 가계부 식별키
      * 유저가 참여하는 가계부가 있다면
      * 가장 최근에 접근한 가계부의 식별 키를 전송
@@ -210,8 +207,9 @@ public class BookController {
 
     /**
      * 기간 내의 모든 지출 내역 조회
-     * @body AllOutcomesRequest 기간, 가계부 식별키 정보
+     *
      * @return List<DayLines> 지출 내역
+     * @body AllOutcomesRequest 기간, 가계부 식별키 정보
      */
     @PostMapping("/outcomes")
     public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesRequest) {
@@ -220,8 +218,9 @@ public class BookController {
 
     /**
      * 가계부의 모든 유저들 조회
+     *
      * @param userDetails 현재 접속한 유저 정보
-     * @param bookKey 가계부 키
+     * @param bookKey     가계부 키
      * @return 가계부 유저들 리스트
      */
     @GetMapping("/users")
@@ -232,6 +231,7 @@ public class BookController {
 
     /**
      * 가계부 나가기(팀원만 호출 가능)
+     *
      * @body BookUserOutRequest 가계부 식별키 정보
      */
     @PostMapping("/users/out")
@@ -243,6 +243,7 @@ public class BookController {
 
     /**
      * 가계부 초대코드 조회
+     *
      * @param bookKey 가계부 식별키
      * @return InviteCodeResponse 가계부 초대코드
      */
