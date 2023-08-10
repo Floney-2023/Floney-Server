@@ -1,13 +1,12 @@
 package com.floney.floney.book.repository;
 
-import com.floney.floney.book.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.DayLine;
-import com.floney.floney.book.dto.process.DayLineByDayView;
-import com.floney.floney.book.dto.process.TotalExpense;
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
+import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.request.*;
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.book.entity.BookUser;
 
 import java.time.LocalDate;
@@ -34,6 +33,9 @@ public interface BookLineCustomRepository {
 
     Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
-    List<AnalyzeByCategory> analyzeByCategory(AnalyzeByCategoryRequest request);
+    List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request);
 
+    AnalyzeResponseByBudget totalIncomeForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
+
+    Map<String,Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
 }

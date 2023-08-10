@@ -1,9 +1,15 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.process.CarryOverInfo;
-import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.repository.BookLineCustomRepository;
-import com.floney.floney.book.repository.BookRepository;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -230,7 +236,7 @@ public class BookController {
      */
     @PostMapping("/users/out")
     public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                              @RequestBody BookUserOutRequest request) {
+                                         @RequestBody BookUserOutRequest request) {
         bookService.bookUserOut(request, userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -245,8 +251,4 @@ public class BookController {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
 
-    @PostMapping("/analyze/category")
-    public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request ) {
-        return new ResponseEntity<>(bookService.analyzeByCategory(request), HttpStatus.OK);
-    }
 }

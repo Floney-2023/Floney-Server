@@ -42,16 +42,8 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse createBookLine(String currentUser, CreateLineRequest request) {
-        Book book = findBook(request.getBookKey());
-        if (request.isNotExcept()) {
-            book.processTrans(request);
-        }
-
-        if (book.getCarryOverStatus()) {
-            book.addCarryOverMoney(request);
-        }
-
-        BookLine requestLine = request.to(findBookUser(currentUser, request), book);
+     Book book = findBook(request.getBookKey());
+        BookLine requestLine = request.to(findBookUser(currentUser,request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         findCategories(savedLine, request);
 

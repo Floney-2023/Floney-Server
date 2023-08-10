@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Objects;
+
+import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @Getter
 @RequiredArgsConstructor
@@ -51,12 +54,5 @@ public class CreateLineRequest {
             .writer(bookUser)
             .description(description)
             .build();
-    }
-
-    public boolean isNotExcept(){
-        if(except == null){
-            return false;
-        }
-        return !this.except;
     }
 }

@@ -1,19 +1,18 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.AnalyzeResponse;
 import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.response.BookUserResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookAnalyze;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.BookAnalyzeRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -42,8 +42,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
-    private final BookAnalyzeRepository analyzeRepository;
-    private final CategoryCustomRepository categoryRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -209,16 +207,6 @@ public class BookServiceImpl implements BookService {
         return new InviteCodeResponse(findBook(bookKey));
     }
 
-    @Override
-    @Transactional
-    public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
-        List<AnalyzeByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
-        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
-
-        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
-            calculateDifference(request, savedAnalyze));
-    }
-
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
@@ -252,23 +240,6 @@ public class BookServiceImpl implements BookService {
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
-
-    private Long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
-        Long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
-        return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
-    }
-
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeByCategory> analyzeResult) {
-        BookAnalyze analyze = BookAnalyze.builder()
-            .analyzeDate(request.getLocalDate())
-            .book(findBook(request.getBookKey()))
-            .category(categoryRepository.findFlowCategory(request.getRoot()))
-            .analyzeResult(analyzeResult)
-            .build();
-
-        return analyzeRepository.save(analyze);
-    }
-
 
     private void reCalculateCarryOverMoney(Book savedBook) {
         Map<String, Long> totalExpenses = bookLineRepository.totalExpenseByAll(savedBook.getBookKey());

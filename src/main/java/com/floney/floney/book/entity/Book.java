@@ -46,9 +46,9 @@ public class Book extends BaseEntity {
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean seeProfile;
 
-    private Long initialAsset;
+    private Long initAsset;
 
-    private Long budget;
+    private Long initBudget;
 
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOverStatus;
@@ -62,16 +62,16 @@ public class Book extends BaseEntity {
 
     @Builder
     private Book(String name, String bookImg, String owner,
-                 String bookKey, Boolean seeProfile, Long initialAsset, Long budget,
-                 Boolean carryOverStatus, String code, Long carryOverMoney) {
+                 String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
+                 Boolean carryOver, String code) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
-        this.initialAsset = initialAsset;
-        this.budget = budget;
-        this.carryOverStatus = carryOverStatus;
+        this.initAsset = initAsset;
+        this.initBudget = initBudget;
+        this.carryOver = carryOver;
         this.code = code;
         this.carryOverMoney = carryOverMoney;
 
@@ -79,16 +79,6 @@ public class Book extends BaseEntity {
 
     public static Book initBook() {
         return new Book();
-    }
-
-    public void processTrans(CreateLineRequest request) {
-        AssetType assetType = find(request.getFlow());
-        Long amount = request.getMoney();
-        if (assetType == OUTCOME) {
-            initialAsset -= amount;
-        } else if (assetType == INCOME) {
-            budget += amount;
-        }
     }
 
     public void updateName(String requestName) {
@@ -110,11 +100,11 @@ public class Book extends BaseEntity {
     }
 
     public void updateAsset(Long asset) {
-        this.initialAsset = asset;
+        this.initAsset = asset;
     }
 
     public void updateBudget(Long budget) {
-        this.budget = budget;
+        this.initBudget = budget;
     }
 
     public void updateLastSettlementDate(LocalDate lastSettlementDate) {
