@@ -1,17 +1,17 @@
 package com.floney.floney.analyze.service;
 
 import com.floney.floney.analyze.dto.process.BookAnalyzer;
-import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
-import com.floney.floney.book.dto.request.DatesDuration;
+import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
-import com.floney.floney.book.entity.Book;
 import com.floney.floney.analyze.entity.BookAnalyze;
 import com.floney.floney.analyze.repository.BookAnalyzeRepository;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;

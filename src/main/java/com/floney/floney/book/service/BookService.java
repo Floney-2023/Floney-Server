@@ -2,48 +2,41 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.user.dto.response.UserResponse;
+import com.floney.floney.book.dto.response.BookUserResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface BookService {
 
-    CreateBookResponse createBook(CustomUserDetails userDetails, CreateBookRequest request);
+    CreateBookResponse createBook(final CustomUserDetails userDetails, final CreateBookRequest request);
 
-    CreateBookResponse addBook(CustomUserDetails userDetails, CreateBookRequest request);
+    CreateBookResponse addBook(final CustomUserDetails userDetails, final CreateBookRequest request);
 
-    CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest code);
+    CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
 
-    void changeBookName(BookNameChangeRequest request);
+    void changeBookName(final BookNameChangeRequest request);
 
-    void deleteBook(String email, String bookKey);
+    void deleteBook(final String email, final String bookKey);
 
-    OurBookInfo getBookInfo(String bookKey, String myEmail);
+    OurBookInfo getBookInfo(final String bookKey, final String myEmail);
 
-    void updateBookImg(UpdateBookImgRequest request);
+    void updateBookImg(final UpdateBookImgRequest request);
 
-    void updateSeeProfile(SeeProfileRequest request);
+    void updateSeeProfile(final SeeProfileRequest request);
 
-    void updateAsset(UpdateAssetRequest request);
+    void updateAsset(final UpdateAssetRequest request);
 
-    void updateBudget(UpdateBudgetRequest request);
+    void updateBudget(final UpdateBudgetRequest request);
 
-    CheckBookValidResponse checkIsBookUser(String email);
+    InvolveBookResponse findInvolveBook(final String email);
 
-    Book findBook(String bookKey);
+    void bookUserOut(final BookUserOutRequest request, final String username);
 
-    void updateLastSettlementDate(String bookKey, LocalDate settlementDate);
+    InviteCodeResponse inviteCode(final String bookKey);
 
-    List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey);
-
-    void bookUserOut(BookUserOutRequest request, String username);
-
-    InviteCodeResponse inviteCode(String bookKey);
-
-
+    List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey);
 }

@@ -3,9 +3,10 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookLineCustomRepository;
@@ -16,17 +17,19 @@ import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
-import com.floney.floney.user.dto.response.UserResponse;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
@@ -36,6 +39,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -60,7 +64,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Transactional
-    public CreateBookResponse subscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
+    public CreateBookResponse subscribeCreateBook(int count,
+                                                  CustomUserDetails userDetails,
+                                                  CreateBookRequest request) {
         if (count >= SUBSCRIBE_MAX) {
             throw new LimitRequestException();
         }
@@ -68,7 +74,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Transactional
-    public CreateBookResponse notSubscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
+    public CreateBookResponse notSubscribeCreateBook(int count,
+                                                     CustomUserDetails userDetails,
+                                                     CreateBookRequest request) {
         if (count >= DEFAULT_MAX) {
             throw new NotSubscribeException();
         }
@@ -106,11 +114,6 @@ public class BookServiceImpl implements BookService {
 
         book.delete();
         bookRepository.save(book);
-    }
-
-    private void isValidToDeleteBook(Book book, String email) {
-        book.isOwner(email);
-        bookUserRepository.countBookUser(book);
     }
 
     @Override
@@ -153,33 +156,26 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CheckBookValidResponse checkIsBookUser(String email) {
-        Book books = bookUserRepository.findBookBy(email).orElse(Book.initBook());
-        return CheckBookValidResponse.userBook(books);
+    @Transactional(readOnly = true)
+    public InvolveBookResponse findInvolveBook(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+        return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
-    }
+    public List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey) {
+        findBookUserByKey(userDetails.getUsername(), bookKey);
 
-    @Override
-    @Transactional
-    public void updateLastSettlementDate(String bookKey, LocalDate settlementDate) {
-        final Book book = findBook(bookKey);
-        book.updateLastSettlementDate(settlementDate);
-        bookRepository.save(book);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey) {
-        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE)
+        final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
+        users.addAll(findAllByBookAndStatus(bookKey)
             .stream()
-            .map(bookUser -> UserResponse.from(bookUser.getUser()))
+            .map(BookUser::getUser)
             .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-            .toList();
+            .toList());
+
+        return userToResponse(users);
     }
 
     @Override
@@ -190,9 +186,35 @@ public class BookServiceImpl implements BookService {
         deleteBookUser(bookUser);
     }
 
-    private BookUser deleteBookUser(BookUser bookUser) {
+    @Override
+    @Transactional(readOnly = true)
+    public InviteCodeResponse inviteCode(String bookKey) {
+        return new InviteCodeResponse(findBook(bookKey));
+    }
+
+    private Book findBook(String bookKey) {
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+            .orElseThrow(NotFoundBookException::new);
+    }
+
+    private void isValidToDeleteBook(Book book, String email) {
+        book.isOwner(email);
+        bookUserRepository.countBookUser(book);
+    }
+
+    private List<BookUserResponse> userToResponse(final List<User> users) {
+        return users.stream()
+            .map(BookUserResponse::from)
+            .toList();
+    }
+
+    private List<BookUser> findAllByBookAndStatus(String bookKey) {
+        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE);
+    }
+
+    private void deleteBookUser(BookUser bookUser) {
         bookUser.delete();
-        return bookUserRepository.save(bookUser);
+        bookUserRepository.save(bookUser);
     }
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
@@ -203,11 +225,4 @@ public class BookServiceImpl implements BookService {
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));
-    }
-
 }

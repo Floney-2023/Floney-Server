@@ -9,7 +9,6 @@ import com.floney.floney.analyze.dto.response.QAnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.DatesDuration;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
