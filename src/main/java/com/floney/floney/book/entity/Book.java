@@ -1,6 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.Currency;
+import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.common.entity.BaseEntity;
@@ -134,5 +135,9 @@ public class Book extends BaseEntity {
 
     public void resetCarryOverMoney() {
         this.carryOverMoney = DEFAULT;
+    }
+
+    public void changeCurrency(Currency requestCurrency) {
+        this.currency = requestCurrency;
     }
 }
