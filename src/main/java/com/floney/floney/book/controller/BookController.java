@@ -1,15 +1,6 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -235,6 +226,16 @@ public class BookController {
     @GetMapping("/code")
     public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @body ChangeCurrencyRequest 변경할 통화 정보
+     * @return 변경한 통화 정보
+     */
+    @PostMapping("/info/currency")
+    public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request){
+        return new ResponseEntity<>(bookService.changeCurrency(request),HttpStatus.OK);
     }
 
 }
