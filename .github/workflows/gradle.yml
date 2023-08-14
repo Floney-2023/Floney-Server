@@ -23,11 +23,13 @@ jobs:
           distribution: 'temurin'
           
       - name: 설정파일 생성
-        env:
-          OCCUPY_SECRET: ${{ secrets.SECRET_YAML }}
-          OCCUPY_SECRET_DIR: ./src/main/resources
-          OCCUPY_SECRET_DIR_FILE_NAME: application-secret.yml
-        run: echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
+      - uses: actions/checkout@v2
+      - run: touch ./src/main/resources/application.yaml
+      - run: echo "${{ secrets.SECRET_YAML }}" > ./src/main/resources/application.yaml
+      - uses: actions/upload-artifact@v2
+        with:
+          name: application.yaml
+          path: ./src/main/resources/application.yaml
 
       - name: Github action IP 가져오기
         id: ip
