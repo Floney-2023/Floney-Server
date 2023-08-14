@@ -5,7 +5,7 @@ JAR_FILE="$ROOT_PATH/build/libs/Floney-0.0.1-SNAPSHOT.jar"
 
 DEPLOY_LOG="$ROOT_PATH/deploy.log"
 
-SERVICE_PID=$(pgrep -f $JAR_FILE) # 실행중인 Spring 서버의 PID
+SERVICE_PID="pgrep -f Floney" 
 
 TIME_NOW=$(date +%c)
 
