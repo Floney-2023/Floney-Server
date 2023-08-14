@@ -23,13 +23,10 @@ jobs:
           distribution: 'temurin'
           
       - name: 설정파일 생성
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: touch ./src/main/resources/application.yaml
       - run: echo "${{ secrets.SECRET_YAML }}" > ./src/main/resources/application.yaml
-      - uses: actions/upload-artifact@v2
-        with:
-          name: application.yaml
-          path: ./src/main/resources/application.yaml
+      - run: cat ./src/main/resources/application.yaml
 
       - name: Github action IP 가져오기
         id: ip
