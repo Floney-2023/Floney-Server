@@ -1,37 +1,38 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.AnalyzeResponse;
+import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.AnalyzeByCategory;
-import com.floney.floney.book.dto.response.CheckBookValidResponse;
+import com.floney.floney.book.dto.response.BookUserResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookAnalyze;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.BookAnalyzeRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
-import com.floney.floney.user.dto.response.UserResponse;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
@@ -41,8 +42,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
-    private final BookAnalyzeRepository analyzeRepository;
-    private final CategoryCustomRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -67,7 +67,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Transactional
-    public CreateBookResponse subscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
+    public CreateBookResponse subscribeCreateBook(int count,
+                                                  CustomUserDetails userDetails,
+                                                  CreateBookRequest request) {
         if (count >= SUBSCRIBE_MAX) {
             throw new LimitRequestException();
         }
@@ -75,7 +77,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Transactional
-    public CreateBookResponse notSubscribeCreateBook(int count, CustomUserDetails userDetails, CreateBookRequest request) {
+    public CreateBookResponse notSubscribeCreateBook(int count,
+                                                     CustomUserDetails userDetails,
+                                                     CreateBookRequest request) {
         if (count >= DEFAULT_MAX) {
             throw new NotSubscribeException();
         }
@@ -115,11 +119,6 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
     }
 
-    private void isValidToDeleteBook(Book book, String email) {
-        book.isOwner(email);
-        bookUserRepository.countBookUser(book);
-    }
-
     @Override
     @Transactional(readOnly = true)
     public OurBookInfo getBookInfo(String bookKey, String myEmail) {
@@ -144,6 +143,16 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public void updateCarryOver(CarryOverRequest request) {
+        Book savedBook = findBook(request.getBookKey());
+        if (request.isStatus()) {
+            reCalculateCarryOverMoney(savedBook);
+        }
+        savedBook.changeCarryOverStatus(request.isStatus());
+        bookRepository.save(savedBook);
+    }
+
+    @Override
     @Transactional
     public void updateAsset(UpdateAssetRequest request) {
         Book savedBook = findBook(request.getBookKey());
@@ -160,33 +169,26 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public CheckBookValidResponse checkIsBookUser(String email) {
-        Book books = bookUserRepository.findBookBy(email).orElse(Book.initBook());
-        return CheckBookValidResponse.userBook(books);
+    @Transactional(readOnly = true)
+    public InvolveBookResponse findInvolveBook(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(UserNotFoundException::new);
+        return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE).orElseThrow(NotFoundBookException::new);
-    }
+    public List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey) {
+        findBookUserByKey(userDetails.getUsername(), bookKey);
 
-    @Override
-    @Transactional
-    public void updateLastSettlementDate(String bookKey, LocalDate settlementDate) {
-        final Book book = findBook(bookKey);
-        book.updateLastSettlementDate(settlementDate);
-        bookRepository.save(book);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserResponse> findUsersByBookExceptCurrentUser(CustomUserDetails userDetails, String bookKey) {
-        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE)
+        final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
+        users.addAll(findAllByBookAndStatus(bookKey)
             .stream()
-            .map(bookUser -> UserResponse.from(bookUser.getUser()))
+            .map(BookUser::getUser)
             .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-            .toList();
+            .toList());
+
+        return userToResponse(users);
     }
 
     @Override
@@ -194,12 +196,40 @@ public class BookServiceImpl implements BookService {
     public void bookUserOut(BookUserOutRequest request, String userEmail) {
         BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
         deleteBookLineBy(bookUser, request.getBookKey());
+        Book savedBook = findBook(request.getBookKey());
+        reCalculateCarryOverMoney(savedBook);
         deleteBookUser(bookUser);
     }
 
-    private BookUser deleteBookUser(BookUser bookUser) {
+    @Override
+    @Transactional(readOnly = true)
+    public InviteCodeResponse inviteCode(String bookKey) {
+        return new InviteCodeResponse(findBook(bookKey));
+    }
+
+    private Book findBook(String bookKey) {
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+            .orElseThrow(NotFoundBookException::new);
+    }
+
+    private void isValidToDeleteBook(Book book, String email) {
+        book.isOwner(email);
+        bookUserRepository.countBookUser(book);
+    }
+
+    private List<BookUserResponse> userToResponse(final List<User> users) {
+        return users.stream()
+            .map(BookUserResponse::from)
+            .toList();
+    }
+
+    private List<BookUser> findAllByBookAndStatus(String bookKey) {
+        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE);
+    }
+
+    private void deleteBookUser(BookUser bookUser) {
         bookUser.delete();
-        return bookUserRepository.save(bookUser);
+        bookUserRepository.save(bookUser);
     }
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
@@ -211,35 +241,10 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));
+    private void reCalculateCarryOverMoney(Book savedBook) {
+        Map<String, Long> totalExpenses = bookLineRepository.totalExpenseByAll(savedBook.getBookKey());
+        long carryOverMoney = CarryOverInfo.calculateMoney(totalExpenses);
+        savedBook.initCarryOverMoney(carryOverMoney);
     }
 
-    @Override
-    @Transactional
-    public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
-        List<AnalyzeByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
-        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory);
-
-        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze,
-            calculateDifference(request, savedAnalyze));
-    }
-
-    private Long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
-        Long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
-        return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
-    }
-
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeByCategory> analyzeResult) {
-        BookAnalyze analyze = BookAnalyze.builder()
-            .analyzeDate(request.getLocalDate())
-            .book(findBook(request.getBookKey()))
-            .category(categoryRepository.findFlowCategory(request.getRoot()))
-            .analyzeResult(analyzeResult)
-            .build();
-
-        return analyzeRepository.save(analyze);
-    }
 }

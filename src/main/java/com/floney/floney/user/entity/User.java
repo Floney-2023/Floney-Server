@@ -1,5 +1,6 @@
 package com.floney.floney.user.entity;
 
+import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.dto.constant.Provider;
 import javax.persistence.EnumType;
@@ -58,6 +59,9 @@ public class User extends BaseEntity {
     @Column(updatable = false, unique = true, length = 30)
     private String providerId;
 
+    @Column()
+    private String recentBookKey;
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
     }
@@ -78,4 +82,7 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
     }
 
+    public void saveRecentBookKey(SaveRecentBookKeyRequest request) {
+        this.recentBookKey = request.getBookKey();
+    }
 }

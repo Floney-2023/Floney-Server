@@ -1,4 +1,4 @@
-package com.floney.floney.settlement.entity;
+package com.floney.floney.settlement.domain.entity;
 
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.entity.User;
@@ -19,7 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SettlementUser extends BaseEntity {
@@ -34,4 +34,12 @@ public class SettlementUser extends BaseEntity {
 
     @Column(nullable = false, updatable = false)
     private Long money;
+
+    public static SettlementUser of(Settlement settlement, User user, Long money) {
+        return SettlementUser.builder()
+                .settlement(settlement)
+                .user(user)
+                .money(money)
+                .build();
+    }
 }
