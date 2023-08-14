@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  $AWS_S3_BUCKET: floney-dev-deploy
+
 jobs:
   build:
     runs-on: ubuntu-latest
