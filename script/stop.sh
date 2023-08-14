@@ -5,7 +5,7 @@ JAR_FILE="$ROOT_PATH/build/libs/Floney-0.0.1-SNAPSHOT.jar"
 
 DEPLOY_LOG="$ROOT_PATH/deploy.log"
 
-SERVICE_PID="pgrep -f Floney" 
+SERVICE_PID=$(pgrep -f Floney)
 
 TIME_NOW=$(date +%c)
 
