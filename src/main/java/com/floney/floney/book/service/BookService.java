@@ -28,6 +28,8 @@ public interface BookService {
 
     void updateSeeProfile(final SeeProfileRequest request);
 
+    void updateCarryOver(final CarryOverRequest request);
+
     void updateAsset(final UpdateAssetRequest request);
 
     void updateBudget(final UpdateBudgetRequest request);

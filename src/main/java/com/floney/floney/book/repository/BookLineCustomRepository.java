@@ -17,6 +17,8 @@ public interface BookLineCustomRepository {
 
     Map<String, Long> totalExpenseByMonth(String bookKey, DatesDuration dates);
 
+    Map<String, Long> totalExpenseByAll(String bookKey);
+
     List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey);
 
     List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey);

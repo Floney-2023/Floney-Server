@@ -16,6 +16,7 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 public class DateFactory {
     public static final int NEXT_DAY = 1;
+    public static final int FIRST_DAY = 1;
 
     public static DatesDuration getDateDuration(String targetDate) {
         LocalDate startDate = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
@@ -39,7 +40,7 @@ public class DateFactory {
             .build();
     }
 
-    public static LocalDate getBeforeMonth(LocalDate targetDate){
+    public static LocalDate getBeforeMonth(LocalDate targetDate) {
         return targetDate.minusMonths(1);
     }
 
@@ -63,6 +64,10 @@ public class DateFactory {
 
     public static LocalDate formatToDate(LocalDateTime createdAt) {
         return createdAt.toLocalDate();
+    }
+
+    public static boolean isFirstDay(String date) {
+        return LocalDate.parse(date).getDayOfMonth() == FIRST_DAY;
     }
 }
 

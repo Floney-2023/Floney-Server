@@ -16,14 +16,6 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 public class CategoryFactory {
     private final CategoryRepository categoryRepository;
 
-    public BookLineCategory create(CarryOverInfo info) {
-        if (info.getAssetType() == INCOME) {
-            return incomeCategory(info.getBookLine());
-        } else {
-            return outcomeCategory(info.getBookLine());
-        }
-    }
-
     private BookLineCategory incomeCategory(BookLine line) {
         return BookLineCategory.builder()
             .bookLine(line)

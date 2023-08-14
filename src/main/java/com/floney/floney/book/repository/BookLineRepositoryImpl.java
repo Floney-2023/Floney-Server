@@ -63,6 +63,24 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
+    public Map<String, Long> totalExpenseByAll(String bookKey) {
+        return jpaQueryFactory
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
+                book.bookKey.eq(bookKey),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE)
+            )
+            .groupBy(bookLineCategory.name)
+            .orderBy(bookLineCategory.name.asc())
+            .transform(groupBy(bookLineCategory.name)
+                .as(bookLine.money.sum()));
+    }
+
+    @Override
     public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
         return jpaQueryFactory.select(
                 new QDayLineByDayView(
