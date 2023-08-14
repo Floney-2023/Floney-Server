@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ROOT_PATH="/home/ubuntu/Floney-Server"
 JAR_FILE="$ROOT_PATH/build/libs/Floney-0.0.1-SNAPSHOT.jar"
