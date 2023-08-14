@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin'
           
       - name: 설정파일 생성
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
       - run: touch ./src/main/resources/application.yaml
              echo "${{ secrets.SECRET_YAML }}" > ./src/main/resources/application.yaml
              cat ./src/main/resources/application.yaml
