@@ -28,6 +28,7 @@ jobs:
       - name: 설정파일 생성
         uses: actions/checkout@v3
       - run: |
+           mkdir ./src/main/resources
            touch ./src/main/resources/application.yaml
            echo "${{ secrets.SECRET_YAML }}" | base64 --decode > ./src/main/resources/application.yaml
 
