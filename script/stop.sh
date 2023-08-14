@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT_PATH="/home/ubuntu/Floney-Server"
-JAR="$ROOT_PATH/Floney-0.0.1-SNAPSHOT.jar"
+JAR="$ROOT_PATH/build/libs/Floney-0.0.1-SNAPSHOT.jar"
 
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
