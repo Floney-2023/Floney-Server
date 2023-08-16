@@ -1,20 +1,22 @@
 package com.floney.floney.analyze.dto.response;
 
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 @Getter
 public class AnalyzeResponseByBudget {
     private final long leftMoney;
-    private final long initMoney;
+    private final long initBudget;
 
-    @QueryProjection
-    public AnalyzeResponseByBudget(long totalOutcomeMoney, long initMoney) {
-        this.initMoney = initMoney;
-        this.leftMoney = calculateLeftMoney(initMoney, totalOutcomeMoney);
+    private AnalyzeResponseByBudget(long totalIncomeMoney, long initBudget) {
+        this.initBudget = initBudget;
+        this.leftMoney = calculateLeftMoney(initBudget, totalIncomeMoney);
     }
 
-    private long calculateLeftMoney(long initMoney, long totalOutcomeMoney) {
-        return initMoney - totalOutcomeMoney;
+    public static AnalyzeResponseByBudget of(Long totalIncome, Long initBudget) {
+        return new AnalyzeResponseByBudget(totalIncome, initBudget);
+    }
+
+    private long calculateLeftMoney(long initBudget, long totalIncomeMoney) {
+        return initBudget - totalIncomeMoney;
     }
 }
