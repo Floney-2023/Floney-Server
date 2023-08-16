@@ -20,9 +20,10 @@ public class DayLines {
     private final AssetType assetType;
     private final String content;
     private final String userEmail;
+    private final boolean exceptStatus;
 
     @Builder
-    public DayLines(Long id, Long money, String img, String content, List<String> category, AssetType assetType, String userEmail) {
+    public DayLines(Long id, Long money, String img, String content, List<String> category, AssetType assetType, String userEmail, boolean exceptStatus) {
         this.id = id;
         this.money = money;
         this.img = img;
@@ -30,6 +31,7 @@ public class DayLines {
         this.category = category;
         this.content = content;
         this.userEmail = userEmail;
+        this.exceptStatus = exceptStatus;
     }
 
     public static List<DayLines> forDayView(List<DayLineByDayView> dayLines) {
@@ -74,6 +76,7 @@ public class DayLines {
             .category(dayInfo.getCategories())
             .img(dayInfo.getImg())
             .userEmail(dayInfo.getUserEmail())
+            .exceptStatus(dayInfo.isExceptStatus())
             .build();
     }
 
