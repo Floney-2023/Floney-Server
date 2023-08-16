@@ -9,6 +9,8 @@ import java.util.List;
 
 @Getter
 public class DayLineInfo {
+    private final Long id;
+
     private final Long money;
 
     private final String content;
@@ -22,7 +24,8 @@ public class DayLineInfo {
     private final String userEmail;
 
     @Builder
-    public DayLineInfo(Long money, String assetType, String content, List<String> categories, String img, String userEmail) {
+    public DayLineInfo(Long id, Long money, String assetType, String content, List<String> categories, String img, String userEmail) {
+        this.id = id;
         this.money = money;
         this.content = content;
         this.assetType = AssetType.find(assetType);
@@ -40,6 +43,7 @@ public class DayLineInfo {
 
     public static DayLineInfo toDayViewInfos(DayLineByDayView dayLine) {
         return DayLineInfo.builder()
+            .id(dayLine.getId())
             .assetType(dayLine.getCategories())
             .categories(new ArrayList<>())
             .money(dayLine.getMoney())

@@ -16,7 +16,7 @@ public class BookLineExpense {
     private final AssetType assetType;
 
 
-    public BookLineExpense(LocalDate date, AssetType assetType) {
+    private BookLineExpense(LocalDate date, AssetType assetType) {
         this.date = date;
         this.money = 0L;
         this.assetType = assetType;

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @EqualsAndHashCode
 public class DayLines {
-
+    private final Long id;
     private final Long money;
     private final String img;
     private final List<String> category;
@@ -22,7 +22,8 @@ public class DayLines {
     private final String userEmail;
 
     @Builder
-    public DayLines(Long money, String img, String content, List<String> category, AssetType assetType,String userEmail) {
+    public DayLines(Long id, Long money, String img, String content, List<String> category, AssetType assetType, String userEmail) {
+        this.id = id;
         this.money = money;
         this.img = img;
         this.assetType = assetType;
@@ -66,6 +67,7 @@ public class DayLines {
 
     private static DayLines toDayLineResponse(DayLineInfo dayInfo) {
         return DayLines.builder()
+            .id(dayInfo.getId())
             .assetType(dayInfo.getAssetType())
             .money(dayInfo.getMoney())
             .content(dayInfo.getContent())
