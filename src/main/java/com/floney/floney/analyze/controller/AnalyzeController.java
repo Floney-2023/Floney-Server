@@ -24,7 +24,7 @@ public class AnalyzeController {
      * @body AnalyzeByCategoryRequest 카테고리 별 분석 요청
      * @return AnalyzeResponse 해당 카테고리 분석 결과
      */
-    @GetMapping("/category")
+    @PostMapping("/category")
     public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request) {
         return new ResponseEntity<>(analyzeService.analyzeByCategory(request), HttpStatus.OK);
     }
