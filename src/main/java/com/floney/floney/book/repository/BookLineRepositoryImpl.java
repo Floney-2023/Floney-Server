@@ -265,7 +265,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .select(
                 new QAnalyzeResponseByBudget(
                     bookLine.money.sum().coalesce(0L),
-                    book.initAsset
+                    book.initBudget
                 ))
             .from(bookLine)
             .innerJoin(bookLine.book, book)
