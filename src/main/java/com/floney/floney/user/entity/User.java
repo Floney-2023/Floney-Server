@@ -85,4 +85,8 @@ public class User extends BaseEntity {
     public void saveRecentBookKey(SaveRecentBookKeyRequest request) {
         this.recentBookKey = request.getBookKey();
     }
+
+    public void saveDefaultBookKey(String bookKey) {
+        this.recentBookKey = bookKey;
+    }
 }

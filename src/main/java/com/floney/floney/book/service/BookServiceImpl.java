@@ -47,10 +47,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public CreateBookResponse createBook(CustomUserDetails userDetails, CreateBookRequest request) {
+        User requestUser = userDetails.getUser();
         Book newBook = request.of(userDetails.getUsername());
-        Book savedBook = bookRepository.save(newBook);
 
-        bookUserRepository.save(BookUser.of(userDetails.getUser(), savedBook));
+        Book savedBook = bookRepository.save(newBook);
+        saveDefaultBookKey(requestUser, savedBook);
+
+        bookUserRepository.save(BookUser.of(requestUser, savedBook));
         return CreateBookResponse.of(savedBook);
     }
 
@@ -86,13 +89,21 @@ public class BookServiceImpl implements BookService {
         return createBook(userDetails, request);
     }
 
+    private void saveDefaultBookKey(User user, Book book) {
+        user.saveDefaultBookKey(book.getBookKey());
+        userRepository.save(user);
+    }
+
     @Override
     @Transactional
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
+
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
+
         bookUserRepository.isMax(book);
+        saveDefaultBookKey(userDetails.getUser(), book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
         return CreateBookResponse.of(book);

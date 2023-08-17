@@ -15,5 +15,4 @@ public interface AnalyzeService {
 
     AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request);
 
-    Book findBook(String bookKey);
 }
