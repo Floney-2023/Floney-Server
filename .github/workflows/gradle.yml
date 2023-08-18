@@ -62,7 +62,7 @@ jobs:
 
       - name: Github Actions IP를 보안 그룹에서 삭제
         run: |
-          aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
