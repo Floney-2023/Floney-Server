@@ -129,12 +129,6 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(OutOfBudgetException.class)
-    protected ResponseEntity<ErrorResponse> outOfBudget(OutOfBudgetException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
     @ExceptionHandler(NotFoundBookUserException.class)
     protected ResponseEntity<ErrorResponse> notFoundUser(NotFoundBookUserException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
