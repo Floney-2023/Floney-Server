@@ -12,12 +12,14 @@ import com.floney.floney.analyze.entity.BookAnalyze;
 import com.floney.floney.analyze.repository.BookAnalyzeRepository;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,10 +81,15 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         BookAnalyze analyze = BookAnalyze.builder()
             .analyzeDate(request.getLocalDate())
             .book(book)
-            .category(categoryRepository.findFlowCategory(request.getRoot()))
+            .category(findCategory(request.getRoot()))
             .analyzeResult(analyzeResult)
             .build();
 
         return analyzeRepository.save(analyze);
+    }
+
+    private Category findCategory(String root){
+        return categoryRepository.findFlowCategory(root)
+            .orElseThrow(() -> new NotFoundCategoryException(root));
     }
 }

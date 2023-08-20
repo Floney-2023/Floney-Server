@@ -1,10 +1,10 @@
 package com.floney.floney.book.util;
 
-import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +35,7 @@ public class CategoryFactory {
     }
 
     private Category findCategory(String category) {
-        return categoryRepository.findFlowCategory(category);
+        return categoryRepository.findFlowCategory(category)
+            .orElseThrow(() -> new NotFoundCategoryException(category));
     }
 }

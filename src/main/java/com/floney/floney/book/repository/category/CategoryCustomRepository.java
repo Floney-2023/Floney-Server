@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface CategoryCustomRepository {
     List<CategoryInfo> findAllCategory(String name, String bookKey);
 
-    Category findFlowCategory(String name);
+    Optional<Category> findFlowCategory(String name);
 
     Category findAssetCategory(String name);
 

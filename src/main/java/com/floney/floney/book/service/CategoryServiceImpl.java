@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category parent = rootParent();
         if (request.hasParent()) {
             parent = categoryRepository.findParentCategory(request.getParent())
-                .orElseThrow(NotFoundCategoryException::new);
+                .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
         }
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
         return CreateCategoryResponse.of(newCategory);

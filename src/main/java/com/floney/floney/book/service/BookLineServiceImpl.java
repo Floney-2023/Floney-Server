@@ -31,8 +31,6 @@ import static java.time.LocalDate.parse;
 @Service
 @RequiredArgsConstructor
 public class BookLineServiceImpl implements BookLineService {
-
-    private static final long NOT_FIRST_DAY = -9999L;
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
@@ -97,12 +95,13 @@ public class BookLineServiceImpl implements BookLineService {
 
     private BookLineCategory saveLineCategory(BookLine bookLine, CreateLineRequest request) {
         Category category = categoryRepository.findLineCategory(request.getLine(), request.getBookKey(), request.getFlow())
-            .orElseThrow(NotFoundCategoryException::new);
+            .orElseThrow(() -> new NotFoundCategoryException(request.getLine()));
         return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
     private BookLineCategory saveFlowCategory(BookLine bookLine, CreateLineRequest request) {
-        Category category = categoryRepository.findFlowCategory(request.getFlow());
+        Category category = categoryRepository.findFlowCategory(request.getFlow())
+            .orElseThrow(() -> new NotFoundCategoryException(request.getFlow()));
         return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
