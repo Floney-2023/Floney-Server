@@ -42,7 +42,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .size();
 
         if (memberCount > MAX_MEMBER) {
-            throw new MaxMemberException();
+            throw new MaxMemberException(book.getBookKey(),memberCount);
         }
     }
 

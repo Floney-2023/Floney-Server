@@ -107,13 +107,14 @@ public class ErrorControllerAdvice {
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {
-        logger.warn("가계부 키= [{}]를 가진 {}",exception.getRequestKey(),ErrorType.NOT_FOUND_BOOK.getMessage());
+        logger.warn("가계부 키= [{}] 가계부 {}",exception.getRequestKey(),ErrorType.NOT_FOUND_BOOK.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(MaxMemberException.class)
     protected ResponseEntity<ErrorResponse> maxMember(MaxMemberException exception) {
+        logger.warn("가계부 키= [{}] 가계부 {} => 현 인원[{}]",exception.getBookKey(),ErrorType.MAX_MEMBER.getMessage(),exception.getMemberCount());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
