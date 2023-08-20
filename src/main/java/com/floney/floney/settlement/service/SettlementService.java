@@ -78,7 +78,7 @@ public class SettlementService {
 
     private Book findBookByBookKey(final String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-                .orElseThrow(NotFoundBookException::new);
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void validateBookUsers(final Set<String> emails, final Book book) {

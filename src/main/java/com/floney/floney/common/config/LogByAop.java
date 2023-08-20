@@ -1,5 +1,6 @@
 package com.floney.floney.common.config;
 
+import com.floney.floney.common.exception.book.NotFoundBookException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -21,4 +22,5 @@ public class LogByAop {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         logger.info("METHOD : " + className + "." + methodName);
     }
+
 }

@@ -100,7 +100,7 @@ public class BookServiceImpl implements BookService {
         String code = request.getCode();
 
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(code));
 
         bookUserRepository.isMax(book);
         saveDefaultBookKey(userDetails.getUser(), book);
@@ -220,7 +220,7 @@ public class BookServiceImpl implements BookService {
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void isValidToDeleteBook(Book book, String email) {

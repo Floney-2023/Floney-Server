@@ -6,6 +6,9 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ErrorControllerAdvice {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     // USER
     @ExceptionHandler(UserFoundException.class)
@@ -103,6 +107,7 @@ public class ErrorControllerAdvice {
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {
+        logger.warn("가계부 키= [{}]를 가진 {}",exception.getRequestKey(),ErrorType.NOT_FOUND_BOOK.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
@@ -130,8 +135,6 @@ public class ErrorControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
-
-
 
     //SUBSCRIBE
     @ExceptionHandler(NotSubscribeException.class)
