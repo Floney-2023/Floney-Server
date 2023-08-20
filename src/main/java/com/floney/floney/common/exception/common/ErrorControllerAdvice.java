@@ -107,14 +107,14 @@ public class ErrorControllerAdvice {
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {
-        logger.warn("가계부 키= [{}] 가계부 {}", exception.getRequestKey(), ErrorType.NOT_FOUND_BOOK.getMessage());
+        logger.warn("가계부 키 [{}] 가계부 {}", exception.getRequestKey(), ErrorType.NOT_FOUND_BOOK.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(MaxMemberException.class)
     protected ResponseEntity<ErrorResponse> maxMember(MaxMemberException exception) {
-        logger.warn("가계부 키= [{}] 가계부 {} => 현 인원[{}]", exception.getBookKey(),
+        logger.warn("가계부 키 [{}] 가계부 {} => 현 인원[{}]", exception.getBookKey(),
             ErrorType.MAX_MEMBER.getMessage(),
             exception.getMemberCount());
 
@@ -124,20 +124,24 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(NotFoundCategoryException.class)
     protected ResponseEntity<ErrorResponse> notFoundCategory(NotFoundCategoryException exception) {
-        logger.warn("[{}] {}",exception.getCategoryName(),ErrorType.NOT_FOUND_CATEGORY.getMessage());
+        logger.warn("[{}] {}", exception.getCategoryName(), ErrorType.NOT_FOUND_CATEGORY.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(CannotDeleteBookException.class)
     protected ResponseEntity<ErrorResponse> cannotDeleteBook(CannotDeleteBookException exception) {
-        logger.warn("[{}]명의 {}",exception.getLeftMemberCount(),ErrorType.NO_DELETE_BOOK.getMessage());
+        logger.warn("[{}]명의 {}", exception.getLeftMemberCount(), ErrorType.NO_DELETE_BOOK.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(NotFoundBookUserException.class)
     protected ResponseEntity<ErrorResponse> notFoundUser(NotFoundBookUserException exception) {
+        logger.warn("가계부키 [{}] 에서 [{}]와 일치하는 {}", exception.getBookKey(),
+            exception.getRequestUser()
+            , ErrorType.NOT_FOUND_BOOK_USER.getMessage()
+        );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
@@ -151,13 +155,14 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(LimitRequestException.class)
     protected ResponseEntity<ErrorResponse> limitOfService(LimitRequestException exception) {
+        logger.warn(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(NoAuthorityException.class)
     protected ResponseEntity<ErrorResponse> notOwner(NoAuthorityException exception) {
-        logger.warn("{} : 가계부 방장 [{}] , 요청자 [{}]",exception.getOwner(),ErrorType.NO_AUTHORITY.getMessage(),exception.getRequestUser());
+        logger.warn("{} : 가계부 방장 [{}] , 요청자 [{}]", exception.getOwner(), ErrorType.NO_AUTHORITY.getMessage(), exception.getRequestUser());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
