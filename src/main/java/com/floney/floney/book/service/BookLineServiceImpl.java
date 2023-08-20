@@ -112,7 +112,7 @@ public class BookLineServiceImpl implements BookLineService {
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
-            .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(),currentUser));
     }
 
     private Book findBook(String bookKey) {

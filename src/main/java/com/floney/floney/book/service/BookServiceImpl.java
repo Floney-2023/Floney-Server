@@ -245,7 +245,7 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-            .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(() -> new NotFoundBookUserException(bookKey,userEmail));
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
