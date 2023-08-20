@@ -30,6 +30,7 @@ public enum ErrorType {
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),
     NOT_FOUND_CATEGORY("B003", "카테고리가 존재하지 않습니다"),
+    NO_DELETE_BOOK("B004","남은 가계부 유저가 있습니다"),
     NO_AUTHORITY("B005","가계부를 만든 사람만 삭제할 수 있습니다"),
     NOT_FOUND_BOOK_USER ("B006","가계부 멤버를 찾을 수 없습니다"),
     NOT_SUBSCRIBE("S001","멤버쉽 전용 기능입니다"),

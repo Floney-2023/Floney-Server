@@ -129,6 +129,13 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(CannotDeleteBookException.class)
+    protected ResponseEntity<ErrorResponse> cannotDeleteBook(CannotDeleteBookException exception) {
+        logger.warn("[{}]명의 {}",exception.getLeftMemberCount(),ErrorType.NO_DELETE_BOOK.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     @ExceptionHandler(NotFoundBookUserException.class)
     protected ResponseEntity<ErrorResponse> notFoundUser(NotFoundBookUserException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -150,6 +157,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(NoAuthorityException.class)
     protected ResponseEntity<ErrorResponse> notOwner(NoAuthorityException exception) {
+        logger.warn("{} : 가계부 방장 [{}] , 요청자 [{}]",exception.getOwner(),ErrorType.NO_AUTHORITY.getMessage(),exception.getRequestUser());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
