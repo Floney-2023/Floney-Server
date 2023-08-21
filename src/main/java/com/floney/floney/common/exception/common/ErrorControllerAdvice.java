@@ -149,6 +149,7 @@ public class ErrorControllerAdvice {
     //SUBSCRIBE
     @ExceptionHandler(NotSubscribeException.class)
     protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {
+        logger.warn(exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
