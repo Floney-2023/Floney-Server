@@ -72,7 +72,6 @@ public class BookLineServiceImpl implements BookLineService {
             CarryOverInfo.createIfFirstDay(book, date));
     }
 
-
     @Override
     @Transactional
     public void deleteAllLine(String bookKey) {
@@ -97,12 +96,11 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     public void deleteLine(Long bookLineKey) {
-        BookLine savedBookLine = bookLineRepository.findById(bookLineKey)
+        BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey,ACTIVE)
             .orElseThrow(() -> new NotFoundBookLineException());
         savedBookLine.delete();
         bookLineRepository.save(savedBookLine);
     }
-
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
@@ -121,6 +119,5 @@ public class BookLineServiceImpl implements BookLineService {
     private Map<String, Long> totalExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
-
 
 }

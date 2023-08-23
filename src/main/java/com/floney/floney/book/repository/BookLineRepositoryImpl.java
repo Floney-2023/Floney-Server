@@ -29,6 +29,7 @@ import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.book.entity.QCategory.category;
 import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -292,7 +293,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public Optional<BookLine> findByIdWithCategories(Long id) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(bookLine)
-            .where(bookLine.id.eq(id))
+            .where(bookLine.id.eq(id),bookLine.status.eq(ACTIVE))
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .fetchJoin()
             .leftJoin(bookLine.writer, bookUser)

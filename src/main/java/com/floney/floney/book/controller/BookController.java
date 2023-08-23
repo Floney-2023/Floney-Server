@@ -187,7 +187,7 @@ public class BookController {
      *
      * @param bookKey 가계부 식별자
      */
-    @DeleteMapping("/lines/delete")
+    @DeleteMapping("/lines/delete/all")
     public ResponseEntity<?> deleteAll(String bookKey) {
         bookLineService.deleteAllLine(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
