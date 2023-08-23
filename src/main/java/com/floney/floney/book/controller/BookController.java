@@ -263,6 +263,11 @@ public class BookController {
         return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
     }
 
+    /**
+     * 가계부 내역 삭제
+     *
+     * @param bookLineKey 가계부 내역 PK
+     */
     @DeleteMapping("/lines/delete")
     public ResponseEntity<?> deleteBookLine(@RequestParam Long bookLineKey) {
         bookLineService.deleteLine(bookLineKey);
