@@ -252,6 +252,12 @@ public class BookController {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
 
+    /**
+     * 가계부 내역 수정
+     *
+     * @body ChangeBookLineRequest 수정한 가계부 내역
+     * @return InviteCodeResponse 가계부 내역
+     */
     @PostMapping("/change")
     public ResponseEntity<?> changeBookLine(@RequestBody ChangeBookLineRequest request) {
         return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
