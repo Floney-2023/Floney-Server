@@ -94,6 +94,14 @@ public class BookLineServiceImpl implements BookLineService {
         return BookLineResponse.changeResponse(savedBookLine, bookLine.getWriter());
     }
 
+    @Override
+    public void deleteLine(Long bookLineKey) {
+        BookLine savedBookLine = bookLineRepository.findById(bookLineKey)
+            .orElseThrow();
+        savedBookLine.delete();
+        bookLineRepository.save(savedBookLine);
+    }
+
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())

@@ -263,7 +263,10 @@ public class BookController {
         return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
     }
 
-
-
-
+    @PostMapping("/lines/delete")
+    public ResponseEntity<?> deleteBookLine(@RequestParam Long bookLineKey) {
+        bookLineService.deleteLine(bookLineKey);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
 }
