@@ -268,5 +268,5 @@ public class BookController {
         bookLineService.deleteLine(bookLineKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
 }

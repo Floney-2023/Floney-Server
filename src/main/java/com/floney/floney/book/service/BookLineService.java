@@ -22,7 +22,6 @@ public interface BookLineService {
 
     List<DayLines> allOutcomes(AllOutcomesRequest allSettlements);
 
-
     BookLineResponse changeLine(ChangeBookLineRequest request);
 
     void deleteLine(Long bookLineKey);

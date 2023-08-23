@@ -15,6 +15,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     public BookLineResponse changeLine(ChangeBookLineRequest request) {
         BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
-            .orElseThrow(() -> new Error());
+            .orElseThrow(() -> new NotFoundBookLineException());
         categoryFactory.changeCategories(bookLine, request);
         bookLine.update(request);
         BookLine savedBookLine = bookLineRepository.save(bookLine);
@@ -97,7 +98,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     public void deleteLine(Long bookLineKey) {
         BookLine savedBookLine = bookLineRepository.findById(bookLineKey)
-            .orElseThrow();
+            .orElseThrow(() -> new NotFoundBookLineException());
         savedBookLine.delete();
         bookLineRepository.save(savedBookLine);
     }
