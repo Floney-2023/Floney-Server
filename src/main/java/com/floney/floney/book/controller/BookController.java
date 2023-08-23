@@ -187,7 +187,7 @@ public class BookController {
      *
      * @param bookKey 가계부 식별자
      */
-    @DeleteMapping("/lines/delete")
+    @DeleteMapping("/lines/delete/all")
     public ResponseEntity<?> deleteAll(String bookKey) {
         bookLineService.deleteAllLine(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -250,6 +250,28 @@ public class BookController {
     @GetMapping("/code")
     public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
+    }
+
+    /**
+     * 가계부 내역 수정
+     *
+     * @return InviteCodeResponse 가계부 내역
+     * @body ChangeBookLineRequest 수정한 가계부 내역
+     */
+    @PostMapping("/lines/change")
+    public ResponseEntity<?> changeBookLine(@RequestBody ChangeBookLineRequest request) {
+        return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
+    }
+
+    /**
+     * 가계부 내역 삭제
+     *
+     * @param bookLineKey 가계부 내역 PK
+     */
+    @DeleteMapping("/lines/delete")
+    public ResponseEntity<?> deleteBookLine(@RequestParam Long bookLineKey) {
+        bookLineService.deleteLine(bookLineKey);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
