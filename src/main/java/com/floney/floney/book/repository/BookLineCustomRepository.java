@@ -6,11 +6,13 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookUser;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface BookLineCustomRepository {
 
@@ -37,4 +39,6 @@ public interface BookLineCustomRepository {
     Long totalIncomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 
     Map<String,Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
+
+    Optional<BookLine> findByIdWithCategories(Long id);
 }

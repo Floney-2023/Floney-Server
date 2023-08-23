@@ -7,10 +7,7 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
-import com.floney.floney.book.entity.RootCategory;
+import com.floney.floney.book.entity.*;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.querydsl.jpa.JPAExpressions;
@@ -22,6 +19,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
@@ -269,7 +267,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
         Map<String, Long> totalExpenses = new HashMap<>();
 
-        Long totalIncomeMoney = totalIncomeMoney(duration,request.getBookKey());
+        Long totalIncomeMoney = totalIncomeMoney(duration, request.getBookKey());
 
         Long totalOutcomeMoney = jpaQueryFactory
             .select(bookLine.money.sum().coalesce(0L))
@@ -288,6 +286,20 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
         totalExpenses.put(INCOME.getKind(), totalIncomeMoney);
         totalExpenses.put(OUTCOME.getKind(), totalOutcomeMoney);
         return totalExpenses;
+    }
+
+    @Override
+    public Optional<BookLine> findByIdWithCategories(Long id) {
+        return Optional.ofNullable(jpaQueryFactory
+            .selectFrom(bookLine)
+            .where(bookLine.id.eq(id))
+            .leftJoin(bookLine.bookLineCategories, bookLineCategory)
+            .fetchJoin()
+            .leftJoin(bookLine.writer, bookUser)
+            .fetchJoin()
+            .leftJoin(bookUser.user, user)
+            .fetchJoin()
+            .fetchOne());
     }
 
     private Long totalIncomeMoney(DatesDuration duration, String bookKey) {

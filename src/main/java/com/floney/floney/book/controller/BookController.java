@@ -252,4 +252,10 @@ public class BookController {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
     }
 
+    @PostMapping("/change")
+    public ResponseEntity<?> changeBookLine(@RequestBody ChangeBookLineRequest request) {
+        return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
+    }
+
+
 }

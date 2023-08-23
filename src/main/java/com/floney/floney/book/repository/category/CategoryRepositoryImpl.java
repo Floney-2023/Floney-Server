@@ -83,7 +83,8 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .fetchOne());
 
         if (target.isEmpty()) {
-            target = Optional.ofNullable(jpaQueryFactory.selectFrom(category)
+            target = Optional.ofNullable(jpaQueryFactory
+                .selectFrom(category)
                 .innerJoin(bookCategory.book, book)
                 .where(book.bookKey.eq(bookKey), bookCategory.name.eq(name),
                     bookCategory.parent.eq(findFlowCategory(parent)))

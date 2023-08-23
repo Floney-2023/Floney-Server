@@ -7,12 +7,12 @@ import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
-import com.floney.floney.book.entity.*;
-import com.floney.floney.book.repository.BookLineCategoryRepository;
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookLine;
+import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
@@ -23,8 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.dto.constant.CategoryEnum.*;
-import static com.floney.floney.book.entity.BookLineCategory.of;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
@@ -43,7 +41,7 @@ public class BookLineServiceImpl implements BookLineService {
         Book book = findBook(request.getBookKey());
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
-        saveCategories(savedLine, request);
+        categoryFactory.saveCategories(savedLine, request);
 
         BookLine newBookLine = bookLineRepository.save(savedLine);
         return BookLineResponse.of(newBookLine);
@@ -86,11 +84,16 @@ public class BookLineServiceImpl implements BookLineService {
         return DayLines.forOutcomes(bookLineRepository.allOutcomes(allOutcomesRequest));
     }
 
-    private void saveCategories(BookLine bookLine, CreateLineRequest request) {
-        bookLine.add(FLOW, categoryFactory.saveFlowBookLineCategory(bookLine, request));
-        bookLine.add(ASSET, categoryFactory.saveAssetBookLineCategory(bookLine, request));
-        bookLine.add(FLOW_LINE, categoryFactory.saveLineBookLineCategory(bookLine, request));
+    @Override
+    public BookLineResponse changeLine(ChangeBookLineRequest request) {
+        BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
+            .orElseThrow(() -> new Error());
+        categoryFactory.changeCategories(bookLine, request);
+        bookLine.update(request);
+        BookLine savedBookLine = bookLineRepository.save(bookLine);
+        return BookLineResponse.changeResponse(savedBookLine, bookLine.getWriter());
     }
+
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
