@@ -1,9 +1,8 @@
 package com.floney.floney.book.dto.response;
 
 import com.floney.floney.book.dto.process.CarryOverInfo;
-import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.process.DayLines;
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.dto.process.TotalExpense;
 import lombok.Builder;
 import lombok.Getter;
 

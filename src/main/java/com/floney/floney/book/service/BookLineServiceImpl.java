@@ -35,6 +35,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
+    private final CarryOverFactory carryOverFactory;
 
     @Override
     @Transactional
@@ -51,25 +52,27 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public MonthLinesResponse showByMonth(String bookKey, String date) {
-        DatesDuration dates = DateFactory.getDateDuration(date);
         Book book = findBook(bookKey);
+        DatesDuration dates = DateFactory.getDateDuration(date);
+
         return MonthLinesResponse.of(date
             , daysExpense(bookKey, dates)
             , totalExpense(bookKey, dates)
-            , CarryOverInfo.of(book));
+            , carryOverFactory.getCarryOverInfo(book, date));
     }
 
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
         Book book = findBook(bookKey);
+
         List<DayLines> dayLines = DayLines.forDayView(bookLineRepository.allLinesByDay(parse(date), bookKey));
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
         return TotalDayLinesResponse.of(dayLines,
             totalExpenses,
             book.getSeeProfile(),
-            CarryOverInfo.createIfFirstDay(book, date));
+            carryOverFactory.getCarryOverInfo(book, date));
     }
 
     @Override
@@ -96,7 +99,7 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     public void deleteLine(Long bookLineKey) {
-        BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey,ACTIVE)
+        BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookLineException());
         savedBookLine.delete();
         bookLineRepository.save(savedBookLine);
