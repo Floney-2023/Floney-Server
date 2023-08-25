@@ -1,14 +1,12 @@
 package com.floney.floney.book.entity;
 
-import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
-import java.time.LocalDate;
-import java.util.Objects;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -16,8 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-
-import static com.floney.floney.book.dto.constant.AssetType.*;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -58,12 +55,10 @@ public class Book extends BaseEntity {
 
     private LocalDate lastSettlementDate;
 
-    private Long carryOverMoney;
-
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
-                 Boolean carryOverStatus, String code, Long carryOverMoney) {
+                 Boolean carryOverStatus, String code) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -73,12 +68,6 @@ public class Book extends BaseEntity {
         this.initBudget = initBudget;
         this.carryOverStatus = carryOverStatus;
         this.code = code;
-        this.carryOverMoney = carryOverMoney;
-
-    }
-
-    public static Book initBook() {
-        return new Book();
     }
 
     public void updateName(String requestName) {
@@ -111,28 +100,11 @@ public class Book extends BaseEntity {
         this.lastSettlementDate = lastSettlementDate;
     }
 
-    public void addCarryOverMoney(CreateLineRequest request) {
-        if(Objects.equals(request.getFlow(), OUTCOME.getKind())){
-            carryOverMoney -= request.getMoney();
-        }
-        else if(Objects.equals(request.getFlow(), INCOME.getKind())){
-            carryOverMoney += request.getMoney();
-        }
-    }
-
-    public void initCarryOverMoney(long carryOverMoney){
-        this.carryOverMoney = carryOverMoney;
-    }
-
     public boolean getCarryOverStatus() {
         return this.carryOverStatus;
     }
 
     public void changeCarryOverStatus(boolean status) {
         this.carryOverStatus = status;
-    }
-
-    public void resetCarryOverMoney() {
-        this.carryOverMoney = DEFAULT;
     }
 }
