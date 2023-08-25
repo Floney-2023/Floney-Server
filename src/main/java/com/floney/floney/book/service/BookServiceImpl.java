@@ -1,6 +1,5 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
@@ -28,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 
 @Service
 @Transactional
@@ -156,9 +153,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateCarryOver(CarryOverRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        if (request.isStatus()) {
-            reCalculateCarryOverMoney(savedBook);
-        }
         savedBook.changeCarryOverStatus(request.isStatus());
         bookRepository.save(savedBook);
     }
@@ -207,8 +201,6 @@ public class BookServiceImpl implements BookService {
     public void bookUserOut(BookUserOutRequest request, String userEmail) {
         BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
         deleteBookLineBy(bookUser, request.getBookKey());
-        Book savedBook = findBook(request.getBookKey());
-        reCalculateCarryOverMoney(savedBook);
         deleteBookUser(bookUser);
     }
 
@@ -251,11 +243,4 @@ public class BookServiceImpl implements BookService {
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
-
-    private void reCalculateCarryOverMoney(Book savedBook) {
-        Map<String, Long> totalExpenses = bookLineRepository.totalExpenseByAll(savedBook.getBookKey());
-        long carryOverMoney = CarryOverInfo.calculateMoney(totalExpenses);
-        savedBook.initCarryOverMoney(carryOverMoney);
-    }
-
 }
