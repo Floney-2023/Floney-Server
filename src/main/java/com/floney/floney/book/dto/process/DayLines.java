@@ -13,22 +13,25 @@ import java.util.stream.Collectors;
 @Getter
 @EqualsAndHashCode
 public class DayLines {
-
+    private final Long id;
     private final Long money;
     private final String img;
     private final List<String> category;
     private final AssetType assetType;
     private final String content;
     private final String userEmail;
+    private final boolean exceptStatus;
 
     @Builder
-    public DayLines(Long money, String img, String content, List<String> category, AssetType assetType,String userEmail) {
+    public DayLines(Long id, Long money, String img, String content, List<String> category, AssetType assetType, String userEmail, boolean exceptStatus) {
+        this.id = id;
         this.money = money;
         this.img = img;
         this.assetType = assetType;
         this.category = category;
         this.content = content;
         this.userEmail = userEmail;
+        this.exceptStatus = exceptStatus;
     }
 
     public static List<DayLines> forDayView(List<DayLineByDayView> dayLines) {
@@ -66,12 +69,14 @@ public class DayLines {
 
     private static DayLines toDayLineResponse(DayLineInfo dayInfo) {
         return DayLines.builder()
+            .id(dayInfo.getId())
             .assetType(dayInfo.getAssetType())
             .money(dayInfo.getMoney())
             .content(dayInfo.getContent())
             .category(dayInfo.getCategories())
             .img(dayInfo.getImg())
             .userEmail(dayInfo.getUserEmail())
+            .exceptStatus(dayInfo.isExceptStatus())
             .build();
     }
 

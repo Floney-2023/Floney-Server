@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DayLineByDayView extends DayLine{
     private String profileImg;
+    private boolean exceptStatus;
 
     @QueryProjection
     @Builder
-    public DayLineByDayView(Long id, Long money, String content, String categories, String profileImg) {
+    public DayLineByDayView(Long id, Long money, String content, String categories, String profileImg,boolean exceptStatus) {
         super(id,content, money, categories);
+        this.exceptStatus = exceptStatus;
         this.profileImg = profileImg;
     }
 }

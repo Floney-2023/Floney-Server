@@ -1,20 +1,15 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.entity.BookLine;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public class CarryOverInfo {
-    private AssetType assetType;
-    private BookLine bookLine;
+    private final boolean carryOverStatus;
+    private final long carryOverMoney;
 
-    @Builder
-    public CarryOverInfo(AssetType assetType, BookLine bookLine) {
-        this.assetType = assetType;
-        this.bookLine = bookLine;
+    public static CarryOverInfo of(boolean status, long carryOverMoney) {
+        return new CarryOverInfo(status, carryOverMoney);
     }
 }

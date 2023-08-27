@@ -1,8 +1,12 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -18,13 +22,13 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private BookUser writer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
     @Column(nullable = false)
@@ -55,5 +59,16 @@ public class BookLine extends BaseEntity {
 
     public String getTargetCategory(CategoryEnum key) {
         return this.bookLineCategories.get(key).getName();
+    }
+
+    public void update(ChangeBookLineRequest request) {
+        this.money = request.getMoney();
+        this.lineDate = request.getLineDate();
+        this.description = request.getDescription();
+        this.exceptStatus = request.getExcept();
+    }
+
+    public String getWriter() {
+        return this.writer.getNickName();
     }
 }

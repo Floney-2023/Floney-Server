@@ -13,9 +13,9 @@ import static com.floney.floney.book.util.DateFactory.formatToDate;
 public class OurBookInfo {
     private final String bookImg;
     private final String bookName;
-    private LocalDate startDay;
-    private boolean seeProfileStatus;
-    private boolean carryOver;
+    private final LocalDate startDay;
+    private final boolean seeProfileStatus;
+    private final boolean carryOver;
     private final List<OurBookUser> ourBookUsers;
 
     @Builder
@@ -39,7 +39,7 @@ public class OurBookInfo {
             .startDay(formatToDate(book.getCreatedAt()))
             .bookUsers(bookUsers)
             .seeProfileStatus(book.getSeeProfile())
-            .carryOver(book.getCarryOver())
+            .carryOver(book.getCarryOverStatus())
             .build();
     }
 

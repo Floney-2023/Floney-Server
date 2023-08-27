@@ -1,17 +1,14 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.process.DayLineByDayView;
 import com.floney.floney.book.dto.process.DayLines;
-import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.entity.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static com.floney.floney.book.BookFixture.BOOK_KEY;
 
 public class BookLineTest {
 
@@ -24,6 +21,7 @@ public class BookLineTest {
             .content("내용")
             .money(1000L)
             .profileImg("img")
+            .exceptStatus(false)
             .build();
 
         DayLineByDayView dayLine2 = DayLineByDayView.builder()
@@ -32,14 +30,17 @@ public class BookLineTest {
             .content("내용")
             .money(1000L)
             .profileImg("img")
+            .exceptStatus(false)
             .build();
 
         List<DayLines> result = Arrays.asList(DayLines.builder()
+            .id(1L)
             .assetType(AssetType.find("수입"))
             .img("img")
             .category(Arrays.asList("급여"))
             .money(1000L)
             .content("내용")
+            .exceptStatus(false)
             .build());
 
 

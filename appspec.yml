@@ -6,6 +6,8 @@ files:
     destination: /home/ubuntu/Floney-Server
     overwrite: yes
 
+file_exists_behavior: OVERWRITE
+
 permissions:
   - object: /
     pattern: "**"
@@ -15,8 +17,10 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: scripts/stop.sh
+    - location: script/stop.sh
       timeout: 60
+      runsas: ubuntu
   ApplicationStart:
-    - location: scripts/start.sh
+    - location: script/start.sh
       timeout: 60
+      runsas: ubuntu

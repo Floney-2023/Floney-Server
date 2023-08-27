@@ -1,14 +1,11 @@
 name: Java CI with Gradle
 
 on:
-  push:
+  pull_request:
     branches: [ "develop" ]
 
 permissions:
   contents: read
-
-env:
-  AWS_S3_BUCKET: floney-dev-deploy
 
 jobs:
   build:
@@ -67,15 +64,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
           AWS_DEFAULT_REGION: ap-northeast-2
-          
-      - name: S3에 업로드
-        run: aws deploy push --application-name floney-dev
-             --ignore-hidden-files 
-             --s3-location s3://$AWS_S3_BUCKET/floney-dev-build/$GITHUB_SHA.zip --source .
-             
-      - name: EC2에 배포
-        run: aws deploy create-deployment 
-             --application-name floney-dev
-             --deployment-config-name CodeDeployDefault.AllAtOnce 
-             --deployment-group-name floney-dev
-             --s3-location bucket=$AWS_S3_BUCKET,key=floney-dev-build/$GITHUB_SHA.zip,bundleType=zip
+     

@@ -49,7 +49,9 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Transactional(readOnly = true)
     public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
         DatesDuration duration = DateFactory.getDateDuration(request.getDate());
-        return bookLineRepository.totalIncomeForBudget(request, duration);
+        Book savedBook = findBook(request.getBookKey());
+        Long totalIncome = bookLineRepository.totalIncomeMoneyForBudget(request, duration);
+        return AnalyzeResponseByBudget.of(totalIncome, savedBook.getInitBudget());
     }
 
     @Override
@@ -63,9 +65,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return bookAnalyzer.analyzeAsset(initAsset);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Book findBook(String bookKey) {
+    private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(NotFoundBookException::new);
     }
