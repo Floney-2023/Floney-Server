@@ -6,7 +6,7 @@ import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.repository.BookLineCategoryRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.Getter;

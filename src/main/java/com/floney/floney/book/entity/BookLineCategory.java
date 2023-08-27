@@ -1,6 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.common.entity.BaseEntity;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class BookLineCategory extends BaseEntity {
     private String name;
 
     @Builder
+    @QueryProjection
     private BookLineCategory(BookLine bookLine, Category category, String name) {
         this.bookLine = bookLine;
         this.category = category;

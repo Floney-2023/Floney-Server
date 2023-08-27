@@ -6,9 +6,9 @@ import lombok.Getter;
 
 @Getter
 public class CurrencyResponse {
-    private final Currency myBookCurrency;
+    private final String myBookCurrency;
 
-    private CurrencyResponse(Currency myBookCurrency) {
+    private CurrencyResponse(String myBookCurrency) {
         this.myBookCurrency = myBookCurrency;
     }
 

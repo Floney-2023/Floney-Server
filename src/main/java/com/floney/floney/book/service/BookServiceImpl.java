@@ -6,9 +6,11 @@ import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -37,6 +39,8 @@ public class BookServiceImpl implements BookService {
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
     private final UserRepository userRepository;
+    private final CategoryCustomRepository categoryRepository;
+    private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
@@ -121,6 +125,7 @@ public class BookServiceImpl implements BookService {
         deleteBookUser(bookUser);
 
         book.delete();
+
         bookRepository.save(book);
     }
 
@@ -198,7 +203,8 @@ public class BookServiceImpl implements BookService {
     public CurrencyResponse changeCurrency(ChangeCurrencyRequest request) {
         Book book = findBook(request.getBookKey());
         book.changeCurrency(request.getRequestCurrency());
-        return CurrencyResponse.of(bookRepository.save(book));
+        Book savedBook = makeInitBook(request.getBookKey());
+        return CurrencyResponse.of(savedBook);
     }
 
     @Override
@@ -212,7 +218,19 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));
+        return new InviteCodeResponse(findBook(bookKey));}
+
+
+    @Override
+    @Transactional
+    public Book makeInitBook(String bookKey) {
+        Book book = findBook(bookKey);
+        book.initBook();
+
+        bookLineRepository.deleteAllLines(bookKey);
+        categoryRepository.deleteAllCustomCategory(book);
+        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+        return bookRepository.save(book);
     }
 
     private Book findBook(String bookKey) {
@@ -248,4 +266,5 @@ public class BookServiceImpl implements BookService {
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
+
 }

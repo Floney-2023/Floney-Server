@@ -18,8 +18,6 @@ public interface BookLineService {
 
     TotalDayLinesResponse showByDays(String bookKey, String date);
 
-    void deleteAllLine(String bookKey);
-
     List<DayLines> allOutcomes(AllOutcomesRequest allSettlements);
 
     BookLineResponse changeLine(ChangeBookLineRequest request);

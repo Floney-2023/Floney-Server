@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import org.assertj.core.api.Assertions;
@@ -29,4 +30,14 @@ public class BookTest {
         Assertions.assertThat(book.getBookImg())
             .isEqualTo(UPDATE_URL);
     }
+
+    @Test
+    @DisplayName("화폐설정을 변경한다")
+    void change_currency(){
+        Currency changeTo = Currency.CNY;
+        Book book= BookFixture.createBook();
+        book.changeCurrency(changeTo);
+        Assertions.assertThat(book.getCurrency()).isEqualTo(changeTo.toString());
+    }
+
 }

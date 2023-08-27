@@ -3,6 +3,7 @@ package com.floney.floney.book.repository.category;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.process.QCategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
@@ -121,6 +122,13 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                         .where(book.bookKey.eq(request.getBookKey()))
                 ),
                 bookCategory.parent.eq(targetRoot))
+            .execute();
+    }
+
+    @Override
+    public void deleteAllCustomCategory(Book book){
+        jpaQueryFactory.delete(bookCategory)
+            .where(bookCategory.book.eq(book))
             .execute();
     }
 

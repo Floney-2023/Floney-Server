@@ -1,22 +1,6 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.Currency;
-import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.common.entity.BaseEntity;
-import com.floney.floney.common.exception.common.NoAuthorityException;
-
-import java.time.LocalDate;
-import java.util.Objects;
-
-import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import javax.persistence.*;
-
-import static com.floney.floney.book.dto.constant.AssetType.*;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
@@ -74,13 +58,12 @@ public class Book extends BaseEntity {
 
     private Long carryOverMoney;
 
-    @Enumerated(EnumType.STRING)
-    private Currency currency;
+    private String currency;
 
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
-                 Boolean carryOverStatus, String code, Long carryOverMoney, Currency currency) {
+                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -92,10 +75,6 @@ public class Book extends BaseEntity {
         this.code = code;
         this.carryOverMoney = carryOverMoney;
         this.currency = currency;
-    }
-
-    public static Book initBook() {
-        return new Book();
     }
 
     public void updateName(String requestName) {
@@ -128,7 +107,6 @@ public class Book extends BaseEntity {
         this.lastSettlementDate = lastSettlementDate;
     }
 
-
     public boolean getCarryOverStatus() {
         return this.carryOverStatus;
     }
@@ -138,6 +116,12 @@ public class Book extends BaseEntity {
     }
 
     public void changeCurrency(Currency requestCurrency) {
-        this.currency = requestCurrency;
+        this.currency = requestCurrency.toString();
+    }
+
+    public void initBook(){
+        this.initBudget = DEFAULT;
+        this.initAsset = DEFAULT;
+        this.carryOverStatus = Boolean.FALSE;
     }
 }

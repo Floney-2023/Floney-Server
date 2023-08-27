@@ -9,4 +9,9 @@ import lombok.RequiredArgsConstructor;
 public class ChangeCurrencyRequest {
     private Currency requestCurrency;
     private String bookKey;
+
+    public ChangeCurrencyRequest(Currency currency, String bookKey) {
+        this.requestCurrency = currency;
+        this.bookKey = bookKey;
+    }
 }

@@ -13,6 +13,7 @@ import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryCustomRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
@@ -36,6 +37,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
     private final CarryOverFactory carryOverFactory;
+    private final BookLineCategoryCustomRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
@@ -77,12 +79,6 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public void deleteAllLine(String bookKey) {
-        bookLineRepository.deleteAllLines(bookKey);
-    }
-
-    @Override
-    @Transactional
     public List<DayLines> allOutcomes(AllOutcomesRequest allOutcomesRequest) {
         return DayLines.forOutcomes(bookLineRepository.allOutcomes(allOutcomesRequest));
     }
@@ -102,6 +98,7 @@ public class BookLineServiceImpl implements BookLineService {
         BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookLineException());
         savedBookLine.delete();
+        bookLineCategoryRepository.deleteBookLineCategoryById(bookLineKey);
         bookLineRepository.save(savedBookLine);
     }
 
