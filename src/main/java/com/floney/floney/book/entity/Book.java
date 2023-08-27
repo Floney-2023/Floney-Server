@@ -118,4 +118,10 @@ public class Book extends BaseEntity {
     public void changeCurrency(Currency requestCurrency) {
         this.currency = requestCurrency.toString();
     }
+
+    public void initBook(){
+        this.initBudget = DEFAULT;
+        this.initAsset = DEFAULT;
+        this.carryOverStatus = Boolean.FALSE;
+    }
 }

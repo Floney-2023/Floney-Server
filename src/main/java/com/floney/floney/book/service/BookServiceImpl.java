@@ -203,6 +203,7 @@ public class BookServiceImpl implements BookService {
     public CurrencyResponse changeCurrency(ChangeCurrencyRequest request) {
         Book book = findBook(request.getBookKey());
         book.changeCurrency(request.getRequestCurrency());
+        makeInitBook(request.getBookKey());
         return CurrencyResponse.of(bookRepository.save(book));
     }
 
@@ -256,10 +257,10 @@ public class BookServiceImpl implements BookService {
 
     private void makeInitBook(String bookKey){
         Book book = findBook(bookKey);
-        bookLineRepository.deleteAllLines(bookKey);
         book.initBook();
+
+        bookLineRepository.deleteAllLines(bookKey);
         categoryRepository.deleteAllCustomCategory(book);
         bookLineCategoryRepository.deleteBookLineCategory(bookKey);
-        bookRepository.save(book);
     }
 }
