@@ -3,10 +3,7 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.BookUserResponse;
-import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.dto.response.InviteCodeResponse;
-import com.floney.floney.book.dto.response.InvolveBookResponse;
+import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookLineCustomRepository;
@@ -194,6 +191,14 @@ public class BookServiceImpl implements BookService {
             .toList());
 
         return userToResponse(users);
+    }
+
+    @Override
+    @Transactional
+    public CurrencyResponse changeCurrency(ChangeCurrencyRequest request) {
+        Book book = findBook(request.getBookKey());
+        book.changeCurrency(request.getRequestCurrency());
+        return CurrencyResponse.of(bookRepository.save(book));
     }
 
     @Override
