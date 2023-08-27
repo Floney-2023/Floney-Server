@@ -30,4 +30,13 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
             ))
             .execute();
     }
+
+    @Override
+    public void deleteBookLineCategoryById(Long id) {
+        jpaQueryFactory.update(bookLineCategory)
+            .set(bookLineCategory.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .where(bookLineCategory.bookLine.id.eq(id))
+            .execute();
+    }
 }
