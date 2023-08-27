@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
@@ -32,10 +33,7 @@ public class BookServiceTest {
 
     @Mock
     private BookRepository bookRepository;
-    @Mock
-    private BookUserRepository bookUserRepository;
-    @Mock
-    private UserRepository userRepository;
+
     @InjectMocks
     private BookServiceImpl bookService;
 
@@ -84,6 +82,15 @@ public class BookServiceTest {
         Book book = BookFixture.createBook();
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
+    }
+
+    @Test
+    @DisplayName("화폐설정을 변경한다")
+    void change_currency(){
+        Currency changeTo = Currency.CNY;
+        Book book= BookFixture.createBook();
+        book.changeCurrency(changeTo);
+        Assertions.assertThat(book.getCurrency()).isEqualTo(changeTo.toString());
     }
 
 }

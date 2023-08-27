@@ -253,6 +253,17 @@ public class BookController {
     }
 
     /**
+     *
+     * @body ChangeCurrencyRequest 변경할 통화 정보
+     * @return 변경한 통화 정보
+     */
+    @PostMapping("/info/currency")
+    public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request){
+        return new ResponseEntity<>(bookService.changeCurrency(request),HttpStatus.OK);
+    }
+  
+    /**
+     *
      * 가계부 내역 수정
      *
      * @return InviteCodeResponse 가계부 내역

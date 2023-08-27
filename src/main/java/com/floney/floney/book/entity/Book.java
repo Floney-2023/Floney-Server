@@ -1,5 +1,6 @@
 package com.floney.floney.book.entity;
 
+import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
@@ -55,10 +56,14 @@ public class Book extends BaseEntity {
 
     private LocalDate lastSettlementDate;
 
+    private Long carryOverMoney;
+
+    private String currency;
+
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
-                 Boolean carryOverStatus, String code) {
+                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -68,6 +73,8 @@ public class Book extends BaseEntity {
         this.initBudget = initBudget;
         this.carryOverStatus = carryOverStatus;
         this.code = code;
+        this.carryOverMoney = carryOverMoney;
+        this.currency = currency;
     }
 
     public void updateName(String requestName) {
@@ -108,9 +115,7 @@ public class Book extends BaseEntity {
         this.carryOverStatus = status;
     }
 
-    public void initBook() {
-        this.carryOverStatus = Boolean.FALSE;
-        this.initAsset = DEFAULT;
-        this.initBudget = DEFAULT;
+    public void changeCurrency(Currency requestCurrency) {
+        this.currency = requestCurrency.toString();
     }
 }
