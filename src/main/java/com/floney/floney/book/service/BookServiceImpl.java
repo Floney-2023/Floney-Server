@@ -9,9 +9,11 @@ import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -40,6 +42,8 @@ public class BookServiceImpl implements BookService {
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
     private final UserRepository userRepository;
+    private final CategoryCustomRepository categoryRepository;
+    private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
@@ -124,6 +128,7 @@ public class BookServiceImpl implements BookService {
         deleteBookUser(bookUser);
 
         book.delete();
+
         bookRepository.save(book);
     }
 
@@ -242,5 +247,14 @@ public class BookServiceImpl implements BookService {
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
+    }
+
+    private void makeInitBook(String bookKey){
+        Book book = findBook(bookKey);
+        bookLineRepository.deleteAllLines(bookKey);
+        book.initBook();
+        categoryRepository.deleteAllCustomCategory(book);
+        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+        bookRepository.save(book);
     }
 }

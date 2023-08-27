@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,6 +155,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public void deleteAllLines(String bookKey) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
             .where(bookLine.book.id.eq(
                 JPAExpressions.select(book.id)
                     .from(book)

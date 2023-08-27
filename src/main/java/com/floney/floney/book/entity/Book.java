@@ -107,4 +107,10 @@ public class Book extends BaseEntity {
     public void changeCarryOverStatus(boolean status) {
         this.carryOverStatus = status;
     }
+
+    public void initBook() {
+        this.carryOverStatus = Boolean.FALSE;
+        this.initAsset = DEFAULT;
+        this.initBudget = DEFAULT;
+    }
 }
