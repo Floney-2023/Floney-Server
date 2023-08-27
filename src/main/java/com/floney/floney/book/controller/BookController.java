@@ -183,11 +183,11 @@ public class BookController {
     }
 
     /**
-     * 가계부 내역 전체 삭제
+     * 가계부 초기화
      *
      * @param bookKey 가계부 식별자
      */
-    @DeleteMapping("/lines/delete/all")
+    @DeleteMapping("/info/delete/all")
     public ResponseEntity<?> deleteAll(String bookKey) {
         bookService.makeInitBook(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);

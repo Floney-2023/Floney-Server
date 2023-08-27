@@ -203,8 +203,8 @@ public class BookServiceImpl implements BookService {
     public CurrencyResponse changeCurrency(ChangeCurrencyRequest request) {
         Book book = findBook(request.getBookKey());
         book.changeCurrency(request.getRequestCurrency());
-        makeInitBook(request.getBookKey());
-        return CurrencyResponse.of(bookRepository.save(book));
+        Book savedBook = makeInitBook(request.getBookKey());
+        return CurrencyResponse.of(savedBook);
     }
 
     @Override
@@ -223,13 +223,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void makeInitBook(String bookKey) {
+    public Book makeInitBook(String bookKey) {
         Book book = findBook(bookKey);
         book.initBook();
 
         bookLineRepository.deleteAllLines(bookKey);
         categoryRepository.deleteAllCustomCategory(book);
         bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+        return bookRepository.save(book);
     }
 
     private Book findBook(String bookKey) {
