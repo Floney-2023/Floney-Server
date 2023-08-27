@@ -189,7 +189,7 @@ public class BookController {
      */
     @DeleteMapping("/lines/delete/all")
     public ResponseEntity<?> deleteAll(String bookKey) {
-        bookLineService.deleteAllLine(bookKey);
+        bookService.makeInitBook(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

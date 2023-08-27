@@ -218,7 +218,18 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));
+        return new InviteCodeResponse(findBook(bookKey));}
+
+
+    @Override
+    @Transactional
+    public void makeInitBook(String bookKey) {
+        Book book = findBook(bookKey);
+        book.initBook();
+
+        bookLineRepository.deleteAllLines(bookKey);
+        categoryRepository.deleteAllCustomCategory(book);
+        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
     }
 
     private Book findBook(String bookKey) {
@@ -255,12 +266,4 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
 
-    private void makeInitBook(String bookKey){
-        Book book = findBook(bookKey);
-        book.initBook();
-
-        bookLineRepository.deleteAllLines(bookKey);
-        categoryRepository.deleteAllCustomCategory(book);
-        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
-    }
 }

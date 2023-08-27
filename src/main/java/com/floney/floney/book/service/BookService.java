@@ -39,5 +39,7 @@ public interface BookService {
 
     List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey);
 
-    CurrencyResponse changeCurrency(ChangeCurrencyRequest request);
+    CurrencyResponse changeCurrency(final ChangeCurrencyRequest request);
+
+    void makeInitBook(final String bookKey);
 }
