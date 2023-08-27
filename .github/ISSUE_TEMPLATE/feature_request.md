@@ -3,7 +3,7 @@ name: Feature request
 about: feature request
 title: "[feature]"
 labels: feature
-assignees: dahyen0o, psyeon1120
+assignees: 
 
 ---
 
