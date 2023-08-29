@@ -1,6 +1,7 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.dto.constant.Provider;
 import javax.persistence.EnumType;
@@ -62,6 +63,8 @@ public class User extends BaseEntity {
     @Column()
     private String recentBookKey;
 
+    private LocalDateTime deleteTime;
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
     }
@@ -88,5 +91,10 @@ public class User extends BaseEntity {
 
     public void saveDefaultBookKey(String bookKey) {
         this.recentBookKey = bookKey;
+    }
+
+    public void delete(){
+        this.status = Status.INACTIVE;
+        this.deleteTime = LocalDateTime.now();
     }
 }
