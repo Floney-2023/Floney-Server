@@ -30,12 +30,13 @@ public class LogByAop {
 
         String method = request.getMethod();
         String path = request.getRequestURI();
+        String ipAddress = request.getRemoteAddr();
 
         List<String> data = Arrays.stream(joinPoint.getArgs())
             .map(Object::toString)
             .toList();
 
-        logger.info("[Access Log] " + method + " " + path + " [Data] " + data);
+        logger.info("[Access Log] " + method + " " + path + " [Data] " + data + " [IP] " + ipAddress);
     }
 
 }
