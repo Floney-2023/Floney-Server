@@ -6,6 +6,7 @@ import com.floney.floney.book.entity.BookUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.Objects;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class CreateLineRequest {
 

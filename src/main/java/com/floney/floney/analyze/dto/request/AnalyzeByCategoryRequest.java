@@ -1,10 +1,12 @@
 package com.floney.floney.analyze.dto.request;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Getter
+@ToString
 public class AnalyzeByCategoryRequest {
 
     private String bookKey;
