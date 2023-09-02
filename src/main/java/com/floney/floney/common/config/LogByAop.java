@@ -36,7 +36,7 @@ public class LogByAop {
             .map(Object::toString)
             .toList();
 
-        logger.info("[Access Log] " + method + " " + path + " [Data] " + data + " [IP] " + ipAddress);
+        logger.info("[ACCESS LOG] " + method + " " + path + " [REQUEST DATA] " + data + " [IP] " + ipAddress);
     }
 
 }

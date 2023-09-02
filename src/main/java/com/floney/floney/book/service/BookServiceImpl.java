@@ -1,18 +1,16 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.BookUserResponse;
-import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.dto.response.InviteCodeResponse;
-import com.floney.floney.book.dto.response.InvolveBookResponse;
+import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -28,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 
 @Service
 @Transactional
@@ -43,6 +39,8 @@ public class BookServiceImpl implements BookService {
     private final BookUserRepository bookUserRepository;
     private final BookLineCustomRepository bookLineRepository;
     private final UserRepository userRepository;
+    private final CategoryCustomRepository categoryRepository;
+    private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
@@ -127,6 +125,7 @@ public class BookServiceImpl implements BookService {
         deleteBookUser(bookUser);
 
         book.delete();
+
         bookRepository.save(book);
     }
 
@@ -156,9 +155,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateCarryOver(CarryOverRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        if (request.isStatus()) {
-            reCalculateCarryOverMoney(savedBook);
-        }
         savedBook.changeCarryOverStatus(request.isStatus());
         bookRepository.save(savedBook);
     }
@@ -204,18 +200,37 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    public CurrencyResponse changeCurrency(ChangeCurrencyRequest request) {
+        Book book = findBook(request.getBookKey());
+        book.changeCurrency(request.getRequestCurrency());
+        Book savedBook = makeInitBook(request.getBookKey());
+        return CurrencyResponse.of(savedBook);
+    }
+
+    @Override
+    @Transactional
     public void bookUserOut(BookUserOutRequest request, String userEmail) {
         BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
         deleteBookLineBy(bookUser, request.getBookKey());
-        Book savedBook = findBook(request.getBookKey());
-        reCalculateCarryOverMoney(savedBook);
         deleteBookUser(bookUser);
     }
 
     @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));
+        return new InviteCodeResponse(findBook(bookKey));}
+
+
+    @Override
+    @Transactional
+    public Book makeInitBook(String bookKey) {
+        Book book = findBook(bookKey);
+        book.initBook();
+
+        bookLineRepository.deleteAllLines(bookKey);
+        categoryRepository.deleteAllCustomCategory(book);
+        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+        return bookRepository.save(book);
     }
 
     private Book findBook(String bookKey) {
@@ -250,12 +265,6 @@ public class BookServiceImpl implements BookService {
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
-    }
-
-    private void reCalculateCarryOverMoney(Book savedBook) {
-        Map<String, Long> totalExpenses = bookLineRepository.totalExpenseByAll(savedBook.getBookKey());
-        long carryOverMoney = CarryOverInfo.calculateMoney(totalExpenses);
-        savedBook.initCarryOverMoney(carryOverMoney);
     }
 
 }

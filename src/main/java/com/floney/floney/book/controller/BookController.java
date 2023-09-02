@@ -183,13 +183,13 @@ public class BookController {
     }
 
     /**
-     * 가계부 내역 전체 삭제
+     * 가계부 초기화
      *
      * @param bookKey 가계부 식별자
      */
-    @DeleteMapping("/lines/delete")
+    @DeleteMapping("/info/delete/all")
     public ResponseEntity<?> deleteAll(String bookKey) {
-        bookLineService.deleteAllLine(bookKey);
+        bookService.makeInitBook(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -250,6 +250,39 @@ public class BookController {
     @GetMapping("/code")
     public ResponseEntity<?> getInviteCode(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.inviteCode(bookKey), HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @body ChangeCurrencyRequest 변경할 통화 정보
+     * @return 변경한 통화 정보
+     */
+    @PostMapping("/info/currency")
+    public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request){
+        return new ResponseEntity<>(bookService.changeCurrency(request),HttpStatus.OK);
+    }
+  
+    /**
+     *
+     * 가계부 내역 수정
+     *
+     * @return InviteCodeResponse 가계부 내역
+     * @body ChangeBookLineRequest 수정한 가계부 내역
+     */
+    @PostMapping("/lines/change")
+    public ResponseEntity<?> changeBookLine(@RequestBody ChangeBookLineRequest request) {
+        return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
+    }
+
+    /**
+     * 가계부 내역 삭제
+     *
+     * @param bookLineKey 가계부 내역 PK
+     */
+    @DeleteMapping("/lines/delete")
+    public ResponseEntity<?> deleteBookLine(@RequestParam Long bookLineKey) {
+        bookLineService.deleteLine(bookLineKey);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

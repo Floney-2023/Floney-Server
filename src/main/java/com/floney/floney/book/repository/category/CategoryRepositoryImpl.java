@@ -3,6 +3,7 @@ package com.floney.floney.book.repository.category;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.process.QCategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
@@ -77,22 +78,21 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     public Optional<Category> findLineCategory(String name, String bookKey, String parent) {
-        Category parentCategory = findFlowCategory(parent)
+        Category parentFlowCategory = findFlowCategory(parent)
             .orElseThrow(() -> new NotFoundCategoryException(parent));
 
-        Optional<Category> target = Optional.ofNullable(jpaQueryFactory
-            .selectFrom(category)
+        Optional<Category> target = Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
-                category.parent.eq(parentCategory)
-                ,category.instanceOf(DefaultCategory.class))
+                category.parent.eq(parentFlowCategory)
+                , category.instanceOf(DefaultCategory.class))
             .fetchOne());
 
         if (target.isEmpty()) {
             target = Optional.ofNullable(jpaQueryFactory
-                .selectFrom(bookCategory)
+                .selectFrom(category)
                 .innerJoin(bookCategory.book, book)
                 .where(book.bookKey.eq(bookKey), bookCategory.name.eq(name),
-                    bookCategory.parent.eq(parentCategory))
+                    bookCategory.parent.eq(parentFlowCategory))
                 .fetchOne());
         }
         return target;
@@ -126,6 +126,13 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                         .where(book.bookKey.eq(request.getBookKey()))
                 ),
                 bookCategory.parent.eq(targetRoot))
+            .execute();
+    }
+
+    @Override
+    public void deleteAllCustomCategory(Book book) {
+        jpaQueryFactory.delete(bookCategory)
+            .where(bookCategory.book.eq(book))
             .execute();
     }
 

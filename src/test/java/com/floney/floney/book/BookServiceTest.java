@@ -1,5 +1,7 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.constant.Currency;
+import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
@@ -85,5 +87,4 @@ public class BookServiceTest {
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
-
 }

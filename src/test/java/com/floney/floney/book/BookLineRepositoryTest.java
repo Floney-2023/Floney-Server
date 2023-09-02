@@ -7,7 +7,7 @@ import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.repository.BookLineCategoryRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;

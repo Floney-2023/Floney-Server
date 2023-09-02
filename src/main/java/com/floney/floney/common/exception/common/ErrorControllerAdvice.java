@@ -146,6 +146,12 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(NotFoundBookLineException.class)
+    protected ResponseEntity<ErrorResponse> notFoundLine(NotFoundBookLineException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     //SUBSCRIBE
     @ExceptionHandler(NotSubscribeException.class)
     protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {

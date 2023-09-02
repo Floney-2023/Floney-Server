@@ -2,6 +2,7 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
@@ -17,9 +18,9 @@ public interface BookLineService {
 
     TotalDayLinesResponse showByDays(String bookKey, String date);
 
-    void deleteAllLine(String bookKey);
-
     List<DayLines> allOutcomes(AllOutcomesRequest allSettlements);
 
+    BookLineResponse changeLine(ChangeBookLineRequest request);
 
+    void deleteLine(Long bookLineKey);
 }
