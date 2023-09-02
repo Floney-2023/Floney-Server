@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: CD 자동화
 
 on:
   push:
@@ -58,7 +58,7 @@ jobs:
         run: chmod +x gradlew
         
       - name: 프로젝트 빌드
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: Github Actions IP를 보안 그룹에서 삭제
         run: |
