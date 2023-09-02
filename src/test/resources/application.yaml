@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    url: jdbc:h2:mem:test;NON_KEYWORDS=USER
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+  redis:
+    host: localhost
+    port: 6379
+  h2:
+    console:
+      enabled: true
+  mail:
+    username: test@test.com
+    port: 0
+    host: host
+    password: password
+
+jwt:
+  token:
+    secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
+
+server:
+  error:
+    include-message: always
