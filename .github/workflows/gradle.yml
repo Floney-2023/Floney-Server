@@ -61,6 +61,7 @@ jobs:
         run: ./gradlew clean build -x test
 
       - name: Github Actions IP를 보안 그룹에서 삭제
+        if: always()
         run: |
           aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32
         env:
