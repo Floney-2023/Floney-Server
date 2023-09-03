@@ -1,19 +1,20 @@
 package com.floney.floney.User.controller;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.MailAddressException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,6 +37,7 @@ class UserControllerTest {
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
     @MockBean private UserService userService;
+    @MockBean private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     public UserControllerTest(MockMvc mockMvc, ObjectMapper objectMapper) {
@@ -83,7 +86,8 @@ class UserControllerTest {
     void sendAuthenticateEmail_success() throws Exception {
         // given
         String email = "right@email.com";
-        given(userService.sendEmailAuthMail(email)).willReturn(anyString());
+        given(customUserDetailsService.loadUserByUsername(email)).willReturn(any(UserDetails.class));
+        given(userService.sendEmailAuthMail(email)).willReturn("");
 
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))
