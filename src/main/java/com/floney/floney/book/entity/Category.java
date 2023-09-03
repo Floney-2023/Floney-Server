@@ -28,12 +28,6 @@ public abstract class Category {
     @Column(nullable = false)
     private Long id;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
     @Column(length = 10)
     private String name;
 
