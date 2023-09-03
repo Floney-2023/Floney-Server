@@ -35,7 +35,7 @@ public abstract class Category {
     @Column(length = 10)
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",cascade = CascadeType.REMOVE)
     private List<BookLineCategory> bookLineCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)

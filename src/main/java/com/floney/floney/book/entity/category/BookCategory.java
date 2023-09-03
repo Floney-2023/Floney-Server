@@ -23,4 +23,9 @@ public class BookCategory extends Category {
         super(name, parent);
         this.book = book;
     }
+
+    public BookCategory delete() {
+        this.book = null;
+        return this;
+    }
 }

@@ -126,10 +126,10 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public void deleteAllCustomCategory(Book book){
-        jpaQueryFactory.delete(bookCategory)
+    public List<BookCategory> findAllCustomCategory(Book book){
+        return jpaQueryFactory.selectFrom(bookCategory)
             .where(bookCategory.book.eq(book))
-            .execute();
+            .fetch();
     }
 
     @Override
