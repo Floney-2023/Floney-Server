@@ -1,6 +1,7 @@
 package com.floney.floney.book.entity;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 @Getter
 @Entity
 @Inheritance
@@ -49,17 +51,4 @@ public abstract class Category {
         this.parent = parent;
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return Objects.equals(name, category.name) && Objects.equals(parent, category.parent);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, parent);
-    }
 }
