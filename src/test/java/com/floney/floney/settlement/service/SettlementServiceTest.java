@@ -279,7 +279,7 @@ class SettlementServiceTest {
 
         // when & then
         assertThatThrownBy(() -> settlementService.create(request))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(NotFoundBookUserException.class);
     }
 
     @Test
