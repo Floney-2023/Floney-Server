@@ -14,22 +14,24 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.types.ExpressionUtils.count;
 
 @Repository
 @RequiredArgsConstructor
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
-    private final JPAQueryFactory jpaQueryFactory;
-
+    private static final int DELETE_TERM = 3;
     private static final int MAX_MEMBER = 4;
     private static final int OWNER = 1;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public void isMax(Book book) {
@@ -126,6 +128,16 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 user.status.eq(Status.ACTIVE))
             .fetchOne();
 
+    }
+
+    @Override
+    public List<BookUser> findBookUserHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookUser)
+            .where(bookUser.updatedAt.before(threeMonthsAgo),
+                bookUser.status.eq(INACTIVE))
+            .fetch();
     }
 
 

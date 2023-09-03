@@ -22,4 +22,6 @@ public interface BookUserCustomRepository {
     void countBookUser(Book book);
 
     BookUser findBookUserBy(String email, Book book);
+
+    List<BookUser> findBookUserHaveToDelete();
 }
