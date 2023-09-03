@@ -10,10 +10,12 @@ import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.settlement.domain.entity.Settlement;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ import static com.floney.floney.book.entity.QCategory.category;
 import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.settlement.domain.entity.QSettlement.settlement;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
@@ -39,6 +42,7 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 @RequiredArgsConstructor
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
+    private final static int DELETE_TERM = 3;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -194,6 +198,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public void deleteAllLinesByUser(BookUser bookUser, String bookKey) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
             .where(bookLine.book.id.eq(
                 JPAExpressions.select(book.id)
                     .from(book)
@@ -295,7 +300,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public Optional<BookLine> findByIdWithCategories(Long id) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(bookLine)
-            .where(bookLine.id.eq(id),bookLine.status.eq(ACTIVE))
+            .where(bookLine.id.eq(id), bookLine.status.eq(ACTIVE))
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .fetchJoin()
             .leftJoin(bookLine.writer, bookUser)
@@ -320,6 +325,39 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.exceptStatus.eq(false)
             )
             .fetchOne();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLine> findLineHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookLine)
+            .where(bookLine.updatedAt.before(threeMonthsAgo),
+                bookLine.status.eq(INACTIVE))
+            .fetch();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLineCategory> findCategoryHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookLineCategory)
+            .where(bookLineCategory.updatedAt.before(threeMonthsAgo),
+                bookLineCategory.status.eq(INACTIVE))
+            .fetch();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Settlement> findSettlementHaveToDelete(){
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(settlement)
+            .where(settlement.updatedAt.before(threeMonthsAgo),
+                settlement.status.eq(INACTIVE))
+            .fetch();
     }
 
 }

@@ -3,11 +3,13 @@ package com.floney.floney.book.repository;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
-import com.floney.floney.book.dto.process.*;
-import com.floney.floney.book.dto.request.*;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.entity.BookLine;
+import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.settlement.domain.entity.Settlement;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,7 +40,13 @@ public interface BookLineCustomRepository {
 
     Long totalIncomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 
-    Map<String,Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
+    Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
 
     Optional<BookLine> findByIdWithCategories(Long id);
+
+    List<BookLine> findLineHaveToDelete();
+
+    List<BookLineCategory> findCategoryHaveToDelete();
+
+    List<Settlement> findSettlementHaveToDelete();
 }
