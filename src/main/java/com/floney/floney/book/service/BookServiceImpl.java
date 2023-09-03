@@ -6,10 +6,10 @@ import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
-import com.floney.floney.book.repository.BookLineCustomRepository;
+import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
@@ -37,7 +37,7 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
-    private final BookLineCustomRepository bookLineRepository;
+    private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
     private final CategoryCustomRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
@@ -218,7 +218,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));}
+        return new InviteCodeResponse(findBook(bookKey));
+    }
 
 
     @Override
