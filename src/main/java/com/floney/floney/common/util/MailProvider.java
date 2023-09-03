@@ -2,7 +2,7 @@ package com.floney.floney.common.util;
 
 import com.floney.floney.common.exception.user.MailAddressException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -21,9 +21,8 @@ public class MailProvider {
 
         try{
             javaMailSender.send(simpleMailMessage);
-        } catch (MailParseException exception) {
-            throw new MailAddressException();
+        } catch (MailSendException exception) {
+            throw new MailAddressException(email);
         }
     }
-
 }

@@ -1,17 +1,18 @@
 package com.floney.floney.User.controller;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.MailAddressException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.UserService;
@@ -95,7 +96,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_fail_invalidEmail() throws Exception {
         // given
         String email = "wrong@email.com";
-        given(userService.sendEmailAuthMail(email)).willThrow(new MailAddressException());
+        given(userService.sendEmailAuthMail(email)).willThrow(new MailAddressException(""));
 
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))
@@ -121,7 +122,7 @@ class UserControllerTest {
     @WithAnonymousUser
     void getUserInfo_fail_throws_userNotFoundException() throws Exception {
         // given
-        given(userService.getUserInfo(any(CustomUserDetails.class))).willThrow(new UserNotFoundException());
+        given(userService.getUserInfo(any(CustomUserDetails.class))).willThrow(new UserNotFoundException(""));
 
         // when & then
         mockMvc.perform(get("/users/mypage"))

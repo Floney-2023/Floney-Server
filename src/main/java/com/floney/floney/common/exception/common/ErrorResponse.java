@@ -8,6 +8,7 @@ public class ErrorResponse {
 
     private final String message;
     private final String code;
+
     public ErrorResponse(ErrorType errorType) {
         this.message = errorType.getMessage();
         this.code = errorType.getCode();

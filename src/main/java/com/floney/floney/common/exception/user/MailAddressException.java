@@ -5,9 +5,12 @@ import lombok.Getter;
 
 @Getter
 public class MailAddressException extends RuntimeException {
-    private final ErrorType errorType;
 
-    public MailAddressException() {
+    private final ErrorType errorType;
+    private final String email;
+
+    public MailAddressException(String email) {
         this.errorType = ErrorType.INVALID_MAIL_ADDRESS;
+        this.email = email;
     }
 }

@@ -17,13 +17,12 @@ import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.settlement.repository.SettlementUserRepository;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -124,6 +123,6 @@ public class SettlementService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 }
