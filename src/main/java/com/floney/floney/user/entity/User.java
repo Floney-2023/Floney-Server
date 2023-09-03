@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
     @Column(nullable = false, updatable = false, length = 100)
@@ -65,7 +64,22 @@ public class User extends BaseEntity {
     @Column()
     private String recentBookKey;
 
+    @DateTimeFormat(iso = ISO.DATE_TIME)
     private LocalDateTime deleteTime;
+
+    @QueryProjection
+    private User(String email, String nickname, String password, String profileImg, LocalDateTime lastAdTime, boolean subscribe, Provider provider, String providerId, String recentBookKey, LocalDateTime deleteTime) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.profileImg = profileImg;
+        this.lastAdTime = lastAdTime;
+        this.subscribe = subscribe;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.recentBookKey = recentBookKey;
+        this.deleteTime = deleteTime;
+    }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
@@ -95,6 +109,7 @@ public class User extends BaseEntity {
         this.recentBookKey = bookKey;
     }
 
+    //유저 탈퇴시, 개인정보 즉시 삭제
     public void delete(){
         this.status = Status.INACTIVE;
         this.email = null;
