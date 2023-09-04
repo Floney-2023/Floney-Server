@@ -83,7 +83,7 @@ public class Book extends BaseEntity {
 
     public void isOwner(String email) {
         if (!owner.equals(email)) {
-            throw new NoAuthorityException();
+            throw new NoAuthorityException(owner,email);
         }
     }
 

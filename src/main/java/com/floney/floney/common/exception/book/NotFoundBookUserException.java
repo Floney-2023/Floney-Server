@@ -6,8 +6,12 @@ import lombok.Getter;
 @Getter
 public class NotFoundBookUserException extends RuntimeException {
     private final ErrorType errorType;
+    private final String bookKey;
+    private final String requestUser;
 
-    public NotFoundBookUserException() {
+    public NotFoundBookUserException(String bookKey, String requestUser) {
         errorType = ErrorType.NOT_FOUND_BOOK_USER;
+        this.bookKey = bookKey;
+        this.requestUser = requestUser;
     }
 }

@@ -5,6 +5,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.config.UserFixture;
@@ -67,7 +68,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(member);
 
         assertThatThrownBy(() -> bookUserRepository.countBookUser(savedBook))
-            .isInstanceOf(NoAuthorityException.class);
+            .isInstanceOf(CannotDeleteBookException.class);
     }
 
     @Test

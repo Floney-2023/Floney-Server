@@ -2,14 +2,27 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CarryOverRequest;
+import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.BookUserResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.CurrencyResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
@@ -20,12 +33,11 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Transactional
@@ -98,7 +110,7 @@ public class BookServiceImpl implements BookService {
         String code = request.getCode();
 
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(code));
 
         bookUserRepository.isMax(book);
         saveDefaultBookKey(userDetails.getUser(), book);
@@ -179,7 +191,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public InvolveBookResponse findInvolveBook(String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new UserNotFoundException(email));
         return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
@@ -235,7 +247,7 @@ public class BookServiceImpl implements BookService {
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void isValidToDeleteBook(Book book, String email) {
@@ -260,7 +272,7 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-            .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(() -> new NotFoundBookUserException(bookKey,userEmail));
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {

@@ -7,6 +7,7 @@ import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.user.entity.User;
@@ -42,7 +43,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .size();
 
         if (memberCount > MAX_MEMBER) {
-            throw new MaxMemberException();
+            throw new MaxMemberException(book.getBookKey(),memberCount);
         }
     }
 
@@ -103,7 +104,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     @Override
     public void countBookUser(Book target) {
-        Long count = jpaQueryFactory.select(count(bookUser))
+        long count = jpaQueryFactory.select(count(bookUser))
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
@@ -111,7 +112,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetchOne();
 
         if (count > OWNER) {
-            throw new NoAuthorityException();
+            throw new CannotDeleteBookException(count);
         }
     }
 
