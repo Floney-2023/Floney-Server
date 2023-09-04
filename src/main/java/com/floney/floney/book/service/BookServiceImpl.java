@@ -34,6 +34,7 @@ import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -243,6 +244,11 @@ public class BookServiceImpl implements BookService {
         categoryRepository.deleteAllCustomCategory(book);
         bookLineCategoryRepository.deleteBookLineCategory(bookKey);
         return bookRepository.save(book);
+    }
+
+    @Override
+    public CurrencyResponse getCurrency(String bookKey) {
+        return CurrencyResponse.of(findBook(bookKey));
     }
 
     private Book findBook(String bookKey) {

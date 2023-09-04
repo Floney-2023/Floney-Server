@@ -285,4 +285,9 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/info/currency")
+    public ResponseEntity<?> getCurrency(@RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.getCurrency(bookKey), HttpStatus.OK);
+    }
+
 }
