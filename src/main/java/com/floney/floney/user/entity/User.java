@@ -61,7 +61,6 @@ public class User extends BaseEntity {
     @Column(updatable = false, unique = true, length = 30)
     private String providerId;
 
-    @Column()
     private String recentBookKey;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)

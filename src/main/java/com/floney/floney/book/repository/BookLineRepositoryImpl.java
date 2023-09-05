@@ -10,7 +10,6 @@ import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.entity.*;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.settlement.domain.entity.Settlement;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,6 @@ import static com.floney.floney.book.entity.QCategory.category;
 import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
-import static com.floney.floney.settlement.domain.entity.QSettlement.settlement;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
@@ -64,23 +62,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 .as(bookLine.money.sum()));
     }
 
-    @Override
-    public Map<String, Long> totalExpenseByAll(String bookKey) {
-        return jpaQueryFactory
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
-                book.bookKey.eq(bookKey),
-                book.status.eq(Status.ACTIVE),
-                bookLine.status.eq(Status.ACTIVE)
-            )
-            .groupBy(bookLineCategory.name)
-            .orderBy(bookLineCategory.name.asc())
-            .transform(groupBy(bookLineCategory.name)
-                .as(bookLine.money.sum()));
-    }
 
     @Override
     public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
@@ -346,17 +327,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .selectFrom(bookLineCategory)
             .where(bookLineCategory.updatedAt.before(threeMonthsAgo),
                 bookLineCategory.status.eq(INACTIVE))
-            .fetch();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Settlement> findSettlementHaveToDelete(){
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
-        return jpaQueryFactory
-            .selectFrom(settlement)
-            .where(settlement.updatedAt.before(threeMonthsAgo),
-                settlement.status.eq(INACTIVE))
             .fetch();
     }
 

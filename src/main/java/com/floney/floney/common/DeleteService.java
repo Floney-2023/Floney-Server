@@ -40,7 +40,7 @@ public class DeleteService {
             .forEach(bookLineRepository::delete);
 
         //정산 삭제
-        bookLineRepository.findSettlementHaveToDelete().stream()
+        settlementRepository.findSettlementHaveToDelete().stream()
             .map(Settlement::deleteForever)
             .forEach(settlementRepository::delete);
 

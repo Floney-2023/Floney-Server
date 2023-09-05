@@ -9,7 +9,6 @@ import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.settlement.domain.entity.Settlement;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,8 +18,6 @@ import java.util.Optional;
 public interface BookLineCustomRepository {
 
     Map<String, Long> totalExpenseByMonth(String bookKey, DatesDuration dates);
-
-    Map<String, Long> totalExpenseByAll(String bookKey);
 
     List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey);
 
@@ -47,6 +44,4 @@ public interface BookLineCustomRepository {
     List<BookLine> findLineHaveToDelete();
 
     List<BookLineCategory> findCategoryHaveToDelete();
-
-    List<Settlement> findSettlementHaveToDelete();
 }
