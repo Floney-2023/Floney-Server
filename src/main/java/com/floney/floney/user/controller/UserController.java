@@ -163,6 +163,13 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserInfo(userDetails), HttpStatus.OK);
     }
 
+    /**
+     *
+     * 최근 접근 가계부 키 저장
+     * @body SaveRecentBookKeyRequest 가계부 키
+     *
+     */
+
     @PostMapping("/bookKey")
     public ResponseEntity<?> recentBookKey(@RequestBody SaveRecentBookKeyRequest request,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
