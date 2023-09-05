@@ -5,6 +5,7 @@ import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.UserService;
@@ -160,5 +161,12 @@ public class UserController {
         userService.saveRecentBookKey(request, customUserDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/subscribe")
+    public ResponseEntity<?> save(@RequestBody @Valid SubscribeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.subscribe(request,userDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
 
 }
