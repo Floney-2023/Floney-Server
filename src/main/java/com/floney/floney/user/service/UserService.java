@@ -17,6 +17,7 @@ import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.SubscribeResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.Subscribe;
@@ -216,10 +217,7 @@ public class UserService {
     }
 
     @Transactional
-    public void saveSubscribe(SubscribeRequest request, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new UserNotFoundException(userEmail));
-
+    public void saveSubscribe(SubscribeRequest request, User user) {
         user.subscribe();
 
         Subscribe subscribe = Subscribe.of(user, request);
@@ -227,13 +225,14 @@ public class UserService {
     }
 
     @Transactional
-    public void updateSubscribe(SubscribeRequest request, String userEmail){
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new UserNotFoundException(userEmail));
-
+    public void updateSubscribe(SubscribeRequest request, User user){
         Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
         subscribe.update(request);
     }
 
-
+    @Transactional(readOnly = true)
+    public SubscribeResponse getSubscribe(User user) {
+        Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
+        return SubscribeResponse.of(subscribe);
+    }
 }
