@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 
+import java.util.Currency;
 import java.util.List;
 
 public interface BookService {
@@ -43,4 +44,6 @@ public interface BookService {
     CurrencyResponse changeCurrency(final ChangeCurrencyRequest request);
 
     Book makeInitBook(final String bookKey);
+
+    CurrencyResponse getCurrency(String bookKey);
 }
