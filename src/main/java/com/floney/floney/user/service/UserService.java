@@ -15,14 +15,16 @@ import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.SubscribeResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.SubscribeRepository;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
-import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -35,6 +37,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +59,7 @@ public class UserService {
     public Token login(LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
             return jwtProvider.generateToken(authentication);
@@ -205,8 +210,9 @@ public class UserService {
     @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
         User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+            .orElseThrow(() -> new UserNotFoundException(username));
         user.saveRecentBookKey(request);
         userRepository.save(user);
     }
+
 }

@@ -117,4 +117,8 @@ public class User extends BaseEntity {
         this.profileImg = null;
         this.deleteTime = LocalDateTime.now();
     }
+
+    public void subscribe() {
+        this.subscribe = true;
+    }
 }
