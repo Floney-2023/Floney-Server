@@ -2,28 +2,18 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CarryOverRequest;
-import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
-import com.floney.floney.book.dto.response.BookUserResponse;
-import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.dto.response.CurrencyResponse;
-import com.floney.floney.book.dto.response.InviteCodeResponse;
-import com.floney.floney.book.dto.response.InvolveBookResponse;
+import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.book.repository.BookLineRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
+import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -33,12 +23,12 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -50,9 +40,9 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
-    private final BookLineCustomRepository bookLineRepository;
+    private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
-    private final CategoryCustomRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
@@ -231,7 +221,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));}
+        return new InviteCodeResponse(findBook(bookKey));
+    }
 
 
     @Override
@@ -239,10 +230,13 @@ public class BookServiceImpl implements BookService {
     public Book makeInitBook(String bookKey) {
         Book book = findBook(bookKey);
         book.initBook();
+        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+
+        categoryRepository.findAllCustomCategory(book).stream()
+            .map(BookCategory::delete)
+            .forEach(categoryRepository::delete);
 
         bookLineRepository.deleteAllLines(bookKey);
-        categoryRepository.deleteAllCustomCategory(book);
-        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
         return bookRepository.save(book);
     }
 

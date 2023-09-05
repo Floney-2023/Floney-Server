@@ -14,6 +14,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 @RequiredArgsConstructor
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
+    private final static int DELETE_TERM = 3;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -60,23 +62,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 .as(bookLine.money.sum()));
     }
 
-    @Override
-    public Map<String, Long> totalExpenseByAll(String bookKey) {
-        return jpaQueryFactory
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
-                book.bookKey.eq(bookKey),
-                book.status.eq(Status.ACTIVE),
-                bookLine.status.eq(Status.ACTIVE)
-            )
-            .groupBy(bookLineCategory.name)
-            .orderBy(bookLineCategory.name.asc())
-            .transform(groupBy(bookLineCategory.name)
-                .as(bookLine.money.sum()));
-    }
 
     @Override
     public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
@@ -194,6 +179,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public void deleteAllLinesByUser(BookUser bookUser, String bookKey) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
             .where(bookLine.book.id.eq(
                 JPAExpressions.select(book.id)
                     .from(book)
@@ -295,7 +281,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public Optional<BookLine> findByIdWithCategories(Long id) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(bookLine)
-            .where(bookLine.id.eq(id),bookLine.status.eq(ACTIVE))
+            .where(bookLine.id.eq(id), bookLine.status.eq(ACTIVE))
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .fetchJoin()
             .leftJoin(bookLine.writer, bookUser)
@@ -320,6 +306,28 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.exceptStatus.eq(false)
             )
             .fetchOne();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLine> findLineHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookLine)
+            .where(bookLine.updatedAt.before(threeMonthsAgo),
+                bookLine.status.eq(INACTIVE))
+            .fetch();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLineCategory> findCategoryHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookLineCategory)
+            .where(bookLineCategory.updatedAt.before(threeMonthsAgo),
+                bookLineCategory.status.eq(INACTIVE))
+            .fetch();
     }
 
 }

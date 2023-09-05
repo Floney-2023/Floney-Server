@@ -5,6 +5,7 @@ import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Currency;
 import java.util.List;

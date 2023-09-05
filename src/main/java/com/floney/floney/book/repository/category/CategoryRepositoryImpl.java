@@ -26,9 +26,9 @@ import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
 @RequiredArgsConstructor
 public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
+    private final JPAQueryFactory jpaQueryFactory;
     private static final boolean DEFAULT = true;
     private static final boolean CUSTOM = false;
-    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<CategoryInfo> findAllCategory(String name, String bookKey) {
@@ -130,10 +130,10 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public void deleteAllCustomCategory(Book book) {
-        jpaQueryFactory.delete(bookCategory)
+    public List<BookCategory> findAllCustomCategory(Book book){
+        return jpaQueryFactory.selectFrom(bookCategory)
             .where(bookCategory.book.eq(book))
-            .execute();
+            .fetch();
     }
 
     @Override
@@ -144,5 +144,6 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .innerJoin(category)
             .fetchOne());
     }
+
 
 }

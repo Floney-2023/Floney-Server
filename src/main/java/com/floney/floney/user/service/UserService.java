@@ -95,6 +95,7 @@ public class UserService {
         User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
         user.delete();
         deleteAllBookAccountsBy(user);
+        userRepository.save(user);
     }
 
     public Token reissueToken(Token token) {

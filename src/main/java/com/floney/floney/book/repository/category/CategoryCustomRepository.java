@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.category.BookCategory;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,8 @@ public interface CategoryCustomRepository {
 
     void deleteCustomCategory(DeleteCategoryRequest request);
 
-    void deleteAllCustomCategory(Book book);
+    List<BookCategory> findAllCustomCategory(Book book);
 
     Optional<Category> findParentCategory(String parentName);
+
 }
