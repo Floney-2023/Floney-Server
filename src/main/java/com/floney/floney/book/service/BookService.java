@@ -47,4 +47,6 @@ public interface BookService {
     Book makeInitBook(final String bookKey);
 
     CurrencyResponse getCurrency(String bookKey);
+
+    BookInfoResponse getBookInfoByCode(String code);
 }

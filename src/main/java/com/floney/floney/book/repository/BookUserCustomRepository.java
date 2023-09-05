@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.entity.User;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface BookUserCustomRepository {
 
     List<MyBookInfo> findMyBooks(User user);
 
-    void countBookUser(Book book);
+    long countBookUser(Book book);
 
     BookUser findBookUserBy(String email, Book book);
 
