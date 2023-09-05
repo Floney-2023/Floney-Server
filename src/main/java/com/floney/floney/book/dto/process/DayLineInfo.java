@@ -25,8 +25,10 @@ public class DayLineInfo {
 
     private final boolean exceptStatus;
 
+    private final String userNickName;
+
     @Builder
-    public DayLineInfo(Long id, Long money, String assetType, String content, List<String> categories, String img, String userEmail, boolean exceptStatus) {
+    public DayLineInfo(Long id, Long money, String assetType, String content, List<String> categories, String img, String userEmail, boolean exceptStatus, String userNickName) {
         this.id = id;
         this.money = money;
         this.content = content;
@@ -35,6 +37,7 @@ public class DayLineInfo {
         this.img = img;
         this.userEmail = userEmail;
         this.exceptStatus = exceptStatus;
+        this.userNickName = userNickName;
     }
 
     public void addCategory(String category) {
@@ -53,6 +56,7 @@ public class DayLineInfo {
             .content(dayLine.getContent())
             .img(dayLine.getProfileImg())
             .exceptStatus(dayLine.isExceptStatus())
+            .userNickName(dayLine.getNickName())
             .build();
     }
 
