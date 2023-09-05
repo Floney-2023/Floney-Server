@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByEmail(username).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UserNotFoundException(username));
         if (user.isInactive()) {
             throw new UserSignoutException();
         }
@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public void validateIfNewUser(String email) {
         try {
             User user = ((CustomUserDetails) loadUserByUsername(email)).getUser();
-            throw new UserFoundException(user.getProvider());
+            throw new UserFoundException(user.getEmail(), user.getProvider());
         } catch (UserNotFoundException ignored) {
         }
     }

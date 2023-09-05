@@ -6,11 +6,14 @@ import lombok.Getter;
 
 @Getter
 public class UserFoundException extends RuntimeException {
+
     private final ErrorType errorType;
+    private final String email;
     private final Provider provider;
 
-    public UserFoundException(Provider provider) {
+    public UserFoundException(String email, Provider provider) {
         this.errorType = ErrorType.USER_FOUND;
+        this.email = email;
         this.provider = provider;
     }
 }

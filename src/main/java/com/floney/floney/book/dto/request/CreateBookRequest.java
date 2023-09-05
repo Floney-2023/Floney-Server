@@ -5,8 +5,10 @@ import com.floney.floney.book.util.CodeFactory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class CreateBookRequest {
     private String name;

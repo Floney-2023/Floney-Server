@@ -104,12 +104,12 @@ public class BookLineServiceImpl implements BookLineService {
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
-            .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {
@@ -119,5 +119,6 @@ public class BookLineServiceImpl implements BookLineService {
     private Map<String, Long> totalExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
+
 
 }

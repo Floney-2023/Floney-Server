@@ -22,7 +22,7 @@ public enum AssetType {
                 return assetType;
             }
         }
-        throw new NotFoundCategoryException();
+        throw new NotFoundCategoryException(name);
     }
 
     public static boolean isAssetType(String name) {

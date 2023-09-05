@@ -1,8 +1,8 @@
-name: Java CI with Gradle
+name: CI 자동화
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "main", "develop" ]
 
 permissions:
   contents: read
@@ -13,43 +13,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: JDK 17 추가
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-          
-      - name: 설정파일 생성
-        uses: actions/checkout@v3
-      - run: |
-           mkdir ./src/main/resources
-           touch ./src/main/resources/application.yaml
-           echo "${{ secrets.SECRET_YAML }}" | base64 --decode > ./src/main/resources/application.yaml
-
-      - name: Github action IP 가져오기
-        id: ip
-        uses: haythem/public-ip@v1.2
-
-      - name: AWS 인증
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
-          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
-          aws-region: ap-northeast-2
-       
-      - name: 환경변수 설정
-        run: |
-          echo "AWS_DEFAULT_REGION=ap-northeast-2" >> $GITHUB_ENV
-          echo "AWS_SG_NAME=group-for-all" >> $GITHUB_ENV
-     
-      - name: Github Actions IP를 보안 그룹에 추가
-        run: |
-          aws ec2 authorize-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32    
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
         
       - name: gradlew에 실행 권한 부여
         run: chmod +x gradlew
@@ -57,11 +26,9 @@ jobs:
       - name: 프로젝트 빌드
         run: ./gradlew clean build
 
-      - name: Github Actions IP를 보안 그룹에서 삭제
-        run: |
-          aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
-     
+      - name: 테스트 실패 시, 실패한 코드 라인에 Check 코멘트를 등록
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ secrets.GITHUB_TOKEN }}
