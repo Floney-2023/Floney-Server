@@ -55,7 +55,6 @@ public class UserService {
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
     private final CustomUserDetailsService customUserDetailsService;
-    private final SubscribeRepository subscribeRepository;
 
     public Token login(LoginRequest request) {
         try {
@@ -216,23 +215,4 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public void saveSubscribe(SubscribeRequest request, User user) {
-        user.subscribe();
-
-        Subscribe subscribe = Subscribe.of(user, request);
-        subscribeRepository.save(subscribe);
-    }
-
-    @Transactional
-    public void updateSubscribe(SubscribeRequest request, User user){
-        Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
-        subscribe.update(request);
-    }
-
-    @Transactional(readOnly = true)
-    public SubscribeResponse getSubscribe(User user) {
-        Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
-        return SubscribeResponse.of(subscribe);
-    }
 }

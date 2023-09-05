@@ -8,6 +8,7 @@ import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.CustomUserDetailsService;
+import com.floney.floney.user.service.SubscribeService;
 import com.floney.floney.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final SubscribeService subscribeService;
     private final CustomUserDetailsService customUserDetailsService;
 
     /**
@@ -186,7 +188,7 @@ public class UserController {
     @PostMapping("/subscribe")
     public ResponseEntity<?> saveSubscribe(@RequestBody @Valid SubscribeRequest request,
                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.saveSubscribe(request, userDetails.getUser());
+        subscribeService.saveSubscribe(request, userDetails.getUser());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -198,7 +200,7 @@ public class UserController {
     @PostMapping("/subscribe/update")
     public ResponseEntity<?> updateSubscribe(@RequestBody @Valid SubscribeRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.updateSubscribe(request, userDetails.getUser());
+        subscribeService.updateSubscribe(request, userDetails.getUser());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -208,7 +210,7 @@ public class UserController {
      */
     @GetMapping("/subscribe")
     public ResponseEntity<?> updateSubscribe(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(userService.getSubscribe(userDetails.getUser()), HttpStatus.OK);
+        return new ResponseEntity<>(subscribeService.getSubscribe(userDetails.getUser()), HttpStatus.OK);
     }
 
 
