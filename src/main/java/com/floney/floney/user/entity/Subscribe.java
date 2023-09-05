@@ -50,4 +50,13 @@ public class Subscribe extends BaseEntity {
             .subscriptionStatus(request.getSubscriptionStatus())
             .build();
     }
+
+    public void update(SubscribeRequest request) {
+        this.expiresDate = request.getExpiresDate();
+        this.productId = request.getProductId();
+        this.originalTransactionId = request.getOriginalTransactionId();
+        this.transactionId = request.getTransactionId();
+        this.renewalStatus = request.isRenewalStatus();
+        this.subscriptionStatus = request.getSubscriptionStatus();
+    }
 }

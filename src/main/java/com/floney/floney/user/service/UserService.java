@@ -216,7 +216,7 @@ public class UserService {
     }
 
     @Transactional
-    public void subscribe(SubscribeRequest request, String userEmail) {
+    public void saveSubscribe(SubscribeRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new UserNotFoundException(userEmail));
 
@@ -225,5 +225,15 @@ public class UserService {
         Subscribe subscribe = Subscribe.of(user, request);
         subscribeRepository.save(subscribe);
     }
+
+    @Transactional
+    public void updateSubscribe(SubscribeRequest request, String userEmail){
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new UserNotFoundException(userEmail));
+
+        Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
+        subscribe.update(request);
+    }
+
 
 }

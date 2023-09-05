@@ -163,8 +163,14 @@ public class UserController {
     }
 
     @PostMapping("/subscribe")
-    public ResponseEntity<?> save(@RequestBody @Valid SubscribeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.subscribe(request,userDetails.getUsername());
+    public ResponseEntity<?> saveSubscribe(@RequestBody @Valid SubscribeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.saveSubscribe(request,userDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/subscribe/update")
+    public ResponseEntity<?> updateSubscribe(@RequestBody @Valid SubscribeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.updateSubscribe(request,userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
