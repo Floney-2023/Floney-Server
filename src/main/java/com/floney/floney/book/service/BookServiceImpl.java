@@ -101,8 +101,10 @@ public class BookServiceImpl implements BookService {
             .orElseThrow(() -> new NotFoundBookException(code));
 
         bookUserRepository.isMax(book);
-        bookUserRepository.findBookUserByCode(userEmail, request.getCode())
-            .orElseThrow(() -> new AlreadyJoinException(userEmail));
+
+        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()){
+            throw new AlreadyJoinException(userEmail);
+        }
 
         saveDefaultBookKey(userDetails.getUser(), book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));

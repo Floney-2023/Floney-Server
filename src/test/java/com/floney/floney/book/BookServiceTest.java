@@ -55,7 +55,8 @@ public class BookServiceTest {
 
         given(bookRepository.findBookByCodeAndStatus(CODE, ACTIVE))
                 .willReturn(Optional.ofNullable(testBook));
-
+        given(bookUserRepository.findBookUserByCode(testUser.getEmail(),CODE))
+            .willReturn(Optional.empty());
         assertThat(bookService.joinWithCode(new CustomUserDetails(testUser, null), codeJoinRequest()).getCode())
                 .isEqualTo(bookResponse().getCode());
     }
