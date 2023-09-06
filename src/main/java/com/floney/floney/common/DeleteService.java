@@ -26,7 +26,7 @@ public class DeleteService {
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final SettlementRepository settlementRepository;
 
-    @Scheduled(cron = "* 3 * * * *") // 매일 오전 3시 삭제
+    @Scheduled(cron = "0 3 * * * *") // 매일 오전 3시 삭제
     @Transactional
     public void deleteOldData() {
         //카테고리 삭제
@@ -54,7 +54,7 @@ public class DeleteService {
 
     }
 
-    @Scheduled(cron = "* 5 * * * *") // 매일 오전 5시 유저 삭제
+    @Scheduled(cron = "0 5 * * * *") // 매일 오전 5시 유저 삭제
     @Transactional
     public void deleteUser() {
         userRepository.deleteUserAfterMonth();
