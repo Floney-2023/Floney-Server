@@ -77,6 +77,20 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetchOne());
     }
 
+    @Override
+    public Optional<BookUser> findBookUserByCode(String currentUserEmail, String bookCode) {
+        return Optional.ofNullable(jpaQueryFactory
+            .select(bookUser)
+            .from(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(currentUserEmail),
+                user.status.eq(Status.ACTIVE))
+            .innerJoin(bookUser.book, book)
+            .where(book.code.eq(bookCode),
+                book.status.eq(Status.ACTIVE))
+            .fetchOne());
+    }
+
 
     @Override
     public List<MyBookInfo> findMyBooks(User user) {

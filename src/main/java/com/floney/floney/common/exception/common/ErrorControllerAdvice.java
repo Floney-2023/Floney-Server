@@ -1,12 +1,6 @@
 package com.floney.floney.common.exception.common;
 
-import com.floney.floney.common.exception.book.CannotDeleteBookException;
-import com.floney.floney.common.exception.book.LimitRequestException;
-import com.floney.floney.common.exception.book.MaxMemberException;
-import com.floney.floney.common.exception.book.NotFoundBookException;
-import com.floney.floney.common.exception.book.NotFoundBookLineException;
-import com.floney.floney.common.exception.book.NotFoundBookUserException;
-import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.MailAddressException;
@@ -196,6 +190,13 @@ public class ErrorControllerAdvice {
         logger.error(Arrays.toString(exception.getStackTrace()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
+    }
+
+    @ExceptionHandler(AlreadyJoinException.class)
+    protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
+        logger.error("{}는 {}",exception.getUserEmail(),ErrorType.ALREADY_JOIN.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
     }
 }
 

@@ -18,6 +18,8 @@ public interface BookUserCustomRepository {
 
     Optional<BookUser> findBookUserByKey(String auth, String bookKey);
 
+    Optional<BookUser> findBookUserByCode(String currentUserEmail, String bookCode);
+
     List<MyBookInfo> findMyBooks(User user);
 
     long countBookUser(Book book);
