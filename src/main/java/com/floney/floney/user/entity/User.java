@@ -121,4 +121,8 @@ public class User extends BaseEntity {
     public void subscribe() {
         this.subscribe = true;
     }
+
+    public void unSubscribe() {
+        this.subscribe = false;
+    }
 }
