@@ -7,9 +7,7 @@ import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.book.CannotDeleteBookException;
 import com.floney.floney.common.exception.book.MaxMemberException;
-import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +29,7 @@ import static com.querydsl.core.types.ExpressionUtils.count;
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
     private static final int DELETE_TERM = 3;
     private static final int MAX_MEMBER = 4;
-    private static final int OWNER = 1;
+
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -45,7 +43,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .size();
 
         if (memberCount > MAX_MEMBER) {
-            throw new MaxMemberException(book.getBookKey(),memberCount);
+            throw new MaxMemberException(book.getBookKey(), memberCount);
         }
     }
 
@@ -79,6 +77,20 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetchOne());
     }
 
+    @Override
+    public Optional<BookUser> findBookUserByCode(String currentUserEmail, String bookCode) {
+        return Optional.ofNullable(jpaQueryFactory
+            .select(bookUser)
+            .from(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(currentUserEmail),
+                user.status.eq(Status.ACTIVE))
+            .innerJoin(bookUser.book, book)
+            .where(book.code.eq(bookCode),
+                book.status.eq(Status.ACTIVE))
+            .fetchOne());
+    }
+
 
     @Override
     public List<MyBookInfo> findMyBooks(User user) {
@@ -105,17 +117,13 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public void countBookUser(Book target) {
-        long count = jpaQueryFactory.select(count(bookUser))
+    public long countBookUser(Book target) {
+        return jpaQueryFactory.select(count(bookUser))
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
                 bookUser.status.eq(Status.ACTIVE))
             .fetchOne();
-
-        if (count > OWNER) {
-            throw new CannotDeleteBookException(count);
-        }
     }
 
     @Override
@@ -140,6 +148,5 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 bookUser.status.eq(INACTIVE))
             .fetch();
     }
-
 
 }

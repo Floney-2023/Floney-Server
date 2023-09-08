@@ -8,16 +8,12 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
-import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryCustomRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.book.LimitRequestException;
-import com.floney.floney.common.exception.book.NotFoundBookException;
-import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -37,6 +33,7 @@ public class BookServiceImpl implements BookService {
 
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
+    private static final int OWNER = 1;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
@@ -99,11 +96,16 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
-
+        String userEmail = userDetails.getUsername();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
 
         bookUserRepository.isMax(book);
+
+        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()){
+            throw new AlreadyJoinException(userEmail);
+        }
+
         saveDefaultBookKey(userDetails.getUser(), book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -245,6 +247,14 @@ public class BookServiceImpl implements BookService {
         return CurrencyResponse.of(findBook(bookKey));
     }
 
+    @Override
+    public BookInfoResponse getBookInfoByCode(String code) {
+        Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
+            .orElseThrow(() -> new NotFoundBookException(code));
+        long memberCount = bookUserRepository.countBookUser(book);
+        return BookInfoResponse.of(book, memberCount);
+    }
+
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
@@ -252,7 +262,10 @@ public class BookServiceImpl implements BookService {
 
     private void isValidToDeleteBook(Book book, String email) {
         book.isOwner(email);
-        bookUserRepository.countBookUser(book);
+        long count = bookUserRepository.countBookUser(book);
+        if (count > OWNER) {
+            throw new CannotDeleteBookException(count);
+        }
     }
 
     private List<BookUserResponse> userToResponse(final List<User> users) {
@@ -272,7 +285,7 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-            .orElseThrow(() -> new NotFoundBookUserException(bookKey,userEmail));
+            .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {

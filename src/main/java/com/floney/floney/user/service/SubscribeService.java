@@ -1,10 +1,12 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.user.dto.constant.SubscribeStatus;
 import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.response.SubscribeResponse;
 import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.SubscribeRepository;
+import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,17 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void saveSubscribe(SubscribeRequest request, User user) {
-        user.subscribe();
-
+        changeUserSubscribe(request.getSubscriptionStatus(), user);
         Subscribe subscribe = Subscribe.of(user, request);
         subscribeRepository.save(subscribe);
     }
 
     @Transactional
-    public void updateSubscribe(SubscribeRequest request, User user){
+    public void updateSubscribe(SubscribeRequest request, User user) {
+        changeUserSubscribe(request.getSubscriptionStatus(), user);
         Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
         subscribe.update(request);
     }
@@ -32,5 +35,14 @@ public class SubscribeService {
     public SubscribeResponse getSubscribe(User user) {
         Subscribe subscribe = subscribeRepository.findSubscribeByUser(user);
         return SubscribeResponse.of(subscribe);
+    }
+
+    private void changeUserSubscribe(String status, User user) {
+        if (SubscribeStatus.isExpired(status)) {
+            user.unSubscribe();
+        } else {
+            user.subscribe();
+        }
+        userRepository.save(user);
     }
 }
