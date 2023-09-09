@@ -221,6 +221,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
+    public void deleteBookLine(Book bookUserBook, BookUser bookUser){
+        deleteAllLinesByOnly(bookUserBook, bookUser);
+        deleteBookUser(bookUser);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
         return new InviteCodeResponse(findBook(bookKey));
@@ -290,6 +297,10 @@ public class BookServiceImpl implements BookService {
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
+    }
+
+    private void deleteAllLinesByOnly(Book bookUserBook, BookUser bookUser){
+        bookLineRepository.deleteAllLinesByBookAndBookUser(bookUserBook,bookUser);
     }
 
 }
