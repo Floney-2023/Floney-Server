@@ -10,6 +10,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
+import static com.floney.floney.book.dto.process.MonthKey.toMonthKey;
+
 @Getter
 public class MonthLinesResponse {
 
@@ -45,11 +47,11 @@ public class MonthLinesResponse {
     }
 
     public static List<BookLineExpense> reflectDB(String monthDate, List<BookLineExpense> dayExpenses) {
-        Map<MonthKey, BookLineExpense> dates = DateFactory.initDates(monthDate);
-        for (BookLineExpense dbExpense : dayExpenses) {
-            dates.replace(MonthKey.toMonthKey(dbExpense), dbExpense);
-        }
-        return dates.values()
+        Map<MonthKey, BookLineExpense> initDatesFrame = DateFactory.initDates(monthDate);
+
+        dayExpenses.forEach(dayExpense -> initDatesFrame.replace(toMonthKey(dayExpense),dayExpense));
+
+        return initDatesFrame.values()
             .stream()
             .toList();
     }

@@ -156,10 +156,10 @@ public class UserService {
         userRepository.save(user);
 
         List<BookUser> bookUsers = bookUserRepository.findByUserAndStatus(user, ACTIVE);
-        for (BookUser bookUser : bookUsers) {
+        bookUsers.forEach(bookUser -> {
             bookUser.updateProfileImg(profileImg);
             bookUserRepository.save(bookUser);
-        }
+        });
     }
 
     public String sendEmailAuthMail(String email) {

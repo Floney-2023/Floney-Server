@@ -36,17 +36,24 @@ public class DayLines {
         this.userNickName = userNickName;
     }
 
+    // 가계부 내역에 여러개의 카테고리를 하나의 객체로 합치는 함수
     public static List<DayLines> forDayView(List<DayLineByDayView> dayLines) {
-        Map<Long, DayLineInfo> infosByDay = new HashMap<>();
-        for (DayLineByDayView dayLine : dayLines) {
-            if (infosByDay.get(dayLine.getId()) == null) {
-                infosByDay.put(dayLine.getId(), DayLineInfo.toDayViewInfos(dayLine));
-            } else {
-                infosByDay.get(dayLine.getId()).addCategory(dayLine.getCategories());
-            }
-        }
+        Map<Long, DayLineInfo> dayLineWithCategories = new HashMap<>();
 
-        return infosByDay.values()
+        dayLines.forEach((dayLine) ->
+        {
+            DayLineInfo dayLineInfo = dayLineWithCategories.get(dayLine.getId());
+
+            // 카테고리 외의 데이터 최초 등록
+            if (dayLineInfo == null) {
+                dayLineWithCategories.put(dayLine.getId(), DayLineInfo.toDayViewInfos(dayLine));
+            } else {
+                dayLineInfo.addCategory(dayLine.getCategories());
+            }
+        });
+
+        // 최종 응답 변경
+        return dayLineWithCategories.values()
             .stream()
             .map(DayLines::toDayLineResponse)
             .collect(Collectors.toList());
