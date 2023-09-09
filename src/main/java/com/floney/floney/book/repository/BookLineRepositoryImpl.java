@@ -181,7 +181,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public void deleteAllLinesByUser(BookUser bookUser, String bookKey) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
-            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .set(bookLine.updatedAt, LocalDateTime.now())
             .where(bookLine.book.id.eq(
                 JPAExpressions.select(book.id)
                     .from(book)
