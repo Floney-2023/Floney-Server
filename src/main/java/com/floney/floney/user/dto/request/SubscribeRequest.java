@@ -1,5 +1,6 @@
 package com.floney.floney.user.dto.request;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -7,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @ToString
+@Builder
 public class SubscribeRequest {
 
     @NotNull

@@ -2,9 +2,11 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
+import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +16,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+
+import static com.floney.floney.common.constant.Status.*;
 
 @Entity
 @Getter
@@ -60,10 +64,14 @@ public class Book extends BaseEntity {
 
     private int userCapacity;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Status bookStatus;
+
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
-                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity) {
+                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -76,6 +84,7 @@ public class Book extends BaseEntity {
         this.carryOverMoney = carryOverMoney;
         this.currency = currency;
         this.userCapacity = userCapacity;
+        this.bookStatus = bookStatus;
     }
 
     public void updateName(String requestName) {
@@ -84,7 +93,7 @@ public class Book extends BaseEntity {
 
     public void isOwner(String email) {
         if (!owner.equals(email)) {
-            throw new NoAuthorityException(owner,email);
+            throw new NoAuthorityException(owner, email);
         }
     }
 
@@ -120,13 +129,23 @@ public class Book extends BaseEntity {
         this.currency = requestCurrency.toString();
     }
 
-    public void initBook(){
+    public void initBook() {
         this.initBudget = DEFAULT;
         this.initAsset = DEFAULT;
         this.carryOverStatus = Boolean.FALSE;
     }
 
-    public void subscribe() {
-        this.userCapacity = Subscribe.S_MAX_MEMBER.getValue();
+    public void subscribe(User user) {
+        this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
+        this.bookStatus = ACTIVE;
+        this.owner = user.getEmail();
+    }
+
+    public void delegateOwner(User user) {
+        this.owner = user.getEmail();
+    }
+
+    public void inactiveBookStatus(){
+        this.bookStatus = INACTIVE;
     }
 }

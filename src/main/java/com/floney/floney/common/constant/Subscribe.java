@@ -4,8 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum Subscribe {
-    S_MAX_MEMBER (4),
-    S_MAX_BOOK(2);
+    SUBSCRIBE_MAX_MEMBER(4),
+    SUBSCRIBE_MAX_BOOK(2),
+    DEFAULT_MAX_MEMBER(2),
+    DEFAULT_MAX_BOOK(1);
 
     private final int value;
     Subscribe(int value) {
