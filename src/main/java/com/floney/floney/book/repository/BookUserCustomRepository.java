@@ -31,5 +31,4 @@ public interface BookUserCustomRepository {
 
     Optional<User> findBookUserWhoSubscribe(Book targetBook);
 
-    Optional<User> findAnyBookUser(Book targetBook);
 }

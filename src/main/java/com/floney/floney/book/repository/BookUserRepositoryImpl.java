@@ -188,19 +188,4 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetchFirst());
     }
 
-    @Override
-    public Optional<User> findAnyBookUser(Book targetBook) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
-            .where(
-                user.in(
-                    JPAExpressions.select(bookUser.user)
-                        .from(bookUser)
-                        .where(
-                            bookUser.book.eq(targetBook)
-                        )
-                )
-            )
-            .fetchFirst());
-    }
-
 }
