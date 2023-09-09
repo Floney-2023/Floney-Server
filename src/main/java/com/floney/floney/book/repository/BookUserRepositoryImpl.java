@@ -7,12 +7,13 @@ import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.user.entity.User;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.Optional;
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.common.constant.Status.INACTIVE;
-import static com.floney.floney.common.constant.Subscribe.S_MAX_MEMBER;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.types.ExpressionUtils.count;
 
@@ -94,7 +94,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
 
     @Override
-    public List<MyBookInfo> findMyBooks(User user) {
+    public List<MyBookInfo> findMyBookInfos(User user) {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .where(bookUser.user.eq(user),
@@ -115,6 +115,27 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             infos.add(my);
         }
         return infos;
+    }
+
+    @Override
+    public List<Book> findMyBooks(User user) {
+        List<Book> books = jpaQueryFactory.select(book)
+            .from(bookUser)
+            .where(bookUser.user.eq(user),
+                bookUser.status.eq(Status.ACTIVE))
+            .fetch();
+
+        List<Book> myBooks = new ArrayList<>();
+        for (Book target : books) {
+            Book myBook = jpaQueryFactory.select(book)
+                .from(bookUser)
+                .where(bookUser.book.eq(target),
+                    book.bookStatus.eq(INACTIVE),
+                    bookUser.status.eq(Status.ACTIVE))
+                .fetchOne();
+            myBooks.add(myBook);
+        }
+        return myBooks;
     }
 
     @Override
@@ -148,6 +169,38 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .where(bookUser.updatedAt.before(threeMonthsAgo),
                 bookUser.status.eq(INACTIVE))
             .fetch();
+    }
+
+    @Override
+    @Transactional
+    public Optional<User> findBookUserWhoSubscribe(Book targetBook) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
+            .where(
+                user.subscribe.eq(true),
+                user.in(
+                    JPAExpressions.select(bookUser.user)
+                        .from(bookUser)
+                        .where(
+                            bookUser.book.eq(targetBook)
+                        )
+                )
+            )
+            .fetchFirst());
+    }
+
+    @Override
+    public Optional<User> findAnyBookUser(Book targetBook) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
+            .where(
+                user.in(
+                    JPAExpressions.select(bookUser.user)
+                        .from(bookUser)
+                        .where(
+                            bookUser.book.eq(targetBook)
+                        )
+                )
+            )
+            .fetchFirst());
     }
 
 }

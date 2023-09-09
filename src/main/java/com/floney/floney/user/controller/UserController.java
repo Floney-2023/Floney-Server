@@ -194,17 +194,6 @@ public class UserController {
 
 
     /**
-     * 구독 정보 수정
-     * @body SubscribeRequest 수정 정보
-     */
-    @PostMapping("/subscribe/update")
-    public ResponseEntity<?> updateSubscribe(@RequestBody @Valid SubscribeRequest request,
-                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        subscribeService.updateSubscribe(request, userDetails.getUser());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
      * 구독 정보 조회
      * @body SubscribeResponse 구독 정보
      */

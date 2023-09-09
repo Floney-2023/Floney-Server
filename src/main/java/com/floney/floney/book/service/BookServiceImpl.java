@@ -70,7 +70,7 @@ public class BookServiceImpl implements BookService {
         CreateBookRequest request) {
         Book newBook = request.of(user.getEmail());
         Book savedBook = bookRepository.save(newBook);
-        savedBook.subscribe();
+        savedBook.subscribe(user);
 
         saveDefaultBookKey(user, savedBook);
         bookUserRepository.save(BookUser.of(user, savedBook));
