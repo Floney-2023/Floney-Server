@@ -15,14 +15,10 @@ import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
-import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
-import com.floney.floney.user.dto.response.SubscribeResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
-import com.floney.floney.user.repository.SubscribeRepository;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
@@ -119,7 +115,7 @@ public class UserService {
 
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
         User user = userDetails.getUser();
-        List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
+        List<MyBookInfo> myBooks = bookUserRepository.findMyBookInfos(user);
         return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 

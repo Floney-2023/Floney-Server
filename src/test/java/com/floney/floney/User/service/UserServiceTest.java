@@ -120,7 +120,7 @@ class UserServiceTest {
     void getUserInfo_success() {
         // given
         User user = UserFixture.getUser();
-        given(bookUserRepository.findMyBooks(user)).willReturn(Collections.singletonList(BookFixture.myBookInfo()));
+        given(bookUserRepository.findMyBookInfos(user)).willReturn(Collections.singletonList(BookFixture.myBookInfo()));
 
         // when & then
         assertThat(userService.getUserInfo(CustomUserDetails.of(user)))
