@@ -285,11 +285,21 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * 가계부 화폐정보 조회
+     * @param bookKey 가계부 키
+     * @return CurrencyResponse 화폐정보
+     */
     @GetMapping("/info/currency")
     public ResponseEntity<?> getCurrency(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.getCurrency(bookKey), HttpStatus.OK);
     }
 
+    /**
+     * 참여코드로 가계부 정보 조회
+     * @param code 가계부 참여코드
+     * @return BookResponse 가계부 정보
+     */
     @GetMapping()
     public ResponseEntity<?> getBookInfo(@RequestParam String code) {
         return new ResponseEntity<>(bookService.getBookInfoByCode(code), HttpStatus.OK);
