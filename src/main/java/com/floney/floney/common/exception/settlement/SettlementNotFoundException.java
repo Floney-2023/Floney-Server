@@ -9,6 +9,6 @@ public class SettlementNotFoundException extends RuntimeException {
     private final ErrorType errorType;
 
     public SettlementNotFoundException() {
-        this.errorType = ErrorType.SETTLEMENT_NOT_FOUND;
+        this.errorType = ErrorType.NOT_FOUND_SETTLEMENT;
     }
 }
