@@ -44,52 +44,52 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse createBook(CustomUserDetails userDetails, CreateBookRequest request) {
-        User requestUser = userDetails.getUser();
-        Book newBook = request.of(userDetails.getUsername());
-
+    public CreateBookResponse createBook(User user, CreateBookRequest request) {
+        Book newBook = request.of(user.getEmail());
         Book savedBook = bookRepository.save(newBook);
-        saveDefaultBookKey(requestUser, savedBook);
+        saveDefaultBookKey(user, savedBook);
 
-        bookUserRepository.save(BookUser.of(requestUser, savedBook));
+        bookUserRepository.save(BookUser.of(user, savedBook));
         return CreateBookResponse.of(savedBook);
     }
 
     @Override
     @Transactional
-    public CreateBookResponse addBook(CustomUserDetails userDetails, CreateBookRequest request) {
-        User user = userDetails.getUser();
-        int count = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
+    public CreateBookResponse addBook(User user, CreateBookRequest request) {
+        checkCreateBookMaximum(user);
         if (user.isSubscribe()) {
-            return subscribeCreateBook(count, userDetails, request);
+            return subscribeCreateBook(user, request);
         } else {
-            return notSubscribeCreateBook(count, userDetails, request);
+            return createBook(user, request);
         }
     }
 
     @Transactional
-    public CreateBookResponse subscribeCreateBook(int count,
-                                                  CustomUserDetails userDetails,
-                                                  CreateBookRequest request) {
-        if (count >= SUBSCRIBE_MAX) {
-            throw new LimitRequestException();
-        }
-        return createBook(userDetails, request);
+    public CreateBookResponse subscribeCreateBook(
+        User user,
+        CreateBookRequest request) {
+        Book newBook = request.of(user.getEmail());
+        Book savedBook = bookRepository.save(newBook);
+        savedBook.subscribe();
+
+        saveDefaultBookKey(user, savedBook);
+        bookUserRepository.save(BookUser.of(user, savedBook));
+        return CreateBookResponse.of(savedBook);
     }
 
-    @Transactional
-    public CreateBookResponse notSubscribeCreateBook(int count,
-                                                     CustomUserDetails userDetails,
-                                                     CreateBookRequest request) {
-        if (count >= DEFAULT_MAX) {
-            throw new NotSubscribeException();
-        }
-        return createBook(userDetails, request);
-    }
+    private void checkCreateBookMaximum(User user) {
+        int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
 
-    private void saveDefaultBookKey(User user, Book book) {
-        user.saveDefaultBookKey(book.getBookKey());
-        userRepository.save(user);
+        if (user.isSubscribe()) {
+            if (currentParticipateCount >= SUBSCRIBE_MAX) {
+                throw new LimitRequestException();
+            }
+        } else {
+            if (currentParticipateCount >= DEFAULT_MAX) {
+                throw new NotSubscribeException();
+            }
+        }
+
     }
 
     @Override
@@ -97,12 +97,19 @@ public class BookServiceImpl implements BookService {
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         String userEmail = userDetails.getUsername();
+        User user = userDetails.getUser();
+
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
 
+        // 현 유저의 가계부 참여 개수 체크
+        checkCreateBookMaximum(user);
+
+        // 참여 희망 가계부 정원 체크
         bookUserRepository.isMax(book);
 
-        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()){
+        // 이미 존재하는 가계부 유저인지 체크
+        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
             throw new AlreadyJoinException(userEmail);
         }
 
@@ -290,6 +297,11 @@ public class BookServiceImpl implements BookService {
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
+    }
+
+    private void saveDefaultBookKey(User user, Book book) {
+        user.saveDefaultBookKey(book.getBookKey());
+        userRepository.save(user);
     }
 
 }

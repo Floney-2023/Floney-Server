@@ -5,16 +5,15 @@ import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import org.springframework.transaction.annotation.Transactional;
+import com.floney.floney.user.entity.User;
 
-import java.util.Currency;
 import java.util.List;
 
 public interface BookService {
 
-    CreateBookResponse createBook(final CustomUserDetails userDetails, final CreateBookRequest request);
+    CreateBookResponse createBook(final User user, final CreateBookRequest request);
 
-    CreateBookResponse addBook(final CustomUserDetails userDetails, final CreateBookRequest request);
+    CreateBookResponse addBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
 

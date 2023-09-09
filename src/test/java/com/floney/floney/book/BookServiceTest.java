@@ -1,7 +1,5 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.constant.Currency;
-import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
@@ -26,12 +24,13 @@ import static com.floney.floney.book.BookFixture.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.ArgumentMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
+    private final CustomUserDetails userDetails;
     @Mock
     private BookRepository bookRepository;
     @Mock
@@ -40,8 +39,6 @@ public class BookServiceTest {
     private UserRepository userRepository;
     @InjectMocks
     private BookServiceImpl bookService;
-
-    private final CustomUserDetails userDetails;
 
     public BookServiceTest() {
         this.userDetails = new CustomUserDetails(UserFixture.getUser(), null);
@@ -54,11 +51,11 @@ public class BookServiceTest {
         User testUser = UserFixture.getUser();
 
         given(bookRepository.findBookByCodeAndStatus(CODE, ACTIVE))
-                .willReturn(Optional.ofNullable(testBook));
-        given(bookUserRepository.findBookUserByCode(testUser.getEmail(),CODE))
+            .willReturn(Optional.ofNullable(testBook));
+        given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
             .willReturn(Optional.empty());
         assertThat(bookService.joinWithCode(new CustomUserDetails(testUser, null), codeJoinRequest()).getCode())
-                .isEqualTo(bookResponse().getCode());
+            .isEqualTo(bookResponse().getCode());
     }
 
     @Test
@@ -66,18 +63,15 @@ public class BookServiceTest {
     void subscribe_book_create() {
         given(bookRepository.save(any(Book.class))).willReturn(createBookRequest().of(userDetails.getUsername()));
 
-        int count = 1;
-
-        assertThat(bookService.subscribeCreateBook(count, userDetails, createBookRequest()).getClass())
-                .isEqualTo(CreateBookResponse.class);
+        assertThat(bookService.subscribeCreateBook(userDetails.getUser(), createBookRequest()).getClass())
+            .isEqualTo(CreateBookResponse.class);
     }
 
     @Test
     @DisplayName("구독을 했다면, 참여한 가계부가 2초과일 시 가계부를 만들 수 없다")
     void subscribe_book_create_exception() {
-        int count = 3;
-        assertThatThrownBy(() -> bookService.subscribeCreateBook(count, userDetails, createBookRequest()))
-                .isInstanceOf(LimitRequestException.class);
+        assertThatThrownBy(() -> bookService.subscribeCreateBook(userDetails.getUser(), createBookRequest()))
+            .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
@@ -88,4 +82,5 @@ public class BookServiceTest {
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
+
 }

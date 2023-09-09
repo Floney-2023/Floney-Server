@@ -2,6 +2,7 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import lombok.AccessLevel;
@@ -11,10 +12,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -60,10 +58,12 @@ public class Book extends BaseEntity {
 
     private String currency;
 
+    private int userCapacity;
+
     @Builder
     private Book(String name, String bookImg, String owner,
                  String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
-                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency) {
+                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
@@ -75,6 +75,7 @@ public class Book extends BaseEntity {
         this.code = code;
         this.carryOverMoney = carryOverMoney;
         this.currency = currency;
+        this.userCapacity = userCapacity;
     }
 
     public void updateName(String requestName) {
@@ -123,5 +124,9 @@ public class Book extends BaseEntity {
         this.initBudget = DEFAULT;
         this.initAsset = DEFAULT;
         this.carryOverStatus = Boolean.FALSE;
+    }
+
+    public void subscribe() {
+        this.userCapacity = Subscribe.S_MAX_MEMBER.getValue();
     }
 }

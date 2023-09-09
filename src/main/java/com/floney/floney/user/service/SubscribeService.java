@@ -42,7 +42,13 @@ public class SubscribeService {
             user.unSubscribe();
         } else {
             user.subscribe();
+            //구독자가 owner인 가계부 정원 4명으로 늘리기
         }
         userRepository.save(user);
     }
+
+
+    //구독 해지 넘기기 랜덤
+
+
 }

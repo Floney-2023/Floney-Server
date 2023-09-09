@@ -7,6 +7,7 @@ import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.common.constant.Subscribe.S_MAX_MEMBER;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.types.ExpressionUtils.count;
 
@@ -28,7 +30,6 @@ import static com.querydsl.core.types.ExpressionUtils.count;
 @RequiredArgsConstructor
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
     private static final int DELETE_TERM = 3;
-    private static final int MAX_MEMBER = 4;
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -42,7 +43,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetch()
             .size();
 
-        if (memberCount > MAX_MEMBER) {
+        if (memberCount >= book.getUserCapacity()) {
             throw new MaxMemberException(book.getBookKey(), memberCount);
         }
     }
