@@ -95,7 +95,7 @@ public class SubscribeServiceTest {
             .willReturn(Optional.ofNullable(subscribe));
 
         // 본인이 방장인 가계부가 존재하지 않는다.
-        given(bookUserRepository.findMyBooks(any(User.class)))
+        given(bookUserRepository.findMyInactiveBooks(any(User.class)))
             .willReturn(Collections.emptyList());
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
@@ -116,7 +116,7 @@ public class SubscribeServiceTest {
 
         // 본인이 방장인 가계부가 존재한다
         Book book = BookFixture.createBook();
-        given(bookUserRepository.findMyBooks(any(User.class)))
+        given(bookUserRepository.findMyInactiveBooks(any(User.class)))
             .willReturn(Collections.singletonList(book));
 
         // 위임 할 가계부원이 없을 경우
@@ -141,7 +141,7 @@ public class SubscribeServiceTest {
 
         // 본인이 방장인 가계부가 존재한다
         Book book = BookFixture.createBook();
-        given(bookUserRepository.findMyBooks(any(User.class)))
+        given(bookUserRepository.findMyInactiveBooks(any(User.class)))
             .willReturn(Collections.singletonList(book));
 
         User delegateUser = UserFixture.createUser2();
