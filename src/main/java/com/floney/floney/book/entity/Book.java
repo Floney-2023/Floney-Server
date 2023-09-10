@@ -135,10 +135,11 @@ public class Book extends BaseEntity {
         this.carryOverStatus = Boolean.FALSE;
     }
 
-    public void subscribe(User user) {
+    public Book subscribe(User user) {
         this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
         this.bookStatus = ACTIVE;
         this.owner = user.getEmail();
+        return this;
     }
 
     public void delegateOwner(User user) {
