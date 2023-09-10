@@ -65,9 +65,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Transactional
-    public CreateBookResponse subscribeCreateBook(
-        User user,
-        CreateBookRequest request) {
+    public CreateBookResponse subscribeCreateBook(User user, CreateBookRequest request) {
         Book newBook = request.of(user.getEmail());
         Book savedBook = bookRepository.save(newBook);
         savedBook.subscribe(user);

@@ -166,10 +166,9 @@ public class UserController {
     }
 
     /**
-     *
      * 최근 접근 가계부 키 저장
-     * @body SaveRecentBookKeyRequest 가계부 키
      *
+     * @body SaveRecentBookKeyRequest 가계부 키
      */
 
     @PostMapping("/bookKey")
@@ -180,21 +179,21 @@ public class UserController {
     }
 
     /**
-     *
      * 구독 데이터 저장
-     * @body SubscribeRequest 구독 정보
      *
+     * @body SubscribeRequest 구독 정보
      */
     @PostMapping("/subscribe")
     public ResponseEntity<?> saveSubscribe(@RequestBody @Valid SubscribeRequest request,
                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        subscribeService.saveSubscribe(request, userDetails.getUser());
-        return new ResponseEntity<>(HttpStatus.CREATED);
+
+        return new ResponseEntity<>(subscribeService.saveSubscribe(request, userDetails.getUser()), HttpStatus.CREATED);
     }
 
 
     /**
      * 구독 정보 조회
+     *
      * @body SubscribeResponse 구독 정보
      */
     @GetMapping("/subscribe")

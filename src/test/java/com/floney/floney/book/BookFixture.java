@@ -8,6 +8,7 @@ import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.entity.User;
 
 public class BookFixture {
@@ -53,6 +54,7 @@ public class BookFixture {
             .owner(EMAIL)
             .code(CODE)
             .initAsset(DEFAULT_VALUE)
+            .bookStatus(Status.ACTIVE)
             .build();
     }
 
@@ -92,5 +94,4 @@ public class BookFixture {
             .newUrl(UPDATE_URL)
             .build();
     }
-
 }

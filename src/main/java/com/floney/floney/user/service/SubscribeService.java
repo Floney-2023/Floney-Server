@@ -104,13 +104,16 @@ public class SubscribeService {
         if (wantDelegateWhoSubscribe.isPresent()) {
             User delegateTarget = wantDelegateWhoSubscribe.get();
             book.delegateOwner(delegateTarget);
+            bookRepository.save(book);
             return DelegateResponse.of(book,delegateTarget);
         }
         // 미존재시, 가계부 비활성화
         else {
             book.inactiveBookStatus();
+            bookRepository.save(book);
             return DelegateResponse.of(book,null);
         }
+
     }
 
 }
