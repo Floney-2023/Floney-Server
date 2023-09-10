@@ -167,7 +167,7 @@ public class BookController {
      */
     @PostMapping("/info/asset")
     public ResponseEntity<?> updateAsset(@RequestBody UpdateAssetRequest request) {
-        bookService.updateAsset(request);
+        bookService.saveOrUpdateAsset(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
