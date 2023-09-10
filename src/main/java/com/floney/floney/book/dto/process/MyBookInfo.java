@@ -21,12 +21,10 @@ public class MyBookInfo {
 
     @QueryProjection
     @Builder
-    public MyBookInfo(String bookImg, String name, Long memberCount,String bookKey) {
+    public MyBookInfo(String bookImg, String name, Long memberCount, String bookKey) {
         this.bookImg = bookImg;
         this.name = name;
         this.bookKey = bookKey;
         this.memberCount = memberCount;
     }
-
-
 }
