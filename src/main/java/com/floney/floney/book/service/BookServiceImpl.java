@@ -212,7 +212,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteBookLine(Book bookUserBook, BookUser bookUser){
+    public void deleteBookLine(Book bookUserBook, BookUser bookUser) {
         deleteAllLinesByOnly(bookUserBook, bookUser);
         deleteBookUser(bookUser);
     }
@@ -294,7 +294,7 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-     private void checkCreateBookMaximum(User user) {
+    private void checkCreateBookMaximum(User user) {
         int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
 
         if (user.isSubscribe()) {
@@ -306,7 +306,10 @@ public class BookServiceImpl implements BookService {
                 throw new NotSubscribeException();
             }
         }
+    }
 
+    private void deleteAllLinesByOnly(Book bookUserBook, BookUser bookUser) {
+        bookLineRepository.deleteAllLinesByBookAndBookUser(bookUserBook, bookUser);
     }
 
 
