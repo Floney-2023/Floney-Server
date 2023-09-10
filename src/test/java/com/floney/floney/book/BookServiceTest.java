@@ -68,9 +68,12 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("구독을 했다면, 참여한 가계부가 2초과일 시 가계부를 만들 수 없다")
+    @DisplayName("구독을 했어도, 참여한 가계부가 2 초과일 시 가계부를 만들 수 없다")
     void subscribe_book_create_exception() {
-        assertThatThrownBy(() -> bookService.subscribeCreateBook(userDetails.getUser(), createBookRequest()))
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class),any(ACTIVE.getClass())))
+            .willReturn(3);
+
+        assertThatThrownBy(() -> bookService.addBook(UserFixture.createSubscribeUser(), createBookRequest()))
             .isInstanceOf(LimitRequestException.class);
     }
 
