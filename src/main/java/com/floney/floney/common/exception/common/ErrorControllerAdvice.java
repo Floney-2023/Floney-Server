@@ -1,7 +1,21 @@
 package com.floney.floney.common.exception.common;
 
-import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.user.*;
+import com.floney.floney.common.exception.book.ExcelMakingException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.OutOfBudgetException;
+import com.floney.floney.common.exception.user.CodeNotSameException;
+import com.floney.floney.common.exception.user.EmailNotFoundException;
+import com.floney.floney.common.exception.user.EmailNotValidException;
+import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
+import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.util.HashMap;
@@ -135,6 +149,12 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> notFoundLine(NotFoundBookLineException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(ExcelMakingException.class)
+    protected ResponseEntity<ErrorResponse> notFoundLine(ExcelMakingException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     //SUBSCRIBE
