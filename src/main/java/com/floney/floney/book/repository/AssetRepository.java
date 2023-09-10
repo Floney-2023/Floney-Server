@@ -1,6 +1,6 @@
-package com.floney.floney.analyze.repository;
+package com.floney.floney.book.repository;
 
-import com.floney.floney.analyze.entity.Asset;
+import com.floney.floney.book.entity.Asset;
 import com.floney.floney.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 

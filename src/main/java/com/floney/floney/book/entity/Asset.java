@@ -1,7 +1,6 @@
-package com.floney.floney.analyze.entity;
+package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.entity.Book;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;

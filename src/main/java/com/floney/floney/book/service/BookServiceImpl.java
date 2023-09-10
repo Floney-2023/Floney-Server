@@ -1,7 +1,9 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.entity.Asset;
-import com.floney.floney.analyze.repository.AssetRepository;
+import com.floney.floney.book.entity.Asset;
+import com.floney.floney.book.entity.Budget;
+import com.floney.floney.book.repository.AssetRepository;
+import com.floney.floney.book.repository.BudgetRepository;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
@@ -45,6 +47,7 @@ public class BookServiceImpl implements BookService {
     private final CategoryRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final AssetRepository assetRepository;
+    private final BudgetRepository budgetRepository;
 
     @Override
     @Transactional
@@ -184,10 +187,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void updateBudget(UpdateBudgetRequest request) {
+    public void saveOrUpdateBudget(UpdateBudgetRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        savedBook.updateBudget(request.getBudget());
-        bookRepository.save(savedBook);
+        Optional<Budget> savedBudget = budgetRepository.findBudgetByBookAndDate(savedBook, request.getDate());
+
+        if (savedBudget.isPresent()) {
+            updateBudget(savedBudget.get(), request);
+        } else {
+            Budget newBudget = Budget.of(savedBook, request);
+            budgetRepository.save(newBudget);
+        }
     }
 
     @Override
@@ -316,5 +325,10 @@ public class BookServiceImpl implements BookService {
     private void updateAsset(Asset savedAsset, UpdateAssetRequest request) {
         savedAsset.update(request);
         assetRepository.save(savedAsset);
+    }
+
+    private void updateBudget(Budget savedBudget, UpdateBudgetRequest request) {
+        savedBudget.update(request);
+        budgetRepository.save(savedBudget);
     }
 }
