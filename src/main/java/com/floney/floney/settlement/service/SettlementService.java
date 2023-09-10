@@ -17,12 +17,13 @@ import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.settlement.repository.SettlementUserRepository;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -88,9 +89,7 @@ public class SettlementService {
     }
 
     public void validateBookUsers(final Set<String> emails, final Book book) {
-        for (String email : emails) {
-            findBookUserByBookAndUserEmail(book, email);
-        }
+        emails.forEach(email -> findBookUserByBookAndUserEmail(book, email));
     }
 
     private void findBookUserByBookAndUserEmail(final Book book, final String email) {

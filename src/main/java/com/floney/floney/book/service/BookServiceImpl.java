@@ -211,6 +211,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
+    public void deleteBookLine(Book bookUserBook, BookUser bookUser){
+        deleteAllLinesByOnly(bookUserBook, bookUser);
+        deleteBookUser(bookUser);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
         return new InviteCodeResponse(findBook(bookKey));
@@ -287,7 +294,7 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-    private void checkCreateBookMaximum(User user) {
+     private void checkCreateBookMaximum(User user) {
         int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
 
         if (user.isSubscribe()) {
@@ -301,5 +308,6 @@ public class BookServiceImpl implements BookService {
         }
 
     }
+
 
 }

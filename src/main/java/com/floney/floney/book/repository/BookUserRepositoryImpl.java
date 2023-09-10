@@ -92,8 +92,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 book.status.eq(ACTIVE))
             .fetchOne());
     }
-
-
+  
+  
     @Override
     public List<MyBookInfo> findMyBookInfos(User user) {
         List<Book> books = jpaQueryFactory.select(book)
@@ -117,7 +117,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         }
         return infos;
     }
+  
 
+
+    
     @Override
     public List<Book> findMyInactiveBooks(User user) {
         List<Book> books = jpaQueryFactory.select(book)

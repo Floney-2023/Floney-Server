@@ -44,14 +44,14 @@ public class OurBookInfo {
     }
 
     private static void checkRole(Book book, List<OurBookUser> bookUsers) {
-        for (OurBookUser bookUser : bookUsers) {
+        bookUsers.forEach((bookUser) -> {
             bookUser.checkRole(book.getOwner());
-        }
+        });
     }
 
     private static void iSMyAccount(List<OurBookUser> bookUsers, String myEmail) {
-        for (OurBookUser bookUser : bookUsers) {
+        bookUsers.forEach((bookUser) -> {
             bookUser.isMyAccount(myEmail);
-        }
+        });
     }
 }

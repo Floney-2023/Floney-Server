@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 
@@ -36,6 +37,9 @@ public interface BookService {
     InvolveBookResponse findInvolveBook(final String email);
 
     void bookUserOut(final BookUserOutRequest request, final String username);
+
+
+    void deleteBookLine(Book bookUserBook, BookUser bookUser);
 
     InviteCodeResponse inviteCode(final String bookKey);
 

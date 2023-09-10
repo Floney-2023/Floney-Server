@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
@@ -37,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Random;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -51,6 +54,7 @@ public class UserService {
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
     private final CustomUserDetailsService customUserDetailsService;
+    private final BookService bookService;
 
     public Token login(LoginRequest request) {
         try {
@@ -94,8 +98,8 @@ public class UserService {
     @Transactional
     public void signout(String email) {
         User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        deleteAllBookLinesAndAccountBy(user);
         user.delete();
-        deleteAllBookAccountsBy(user);
         userRepository.save(user);
     }
 
@@ -151,11 +155,11 @@ public class UserService {
         user.updateProfileImg(profileImg);
         userRepository.save(user);
 
-        List<BookUser> bookUsers = bookUserRepository.findByUser(user);
-        for (BookUser bookUser : bookUsers) {
+        List<BookUser> bookUsers = bookUserRepository.findByUserAndStatus(user, ACTIVE);
+        bookUsers.forEach(bookUser -> {
             bookUser.updateProfileImg(profileImg);
             bookUserRepository.save(bookUser);
-        }
+        });
     }
 
     public String sendEmailAuthMail(String email) {
@@ -194,13 +198,12 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteAllBookAccountsBy(User user) {
+    public void deleteAllBookLinesAndAccountBy(User user) {
         userRepository.save(user);
-        List<BookUser> myBookAccounts = bookUserRepository.findByUser(user);
-        for (BookUser myAccounts : myBookAccounts) {
-            myAccounts.delete();
-            bookUserRepository.save(myAccounts);
-        }
+        List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
+        myBookAccounts
+            .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
+
     }
 
     @Transactional

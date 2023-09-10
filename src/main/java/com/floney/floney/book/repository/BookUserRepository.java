@@ -11,7 +11,7 @@ public interface BookUserRepository extends JpaRepository<BookUser, Long>, BookU
 
     int countBookUserByUserAndStatus(User user, Status status);
 
-    List<BookUser> findByUser(User user);
+    List<BookUser> findByUserAndStatus(User user,Status status);
 
     List<BookUser> findAllByBookAndStatus(Book book, Status status);
 
