@@ -77,21 +77,6 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(savedBook);
     }
 
-    private void checkCreateBookMaximum(User user) {
-        int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
-
-        if (user.isSubscribe()) {
-            if (currentParticipateCount >= SUBSCRIBE_MAX) {
-                throw new LimitRequestException();
-            }
-        } else {
-            if (currentParticipateCount >= DEFAULT_MAX) {
-                throw new NotSubscribeException();
-            }
-        }
-
-    }
-
     @Override
     @Transactional
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
@@ -302,6 +287,21 @@ public class BookServiceImpl implements BookService {
     private void saveDefaultBookKey(User user, Book book) {
         user.saveDefaultBookKey(book.getBookKey());
         userRepository.save(user);
+    }
+
+    private void checkCreateBookMaximum(User user) {
+        int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
+
+        if (user.isSubscribe()) {
+            if (currentParticipateCount >= SUBSCRIBE_MAX) {
+                throw new LimitRequestException();
+            }
+        } else {
+            if (currentParticipateCount >= DEFAULT_MAX) {
+                throw new NotSubscribeException();
+            }
+        }
+
     }
 
 }

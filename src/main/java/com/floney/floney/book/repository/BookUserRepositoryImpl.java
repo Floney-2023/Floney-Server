@@ -6,7 +6,6 @@ import com.floney.floney.book.dto.process.QMyBookInfo;
 import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.JPAExpressions;
@@ -18,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.types.ExpressionUtils.count;
@@ -39,7 +40,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .select(bookUser)
             .from(bookUser)
             .where(bookUser.book.eq(book),
-                bookUser.status.eq(Status.ACTIVE))
+                bookUser.status.eq(ACTIVE))
             .fetch()
             .size();
 
@@ -58,9 +59,9 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 ))
             .from(bookUser)
             .innerJoin(bookUser.book, book)
-            .where(book.bookKey.eq(bookKey), book.status.eq(Status.ACTIVE))
+            .where(book.bookKey.eq(bookKey), book.status.eq(ACTIVE))
             .innerJoin(bookUser.user, user)
-            .where(user.status.eq(Status.ACTIVE))
+            .where(user.status.eq(ACTIVE))
             .fetch();
     }
 
@@ -71,10 +72,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .innerJoin(bookUser.user, user)
             .where(user.email.eq(currentUserEmail),
-                user.status.eq(Status.ACTIVE))
+                user.status.eq(ACTIVE))
             .innerJoin(bookUser.book, book)
             .where(book.bookKey.eq(bookKey),
-                book.status.eq(Status.ACTIVE))
+                book.status.eq(ACTIVE))
             .fetchOne());
     }
 
@@ -85,10 +86,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .innerJoin(bookUser.user, user)
             .where(user.email.eq(currentUserEmail),
-                user.status.eq(Status.ACTIVE))
+                user.status.eq(ACTIVE))
             .innerJoin(bookUser.book, book)
             .where(book.code.eq(bookCode),
-                book.status.eq(Status.ACTIVE))
+                book.status.eq(ACTIVE))
             .fetchOne());
     }
 
@@ -98,7 +99,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .where(bookUser.user.eq(user),
-                bookUser.status.eq(Status.ACTIVE))
+                bookUser.status.eq(ACTIVE))
             .fetch();
 
         List<MyBookInfo> infos = new ArrayList<>();
@@ -110,7 +111,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                         book.bookKey))
                 .from(bookUser)
                 .where(bookUser.book.eq(target),
-                    bookUser.status.eq(Status.ACTIVE))
+                    bookUser.status.eq(ACTIVE))
                 .fetchOne();
             infos.add(my);
         }
@@ -118,25 +119,42 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public List<Book> findMyBooks(User user) {
+    public List<Book> findMyInactiveBooks(User user) {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .where(bookUser.user.eq(user),
-                bookUser.status.eq(Status.ACTIVE))
+                bookUser.status.eq(ACTIVE))
+            .fetch();
+
+        List<Book> myBooks = new ArrayList<>();
+
+        for (Book target : books) {
+            if(target.getBookStatus() == INACTIVE && target.getStatus() == ACTIVE){
+                myBooks.add(target);
+            }
+        }
+        return myBooks;
+
+    }
+
+    @Override
+    public List<Book> findBookByOwner(User user) {
+        List<Book> books = jpaQueryFactory.select(book)
+            .from(bookUser)
+            .where(bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE))
             .fetch();
 
         List<Book> myBooks = new ArrayList<>();
         for (Book target : books) {
-            Book myBook = jpaQueryFactory.select(book)
-                .from(bookUser)
-                .where(bookUser.book.eq(target),
-                    book.bookStatus.eq(INACTIVE),
-                    bookUser.status.eq(Status.ACTIVE))
-                .fetchOne();
-            myBooks.add(myBook);
+            if(Objects.equals(target.getOwner(), user.getEmail())) {
+                myBooks.add(target);
+            }
         }
         return myBooks;
+
     }
+
 
     @Override
     public long countBookUser(Book target) {
@@ -144,7 +162,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
-                bookUser.status.eq(Status.ACTIVE))
+                bookUser.status.eq(ACTIVE))
             .fetchOne();
     }
 
@@ -153,10 +171,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return jpaQueryFactory.selectFrom(bookUser)
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
-                book.status.eq(Status.ACTIVE))
+                book.status.eq(ACTIVE))
             .innerJoin(bookUser.user, user)
             .where(user.email.eq(email),
-                user.status.eq(Status.ACTIVE))
+                user.status.eq(ACTIVE))
             .fetchOne();
 
     }

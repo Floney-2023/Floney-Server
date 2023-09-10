@@ -21,7 +21,9 @@ public interface BookUserCustomRepository {
 
     List<MyBookInfo> findMyBookInfos(User user);
 
-    List<Book> findMyBooks(User user);
+    List<Book> findMyInactiveBooks(User user);
+
+    List<Book> findBookByOwner(User user);
 
     long countBookUser(Book book);
 
