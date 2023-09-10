@@ -178,7 +178,7 @@ public class BookController {
      */
     @PostMapping("/info/budget")
     public ResponseEntity<?> updateBudget(@RequestBody UpdateBudgetRequest request) {
-        bookService.updateBudget(request);
+        bookService.saveOrUpdateBudget(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
