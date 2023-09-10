@@ -31,7 +31,7 @@ public interface BookService {
 
     void saveOrUpdateAsset(final UpdateAssetRequest request);
 
-    void updateBudget(final UpdateBudgetRequest request);
+    void saveOrUpdateBudget(final UpdateBudgetRequest request);
 
     InvolveBookResponse findInvolveBook(final String email);
 
