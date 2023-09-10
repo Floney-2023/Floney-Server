@@ -24,10 +24,10 @@ public class BookAnalyzer {
         return initAsset + difference;
     }
 
-    public AnalyzeResponseByAsset analyzeAsset(long initAsset) {
+    public AnalyzeResponseByAsset analyzeAsset(long savedAsset) {
         long difference = differenceInAndOutCome();
-        long currentAsset = calculateCurrentAsset(initAsset, difference);
+        long currentAsset = calculateCurrentAsset(savedAsset, difference);
 
-        return AnalyzeResponseByAsset.of(difference, initAsset, currentAsset);
+        return AnalyzeResponseByAsset.of(difference, savedAsset, currentAsset);
     }
 }

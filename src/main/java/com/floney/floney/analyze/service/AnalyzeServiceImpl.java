@@ -8,7 +8,9 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.entity.Asset;
 import com.floney.floney.analyze.entity.BookAnalyze;
+import com.floney.floney.analyze.repository.AssetRepository;
 import com.floney.floney.analyze.repository.BookAnalyzeRepository;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.Book;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +38,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final BookLineCustomRepository bookLineRepository;
     private final BookAnalyzeRepository analyzeRepository;
     private final CategoryRepository categoryRepository;
+    private final AssetRepository assetRepository;
 
     @Override
     @Transactional
@@ -60,11 +64,12 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Transactional(readOnly = true)
     public AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request) {
         Book savedBook = findBook(request.getBookKey());
-        long initAsset = savedBook.getInitAsset();
+        Asset asset = assetRepository.findAssetByBookAndDate(savedBook, LocalDate.parse(request.getDate()))
+            .orElse(Asset.init());
 
         Map<String, Long> totalExpense = bookLineRepository.totalExpensesForAsset(request);
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        return bookAnalyzer.analyzeAsset(initAsset);
+        return bookAnalyzer.analyzeAsset(asset.getMoney());
     }
 
     private Book findBook(String bookKey) {
@@ -88,7 +93,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return analyzeRepository.save(analyze);
     }
 
-    private Category findCategory(String root){
+    private Category findCategory(String root) {
         return categoryRepository.findFlowCategory(root)
             .orElseThrow(() -> new NotFoundCategoryException(root));
     }
