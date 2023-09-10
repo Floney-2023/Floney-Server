@@ -1,5 +1,10 @@
 package com.floney.floney.book.repository;
 
+import static com.floney.floney.book.entity.QBook.book;
+import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.user.entity.QUser.user;
+import static com.querydsl.core.types.ExpressionUtils.count;
+
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.process.QMyBookInfo;
@@ -11,17 +16,11 @@ import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QBookUser.bookUser;
-import static com.floney.floney.user.entity.QUser.user;
-import static com.querydsl.core.types.ExpressionUtils.count;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -128,5 +127,12 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     }
 
-
+    @Override
+    public boolean existsByUserEmailAndBookKey(final String email, final String bookKey) {
+        return jpaQueryFactory.selectFrom(bookUser)
+                .innerJoin(bookUser.book, book)
+                .innerJoin(bookUser.user, user)
+                .where(book.bookKey.eq(bookKey), user.email.eq(email))
+                .fetchOne() != null;
+    }
 }

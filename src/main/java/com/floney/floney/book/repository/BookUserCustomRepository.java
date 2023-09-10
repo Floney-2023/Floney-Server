@@ -5,7 +5,6 @@ import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +21,6 @@ public interface BookUserCustomRepository {
     void countBookUser(Book book);
 
     BookUser findBookUserBy(String email, Book book);
+
+    boolean existsByUserEmailAndBookKey(String email, String bookKey);
 }
