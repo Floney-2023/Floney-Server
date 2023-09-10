@@ -1,4 +1,4 @@
-package com.floney.floney.User;
+package com.floney.floney.User.service;
 
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.entity.Book;
@@ -35,6 +35,9 @@ public class SubscribeServiceTest {
 
     @Mock
     private BookUserRepository bookUserRepository;
+
+    @Mock
+    private BookRepository bookRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -95,7 +98,7 @@ public class SubscribeServiceTest {
             .willReturn(Optional.ofNullable(subscribe));
 
         // 본인이 방장인 가계부가 존재하지 않는다.
-        given(bookUserRepository.findMyInactiveBooks(any(User.class)))
+        given(bookUserRepository.findBookByOwner(any(User.class)))
             .willReturn(Collections.emptyList());
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
@@ -116,8 +119,12 @@ public class SubscribeServiceTest {
 
         // 본인이 방장인 가계부가 존재한다
         Book book = BookFixture.createBook();
-        given(bookUserRepository.findMyInactiveBooks(any(User.class)))
+        given(bookUserRepository.findBookByOwner(any(User.class)))
             .willReturn(Collections.singletonList(book));
+
+        // 해당 가계부는 구독 혜택을 받는 중
+        given(bookUserRepository.countBookUser(any(Book.class)))
+            .willReturn(4L);
 
         // 위임 할 가계부원이 없을 경우
         given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
@@ -129,6 +136,7 @@ public class SubscribeServiceTest {
 
         subscribeService.saveSubscribe(newRequest, user);
 
+        // 가계부는 비활성화
         Assertions.assertThat(book.getBookStatus())
             .isEqualTo(Status.INACTIVE);
     }
@@ -141,12 +149,15 @@ public class SubscribeServiceTest {
 
         // 본인이 방장인 가계부가 존재한다
         Book book = BookFixture.createBook();
-        given(bookUserRepository.findMyInactiveBooks(any(User.class)))
+        given(bookUserRepository.findBookByOwner(any(User.class)))
             .willReturn(Collections.singletonList(book));
 
-        User delegateUser = UserFixture.createUser2();
+        // 해당 가계부는 구독 혜택을 받는 중
+        given(bookUserRepository.countBookUser(any(Book.class)))
+            .willReturn(4L);
 
         // 위임 할 가계부원이 존재할 경우
+        User delegateUser = UserFixture.createUser2();
         given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
             .willReturn(Optional.of(delegateUser));
 
