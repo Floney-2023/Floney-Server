@@ -79,7 +79,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .innerJoin(bookLine.book, book)
             .leftJoin(bookLine.writer, bookUser)
-            .leftJoin(bookUser.user,user)
+            .leftJoin(bookUser.user, user)
             .where(
                 book.status.eq(Status.ACTIVE),
                 bookLine.status.eq(Status.ACTIVE),
@@ -181,7 +181,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public void deleteAllLinesByUser(BookUser bookUser, String bookKey) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
-            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .set(bookLine.updatedAt, LocalDateTime.now())
             .where(bookLine.book.id.eq(
                 JPAExpressions.select(book.id)
                     .from(book)
@@ -332,4 +332,17 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetch();
     }
 
+    @Override
+    @Transactional
+    public void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
+            .where(bookLine.book.eq(
+                bookUserBook
+            ), bookLine.writer.id.eq(
+                targetBookUser.getId()
+            ))
+            .execute();
+    }
 }

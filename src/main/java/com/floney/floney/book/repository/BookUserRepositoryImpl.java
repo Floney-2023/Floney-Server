@@ -94,6 +94,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     @Override
     public List<MyBookInfo> findMyBooks(User user) {
+
+        // 유저가 가입한 가계부 전체 조회
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .where(bookUser.user.eq(user),
@@ -101,8 +103,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .fetch();
 
         List<MyBookInfo> infos = new ArrayList<>();
-        for (Book target : books) {
-            MyBookInfo my = jpaQueryFactory.select(
+
+        // 각 가계부 정보 조회
+        books.forEach(target -> {
+            MyBookInfo myBookInfo = jpaQueryFactory.select(
                     new QMyBookInfo(book.bookImg,
                         book.name,
                         bookUser.count(),
@@ -111,8 +115,9 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 .where(bookUser.book.eq(target),
                     bookUser.status.eq(Status.ACTIVE))
                 .fetchOne();
-            infos.add(my);
-        }
+            infos.add(myBookInfo);
+        });
+
         return infos;
     }
 
