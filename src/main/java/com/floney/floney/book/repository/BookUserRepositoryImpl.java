@@ -145,6 +145,14 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
+    public boolean existsByUserEmailAndBookKey(final String email, final String bookKey) {
+        return jpaQueryFactory.selectFrom(bookUser)
+                .innerJoin(bookUser.book, book)
+                .innerJoin(bookUser.user, user)
+                .where(book.bookKey.eq(bookKey), user.email.eq(email))
+                .fetchOne() != null;
+    }
+    @Override
     public List<BookUser> findBookUserHaveToDelete() {
         LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
         return jpaQueryFactory

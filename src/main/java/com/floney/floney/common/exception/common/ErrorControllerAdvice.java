@@ -8,6 +8,13 @@ import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.book.ExcelMakingException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.util.Arrays;
@@ -156,6 +163,12 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(NotFoundBookLineException.class)
     protected ResponseEntity<ErrorResponse> notFoundLine(NotFoundBookLineException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(ExcelMakingException.class)
+    protected ResponseEntity<ErrorResponse> notFoundLine(ExcelMakingException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
