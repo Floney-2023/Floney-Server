@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -85,7 +87,7 @@ public class BookServiceImpl implements BookService {
         String userEmail = userDetails.getUsername();
         User user = userDetails.getUser();
 
-        Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
+        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
@@ -187,10 +189,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public InvolveBookResponse findInvolveBook(String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(email));
-        return InvolveBookResponse.of(user.getRecentBookKey());
+    public InvolveBookResponse findInvolveBook(User user) {
+        String recentBookKey = user.getRecentBookKey();
+        Optional<Book> book = bookRepository.findBookByBookKeyAndStatus(recentBookKey, ACTIVE);
+        return InvolveBookResponse.of(book);
+
     }
 
     @Override
@@ -261,14 +264,19 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookInfoResponse getBookInfoByCode(String code) {
-        Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
+        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
         long memberCount = bookUserRepository.countBookUser(book);
         return BookInfoResponse.of(book, memberCount);
     }
 
+    @Override
+    public BookStatusResponse getBookStatus(String bookKey) {
+        return BookStatusResponse.of(findBook(bookKey));
+    }
+
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
@@ -287,7 +295,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private List<BookUser> findAllByBookAndStatus(String bookKey) {
-        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), Status.ACTIVE);
+        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), ACTIVE);
     }
 
     private void deleteBookUser(BookUser bookUser) {
@@ -310,7 +318,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void checkCreateBookMaximum(User user) {
-        int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, Status.ACTIVE);
+        int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
         if (user.isSubscribe()) {
             if (currentParticipateCount >= SUBSCRIBE_MAX) {

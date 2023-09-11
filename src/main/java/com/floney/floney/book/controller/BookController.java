@@ -202,7 +202,7 @@ public class BookController {
      */
     @GetMapping("/users/check")
     public ResponseEntity<?> findInvolveBook(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUsername()), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUser()), HttpStatus.OK);
     }
 
     /**
@@ -303,6 +303,16 @@ public class BookController {
     @GetMapping()
     public ResponseEntity<?> getBookInfo(@RequestParam String code) {
         return new ResponseEntity<>(bookService.getBookInfoByCode(code), HttpStatus.OK);
+    }
+
+    /**
+     * 가계부 비활성화 / 활성화 여부 조회
+     * @param bookKey 가계부 키
+     * @return BookStatusResponse 비활성화 / 활성화 여부
+     */
+    @GetMapping("/bookStatus")
+    public ResponseEntity<?> getBookStatus(@RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.getBookStatus(bookKey), HttpStatus.OK);
     }
 
 }
