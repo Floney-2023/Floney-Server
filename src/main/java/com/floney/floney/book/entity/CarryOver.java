@@ -51,6 +51,13 @@ public class CarryOver extends BaseEntity {
             .build();
     }
 
+    public static CarryOver init() {
+        return CarryOver
+            .builder()
+            .money(0L)
+            .build();
+    }
+
     public void update(Long updateMoney, String flow) {
         if(Objects.equals(flow, AssetType.INCOME.name())){
             money += updateMoney;

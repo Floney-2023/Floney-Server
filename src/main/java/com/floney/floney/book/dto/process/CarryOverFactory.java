@@ -1,13 +1,20 @@
 package com.floney.floney.book.dto.process;
 
+import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.BookLineRepository;
+import com.floney.floney.book.repository.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
@@ -15,23 +22,45 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 @RequiredArgsConstructor
 @Component
 public class CarryOverFactory {
-    private final static long INACTIVE_CARRY_OVER = 0L;
-    private final static long DEFAULT_EXPENSE = 0L;
-    private final BookLineRepository bookLineRepository;
+    private static final int FIVE_YEARS = 60;
+    private final CarryOverRepository carryOverRepository;
 
     public CarryOverInfo getCarryOverInfo(Book book, String date) {
-        boolean status = book.getCarryOverStatus();
-
-        if (DateFactory.isFirstDay(date) && status) {
-            DatesDuration datesDuration = DateFactory.getBeforeDateDuration(LocalDate.parse(date));
-            return CarryOverInfo.of(status, getCarryOverMoney(book.getBookKey(), datesDuration));
+        boolean carryOverStatus = book.getCarryOverStatus();
+        LocalDate localDate = LocalDate.parse(date);
+        // 1일일 경우, 이월 내역 포함하여 전송
+        if (carryOverStatus && DateFactory.isFirstDay(date)) {
+            Optional<CarryOver> carryOverOptional = carryOverRepository.findCarryOverByDate(localDate);
+            if (carryOverOptional.isPresent()) {
+                return CarryOverInfo.of(true, carryOverOptional.get());
+            }
         }
-        return CarryOverInfo.of(status, INACTIVE_CARRY_OVER);
+
+        return CarryOverInfo.of(carryOverStatus, CarryOver.init());
     }
 
-    private long getCarryOverMoney(String bookKey, DatesDuration duration) {
-        Map<String, Long> totalExpense = bookLineRepository.totalExpenseByMonth(bookKey, duration);
-        long carryOverMoney = totalExpense.getOrDefault(INCOME.getKind(),DEFAULT_EXPENSE) - totalExpense.getOrDefault(OUTCOME.getKind(),DEFAULT_EXPENSE);
-        return carryOverMoney;
+
+    @Transactional
+    public void updateCarryOver(CreateLineRequest request, Book book) {
+        LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
+        List<CarryOver> carryOvers = new ArrayList<>();
+
+        // 5년(60개월) 동안의 엔티티 생성
+        for (int i = 0; i < FIVE_YEARS; i++) {
+            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDate(targetDate);
+
+            if (savedCarryOver.isEmpty()) {
+                CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
+                carryOvers.add(newCarryOver);
+            } else {
+                CarryOver saved = savedCarryOver.get();
+                saved.update(request.getMoney(), request.getFlow());
+                carryOvers.add(saved);
+            }
+            targetDate = targetDate.plusMonths(1);
+        }
+
+        carryOverRepository.saveAll(carryOvers);
     }
+
 }

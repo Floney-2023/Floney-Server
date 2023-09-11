@@ -36,14 +36,13 @@ import static java.time.LocalDate.parse;
 @Service
 @RequiredArgsConstructor
 public class BookLineServiceImpl implements BookLineService {
-    private static final int FIVE_YEARS = 60;
+
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
     private final CarryOverFactory carryOverFactory;
     private final BookLineCategoryCustomRepository bookLineCategoryRepository;
-    private final CarryOverRepository carryOverRepository;
 
     @Override
     @Transactional
@@ -51,7 +50,7 @@ public class BookLineServiceImpl implements BookLineService {
         Book book = findBook(request.getBookKey());
 
         if (book.getCarryOverStatus()) {
-            updateCarryOver(request, book);
+            carryOverFactory.updateCarryOver(request, book);
         }
 
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
@@ -131,27 +130,6 @@ public class BookLineServiceImpl implements BookLineService {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
 
-    private void updateCarryOver(CreateLineRequest request, Book book) {
-        LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
-        List<CarryOver> carryOvers = new ArrayList<>();
-
-        // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDate(targetDate);
-
-            if (savedCarryOver.isEmpty()) {
-                CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
-                carryOvers.add(newCarryOver);
-            } else {
-                CarryOver saved = savedCarryOver.get();
-                saved.update(request.getMoney(), request.getFlow());
-                carryOvers.add(saved);
-            }
-            targetDate = targetDate.plusMonths(1);
-        }
-
-        carryOverRepository.saveAll(carryOvers);
-    }
 
 
 }
