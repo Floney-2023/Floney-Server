@@ -108,7 +108,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                     new QMyBookInfo(book.bookImg,
                         book.name,
                         bookUser.count(),
-                        book.bookKey))
+                        book.bookKey,
+                        book.bookStatus))
                 .from(bookUser)
                 .where(bookUser.book.eq(target),
                     bookUser.status.eq(ACTIVE))
