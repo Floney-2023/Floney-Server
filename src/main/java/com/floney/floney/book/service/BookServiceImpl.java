@@ -270,6 +270,11 @@ public class BookServiceImpl implements BookService {
         return BookInfoResponse.of(book, memberCount);
     }
 
+    @Override
+    public BookStatusResponse getBookStatus(String bookKey) {
+        return BookStatusResponse.of(findBook(bookKey));
+    }
+
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));

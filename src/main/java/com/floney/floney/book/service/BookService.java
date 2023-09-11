@@ -52,4 +52,6 @@ public interface BookService {
     CurrencyResponse getCurrency(String bookKey);
 
     BookInfoResponse getBookInfoByCode(String code);
+
+    BookStatusResponse getBookStatus(String bookKey);
 }
