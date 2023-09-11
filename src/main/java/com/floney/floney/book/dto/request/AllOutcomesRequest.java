@@ -2,11 +2,13 @@ package com.floney.floney.book.dto.request;
 
 import com.floney.floney.book.dto.process.DatesDuration;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
+@ToString
 public class AllOutcomesRequest {
 
     private String bookKey;

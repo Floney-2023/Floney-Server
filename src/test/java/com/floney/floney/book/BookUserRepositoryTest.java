@@ -5,6 +5,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.config.UserFixture;
@@ -55,8 +56,8 @@ public class BookUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("가계부 사용자가 2명이상이면 가계부를 삭제할 수 없다")
-    void delete_exception() {
+    @DisplayName("가계부 사용자가 몇명인지 반환한다")
+    void count_book_user() {
         User savedUser = userRepository.save(UserFixture.createUser());
         Book savedBook = bookRepository.save(BookFixture.createBook());
 
@@ -66,8 +67,8 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(owner);
         bookUserRepository.save(member);
 
-        assertThatThrownBy(() -> bookUserRepository.countBookUser(savedBook))
-            .isInstanceOf(NoAuthorityException.class);
+        assertThat(bookUserRepository.countBookUser(savedBook))
+            .isEqualTo(2);
     }
 
     @Test

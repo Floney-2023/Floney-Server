@@ -68,6 +68,13 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = request.getExcept();
     }
 
+    public BookLine deleteForever() {
+        this.writer = null;
+        this.bookLineCategories = null;
+        this.book = null;
+        return this;
+    }
+
     public String getWriter() {
         return this.writer.getNickName();
     }

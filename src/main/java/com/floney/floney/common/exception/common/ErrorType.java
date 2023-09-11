@@ -30,17 +30,21 @@ public enum ErrorType {
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),
     NOT_FOUND_CATEGORY("B003", "카테고리가 존재하지 않습니다"),
-    OUT_OF_BUDGET("B004","자산 범위를 초과하였습니다"),
+    NO_DELETE_BOOK("B004","남은 가계부 유저가 있습니다"),
     NO_AUTHORITY("B005","가계부를 만든 사람만 삭제할 수 있습니다"),
     NOT_FOUND_BOOK_USER ("B006","가계부 멤버를 찾을 수 없습니다"),
     NOT_FOUND_BOOK_LINE ("B007","가계부 내역을 찾을 수 없습니다"),
+    ALREADY_JOIN("B008", "이미 존재하는 가계부 유저입니다"),
+
     FAIL_TO_CREATE_EXCEL("B008", "엑셀 파일을 생성하는 중 오류가 발생했습니다"),
 
     NOT_SUBSCRIBE("S001","멤버쉽 전용 기능입니다"),
     LIMIT("S002","제공하지 않는 서비스입니다"),
 
     SETTLEMENT_NOT_FOUND("ST001", "정산 내역이 존재하지 않습니다"),
-    OUTCOME_USER_NOT_FOUND("ST002", "지출 내역의 유저가 유저 목록에 존재하지 않습니다");
+    OUTCOME_USER_NOT_FOUND("ST002", "지출 내역의 유저가 유저 목록에 존재하지 않습니다"),
+
+    SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다");
 
     private final String code;
     private final String message;

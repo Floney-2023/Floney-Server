@@ -1,12 +1,14 @@
 package com.floney.floney.settlement.domain.entity;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.settlement.dto.request.OutcomeRequest;
 import com.floney.floney.settlement.dto.request.SettlementRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
@@ -15,6 +17,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +33,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Settlement extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,6 +57,17 @@ public class Settlement extends BaseEntity {
 
     @Column(nullable = false, updatable = false)
     private Long avgOutcome;
+
+    @QueryProjection
+    private Settlement(Book book, List<SettlementUser> details, LocalDate startDate, LocalDate endDate, Integer userCount, Long totalOutcome, Long avgOutcome) {
+        this.book = book;
+        this.details = details;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.userCount = userCount;
+        this.totalOutcome = totalOutcome;
+        this.avgOutcome = avgOutcome;
+    }
 
     public static Settlement of(Book book, SettlementRequest request) {
         final Integer userCount = calculateUserCount(request.getUserEmails());
@@ -88,5 +102,10 @@ public class Settlement extends BaseEntity {
 
     public void updateBookLastSettlementDate() {
         book.updateLastSettlementDate(getCreatedAt().toLocalDate());
+    }
+
+    public Settlement deleteForever() {
+        this.book = null;
+        return this;
     }
 }

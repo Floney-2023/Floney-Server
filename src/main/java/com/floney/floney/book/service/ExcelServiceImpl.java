@@ -144,7 +144,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private void validateBookUser(final String userEmail, final String bookKey) {
         if (!bookUserRepository.existsByUserEmailAndBookKey(userEmail, bookKey)) {
-            throw new NotFoundBookUserException();
+            throw new NotFoundBookUserException(bookKey, userEmail);
         }
     }
 }

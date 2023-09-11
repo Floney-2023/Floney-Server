@@ -4,8 +4,11 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Currency;
 import java.util.List;
 
 public interface BookService {
@@ -36,6 +39,9 @@ public interface BookService {
 
     void bookUserOut(final BookUserOutRequest request, final String username);
 
+
+    void deleteBookLine(Book bookUserBook, BookUser bookUser);
+
     InviteCodeResponse inviteCode(final String bookKey);
 
     List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey);
@@ -43,4 +49,8 @@ public interface BookService {
     CurrencyResponse changeCurrency(final ChangeCurrencyRequest request);
 
     Book makeInitBook(final String bookKey);
+
+    CurrencyResponse getCurrency(String bookKey);
+
+    BookInfoResponse getBookInfoByCode(String code);
 }

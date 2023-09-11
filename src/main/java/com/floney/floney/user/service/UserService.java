@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
@@ -21,20 +22,29 @@ import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
-import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Random;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -44,13 +54,22 @@ public class UserService {
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
     private final CustomUserDetailsService customUserDetailsService;
+    private final BookService bookService;
 
     public Token login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
+        try {
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+            );
 
-        return jwtProvider.generateToken(authentication);
+            return jwtProvider.generateToken(authentication);
+        } catch (BadCredentialsException exception) {
+            logger.warn("카카오 로그인 실패: [{}]", request.getEmail());
+            throw exception;
+        } catch (AccountStatusException exception) {
+            logger.error("카카오 로그인 오류: {}", exception.getMessage());
+            throw exception;
+        }
     }
 
     public String logout(String accessToken) {
@@ -79,8 +98,9 @@ public class UserService {
     @Transactional
     public void signout(String email) {
         User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        deleteAllBookLinesAndAccountBy(user);
         user.delete();
-        deleteAllBookAccountsBy(user);
+        userRepository.save(user);
     }
 
     public Token reissueToken(Token token) {
@@ -135,11 +155,11 @@ public class UserService {
         user.updateProfileImg(profileImg);
         userRepository.save(user);
 
-        List<BookUser> bookUsers = bookUserRepository.findByUser(user);
-        for (BookUser bookUser : bookUsers) {
+        List<BookUser> bookUsers = bookUserRepository.findByUserAndStatus(user, ACTIVE);
+        bookUsers.forEach(bookUser -> {
             bookUser.updateProfileImg(profileImg);
             bookUserRepository.save(bookUser);
-        }
+        });
     }
 
     public String sendEmailAuthMail(String email) {
@@ -166,29 +186,32 @@ public class UserService {
     }
 
     public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {
-        if (!redisProvider.hasKey(emailAuthenticationRequest.getEmail())) {
-            throw new EmailNotFoundException();
-        } else if (!redisProvider.get(emailAuthenticationRequest.getEmail())
-                .equals(emailAuthenticationRequest.getCode())) {
-            throw new CodeNotSameException();
+        final String requestEmail = emailAuthenticationRequest.getEmail();
+        final String requestCode = emailAuthenticationRequest.getCode();
+
+        if (!redisProvider.hasKey(requestEmail)) {
+            throw new EmailNotFoundException(requestEmail);
+        }
+        if (!redisProvider.get(requestEmail).equals(requestCode)) {
+            throw new CodeNotSameException(requestEmail, requestCode);
         }
     }
 
     @Transactional
-    public void deleteAllBookAccountsBy(User user) {
+    public void deleteAllBookLinesAndAccountBy(User user) {
         userRepository.save(user);
-        List<BookUser> myBookAccounts = bookUserRepository.findByUser(user);
-        for (BookUser myAccounts : myBookAccounts) {
-            myAccounts.delete();
-            bookUserRepository.save(myAccounts);
-        }
+        List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
+        myBookAccounts
+            .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
+
     }
 
     @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
         User user = userRepository.findByEmail(username)
-            .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new UserNotFoundException(username));
         user.saveRecentBookKey(request);
         userRepository.save(user);
     }
+
 }

@@ -85,11 +85,12 @@ public class CategoryFactory {
 
     private Category findLineCategory(String line, String bookKey, String flow) {
         return categoryRepository.findLineCategory(line, bookKey, flow)
-            .orElseThrow(NotFoundCategoryException::new);
+            .orElseThrow(() -> new NotFoundCategoryException(line));
     }
 
     private Category findFlowCategory(String flow) {
-        return categoryRepository.findFlowCategory(flow);
+        return categoryRepository.findFlowCategory(flow)
+            .orElseThrow(() -> new NotFoundCategoryException(flow));
     }
 
     private Category findAssetCategory(String asset) {

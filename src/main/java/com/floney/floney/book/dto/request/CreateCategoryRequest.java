@@ -7,10 +7,12 @@ import com.floney.floney.book.entity.DefaultCategory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.Objects;
 
 @Getter
+@ToString
 @RequiredArgsConstructor
 public class CreateCategoryRequest {
 

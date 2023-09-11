@@ -5,20 +5,18 @@ import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.CustomUserDetailsService;
+import com.floney.floney.user.service.SubscribeService;
 import com.floney.floney.user.service.UserService;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -26,10 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final SubscribeService subscribeService;
     private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * 회원가입
+     *
      * @param request 회원 가입 요청
      * @return 회원가입한 유저의 access token
      */
@@ -41,6 +41,7 @@ public class UserController {
 
     /**
      * 이메일 인증 메일 전송
+     *
      * @param email 이메일 주소
      */
     @GetMapping("/email/mail")
@@ -52,6 +53,7 @@ public class UserController {
 
     /**
      * 이메일 인증 메일의 코드를 검사
+     *
      * @param request 이메일 주소와 인증 코드
      */
     @PostMapping("/email/mail")
@@ -62,6 +64,7 @@ public class UserController {
 
     /**
      * 로그인
+     *
      * @param request 로그인 요청
      * @return 로그인 한 유저의 access token
      */
@@ -72,6 +75,7 @@ public class UserController {
 
     /**
      * 로그아웃
+     *
      * @param accessToken 로그아웃 할 유저의 access token
      */
     @GetMapping("/logout")
@@ -82,6 +86,7 @@ public class UserController {
 
     /**
      * token 재발급
+     *
      * @param token 기존 토큰
      * @return 새로운 토큰
      */
@@ -92,6 +97,7 @@ public class UserController {
 
     /**
      * 회원 탈퇴
+     *
      * @param accessToken 탈퇴할 유저의 access token
      */
     @GetMapping("/signout")
@@ -102,7 +108,8 @@ public class UserController {
 
     /**
      * 회원 닉네임 수정
-     * @param nickname 수정할 닉네임
+     *
+     * @param nickname    수정할 닉네임
      * @param userDetails 접속한 유저 정보
      */
     @GetMapping("/nickname/update")
@@ -113,7 +120,8 @@ public class UserController {
 
     /**
      * 회원 비밀번호 수정
-     * @param password 수정할 비밀번호
+     *
+     * @param password    수정할 비밀번호
      * @param userDetails 접속한 유저 정보
      */
     @GetMapping("/password/update")
@@ -124,6 +132,7 @@ public class UserController {
 
     /**
      * 비밀번호 재발급 메일 전송
+     *
      * @param email 회원 이메일 주소
      */
     @GetMapping("/password/find")
@@ -135,7 +144,8 @@ public class UserController {
 
     /**
      * 회원 프로필 이미지 수정
-     * @param profileImg 새 프로필 이미지 주소
+     *
+     * @param profileImg  새 프로필 이미지 주소
      * @param userDetails 접속한 유저 정보
      */
     @GetMapping("/profileimg/update")
@@ -146,6 +156,7 @@ public class UserController {
 
     /**
      * 마이페이지 조회
+     *
      * @param userDetails 접속한 유저 정보
      * @return 마이페이지 정보
      */
@@ -154,11 +165,53 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserInfo(userDetails), HttpStatus.OK);
     }
 
+    /**
+     *
+     * 최근 접근 가계부 키 저장
+     * @body SaveRecentBookKeyRequest 가계부 키
+     *
+     */
+
     @PostMapping("/bookKey")
-    public ResponseEntity<?> recentBookKey(@RequestBody SaveRecentBookKeyRequest request ,
+    public ResponseEntity<?> recentBookKey(@RequestBody SaveRecentBookKeyRequest request,
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         userService.saveRecentBookKey(request, customUserDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     *
+     * 구독 데이터 저장
+     * @body SubscribeRequest 구독 정보
+     *
+     */
+    @PostMapping("/subscribe")
+    public ResponseEntity<?> saveSubscribe(@RequestBody @Valid SubscribeRequest request,
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        subscribeService.saveSubscribe(request, userDetails.getUser());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+
+    /**
+     * 구독 정보 수정
+     * @body SubscribeRequest 수정 정보
+     */
+    @PostMapping("/subscribe/update")
+    public ResponseEntity<?> updateSubscribe(@RequestBody @Valid SubscribeRequest request,
+                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
+        subscribeService.updateSubscribe(request, userDetails.getUser());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 구독 정보 조회
+     * @body SubscribeResponse 구독 정보
+     */
+    @GetMapping("/subscribe")
+    public ResponseEntity<?> updateSubscribe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.getSubscribe(userDetails.getUser()), HttpStatus.OK);
+    }
+
 
 }

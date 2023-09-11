@@ -6,15 +6,14 @@ import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
-import com.floney.floney.book.repository.BookLineCustomRepository;
+import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.CategoryCustomRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
+import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.exception.book.LimitRequestException;
-import com.floney.floney.common.exception.book.NotFoundBookException;
-import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -34,12 +33,13 @@ public class BookServiceImpl implements BookService {
 
     private static final int SUBSCRIBE_MAX = 2;
     private static final int DEFAULT_MAX = 1;
+    private static final int OWNER = 1;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
-    private final BookLineCustomRepository bookLineRepository;
+    private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
-    private final CategoryCustomRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
@@ -96,11 +96,16 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
-
+        String userEmail = userDetails.getUsername();
         Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(code));
 
         bookUserRepository.isMax(book);
+
+        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()){
+            throw new AlreadyJoinException(userEmail);
+        }
+
         saveDefaultBookKey(userDetails.getUser(), book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
@@ -179,7 +184,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public InvolveBookResponse findInvolveBook(String email) {
         User user = userRepository.findByEmail(email)
-            .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new UserNotFoundException(email));
         return InvolveBookResponse.of(user.getRecentBookKey());
     }
 
@@ -216,9 +221,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
+    public void deleteBookLine(Book bookUserBook, BookUser bookUser){
+        deleteAllLinesByOnly(bookUserBook, bookUser);
+        deleteBookUser(bookUser);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public InviteCodeResponse inviteCode(String bookKey) {
-        return new InviteCodeResponse(findBook(bookKey));}
+        return new InviteCodeResponse(findBook(bookKey));
+    }
 
 
     @Override
@@ -226,21 +239,40 @@ public class BookServiceImpl implements BookService {
     public Book makeInitBook(String bookKey) {
         Book book = findBook(bookKey);
         book.initBook();
+        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+
+        categoryRepository.findAllCustomCategory(book).stream()
+            .map(BookCategory::delete)
+            .forEach(categoryRepository::delete);
 
         bookLineRepository.deleteAllLines(bookKey);
-        categoryRepository.deleteAllCustomCategory(book);
-        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
         return bookRepository.save(book);
+    }
+
+    @Override
+    public CurrencyResponse getCurrency(String bookKey) {
+        return CurrencyResponse.of(findBook(bookKey));
+    }
+
+    @Override
+    public BookInfoResponse getBookInfoByCode(String code) {
+        Book book = bookRepository.findBookByCodeAndStatus(code, Status.ACTIVE)
+            .orElseThrow(() -> new NotFoundBookException(code));
+        long memberCount = bookUserRepository.countBookUser(book);
+        return BookInfoResponse.of(book, memberCount);
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(NotFoundBookException::new);
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void isValidToDeleteBook(Book book, String email) {
         book.isOwner(email);
-        bookUserRepository.countBookUser(book);
+        long count = bookUserRepository.countBookUser(book);
+        if (count > OWNER) {
+            throw new CannotDeleteBookException(count);
+        }
     }
 
     private List<BookUserResponse> userToResponse(final List<User> users) {
@@ -260,11 +292,15 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-            .orElseThrow(NotFoundBookUserException::new);
+            .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
     }
 
     private void deleteBookLineBy(BookUser bookUser, String bookKey) {
         bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
+    }
+
+    private void deleteAllLinesByOnly(Book bookUserBook, BookUser bookUser){
+        bookLineRepository.deleteAllLinesByBookAndBookUser(bookUserBook,bookUser);
     }
 
 }

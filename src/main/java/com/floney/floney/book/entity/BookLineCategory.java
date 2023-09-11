@@ -41,4 +41,10 @@ public class BookLineCategory extends BaseEntity {
             .name(category.getName())
             .build();
     }
+
+    public BookLineCategory deleteForever(){
+        this.bookLine = null;
+        this.category = null;
+        return this;
+    }
 }

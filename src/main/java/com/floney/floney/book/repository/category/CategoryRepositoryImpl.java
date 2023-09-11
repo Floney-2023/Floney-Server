@@ -8,6 +8,7 @@ import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.RootCategory;
 import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -56,12 +57,12 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public Category findFlowCategory(String name) {
-        return jpaQueryFactory.selectFrom(category)
+    public Optional<Category> findFlowCategory(String name) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
                 category.instanceOf(RootCategory.class),
                 category.parent.isNull())
-            .fetchOne();
+            .fetchOne());
     }
 
     @Override
@@ -77,9 +78,12 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     public Optional<Category> findLineCategory(String name, String bookKey, String parent) {
+        Category parentFlowCategory = findFlowCategory(parent)
+            .orElseThrow(() -> new NotFoundCategoryException(parent));
+
         Optional<Category> target = Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(name),
-                category.parent.eq(findFlowCategory(parent))
+                category.parent.eq(parentFlowCategory)
                 , category.instanceOf(DefaultCategory.class))
             .fetchOne());
 
@@ -88,7 +92,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                 .selectFrom(category)
                 .innerJoin(bookCategory.book, book)
                 .where(book.bookKey.eq(bookKey), bookCategory.name.eq(name),
-                    bookCategory.parent.eq(findFlowCategory(parent)))
+                    bookCategory.parent.eq(parentFlowCategory))
                 .fetchOne());
         }
         return target;
@@ -126,10 +130,10 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public void deleteAllCustomCategory(Book book){
-        jpaQueryFactory.delete(bookCategory)
+    public List<BookCategory> findAllCustomCategory(Book book){
+        return jpaQueryFactory.selectFrom(bookCategory)
             .where(bookCategory.book.eq(book))
-            .execute();
+            .fetch();
     }
 
     @Override
@@ -140,5 +144,6 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .innerJoin(category)
             .fetchOne());
     }
+
 
 }

@@ -6,6 +6,8 @@ import com.floney.floney.user.dto.response.KakaoUserResponse;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,6 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Getter
 @Component
 public class KakaoClient implements ClientProxy {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private String id;
 
@@ -33,6 +37,7 @@ public class KakaoClient implements ClientProxy {
         HttpEntity<String> request = new HttpEntity<>(header);
 
         try {
+            logger.info("[{}]로 통신 시작", uri);
             ResponseEntity<KakaoUserResponse> result = createRequest()
                     .exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
             this.id = result.getBody().getId().toString();
@@ -41,7 +46,5 @@ public class KakaoClient implements ClientProxy {
         } catch (NullPointerException exception) {
             throw new OAuthResponseException();
         }
-
     }
-
 }

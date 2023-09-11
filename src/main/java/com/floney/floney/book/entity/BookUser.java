@@ -18,7 +18,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookUser extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -50,5 +50,11 @@ public class BookUser extends BaseEntity {
 
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
+    }
+
+    public BookUser deleteForever() {
+        this.book = null;
+        this.user = null;
+        return this;
     }
 }

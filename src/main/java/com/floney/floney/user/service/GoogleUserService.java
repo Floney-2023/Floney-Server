@@ -1,15 +1,19 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
-import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.client.GoogleClient;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class GoogleUserService implements OAuthUserService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final GoogleClient googleClient;
     private final JwtProvider jwtProvider;
@@ -44,12 +50,22 @@ public class GoogleUserService implements OAuthUserService {
     public Token login(String oAuthToken) {
         String providerId = getProviderId(oAuthToken);
 
-        User user = userRepository.findByProviderId(providerId).orElseThrow(UserNotFoundException::new);
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
-        );
+        User user = userRepository.findByProviderId(providerId)
+                .orElseThrow(() -> new UserNotFoundException(oAuthToken));
 
-        return jwtProvider.generateToken(authentication);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
+            );
+
+            return jwtProvider.generateToken(authentication);
+        } catch (BadCredentialsException exception) {
+            logger.warn("구글 로그인 실패: [{}]", user.getEmail());
+            throw exception;
+        } catch (AccountStatusException exception) {
+            logger.error("구글 로그인 오류: {}", exception.getMessage());
+            throw exception;
+        }
     }
 
     private String getProviderId(String oAuthToken) {

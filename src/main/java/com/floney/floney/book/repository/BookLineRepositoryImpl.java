@@ -1,8 +1,31 @@
 package com.floney.floney.book.repository;
 
-import static com.floney.floney.book.dto.constant.AssetType.BANK;
+import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
+import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
+import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
+import com.floney.floney.book.entity.*;
+import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.constant.Status;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookLine.bookLine;
 import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
@@ -14,43 +37,11 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
-import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
-import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
-import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.dto.process.DayLine;
-import com.floney.floney.book.dto.process.DayLineByDayView;
-import com.floney.floney.book.dto.process.QBookLineExpense;
-import com.floney.floney.book.dto.process.QDayLine;
-import com.floney.floney.book.dto.process.QDayLineByDayView;
-import com.floney.floney.book.dto.process.QTotalExpense;
-import com.floney.floney.book.dto.process.TotalExpense;
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
-import com.floney.floney.book.entity.RootCategory;
-import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.constant.Status;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 @Repository
 @RequiredArgsConstructor
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
+    private final static int DELETE_TERM = 3;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -72,23 +63,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 .as(bookLine.money.sum()));
     }
 
-    @Override
-    public Map<String, Long> totalExpenseByAll(String bookKey) {
-        return jpaQueryFactory
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
-                book.bookKey.eq(bookKey),
-                book.status.eq(Status.ACTIVE),
-                bookLine.status.eq(Status.ACTIVE)
-            )
-            .groupBy(bookLineCategory.name)
-            .orderBy(bookLineCategory.name.asc())
-            .transform(groupBy(bookLineCategory.name)
-                .as(bookLine.money.sum()));
-    }
 
     @Override
     public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
@@ -99,12 +73,14 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLine.description,
                     bookLineCategory.name,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
-                    bookLine.exceptStatus
+                    bookLine.exceptStatus,
+                    user.nickname
                 ))
             .from(bookLine)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .innerJoin(bookLine.book, book)
             .leftJoin(bookLine.writer, bookUser)
+            .leftJoin(bookUser.user, user)
             .where(
                 book.status.eq(Status.ACTIVE),
                 bookLine.status.eq(Status.ACTIVE),
@@ -206,6 +182,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public void deleteAllLinesByUser(BookUser bookUser, String bookKey) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
             .where(bookLine.book.id.eq(
                 JPAExpressions.select(book.id)
                     .from(book)
@@ -307,7 +284,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public Optional<BookLine> findByIdWithCategories(Long id) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(bookLine)
-            .where(bookLine.id.eq(id),bookLine.status.eq(ACTIVE))
+            .where(bookLine.id.eq(id), bookLine.status.eq(ACTIVE))
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .fetchJoin()
             .leftJoin(bookLine.writer, bookUser)
@@ -351,4 +328,39 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetchOne();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLine> findLineHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookLine)
+            .where(bookLine.updatedAt.before(threeMonthsAgo),
+                bookLine.status.eq(INACTIVE))
+            .fetch();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLineCategory> findCategoryHaveToDelete() {
+        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
+        return jpaQueryFactory
+            .selectFrom(bookLineCategory)
+            .where(bookLineCategory.updatedAt.before(threeMonthsAgo),
+                bookLineCategory.status.eq(INACTIVE))
+            .fetch();
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
+            .where(bookLine.book.eq(
+                bookUserBook
+            ), bookLine.writer.id.eq(
+                targetBookUser.getId()
+            ))
+            .execute();
+    }
 }

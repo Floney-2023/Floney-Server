@@ -3,13 +3,11 @@ package com.floney.floney.user.dto.request;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import lombok.*;
 
 @Getter
+@ToString
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
