@@ -47,4 +47,6 @@ public interface BookLineCustomRepository {
     List<BookLineCategory> findCategoryHaveToDelete();
 
     void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser);
+
+    List<BookLine> findAllByBook(String bookKey);
 }

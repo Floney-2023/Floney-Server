@@ -29,6 +29,8 @@ public interface BookUserCustomRepository {
 
     BookUser findBookUserBy(String email, Book targetBook);
 
+    boolean existsByUserEmailAndBookKey(String email, String bookKey);
+
     List<BookUser> findBookUserHaveToDelete();
 
     Optional<User> findBookUserWhoSubscribe(Book targetBook);

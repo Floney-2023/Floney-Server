@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QBookLine.bookLine;
 import static com.floney.floney.book.entity.QBookLineCategory.bookLineCategory;
@@ -291,6 +292,23 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .leftJoin(bookUser.user, user)
             .fetchJoin()
             .fetchOne());
+    }
+
+    @Override
+    public List<BookLine> findAllByBook(final String bookKey) {
+        return jpaQueryFactory
+                .selectFrom(bookLine)
+                .innerJoin(bookLine.book, book).fetchJoin()
+                .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+                .innerJoin(bookLine.writer, bookUser).fetchJoin()
+                .innerJoin(bookUser.user, user).fetchJoin()
+                .where(
+                        bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind(), BANK.getKind()),
+                        book.bookKey.eq(bookKey),
+                        book.status.eq(Status.ACTIVE),
+                        bookLine.status.eq(Status.ACTIVE)
+                )
+                .fetch();
     }
 
     private Long totalIncomeMoney(DatesDuration duration, String bookKey) {

@@ -153,6 +153,12 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(ExcelMakingException.class)
+    protected ResponseEntity<ErrorResponse> notFoundLine(ExcelMakingException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     //SUBSCRIBE
     @ExceptionHandler(NotSubscribeException.class)
     protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {
@@ -181,7 +187,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error("{},{}",exception.getLocalizedMessage(),exception.getStackTrace());
+        logger.error(Arrays.toString(exception.getStackTrace()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
     }
