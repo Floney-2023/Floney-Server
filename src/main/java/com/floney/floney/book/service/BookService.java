@@ -6,9 +6,7 @@ import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Currency;
 import java.util.List;
 
 public interface BookService {
@@ -31,9 +29,9 @@ public interface BookService {
 
     void updateCarryOver(final CarryOverRequest request);
 
-    void updateAsset(final UpdateAssetRequest request);
+    void saveOrUpdateAsset(final UpdateAssetRequest request);
 
-    void updateBudget(final UpdateBudgetRequest request);
+    void saveOrUpdateBudget(final UpdateBudgetRequest request);
 
     InvolveBookResponse findInvolveBook(final String email);
 

@@ -33,10 +33,8 @@ public class BookFixture {
             .name(NAME)
             .bookImg(URL)
             .bookKey(bookKey)
-            .initBudget(DEFAULT_VALUE)
             .owner(EMAIL)
             .code(CODE)
-            .initAsset(DEFAULT_VALUE)
             .build();
     }
 
@@ -49,10 +47,8 @@ public class BookFixture {
             .name(NAME)
             .bookImg(URL)
             .bookKey(BOOK_KEY)
-            .initBudget(DEFAULT_VALUE)
             .owner(EMAIL)
             .code(CODE)
-            .initAsset(DEFAULT_VALUE)
             .build();
     }
 

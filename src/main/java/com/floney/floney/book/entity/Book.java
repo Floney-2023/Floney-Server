@@ -2,8 +2,10 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
+import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,11 +13,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
+
+import static com.floney.floney.common.constant.Status.*;
 
 @Entity
 @Getter
@@ -44,10 +45,6 @@ public class Book extends BaseEntity {
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean seeProfile;
 
-    private Long initAsset;
-
-    private Long initBudget;
-
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOverStatus;
 
@@ -60,21 +57,27 @@ public class Book extends BaseEntity {
 
     private String currency;
 
+    private int userCapacity;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Status bookStatus;
+
     @Builder
     private Book(String name, String bookImg, String owner,
-                 String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
-                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency) {
+                 String bookKey, Boolean seeProfile,
+                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
-        this.initAsset = initAsset;
-        this.initBudget = initBudget;
         this.carryOverStatus = carryOverStatus;
         this.code = code;
         this.carryOverMoney = carryOverMoney;
         this.currency = currency;
+        this.userCapacity = userCapacity;
+        this.bookStatus = bookStatus;
     }
 
     public void updateName(String requestName) {
@@ -83,7 +86,7 @@ public class Book extends BaseEntity {
 
     public void isOwner(String email) {
         if (!owner.equals(email)) {
-            throw new NoAuthorityException(owner,email);
+            throw new NoAuthorityException(owner, email);
         }
     }
 
@@ -93,14 +96,6 @@ public class Book extends BaseEntity {
 
     public void changeSeeProfile(boolean status) {
         this.seeProfile = status;
-    }
-
-    public void updateAsset(Long asset) {
-        this.initAsset = asset;
-    }
-
-    public void updateBudget(Long budget) {
-        this.initBudget = budget;
     }
 
     public void updateLastSettlementDate(LocalDate lastSettlementDate) {
@@ -119,9 +114,22 @@ public class Book extends BaseEntity {
         this.currency = requestCurrency.toString();
     }
 
-    public void initBook(){
-        this.initBudget = DEFAULT;
-        this.initAsset = DEFAULT;
+    public void initBook() {
         this.carryOverStatus = Boolean.FALSE;
+    }
+
+    public Book subscribe(User user) {
+        this.userCapacity = 4;
+        this.bookStatus = ACTIVE;
+        this.owner = user.getEmail();
+        return this;
+    }
+
+    public void delegateOwner(User user) {
+        this.owner = user.getEmail();
+    }
+
+    public void inactiveBookStatus(){
+        this.bookStatus = INACTIVE;
     }
 }
