@@ -69,5 +69,9 @@ public class DateFactory {
     public static boolean isFirstDay(String date) {
         return LocalDate.parse(date).getDayOfMonth() == FIRST_DAY;
     }
+
+    public static LocalDate getFirstDayOf(LocalDate requestDate) {
+        return requestDate.withDayOfMonth(FIRST_DAY);
+    }
 }
 
