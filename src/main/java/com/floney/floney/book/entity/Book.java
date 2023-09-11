@@ -17,7 +17,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-import static com.floney.floney.common.constant.Status.*;
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Entity
 @Getter
@@ -46,10 +47,6 @@ public class Book extends BaseEntity {
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean seeProfile;
 
-    private Long initAsset;
-
-    private Long initBudget;
-
     @Column(columnDefinition = "TINYINT", length = 1)
     private Boolean carryOverStatus;
 
@@ -70,15 +67,13 @@ public class Book extends BaseEntity {
 
     @Builder
     private Book(String name, String bookImg, String owner,
-                 String bookKey, Boolean seeProfile, Long initAsset, Long initBudget,
+                 String bookKey, Boolean seeProfile,
                  Boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
-        this.initAsset = initAsset;
-        this.initBudget = initBudget;
         this.carryOverStatus = carryOverStatus;
         this.code = code;
         this.carryOverMoney = carryOverMoney;
@@ -105,14 +100,6 @@ public class Book extends BaseEntity {
         this.seeProfile = status;
     }
 
-    public void updateAsset(Long asset) {
-        this.initAsset = asset;
-    }
-
-    public void updateBudget(Long budget) {
-        this.initBudget = budget;
-    }
-
     public void updateLastSettlementDate(LocalDate lastSettlementDate) {
         this.lastSettlementDate = lastSettlementDate;
     }
@@ -130,8 +117,6 @@ public class Book extends BaseEntity {
     }
 
     public void initBook() {
-        this.initBudget = DEFAULT;
-        this.initAsset = DEFAULT;
         this.carryOverStatus = Boolean.FALSE;
     }
 

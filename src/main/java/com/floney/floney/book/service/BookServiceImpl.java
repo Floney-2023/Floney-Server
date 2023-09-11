@@ -4,12 +4,12 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.entity.Asset;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -41,6 +42,8 @@ public class BookServiceImpl implements BookService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
+    private final AssetRepository assetRepository;
+    private final BudgetRepository budgetRepository;
 
     @Override
     @Transactional
@@ -156,18 +159,30 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void updateAsset(UpdateAssetRequest request) {
+    public void saveOrUpdateAsset(UpdateAssetRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        savedBook.updateAsset(request.getAsset());
-        bookRepository.save(savedBook);
+        Optional<Asset> asset = assetRepository.findAssetByBookAndDate(savedBook, request.getDate());
+
+        if (asset.isPresent()) {
+            updateAsset(asset.get(), request);
+        } else {
+            Asset newAsset = Asset.of(savedBook, request);
+            assetRepository.save(newAsset);
+        }
     }
 
     @Override
     @Transactional
-    public void updateBudget(UpdateBudgetRequest request) {
+    public void saveOrUpdateBudget(UpdateBudgetRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        savedBook.updateBudget(request.getBudget());
-        bookRepository.save(savedBook);
+        Optional<Budget> savedBudget = budgetRepository.findBudgetByBookAndDate(savedBook, request.getDate());
+
+        if (savedBudget.isPresent()) {
+            updateBudget(savedBudget.get(), request);
+        } else {
+            Budget newBudget = Budget.of(savedBook, request);
+            budgetRepository.save(newBudget);
+        }
     }
 
     @Override
@@ -312,5 +327,13 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.deleteAllLinesByBookAndBookUser(bookUserBook, bookUser);
     }
 
+    private void updateAsset(Asset savedAsset, UpdateAssetRequest request) {
+        savedAsset.update(request);
+        assetRepository.save(savedAsset);
+    }
 
+    private void updateBudget(Budget savedBudget, UpdateBudgetRequest request) {
+        savedBudget.update(request);
+        budgetRepository.save(savedBudget);
+    }
 }

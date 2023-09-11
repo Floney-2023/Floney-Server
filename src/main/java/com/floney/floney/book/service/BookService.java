@@ -30,9 +30,9 @@ public interface BookService {
 
     void updateCarryOver(final CarryOverRequest request);
 
-    void updateAsset(final UpdateAssetRequest request);
+    void saveOrUpdateAsset(final UpdateAssetRequest request);
 
-    void updateBudget(final UpdateBudgetRequest request);
+    void saveOrUpdateBudget(final UpdateBudgetRequest request);
 
     InvolveBookResponse findInvolveBook(final String email);
 

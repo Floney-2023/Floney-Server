@@ -167,7 +167,7 @@ public class BookController {
      */
     @PostMapping("/info/asset")
     public ResponseEntity<?> updateAsset(@RequestBody UpdateAssetRequest request) {
-        bookService.updateAsset(request);
+        bookService.saveOrUpdateAsset(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -178,7 +178,7 @@ public class BookController {
      */
     @PostMapping("/info/budget")
     public ResponseEntity<?> updateBudget(@RequestBody UpdateBudgetRequest request) {
-        bookService.updateBudget(request);
+        bookService.saveOrUpdateBudget(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
