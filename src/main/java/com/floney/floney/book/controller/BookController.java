@@ -27,7 +27,7 @@ public class BookController {
     @PostMapping()
     public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request,
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.createBook(userDetails, request), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(userDetails.getUser(), request), HttpStatus.CREATED);
     }
 
     /**
@@ -39,7 +39,7 @@ public class BookController {
     @PostMapping("/add")
     public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.addBook(userDetails, request), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.addBook(userDetails.getUser(), request), HttpStatus.CREATED);
     }
 
     /**

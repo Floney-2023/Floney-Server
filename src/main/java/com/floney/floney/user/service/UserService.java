@@ -119,7 +119,7 @@ public class UserService {
 
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
         User user = userDetails.getUser();
-        List<MyBookInfo> myBooks = bookUserRepository.findMyBooks(user);
+        List<MyBookInfo> myBooks = bookUserRepository.findMyBookInfos(user);
         return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 

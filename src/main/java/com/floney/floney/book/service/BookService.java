@@ -6,14 +6,15 @@ import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.entity.User;
 
 import java.util.List;
 
 public interface BookService {
 
-    CreateBookResponse createBook(final CustomUserDetails userDetails, final CreateBookRequest request);
+    CreateBookResponse createBook(final User user, final CreateBookRequest request);
 
-    CreateBookResponse addBook(final CustomUserDetails userDetails, final CreateBookRequest request);
+    CreateBookResponse addBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
 

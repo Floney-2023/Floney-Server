@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.user.entity.User;
@@ -16,7 +17,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.time.LocalDate;
 
-import static com.floney.floney.common.constant.Status.*;
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Entity
 @Getter
@@ -119,7 +121,7 @@ public class Book extends BaseEntity {
     }
 
     public Book subscribe(User user) {
-        this.userCapacity = 4;
+        this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
         this.bookStatus = ACTIVE;
         this.owner = user.getEmail();
         return this;

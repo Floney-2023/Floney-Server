@@ -35,14 +35,14 @@ public enum ErrorType {
     NOT_FOUND_BOOK_USER ("B006","가계부 멤버를 찾을 수 없습니다"),
     NOT_FOUND_BOOK_LINE ("B007","가계부 내역을 찾을 수 없습니다"),
     ALREADY_JOIN("B008", "이미 존재하는 가계부 유저입니다"),
-
-    FAIL_TO_CREATE_EXCEL("B008", "엑셀 파일을 생성하는 중 오류가 발생했습니다"),
+    FAIL_TO_CREATE_EXCEL("B009", "엑셀 파일을 생성하는 중 오류가 발생했습니다"),
 
     NOT_SUBSCRIBE("S001","멤버쉽 전용 기능입니다"),
     LIMIT("S002","제공하지 않는 서비스입니다"),
+    NOT_FOUND_SUBSCRIBE("S003","구독 정보를 찾을 수 없습니다"),
 
-    SETTLEMENT_NOT_FOUND("ST001", "정산 내역이 존재하지 않습니다"),
-    OUTCOME_USER_NOT_FOUND("ST002", "지출 내역의 유저가 유저 목록에 존재하지 않습니다"),
+    NOT_FOUND_SETTLEMENT("ST001", "정산 내역이 존재하지 않습니다"),
+    NOT_FOUND_OUTCOME_USER("ST002", "지출 내역의 유저가 유저 목록에 존재하지 않습니다"),
 
     SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다");
 

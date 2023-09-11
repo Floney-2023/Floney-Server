@@ -9,6 +9,6 @@ public class OutcomeUserNotFoundException extends RuntimeException {
     private final ErrorType errorType;
 
     public OutcomeUserNotFoundException() {
-        this.errorType = ErrorType.OUTCOME_USER_NOT_FOUND;
+        this.errorType = ErrorType.NOT_FOUND_OUTCOME_USER;
     }
 }
