@@ -10,8 +10,8 @@ public class NotFoundSubscribeException extends RuntimeException {
     private final ErrorType errorType;
     private final String userEmail;
 
-    public NotFoundSubscribeException(final User user) {
+    public NotFoundSubscribeException(final String email) {
         this.errorType = ErrorType.NOT_FOUND_SUBSCRIBE;
-        this.userEmail = user.getEmail();
+        this.userEmail = email;
     }
 }

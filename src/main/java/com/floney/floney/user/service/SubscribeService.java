@@ -52,7 +52,7 @@ public class SubscribeService {
     @Transactional(readOnly = true)
     public SubscribeResponse getSubscribe(User user) {
         Subscribe subscribe = subscribeRepository.findSubscribeByUser(user)
-            .orElseThrow(() -> new NotFoundSubscribeException(user));
+            .orElseThrow(() -> new NotFoundSubscribeException(user.getEmail()));
         return SubscribeResponse.of(subscribe);
     }
 
