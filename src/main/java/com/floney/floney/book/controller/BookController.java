@@ -202,7 +202,7 @@ public class BookController {
      */
     @GetMapping("/users/check")
     public ResponseEntity<?> findInvolveBook(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUsername()), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUser()), HttpStatus.OK);
     }
 
     /**

@@ -34,7 +34,7 @@ public interface BookService {
 
     void saveOrUpdateBudget(final UpdateBudgetRequest request);
 
-    InvolveBookResponse findInvolveBook(final String email);
+    InvolveBookResponse findInvolveBook(final User user);
 
     void bookUserOut(final BookUserOutRequest request, final String username);
 
