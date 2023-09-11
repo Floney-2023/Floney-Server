@@ -69,8 +69,7 @@ public class KakaoUserService implements OAuthUserService {
     }
 
     private String getProviderId(String oAuthToken) {
-        kakaoClient.init(oAuthToken);
-        return kakaoClient.getId();
+        return kakaoClient.getAuthId(oAuthToken);
     }
 
 }
