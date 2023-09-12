@@ -18,6 +18,8 @@ public class DateFactory {
     public static final int NEXT_DAY = 1;
     public static final int FIRST_DAY = 1;
 
+    private static final int DELETE_TERM = 3;
+
     public static DatesDuration getDateDuration(String targetDate) {
         LocalDate startDate = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
         YearMonth yearMonth = YearMonth.from(startDate);
@@ -72,6 +74,10 @@ public class DateFactory {
 
     public static LocalDate getFirstDayOf(LocalDate requestDate) {
         return requestDate.withDayOfMonth(FIRST_DAY);
+    }
+
+    public static LocalDateTime getThreeMonthAgo() {
+        return LocalDateTime.now().minusMonths(DELETE_TERM);
     }
 }
 

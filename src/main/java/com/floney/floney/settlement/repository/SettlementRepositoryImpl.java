@@ -1,5 +1,6 @@
 package com.floney.floney.settlement.repository;
 
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.settlement.domain.entity.Settlement;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,14 @@ import static com.floney.floney.settlement.domain.entity.QSettlement.settlement;
 @Repository
 @RequiredArgsConstructor
 public class SettlementRepositoryImpl implements SettlementCustomRepository {
-    private final static int DELETE_TERM = 3;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     @Transactional(readOnly = true)
     public List<Settlement> findSettlementHaveToDelete() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
         return jpaQueryFactory
             .selectFrom(settlement)
-            .where(settlement.updatedAt.before(threeMonthsAgo),
+            .where(settlement.updatedAt.before(DateFactory.getThreeMonthAgo()),
                 settlement.status.eq(INACTIVE))
             .fetch();
     }

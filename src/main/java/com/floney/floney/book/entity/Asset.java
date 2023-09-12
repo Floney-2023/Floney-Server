@@ -53,4 +53,9 @@ public class Asset extends BaseEntity {
     public void update(UpdateAssetRequest request) {
         this.money = request.getAsset();
     }
+
+    public Asset initMoney() {
+        this.money = 0L;
+        return this;
+    }
 }

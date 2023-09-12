@@ -258,6 +258,18 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.deleteAllLines(bookKey);
         carryOverRepository.deleteAllCarryOver(bookKey);
 
+        List<Budget> initBudgets = budgetRepository.findAllByBook(book)
+            .stream()
+            .map(Budget::initMoney)
+            .toList();
+        budgetRepository.saveAll(initBudgets);
+
+        List<Asset> initAssets = assetRepository.findAllByBook(book)
+            .stream()
+            .map(Asset::initMoney)
+            .toList();
+        assetRepository.saveAll(initAssets);
+
         return bookRepository.save(book);
     }
 

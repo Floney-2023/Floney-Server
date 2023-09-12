@@ -187,7 +187,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error(Arrays.toString(exception.getStackTrace()));
+        logger.error(exception.getMessage(),Arrays.toString(exception.getStackTrace()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
     }

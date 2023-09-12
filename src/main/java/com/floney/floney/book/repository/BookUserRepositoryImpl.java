@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.process.QMyBookInfo;
 import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.JPAExpressions;
@@ -30,7 +31,6 @@ import static com.querydsl.core.types.ExpressionUtils.count;
 @Repository
 @RequiredArgsConstructor
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
-    private static final int DELETE_TERM = 3;
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -191,12 +191,12 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 .where(book.bookKey.eq(bookKey), user.email.eq(email))
                 .fetchOne() != null;
     }
+
     @Override
     public List<BookUser> findBookUserHaveToDelete() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
         return jpaQueryFactory
             .selectFrom(bookUser)
-            .where(bookUser.updatedAt.before(threeMonthsAgo),
+            .where(bookUser.updatedAt.before(DateFactory.getThreeMonthAgo()),
                 bookUser.status.eq(INACTIVE))
             .fetch();
     }
