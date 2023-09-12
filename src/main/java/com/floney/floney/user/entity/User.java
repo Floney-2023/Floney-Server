@@ -33,6 +33,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
+    private static final String DELETE_VALUE = "admin";
+
     @Column(nullable = false, length = 100)
     private String email;
 
@@ -111,10 +113,10 @@ public class User extends BaseEntity {
     //유저 탈퇴시, 개인정보 즉시 삭제
     public void delete(){
         this.status = Status.INACTIVE;
-        this.email = null;
-        this.nickname = null;
-        this.password = null;
-        this.profileImg = null;
+        this.email = DELETE_VALUE;
+        this.nickname = DELETE_VALUE;
+        this.password = DELETE_VALUE;
+        this.profileImg = DELETE_VALUE;
         this.deleteTime = LocalDateTime.now();
     }
 
