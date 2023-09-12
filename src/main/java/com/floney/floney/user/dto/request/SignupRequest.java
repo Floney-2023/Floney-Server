@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
-@ToString
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -46,4 +45,11 @@ public class SignupRequest {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "SignupRequest{" +
+            "email='" + email + '\'' +
+            ", nickname='" + nickname + '\'' +
+            '}';
+    }
 }
