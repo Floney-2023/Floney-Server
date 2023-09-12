@@ -1,5 +1,6 @@
 package com.floney.floney.book.dto.process;
 
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.CarryOver;
@@ -11,13 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static com.floney.floney.book.dto.constant.AssetType.INCOME;
-import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.dto.constant.AssetType.*;
 
 @RequiredArgsConstructor
 @Component
@@ -45,11 +42,14 @@ public class CarryOverFactory {
         LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
 
+        // 다음달부터 생성
+        targetDate = targetDate.plusMonths(1);
+
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDate(targetDate);
 
-            if (savedCarryOver.isEmpty()) {
+            if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.name())) {
                 CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
