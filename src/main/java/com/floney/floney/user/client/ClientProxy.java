@@ -8,6 +8,6 @@ public interface ClientProxy {
         return new RestTemplate();
     }
 
-    void init(String authToken);
+    String getAuthId(String authToken);
 
 }
