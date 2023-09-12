@@ -1,6 +1,5 @@
 package com.floney.floney.analyze.dto.response;
 
-import com.floney.floney.analyze.entity.BookAnalyze;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,15 +22,14 @@ public class AnalyzeResponse {
         this.analyzeResult = analyzeResult;
     }
 
-
-    public static AnalyzeResponse of(List<AnalyzeResponseByCategory> result, BookAnalyze savedAnalyze, Long differance) {
+    public static AnalyzeResponse of(List<AnalyzeResponseByCategory> result, long totalMoney, Long differance) {
         List<AnalyzeResponseByCategory> sortedResult = result.stream()
             .sorted(comparing(AnalyzeResponseByCategory::getMoney).reversed())
             .collect(toList());
 
         return AnalyzeResponse.builder()
             .analyzeResult(sortedResult)
-            .total(savedAnalyze.getTotalMoney())
+            .total(totalMoney)
             .differance(differance)
             .build();
     }

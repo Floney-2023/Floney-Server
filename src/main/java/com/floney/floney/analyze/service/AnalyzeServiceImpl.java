@@ -8,22 +8,17 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.Asset;
-import com.floney.floney.analyze.entity.BookAnalyze;
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.repository.AssetRepository;
-import com.floney.floney.analyze.repository.BookAnalyzeRepository;
-import com.floney.floney.book.repository.BudgetRepository;
-import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.repository.BudgetRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
-import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +33,6 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     private final BookRepository bookRepository;
     private final BookLineCustomRepository bookLineRepository;
-    private final BookAnalyzeRepository analyzeRepository;
-    private final CategoryRepository categoryRepository;
     private final AssetRepository assetRepository;
     private final BudgetRepository budgetRepository;
 
@@ -47,12 +40,10 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Transactional
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
         List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
-        Book savedBook = findBook(request.getBookKey());
 
-        BookAnalyze savedAnalyze = saveAnalyze(request, analyzeResultByCategory, savedBook);
-        long difference = calculateDifference(request, savedAnalyze);
-
-        return AnalyzeResponse.of(analyzeResultByCategory, savedAnalyze, difference);
+        long totalMoney = calculateTotalMoney(analyzeResultByCategory);
+        long difference = calculateDifference(request, totalMoney);
+        return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
     }
 
     @Override
@@ -91,24 +82,14 @@ public class AnalyzeServiceImpl implements AnalyzeService {
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private long calculateDifference(AnalyzeByCategoryRequest request, BookAnalyze currentMonthAnalyze) {
+    private long calculateDifference(AnalyzeByCategoryRequest request, Long totalMoney) {
         long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
-        return currentMonthAnalyze.calculateDifferenceWith(beforeMonthTotal);
+        return totalMoney - beforeMonthTotal;
     }
 
-    private BookAnalyze saveAnalyze(AnalyzeByCategoryRequest request, List<AnalyzeResponseByCategory> analyzeResult, Book book) {
-        BookAnalyze analyze = BookAnalyze.builder()
-            .analyzeDate(request.getLocalDate())
-            .book(book)
-            .category(findCategory(request.getRoot()))
-            .analyzeResult(analyzeResult)
-            .build();
-
-        return analyzeRepository.save(analyze);
-    }
-
-    private Category findCategory(String root) {
-        return categoryRepository.findFlowCategory(root)
-            .orElseThrow(() -> new NotFoundCategoryException(root));
+    private Long calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
+        return result.stream()
+            .mapToLong(AnalyzeResponseByCategory::getMoney)
+            .sum();
     }
 }
