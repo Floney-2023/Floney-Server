@@ -1,7 +1,5 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -29,13 +27,4 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return CustomUserDetails.of(user);
     }
-
-    public void validateIfNewUser(String email) {
-        try {
-            User user = ((CustomUserDetails) loadUserByUsername(email)).getUser();
-            throw new UserFoundException(user.getEmail(), user.getProvider());
-        } catch (UserNotFoundException ignored) {
-        }
-    }
-
 }

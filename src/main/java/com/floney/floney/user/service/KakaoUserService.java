@@ -1,7 +1,9 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.KakaoClient;
 import com.floney.floney.user.dto.constant.Provider;
@@ -40,6 +42,7 @@ public class KakaoUserService implements OAuthUserService {
     @Override
     @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
+        validateIfNewUser(request.getEmail());
         String providerId = getProviderId(oAuthToken);
         User user = request.to(Provider.KAKAO, providerId);
         user.encodePassword(passwordEncoder);
@@ -73,4 +76,12 @@ public class KakaoUserService implements OAuthUserService {
         return kakaoClient.getId();
     }
 
+    private void validateIfNewUser(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (user.isInactive()) {
+                throw new UserSignoutException();
+            }
+            throw new UserFoundException(user.getEmail(), user.getProvider());
+        });
+    }
 }

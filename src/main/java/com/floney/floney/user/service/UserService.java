@@ -11,7 +11,9 @@ import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.PasswordSameException;
+import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -58,7 +60,7 @@ public class UserService {
     public Token login(LoginRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
             return jwtProvider.generateToken(authentication);
@@ -88,6 +90,7 @@ public class UserService {
 
     @Transactional
     public LoginRequest signup(SignupRequest request) {
+        validateIfNewUser(request.getEmail());
         User user = request.to();
         user.encodePassword(bCryptPasswordEncoder);
         userRepository.save(user);
@@ -96,7 +99,7 @@ public class UserService {
 
     @Transactional
     public void signout(String email) {
-        User user = findUser(email);
+        User user = findActiveUser(email);
         deleteAllBookLinesAndAccountBy(user);
         user.delete();
         userRepository.save(user);
@@ -144,7 +147,7 @@ public class UserService {
     }
 
     public void updatePassword(String password, String email) {
-        User user = findUser(email);
+        User user = findActiveUser(email);
         updatePassword(password, user);
     }
 
@@ -162,6 +165,8 @@ public class UserService {
     }
 
     public String sendEmailAuthMail(String email) {
+        validateIfNewUser(email);
+
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         String code = String.format("%06d", random.nextInt(1_000_000) % 1_000_000);
@@ -201,20 +206,34 @@ public class UserService {
         userRepository.save(user);
         List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
         myBookAccounts
-            .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
+                .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
 
     }
 
     @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
         User user = userRepository.findByEmail(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
+                .orElseThrow(() -> new UserNotFoundException(username));
         user.saveRecentBookKey(request);
         userRepository.save(user);
     }
 
-    private User findUser(final String username) {
-        return userRepository.findByEmailAndStatus(username, ACTIVE)
+    private User findActiveUser(final String username) {
+        final User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
+
+        if (user.isInactive()) {
+            throw new UserSignoutException();
+        }
+        return user;
+    }
+
+    private void validateIfNewUser(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (user.isInactive()) {
+                throw new UserSignoutException();
+            }
+            throw new UserFoundException(user.getEmail(), user.getProvider());
+        });
     }
 }
