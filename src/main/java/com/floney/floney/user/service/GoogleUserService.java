@@ -72,8 +72,7 @@ public class GoogleUserService implements OAuthUserService {
     }
 
     private String getProviderId(String oAuthToken) {
-        googleClient.init(oAuthToken);
-        return googleClient.getId();
+        return googleClient.getAuthId(oAuthToken);
     }
 
     private void validateIfNewUser(String email) {

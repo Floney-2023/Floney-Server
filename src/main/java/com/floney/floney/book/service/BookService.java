@@ -18,6 +18,7 @@ import com.floney.floney.book.dto.response.CurrencyResponse;
 import com.floney.floney.book.dto.response.InviteCodeResponse;
 import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.book.dto.response.LastSettlementDateResponse;
+import com.floney.floney.book.dto.response.BookStatusResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -48,10 +49,9 @@ public interface BookService {
 
     void saveOrUpdateBudget(final UpdateBudgetRequest request);
 
-    InvolveBookResponse findInvolveBook(final String email);
+    InvolveBookResponse findInvolveBook(final User user);
 
     void bookUserOut(final BookUserOutRequest request, final String username);
-
 
     void deleteBookLine(Book bookUserBook, BookUser bookUser);
 
@@ -68,4 +68,6 @@ public interface BookService {
     BookInfoResponse getBookInfoByCode(String code);
 
     LastSettlementDateResponse getPassedDaysAfterLastSettlementDate(String userEmail, String bookKey);
+
+    BookStatusResponse getBookStatus(String bookKey);
 }

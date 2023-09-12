@@ -1,18 +1,6 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CarryOverRequest;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -20,13 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -220,7 +202,7 @@ public class BookController {
      */
     @GetMapping("/users/check")
     public ResponseEntity<?> findInvolveBook(@AuthenticationPrincipal CustomUserDetails userDetail) {
-        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUsername()), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.findInvolveBook(userDetail.getUser()), HttpStatus.OK);
     }
 
     /**
@@ -279,7 +261,7 @@ public class BookController {
     public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request) {
         return new ResponseEntity<>(bookService.changeCurrency(request), HttpStatus.OK);
     }
-
+  
     /**
      * 가계부 내역 수정
      *
@@ -304,7 +286,6 @@ public class BookController {
 
     /**
      * 가계부 화폐정보 조회
-     *
      * @param bookKey 가계부 키
      * @return CurrencyResponse 화폐정보
      */
@@ -315,7 +296,6 @@ public class BookController {
 
     /**
      * 참여코드로 가계부 정보 조회
-     *
      * @param code 가계부 참여코드
      * @return BookResponse 가계부 정보
      */
@@ -335,4 +315,14 @@ public class BookController {
                                                @RequestParam String bookKey) {
         return ResponseEntity.ok(bookService.getPassedDaysAfterLastSettlementDate(userDetails.getUsername(), bookKey));
     }
+    /**
+     * 가계부 비활성화 / 활성화 여부 조회
+     * @param bookKey 가계부 키
+     * @return BookStatusResponse 비활성화 / 활성화 여부
+     */
+    @GetMapping("/bookStatus")
+    public ResponseEntity<?> getBookStatus(@RequestParam String bookKey) {
+        return new ResponseEntity<>(bookService.getBookStatus(bookKey), HttpStatus.OK);
+    }
+
 }
