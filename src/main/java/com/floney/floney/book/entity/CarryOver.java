@@ -2,7 +2,6 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.request.CreateLineRequest;
-import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,6 +15,9 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import static com.floney.floney.book.dto.constant.AssetType.INCOME;
+import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @Entity
 @Getter
@@ -39,16 +41,22 @@ public class CarryOver extends BaseEntity {
     }
 
     public static CarryOver of(CreateLineRequest request, Book book, LocalDate date) {
-        long money = request.getMoney();
-        if(Objects.equals(request.getFlow(), AssetType.OUTCOME.name())){
-            money = -1 * request.getMoney();
+        if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
+            return CarryOver
+                .builder()
+                .money(-1 * request.getMoney())
+                .book(book)
+                .date(date)
+                .build();
+        } else {
+            return CarryOver
+                .builder()
+                .money(request.getMoney())
+                .book(book)
+                .date(date)
+                .build();
         }
-        return CarryOver
-            .builder()
-            .money(money)
-            .book(book)
-            .date(date)
-            .build();
+
     }
 
     public static CarryOver init() {
@@ -59,10 +67,9 @@ public class CarryOver extends BaseEntity {
     }
 
     public void update(Long updateMoney, String flow) {
-        if(Objects.equals(flow, AssetType.INCOME.name())){
+        if (Objects.equals(flow, AssetType.INCOME.name())) {
             money += updateMoney;
-        }
-        else{
+        } else {
             money -= updateMoney;
         }
     }
