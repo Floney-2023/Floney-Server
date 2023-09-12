@@ -1,5 +1,7 @@
 package com.floney.floney.user.service;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
@@ -22,6 +24,8 @@ import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -35,12 +39,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Random;
-
-import static com.floney.floney.common.constant.Status.ACTIVE;
-
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
@@ -53,7 +53,6 @@ public class UserService {
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
-    private final CustomUserDetailsService customUserDetailsService;
     private final BookService bookService;
 
     public Token login(LoginRequest request) {
@@ -64,10 +63,10 @@ public class UserService {
 
             return jwtProvider.generateToken(authentication);
         } catch (BadCredentialsException exception) {
-            logger.warn("카카오 로그인 실패: [{}]", request.getEmail());
+            logger.warn("로그인 실패: [{}]", request.getEmail());
             throw exception;
         } catch (AccountStatusException exception) {
-            logger.error("카카오 로그인 오류: {}", exception.getMessage());
+            logger.error("로그인 오류: {}", exception.getMessage());
             throw exception;
         }
     }
@@ -97,7 +96,7 @@ public class UserService {
 
     @Transactional
     public void signout(String email) {
-        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        User user = findUser(email);
         deleteAllBookLinesAndAccountBy(user);
         user.delete();
         userRepository.save(user);
@@ -145,7 +144,7 @@ public class UserService {
     }
 
     public void updatePassword(String password, String email) {
-        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        User user = findUser(email);
         updatePassword(password, user);
     }
 
@@ -214,4 +213,8 @@ public class UserService {
         userRepository.save(user);
     }
 
+    private User findUser(final String username) {
+        return userRepository.findByEmailAndStatus(username, ACTIVE)
+                .orElseThrow(() -> new UserNotFoundException(username));
+    }
 }
