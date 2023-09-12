@@ -2,6 +2,7 @@ package com.floney.floney.user.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.client.dto.ApplePublicKeys;
 import com.floney.floney.user.client.dto.AppleTokenHeader;
@@ -35,10 +36,12 @@ public class AppleClient implements ClientProxy {
                     .fromUriString("https://appleid.apple.com")
                     .path("/auth/keys")
                     .build().toUri();
+
+            logger.info("[{}]로 통신 시작", uri);
             final ApplePublicKeys applePublicKeys = createRequest().getForObject(uri, ApplePublicKeys.class);
 
             if (applePublicKeys == null) {
-                throw new OAuthTokenNotValidException();
+                throw new OAuthResponseException();
             }
 
             final PublicKey publicKey = publicKeyGenerator.generate(authTokenHeader, applePublicKeys.getKeys());
