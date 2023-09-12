@@ -28,10 +28,10 @@ public class ExcelController {
     public void download(@AuthenticationPrincipal CustomUserDetails userDetails,
                          @RequestParam String bookKey,
                          HttpServletResponse response) {
-        response.setContentType("application/vnd.ms-excel");
-        response.setHeader("Content-Disposition", "attachment;filename="+ FILENAME +".xlsx");
-
         try (final Workbook bookExcel = excelService.createBookExcel(userDetails.getUsername(), bookKey)) {
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment;filename="+ FILENAME +".xlsx");
+
             bookExcel.write(response.getOutputStream());
         } catch (final IOException exception) {
             throw new ExcelMakingException();
