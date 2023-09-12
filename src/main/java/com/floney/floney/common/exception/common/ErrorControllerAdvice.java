@@ -1,10 +1,24 @@
 package com.floney.floney.common.exception.common;
 
-import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.user.*;
+import com.floney.floney.common.exception.book.AlreadyJoinException;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
+import com.floney.floney.common.exception.book.ExcelMakingException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.user.CodeNotSameException;
+import com.floney.floney.common.exception.user.EmailNotFoundException;
+import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.NotFoundSubscribeException;
+import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
+import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -187,7 +201,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error(Arrays.toString(exception.getStackTrace()));
+        logger.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
     }

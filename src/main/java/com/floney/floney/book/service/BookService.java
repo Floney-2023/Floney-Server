@@ -1,13 +1,27 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.OurBookInfo;
-import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CarryOverRequest;
+import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.BookInfoResponse;
+import com.floney.floney.book.dto.response.BookUserResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.CurrencyResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
+import com.floney.floney.book.dto.response.LastSettlementDateResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
-
 import java.util.List;
 
 public interface BookService {
@@ -52,4 +66,6 @@ public interface BookService {
     CurrencyResponse getCurrency(String bookKey);
 
     BookInfoResponse getBookInfoByCode(String code);
+
+    LastSettlementDateResponse getPassedDaysAfterLastSettlementDate(String userEmail, String bookKey);
 }
