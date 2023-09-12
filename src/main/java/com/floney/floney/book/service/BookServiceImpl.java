@@ -12,10 +12,9 @@ import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -46,6 +45,8 @@ public class BookServiceImpl implements BookService {
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final AssetRepository assetRepository;
     private final BudgetRepository budgetRepository;
+    private final SettlementRepository settlementRepository;
+    private final CarryOverRepository carryOverRepository;
 
     @Override
     @Transactional
@@ -253,7 +254,10 @@ public class BookServiceImpl implements BookService {
             .map(BookCategory::delete)
             .forEach(categoryRepository::delete);
 
+        settlementRepository.deleteAllSettlement(bookKey);
         bookLineRepository.deleteAllLines(bookKey);
+        carryOverRepository.deleteAllCarryOver(bookKey);
+
         return bookRepository.save(book);
     }
 

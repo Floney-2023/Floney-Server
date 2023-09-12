@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,6 @@ import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @Entity
@@ -34,6 +34,7 @@ public class CarryOver extends BaseEntity {
     private LocalDate date;
 
     @Builder
+    @QueryProjection
     private CarryOver(long money, Book book, LocalDate date) {
         this.money = money;
         this.book = book;

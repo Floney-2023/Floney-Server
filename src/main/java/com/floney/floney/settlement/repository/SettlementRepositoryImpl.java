@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.settlement.domain.entity.QSettlement.settlement;
 
@@ -27,5 +28,22 @@ public class SettlementRepositoryImpl implements SettlementCustomRepository {
             .where(settlement.updatedAt.before(threeMonthsAgo),
                 settlement.status.eq(INACTIVE))
             .fetch();
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteAllSettlement(String bookKey) {
+        jpaQueryFactory.
+            update(settlement)
+            .set(settlement.status, INACTIVE)
+            .set(settlement.updatedAt, LocalDateTime.now())
+            .where(settlement.in(
+                jpaQueryFactory.selectFrom(settlement)
+                    .innerJoin(settlement.book, book)
+                    .on(book.bookKey.eq(bookKey))
+            ));
+
+
     }
 }
