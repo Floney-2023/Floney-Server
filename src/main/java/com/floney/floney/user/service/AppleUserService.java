@@ -43,9 +43,11 @@ public class AppleUserService implements OAuthUserService {
     @Override
     @Transactional
     public Token signup(final String oAuthToken, final SignupRequest request) {
-        validateIfNewUser(request.getEmail());
+        validateUserExistByEmail(request.getEmail());
 
         final String providerId = getProviderId(oAuthToken);
+        validateUserExistByProviderId(providerId);
+
         final User user = request.to(Provider.APPLE, providerId);
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
@@ -83,7 +85,13 @@ public class AppleUserService implements OAuthUserService {
         return appleClient.getAuthId(oAuthToken);
     }
 
-    private void validateIfNewUser(String email) {
+    private void validateUserExistByProviderId(final String providerId) {
+        userRepository.findByProviderId(providerId).ifPresent(user -> {
+            throw new UserFoundException(user.getEmail(), user.getProvider());
+        });
+    }
+
+    private void validateUserExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             if (user.isInactive()) {
                 throw new UserSignoutException();
