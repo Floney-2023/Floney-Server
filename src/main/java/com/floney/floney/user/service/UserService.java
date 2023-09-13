@@ -196,8 +196,10 @@ public class UserService {
         if (!redisProvider.hasKey(requestEmail)) {
             throw new EmailNotFoundException(requestEmail);
         }
-        if (!redisProvider.get(requestEmail).equals(requestCode)) {
-            throw new CodeNotSameException(requestEmail, requestCode);
+
+        final String code = redisProvider.get(requestEmail);
+        if (!code.equals(requestCode)) {
+            throw new CodeNotSameException(code, requestCode);
         }
     }
 

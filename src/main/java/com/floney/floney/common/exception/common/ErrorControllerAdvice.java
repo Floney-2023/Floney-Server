@@ -107,7 +107,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(CodeNotSameException.class)
     protected ResponseEntity<ErrorResponse> invalidCode(CodeNotSameException exception) {
-        logger.debug("일치하지 않는 코드: [{}], [{}]", exception.getCode(), exception.getAnotherCode());
+        logger.debug("일치하지 않는 이메일 인증 코드: [{}], [{}]", exception.getCode(), exception.getAnotherCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
