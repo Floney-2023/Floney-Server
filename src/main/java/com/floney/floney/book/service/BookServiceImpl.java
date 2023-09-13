@@ -177,6 +177,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void updateCarryOver(CarryOverRequest request) {
         Book savedBook = findBook(request.getBookKey());
         savedBook.changeCarryOverStatus(request.isStatus());
@@ -297,11 +298,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CurrencyResponse getCurrency(String bookKey) {
         return CurrencyResponse.of(findBook(bookKey));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookInfoResponse getBookInfoByCode(String code) {
         Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
                 .orElseThrow(() -> new NotFoundBookException(code));
@@ -310,6 +313,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LastSettlementDateResponse getPassedDaysAfterLastSettlementDate(final String userEmail,
                                                                            final String bookKey) {
         final LocalDate lastSettlementDate = findBook(userEmail, bookKey).getLastSettlementDate();
@@ -321,6 +325,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookStatusResponse getBookStatus(String bookKey) {
         return BookStatusResponse.of(findBook(bookKey));
     }
