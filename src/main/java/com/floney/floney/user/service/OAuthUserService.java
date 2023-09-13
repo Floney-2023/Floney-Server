@@ -7,7 +7,7 @@ public interface OAuthUserService {
 
     boolean checkIfSignup(String oAuthToken);
 
-    void signup(String oAuthToken, SignupRequest request);
+    Token signup(String oAuthToken, SignupRequest request);
 
     Token login(String oAuthToken);
 }

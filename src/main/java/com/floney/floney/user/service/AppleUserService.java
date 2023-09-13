@@ -42,12 +42,15 @@ public class AppleUserService implements OAuthUserService {
 
     @Override
     @Transactional
-    public void signup(final String oAuthToken, final SignupRequest request) {
+    public Token signup(final String oAuthToken, final SignupRequest request) {
         validateIfNewUser(request.getEmail());
+
         final String providerId = getProviderId(oAuthToken);
         final User user = request.to(Provider.APPLE, providerId);
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
+
+        return generateToken(user);
     }
 
     @Override
@@ -57,6 +60,10 @@ public class AppleUserService implements OAuthUserService {
         final User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new UserNotFoundException(oAuthToken));
 
+        return generateToken(user);
+    }
+
+    private Token generateToken(final User user) {
         try {
             final Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
