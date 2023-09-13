@@ -83,7 +83,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         return TotalDayLinesResponse.of(dayLines,
             totalExpenses,
-            book.isSeeProfile(),
+            book.getSeeProfile(),
             carryOverFactory.getCarryOverInfo(book, date));
     }
 
