@@ -253,7 +253,7 @@ public class BookController {
     }
 
     /**
-     *
+     * 화폐 통화 변경
      * @body ChangeCurrencyRequest 변경할 통화 정보
      * @return 변경한 통화 정보
      */

@@ -53,4 +53,9 @@ public class Budget extends BaseEntity {
     public void update(UpdateBudgetRequest request) {
         this.money = request.getBudget();
     }
+
+    public Budget initMoney() {
+        this.money = 0L;
+        return this;
+    }
 }
