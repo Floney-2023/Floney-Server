@@ -43,6 +43,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
+
 
     // QueryDsl
     implementation 'com.h2database:h2'

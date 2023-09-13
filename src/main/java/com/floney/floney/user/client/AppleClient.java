@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
@@ -23,6 +24,7 @@ public class AppleClient implements ClientProxy {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
     private final AppleOAuthPublicKeyGenerator publicKeyGenerator;
 
     @Override
@@ -38,7 +40,7 @@ public class AppleClient implements ClientProxy {
                     .build().toUri();
 
             logger.info("[{}]로 통신 시작", uri);
-            final ApplePublicKeys applePublicKeys = createRequest().getForObject(uri, ApplePublicKeys.class);
+            final ApplePublicKeys applePublicKeys = restTemplate.getForObject(uri, ApplePublicKeys.class);
 
             if (applePublicKeys == null) {
                 throw new OAuthResponseException();

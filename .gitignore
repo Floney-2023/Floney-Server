@@ -37,6 +37,7 @@ out/
 .vscode/
 
 /src/main/resources/application.yaml
+/src/main/resources/google-credential.json
 /logs
 /was-logs
 

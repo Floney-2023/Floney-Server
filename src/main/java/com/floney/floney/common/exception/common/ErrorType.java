@@ -44,6 +44,8 @@ public enum ErrorType {
     NOT_FOUND_SETTLEMENT("ST001", "정산 내역이 존재하지 않습니다"),
     NOT_FOUND_OUTCOME_USER("ST002", "지출 내역의 유저가 유저 목록에 존재하지 않습니다"),
 
+    FAIL_TO_GENERATE_TOKEN("A001", "외부 서버에서 토큰을 요청하는 중 에러가 발생했습니다"),
+
     SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다");
 
     private final String code;
