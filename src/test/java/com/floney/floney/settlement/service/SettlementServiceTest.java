@@ -66,7 +66,6 @@ class SettlementServiceTest {
         final Book book = Book.builder()
             .bookKey(request.getBookKey())
             .code("code")
-            .carryOverMoney(0L)
             .name("name")
             .build();
 
@@ -133,7 +132,6 @@ class SettlementServiceTest {
             .bookKey(request.getBookKey())
             .code("code")
             .name("name")
-            .carryOverMoney(0L)
             .build();
 
         bookRepository.save(book);
@@ -206,7 +204,6 @@ class SettlementServiceTest {
             .bookKey(request.getBookKey())
             .code("code")
             .name("name")
-            .carryOverMoney(0L)
             .build();
 
         bookRepository.save(book);
@@ -260,7 +257,6 @@ class SettlementServiceTest {
         final Book book = Book.builder()
             .bookKey(request.getBookKey())
             .code("code")
-            .carryOverMoney(0L)
             .name("name")
             .build();
 
@@ -305,7 +301,6 @@ class SettlementServiceTest {
             .bookKey(request.getBookKey())
             .code("code")
             .name("name")
-            .carryOverMoney(0L)
             .build();
 
         bookRepository.save(book);
@@ -347,7 +342,6 @@ class SettlementServiceTest {
         final Book book = Book.builder()
             .bookKey(request.getBookKey())
             .code("code")
-            .carryOverMoney(0L)
             .name("name")
             .build();
 
@@ -407,7 +401,6 @@ class SettlementServiceTest {
             .bookKey(request.getBookKey())
             .code("code")
             .name("name")
-            .carryOverMoney(0L)
             .build();
 
         bookRepository.save(book);

@@ -34,7 +34,6 @@ public class BookFixture {
             .bookImg(URL)
             .bookKey(bookKey)
             .owner(EMAIL)
-            .carryOverMoney(0L)
             .code(CODE)
             .build();
     }
@@ -49,7 +48,6 @@ public class BookFixture {
             .bookImg(URL)
             .bookKey(BOOK_KEY)
             .owner(EMAIL)
-            .carryOverMoney(0L)
             .code(CODE)
             .build();
     }
