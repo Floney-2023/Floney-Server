@@ -1,10 +1,25 @@
 package com.floney.floney.common.exception.common;
 
-import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.user.*;
+import com.floney.floney.common.exception.book.AlreadyJoinException;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
+import com.floney.floney.common.exception.book.ExcelMakingException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.user.CodeNotSameException;
+import com.floney.floney.common.exception.user.EmailNotFoundException;
+import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.NotFoundSubscribeException;
+import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
+import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -39,6 +54,12 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> notFoundUser(UserNotFoundException exception) {
         logger.warn("저장되지 않은 유저 정보: [{}]", exception.getUsername());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(UserSignoutException.class)
+    protected ResponseEntity<ErrorResponse> signoutUser(UserSignoutException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 

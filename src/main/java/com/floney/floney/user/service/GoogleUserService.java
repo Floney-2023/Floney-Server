@@ -1,7 +1,9 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.GoogleClient;
 import com.floney.floney.user.dto.constant.Provider;
@@ -40,6 +42,7 @@ public class GoogleUserService implements OAuthUserService {
     @Override
     @Transactional
     public void signup(String oAuthToken, SignupRequest request) {
+        validateIfNewUser(request.getEmail());
         String providerId = getProviderId(oAuthToken);
         User user = request.to(Provider.GOOGLE, providerId);
         user.encodePassword(passwordEncoder);
@@ -69,8 +72,15 @@ public class GoogleUserService implements OAuthUserService {
     }
 
     private String getProviderId(String oAuthToken) {
-        googleClient.init(oAuthToken);
-        return googleClient.getId();
+        return googleClient.getAuthId(oAuthToken);
     }
 
+    private void validateIfNewUser(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (user.isInactive()) {
+                throw new UserSignoutException();
+            }
+            throw new UserFoundException(user.getEmail(), user.getProvider());
+        });
+    }
 }

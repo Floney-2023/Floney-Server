@@ -1,8 +1,13 @@
 package com.floney.floney.settlement.repository;
 
-import com.floney.floney.book.util.DateFactory;
+
+import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.settlement.domain.entity.QSettlement.settlement;
+
 import com.floney.floney.settlement.domain.entity.Settlement;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +19,10 @@ import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.settlement.domain.entity.QSettlement.settlement;
 
+
 @Repository
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SettlementRepositoryImpl implements SettlementCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -31,7 +38,8 @@ public class SettlementRepositoryImpl implements SettlementCustomRepository {
                     .innerJoin(settlement.book, book)
                     .on(book.bookKey.eq(bookKey))
             ));
-
-
     }
+
 }
+
+    

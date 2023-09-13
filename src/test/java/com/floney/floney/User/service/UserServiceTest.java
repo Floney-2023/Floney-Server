@@ -10,9 +10,11 @@ import static org.mockito.BDDMockito.then;
 import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.PasswordSameException;
-import com.floney.floney.common.util.MailProvider;
+import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
+import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.config.UserFixture;
 import com.floney.floney.user.dto.request.SignupRequest;
@@ -24,6 +26,7 @@ import com.floney.floney.user.repository.UserRepository;
 import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.UserService;
 import java.util.Collections;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +34,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,12 +80,29 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("회원가입에 실패한다 - 이미 가입된 회원")
+    void signup_fail_throws_userFoundException() {
+        // given
+        User user = UserFixture.getUser();
+        SignupRequest signupRequest = SignupRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .build();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // when & then
+        assertThatThrownBy(() -> userService.signup(signupRequest))
+                .isInstanceOf(UserFoundException.class);
+    }
+
+    @Test
     @DisplayName("회원탈퇴에 성공한다")
     void signout_success() {
         // given
         User user = UserFixture.createUser();
-        given(customUserDetailsService.loadUserByUsername(user.getEmail()))
-                .willReturn(new CustomUserDetails(user, null));
+        given(userRepository.findByEmail(user.getEmail()))
+                .willReturn(Optional.of(user));
 
         // when
         userService.signout(user.getEmail());
@@ -98,7 +117,7 @@ class UserServiceTest {
         // given
         User user = UserFixture.createUser();
         user.delete();
-        given(customUserDetailsService.loadUserByUsername(user.getEmail())).willThrow(UserSignoutException.class);
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
         assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserSignoutException.class);
@@ -109,10 +128,10 @@ class UserServiceTest {
     void signout_fail_throws_usernameNotFoundException() {
         // given
         User user = UserFixture.createUser();
-        given(customUserDetailsService.loadUserByUsername(user.getEmail())).willThrow(UsernameNotFoundException.class);
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UsernameNotFoundException.class);
+        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserNotFoundException.class);
     }
 
     @Test

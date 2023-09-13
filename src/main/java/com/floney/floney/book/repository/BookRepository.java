@@ -5,7 +5,7 @@ import com.floney.floney.common.constant.Status;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, Long>, BookCustomRepository {
 
     Optional<Book> findBookByCodeAndStatus(String code, Status status);
 

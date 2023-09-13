@@ -5,7 +5,7 @@ import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
-import com.floney.floney.user.client.KakaoClient;
+import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.entity.User;
@@ -23,56 +23,57 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class KakaoUserService implements OAuthUserService {
+public class AppleUserService implements OAuthUserService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    private final KakaoClient kakaoClient;
+    private final AppleClient appleClient;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean checkIfSignup(String oAuthToken) {
+    public boolean checkIfSignup(final String oAuthToken) {
         return userRepository.existsByProviderId(getProviderId(oAuthToken));
     }
 
     @Override
     @Transactional
-    public void signup(String oAuthToken, SignupRequest request) {
+    public void signup(final String oAuthToken, final SignupRequest request) {
         validateIfNewUser(request.getEmail());
-        String providerId = getProviderId(oAuthToken);
-        User user = request.to(Provider.KAKAO, providerId);
+        final String providerId = getProviderId(oAuthToken);
+        final User user = request.to(Provider.APPLE, providerId);
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
     }
 
     @Override
-    public Token login(String oAuthToken) {
-        String providerId = getProviderId(oAuthToken);
+    public Token login(final String oAuthToken) {
+        final String providerId = getProviderId(oAuthToken);
 
-        User user = userRepository.findByProviderId(providerId)
+        final User user = userRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new UserNotFoundException(oAuthToken));
 
         try {
-            Authentication authentication = authenticationManager.authenticate(
+            final Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
             );
 
             return jwtProvider.generateToken(authentication);
         } catch (BadCredentialsException exception) {
-            logger.warn("카카오 로그인 실패: [{}]", user.getEmail());
+            logger.warn("애플 로그인 실패: [{}]", user.getEmail());
             throw exception;
         } catch (AccountStatusException exception) {
-            logger.error("카카오 로그인 오류: {}", exception.getMessage());
+            logger.error("애플 로그인 오류: {}", exception.getMessage());
             throw exception;
         }
     }
 
     private String getProviderId(String oAuthToken) {
-        return kakaoClient.getAuthId(oAuthToken);
+        return appleClient.getAuthId(oAuthToken);
     }
 
     private void validateIfNewUser(String email) {
