@@ -45,17 +45,17 @@ public class Book extends BaseEntity {
     private String bookKey;
 
     @Column(columnDefinition = "TINYINT", length = 1)
-    private Boolean seeProfile;
+    private boolean seeProfile;
 
     @Column(columnDefinition = "TINYINT", length = 1)
-    private Boolean carryOverStatus;
+    private boolean carryOverStatus;
 
     @Column(nullable = false, length = 10)
     private String code;
 
     private LocalDate lastSettlementDate;
 
-    private Long carryOverMoney;
+    private long carryOverMoney;
 
     private String currency;
 
@@ -67,8 +67,8 @@ public class Book extends BaseEntity {
 
     @Builder
     private Book(String name, String bookImg, String owner,
-                 String bookKey, Boolean seeProfile,
-                 Boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
+                 String bookKey, boolean seeProfile,
+                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
         this.name = name;
         this.bookImg = bookImg;
         this.owner = owner;
