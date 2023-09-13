@@ -28,6 +28,8 @@ jobs:
       - run: |
            touch ./src/main/resources/application.yaml
            echo "${{ secrets.SECRET_YAML }}" | base64 --decode > ./src/main/resources/application.yaml
+           touch ./src/main/resources/google-credential.json
+           echo "${{ secrets.GOOGLE_CREDENTIAL }}" | base64 --decode > ./src/main/resources/google-credential.json
 
       - name: Github action IP 가져오기
         id: ip
