@@ -31,7 +31,7 @@ public class AppleController implements AuthController {
     }
 
     @Override
-    @PostMapping("/login")
+    @GetMapping("/login")
     public ResponseEntity<?> login(final String token) {
         return ResponseEntity.ok(appleUserService.login(token));
     }
