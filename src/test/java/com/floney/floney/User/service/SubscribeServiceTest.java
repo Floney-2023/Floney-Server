@@ -42,9 +42,6 @@ public class SubscribeServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private BookRepository boo;
-
     @InjectMocks
     private SubscribeService subscribeService;
 

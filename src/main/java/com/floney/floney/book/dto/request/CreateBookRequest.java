@@ -24,7 +24,6 @@ public class CreateBookRequest {
         return Book.builder()
             .bookKey(CodeFactory.generateCode())
             .name(name)
-            .carryOverMoney(0L)
             .bookImg(bookImg)
             .owner(email)
             .code(CodeFactory.generateCode())
