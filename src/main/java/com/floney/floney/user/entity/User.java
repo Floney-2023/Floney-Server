@@ -4,23 +4,24 @@ import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.dto.constant.Provider;
+import com.querydsl.core.annotations.QueryProjection;
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.querydsl.core.annotations.QueryProjection;
-import lombok.*;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -60,7 +61,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @Column(updatable = false, unique = true, length = 30)
+    @Column(updatable = false, unique = true)
     private String providerId;
 
     private String recentBookKey;
