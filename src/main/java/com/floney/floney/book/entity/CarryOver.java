@@ -75,8 +75,4 @@ public class CarryOver extends BaseEntity {
         }
     }
 
-    public CarryOver deleteForever() {
-        this.book = null;
-        return this;
-    }
 }

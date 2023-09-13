@@ -8,7 +8,6 @@ import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.BookUser;
 
 import java.time.LocalDate;
@@ -41,10 +40,6 @@ public interface BookLineCustomRepository {
     Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
 
     Optional<BookLine> findByIdWithCategories(Long id);
-
-    List<BookLine> findLineHaveToDelete();
-
-    List<BookLineCategory> findCategoryHaveToDelete();
 
     void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser);
 

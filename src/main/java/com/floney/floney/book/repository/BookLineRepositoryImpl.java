@@ -328,26 +328,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<BookLine> findLineHaveToDelete() {
-        return jpaQueryFactory
-            .selectFrom(bookLine)
-            .where(bookLine.updatedAt.before(DateFactory.getThreeMonthAgo()),
-                bookLine.status.eq(INACTIVE))
-            .fetch();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<BookLineCategory> findCategoryHaveToDelete() {
-        return jpaQueryFactory
-            .selectFrom(bookLineCategory)
-            .where(bookLineCategory.updatedAt.before(DateFactory.getThreeMonthAgo()),
-                bookLineCategory.status.eq(INACTIVE))
-            .fetch();
-    }
-
-    @Override
     @Transactional
     public void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser) {
         jpaQueryFactory.update(bookLine)

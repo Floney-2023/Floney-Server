@@ -193,15 +193,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public List<BookUser> findBookUserHaveToDelete() {
-        return jpaQueryFactory
-            .selectFrom(bookUser)
-            .where(bookUser.updatedAt.before(DateFactory.getThreeMonthAgo()),
-                bookUser.status.eq(INACTIVE))
-            .fetch();
-    }
-
-    @Override
     @Transactional
     public Optional<User> findBookUserWhoSubscribe(Book targetBook) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(user)

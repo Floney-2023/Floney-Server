@@ -51,10 +51,4 @@ public class BookUser extends BaseEntity {
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
-
-    public BookUser deleteForever() {
-        this.book = null;
-        this.user = null;
-        return this;
-    }
 }

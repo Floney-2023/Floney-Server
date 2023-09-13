@@ -20,17 +20,6 @@ public class SettlementRepositoryImpl implements SettlementCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Settlement> findSettlementHaveToDelete() {
-        return jpaQueryFactory
-            .selectFrom(settlement)
-            .where(settlement.updatedAt.before(DateFactory.getThreeMonthAgo()),
-                settlement.status.eq(INACTIVE))
-            .fetch();
-    }
-
-
-    @Override
     @Transactional
     public void deleteAllSettlement(String bookKey) {
         jpaQueryFactory.
