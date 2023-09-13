@@ -1,5 +1,6 @@
 package com.floney.floney.common.exception.common;
 
+import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
 import com.floney.floney.common.exception.book.AlreadyJoinException;
 import com.floney.floney.common.exception.book.CannotDeleteBookException;
 import com.floney.floney.common.exception.book.ExcelMakingException;
@@ -206,13 +207,6 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
-    }
-
     @ExceptionHandler(AlreadyJoinException.class)
     protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
         logger.error("{}는 {}",exception.getUserEmail(),ErrorType.ALREADY_JOIN.getMessage());
@@ -225,6 +219,20 @@ public class ErrorControllerAdvice {
         logger.error("{} User = {}",ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(),exception.getUserEmail());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    // ALARM
+    @ExceptionHandler(GoogleAccessTokenGenerateException.class)
+    protected ResponseEntity<ErrorResponse> failToGenerateGoogleAccessTokenException(GoogleAccessTokenGenerateException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
+        logger.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
     }
 }
 
