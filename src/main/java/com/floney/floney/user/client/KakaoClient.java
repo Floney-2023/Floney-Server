@@ -6,6 +6,7 @@ import com.floney.floney.user.dto.response.KakaoUserResponse;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -14,12 +15,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
+@RequiredArgsConstructor
 public class KakaoClient implements ClientProxy {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    private final RestTemplate restTemplate;
 
     @Override
     public String getAuthId(final String authToken) {
@@ -35,7 +39,7 @@ public class KakaoClient implements ClientProxy {
 
         try {
             logger.info("[{}]로 통신 시작", uri);
-            final ResponseEntity<KakaoUserResponse> result = createRequest()
+            final ResponseEntity<KakaoUserResponse> result = restTemplate
                     .exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
             return Objects.requireNonNull(result.getBody()).getId().toString();
         } catch (HttpClientErrorException.Unauthorized exception) {
