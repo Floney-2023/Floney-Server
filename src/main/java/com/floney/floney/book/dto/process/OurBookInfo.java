@@ -38,7 +38,7 @@ public class OurBookInfo {
             .bookName(book.getName())
             .startDay(formatToDate(book.getCreatedAt()))
             .bookUsers(bookUsers)
-            .seeProfileStatus(book.getSeeProfile())
+            .seeProfileStatus(book.isSeeProfile())
             .carryOver(book.getCarryOverStatus())
             .build();
     }
