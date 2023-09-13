@@ -2,7 +2,6 @@ package com.floney.floney.user.controller;
 
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.service.AppleUserService;
-import com.floney.floney.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppleController implements AuthController {
 
     private final AppleUserService appleUserService;
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     @GetMapping("/check")
@@ -28,7 +26,6 @@ public class AppleController implements AuthController {
     @Override
     @PostMapping("/signup")
     public ResponseEntity<?> signup(final String token, final SignupRequest request) {
-        customUserDetailsService.validateIfNewUser(request.getEmail());
         appleUserService.signup(token, request);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

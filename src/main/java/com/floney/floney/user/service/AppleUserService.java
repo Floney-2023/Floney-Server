@@ -1,7 +1,9 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.dto.constant.Provider;
@@ -41,6 +43,7 @@ public class AppleUserService implements OAuthUserService {
     @Override
     @Transactional
     public void signup(final String oAuthToken, final SignupRequest request) {
+        validateIfNewUser(request.getEmail());
         final String providerId = getProviderId(oAuthToken);
         final User user = request.to(Provider.APPLE, providerId);
         user.encodePassword(passwordEncoder);
@@ -71,5 +74,14 @@ public class AppleUserService implements OAuthUserService {
 
     private String getProviderId(String oAuthToken) {
         return appleClient.getAuthId(oAuthToken);
+    }
+
+    private void validateIfNewUser(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            if (user.isInactive()) {
+                throw new UserSignoutException();
+            }
+            throw new UserFoundException(user.getEmail(), user.getProvider());
+        });
     }
 }

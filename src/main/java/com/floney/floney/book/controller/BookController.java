@@ -258,12 +258,11 @@ public class BookController {
      * @return 변경한 통화 정보
      */
     @PostMapping("/info/currency")
-    public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request){
-        return new ResponseEntity<>(bookService.changeCurrency(request),HttpStatus.OK);
+    public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request) {
+        return new ResponseEntity<>(bookService.changeCurrency(request), HttpStatus.OK);
     }
   
     /**
-     *
      * 가계부 내역 수정
      *
      * @return InviteCodeResponse 가계부 내역
@@ -305,6 +304,17 @@ public class BookController {
         return new ResponseEntity<>(bookService.getBookInfoByCode(code), HttpStatus.OK);
     }
 
+    /**
+     * 가계부의 마지막 정산 날짜로부터 며칠이 지났는 지 조회
+     *
+     * @param bookKey 가계부 key
+     * @return LastSettlementDateResponse 마지막 정산 날짜로부터 지난 날짜
+     */
+    @GetMapping("/settlement/last")
+    public ResponseEntity<?> getLastSettlement(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                               @RequestParam String bookKey) {
+        return ResponseEntity.ok(bookService.getPassedDaysAfterLastSettlementDate(userDetails.getUsername(), bookKey));
+    }
     /**
      * 가계부 비활성화 / 활성화 여부 조회
      * @param bookKey 가계부 키
