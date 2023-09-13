@@ -27,13 +27,12 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.repository.AssetRepository;
-import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.BudgetRepository;
+import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.common.NotSubscribeException;
+import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.common.exception.book.AlreadyJoinException;
 import com.floney.floney.common.exception.book.CannotDeleteBookException;
 import com.floney.floney.common.exception.book.LimitRequestException;
@@ -69,6 +68,8 @@ public class BookServiceImpl implements BookService {
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final AssetRepository assetRepository;
     private final BudgetRepository budgetRepository;
+    private final SettlementRepository settlementRepository;
+    private final CarryOverRepository carryOverRepository;
 
     @Override
     @Transactional
@@ -276,7 +277,22 @@ public class BookServiceImpl implements BookService {
                 .map(BookCategory::delete)
                 .forEach(categoryRepository::delete);
 
+        settlementRepository.deleteAllSettlement(bookKey);
         bookLineRepository.deleteAllLines(bookKey);
+        carryOverRepository.deleteAllCarryOver(bookKey);
+
+        List<Budget> initBudgets = budgetRepository.findAllByBook(book)
+            .stream()
+            .map(Budget::initMoney)
+            .toList();
+        budgetRepository.saveAll(initBudgets);
+
+        List<Asset> initAssets = assetRepository.findAllByBook(book)
+            .stream()
+            .map(Asset::initMoney)
+            .toList();
+        assetRepository.saveAll(initAssets);
+
         return bookRepository.save(book);
     }
 

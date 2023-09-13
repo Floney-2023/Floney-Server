@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface SettlementCustomRepository {
 
-    List<Settlement> findSettlementHaveToDelete();
+    void deleteAllSettlement(String bookKey);
 }

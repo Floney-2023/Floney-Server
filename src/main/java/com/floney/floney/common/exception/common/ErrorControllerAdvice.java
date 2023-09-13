@@ -20,6 +20,8 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.exception.user.UserSignoutException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -208,7 +210,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error(exception.getMessage());
+        logger.error(exception.getMessage(), Arrays.toString(exception.getStackTrace()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
     }

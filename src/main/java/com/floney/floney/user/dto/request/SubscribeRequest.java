@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 @ToString
 @RequiredArgsConstructor
 public class SubscribeRequest {
+
     @NotNull
     private String originalTransactionId;
 
