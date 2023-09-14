@@ -46,7 +46,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
-    private final PasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
@@ -86,7 +86,7 @@ public class UserService {
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
         User user = request.to();
-        user.encodePassword(bCryptPasswordEncoder);
+        user.encodePassword(passwordEncoder);
         userRepository.save(user);
         return request.toLoginRequest();
     }
@@ -130,12 +130,12 @@ public class UserService {
     public void updatePassword(String password, User user) {
         validatePassword(password, user.getPassword());
         user.updatePassword(password);
-        user.encodePassword(bCryptPasswordEncoder);
+        user.encodePassword(passwordEncoder);
         userRepository.save(user);
     }
 
     private void validatePassword(String newPassword, String oldPassword) {
-        if (bCryptPasswordEncoder.matches(newPassword, oldPassword)) {
+        if (passwordEncoder.matches(newPassword, oldPassword)) {
             throw new PasswordSameException();
         }
     }
@@ -219,7 +219,7 @@ public class UserService {
     }
 
     private void validatePasswordMatches(final LoginRequest request, final String user) {
-        if (!bCryptPasswordEncoder.matches(request.getPassword(), user)) {
+        if (!passwordEncoder.matches(request.getPassword(), user)) {
             throw new BadCredentialsException(request.getEmail());
         }
     }
