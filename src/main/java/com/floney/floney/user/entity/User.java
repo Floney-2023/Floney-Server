@@ -67,10 +67,25 @@ public class User extends BaseEntity {
     private String recentBookKey;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime deleteTime;
+    private LocalDateTime inactiveTime;
+
+    @Column(nullable = false)
+    @DateTimeFormat(iso = ISO.DATE_TIME)
+    @Builder.Default
+    private LocalDateTime lastLoginTime = LocalDateTime.now();
 
     @QueryProjection
-    private User(String email, String nickname, String password, String profileImg, LocalDateTime lastAdTime, boolean subscribe, Provider provider, String providerId, String recentBookKey, LocalDateTime deleteTime) {
+    private User(String email,
+                 String nickname,
+                 String password,
+                 String profileImg,
+                 LocalDateTime lastAdTime,
+                 boolean subscribe,
+                 Provider provider,
+                 String providerId,
+                 String recentBookKey,
+                 LocalDateTime inactiveTime,
+                 LocalDateTime lastLoginTime) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -80,7 +95,8 @@ public class User extends BaseEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.recentBookKey = recentBookKey;
-        this.deleteTime = deleteTime;
+        this.inactiveTime = inactiveTime;
+        this.lastLoginTime = lastLoginTime;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -111,14 +127,9 @@ public class User extends BaseEntity {
         this.recentBookKey = bookKey;
     }
 
-    //유저 탈퇴시, 개인정보 즉시 삭제
-    public void delete(){
+    public void inactive(){
         this.status = Status.INACTIVE;
-        this.email = DELETE_VALUE;
-        this.nickname = DELETE_VALUE;
-        this.password = DELETE_VALUE;
-        this.profileImg = DELETE_VALUE;
-        this.deleteTime = LocalDateTime.now();
+        this.inactiveTime = LocalDateTime.now();
     }
 
     public void subscribe() {

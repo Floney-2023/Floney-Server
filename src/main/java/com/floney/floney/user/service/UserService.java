@@ -101,7 +101,7 @@ public class UserService {
     public void signout(String email) {
         User user = findActiveUser(email);
         deleteAllBookLinesAndAccountBy(user);
-        user.delete();
+        user.inactive();
         userRepository.save(user);
     }
 

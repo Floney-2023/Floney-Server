@@ -116,7 +116,7 @@ class UserServiceTest {
     void signout_fail_throws_userSignoutException() {
         // given
         User user = UserFixture.createUser();
-        user.delete();
+        user.inactive();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
