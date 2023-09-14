@@ -1,12 +1,11 @@
-package com.floney.floney.User.repository;
+package com.floney.floney.user.repository;
 
-import static com.floney.floney.book.BookFixture.EMAIL;
 import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.fixture.BookFixture.EMAIL;
 
 import com.floney.floney.config.TestConfig;
-import com.floney.floney.config.UserFixture;
+import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
-import com.floney.floney.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,11 +1,16 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.response.CreateCategoryResponse;
-import com.floney.floney.book.dto.request.CreateCategoryRequest;
-import com.floney.floney.book.entity.*;
-import com.floney.floney.book.entity.category.BookCategory;
+import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
 
-import static com.floney.floney.book.BookFixture.BOOK_KEY;
+import com.floney.floney.book.dto.request.CreateCategoryRequest;
+import com.floney.floney.book.dto.response.CreateCategoryResponse;
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookLine;
+import com.floney.floney.book.entity.BookLineCategory;
+import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.RootCategory;
+import com.floney.floney.book.entity.category.BookCategory;
 
 public class CategoryFixture {
 

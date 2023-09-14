@@ -1,4 +1,4 @@
-package com.floney.floney.User.controller;
+package com.floney.floney.user.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;

@@ -1,17 +1,21 @@
-package com.floney.floney.User.service;
+package com.floney.floney.user.service;
 
-import com.floney.floney.book.BookFixture;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.config.UserFixture;
+import com.floney.floney.fixture.BookFixture;
+import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.SubscribeRepository;
 import com.floney.floney.user.repository.UserRepository;
-import com.floney.floney.user.service.SubscribeService;
+import java.util.Collections;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,12 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class SubscribeServiceTest {

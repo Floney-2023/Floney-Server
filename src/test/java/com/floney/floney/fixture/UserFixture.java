@@ -1,11 +1,10 @@
-package com.floney.floney.config;
+package com.floney.floney.fixture;
+
+import static com.floney.floney.fixture.BookFixture.EMAIL;
 
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
-
 import java.time.LocalDateTime;
-
-import static com.floney.floney.book.BookFixture.EMAIL;
 
 public class UserFixture {
 
