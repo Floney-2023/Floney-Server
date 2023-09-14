@@ -4,10 +4,10 @@ import com.floney.floney.common.exception.common.ErrorType;
 import lombok.Getter;
 
 @Getter
-public class UserSignoutException extends RuntimeException {
+public class UserInactiveException extends RuntimeException {
     private final ErrorType errorType;
 
-    public UserSignoutException() {
-        this.errorType = ErrorType.USER_SIGNOUT;
+    public UserInactiveException() {
+        this.errorType = ErrorType.USER_INACTIVE;
     }
 }

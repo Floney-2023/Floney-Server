@@ -2,8 +2,8 @@ package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.dto.constant.Provider;
@@ -94,7 +94,7 @@ public class AppleUserService implements OAuthUserService {
     private void validateUserExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             if (user.isInactive()) {
-                throw new UserSignoutException();
+                throw new UserInactiveException();
             }
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });

@@ -12,8 +12,8 @@ import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -225,7 +225,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(username));
 
         if (user.isInactive()) {
-            throw new UserSignoutException();
+            throw new UserInactiveException();
         }
         return user;
     }
@@ -233,7 +233,7 @@ public class UserService {
     private void validateUserExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             if (user.isInactive()) {
-                throw new UserSignoutException();
+                throw new UserInactiveException();
             }
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });

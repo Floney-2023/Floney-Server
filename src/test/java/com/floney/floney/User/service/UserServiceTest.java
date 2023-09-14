@@ -11,8 +11,8 @@ import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -120,7 +120,7 @@ class UserServiceTest {
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserSignoutException.class);
+        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserInactiveException.class);
     }
 
     @Test

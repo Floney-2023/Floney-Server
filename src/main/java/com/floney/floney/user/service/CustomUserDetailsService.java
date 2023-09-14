@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.common.exception.user.UserSignoutException;
+import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
         if (user.isInactive()) {
-            throw new UserSignoutException();
+            throw new UserInactiveException();
         }
 
         return CustomUserDetails.of(user);

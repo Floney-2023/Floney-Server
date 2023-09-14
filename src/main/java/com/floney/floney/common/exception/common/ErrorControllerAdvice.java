@@ -17,8 +17,8 @@ import com.floney.floney.common.exception.user.NotFoundSubscribeException;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.exception.user.UserSignoutException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.util.HashMap;
@@ -58,8 +58,8 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(UserSignoutException.class)
-    protected ResponseEntity<ErrorResponse> signoutUser(UserSignoutException exception) {
+    @ExceptionHandler(UserInactiveException.class)
+    protected ResponseEntity<ErrorResponse> signoutUser(UserInactiveException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
