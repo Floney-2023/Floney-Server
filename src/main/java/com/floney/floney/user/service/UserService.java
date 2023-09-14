@@ -90,7 +90,7 @@ public class UserService {
 
     @Transactional
     public LoginRequest signup(SignupRequest request) {
-        validateIfNewUser(request.getEmail());
+        validateUserExistByEmail(request.getEmail());
         User user = request.to();
         user.encodePassword(bCryptPasswordEncoder);
         userRepository.save(user);
@@ -165,7 +165,7 @@ public class UserService {
     }
 
     public String sendEmailAuthMail(String email) {
-        validateIfNewUser(email);
+        validateUserExistByEmail(email);
 
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
@@ -230,7 +230,7 @@ public class UserService {
         return user;
     }
 
-    private void validateIfNewUser(String email) {
+    private void validateUserExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             if (user.isInactive()) {
                 throw new UserSignoutException();
