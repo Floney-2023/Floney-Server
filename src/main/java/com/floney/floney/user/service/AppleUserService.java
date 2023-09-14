@@ -2,7 +2,6 @@ package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.AppleClient;
@@ -13,11 +12,6 @@ import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +25,6 @@ public class AppleUserService implements OAuthUserService {
 
     private final AppleClient appleClient;
     private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,59 +36,47 @@ public class AppleUserService implements OAuthUserService {
     @Override
     @Transactional
     public Token signup(final String oAuthToken, final SignupRequest request) {
-        validateUserExistByEmail(request.getEmail());
-
         final String providerId = getProviderId(oAuthToken);
-        validateUserExistByProviderId(providerId);
+        validateNewUser(request.getEmail(), providerId);
 
+        final User user = createUser(request, providerId);
+        return generateToken(user.getEmail());
+    }
+
+    private User createUser(final SignupRequest request, final String providerId) {
         final User user = request.to(Provider.APPLE, providerId);
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
-
-        return generateToken(user);
+        return user;
     }
 
     @Override
+    @Transactional
     public Token login(final String oAuthToken) {
         final String providerId = getProviderId(oAuthToken);
+        final User user = findUserByProviderId(oAuthToken, providerId);
 
-        final User user = userRepository.findByProviderId(providerId)
-                .orElseThrow(() -> new UserNotFoundException(oAuthToken));
+        user.active();
+        userRepository.save(user);
 
-        return generateToken(user);
+        return generateToken(user.getEmail());
     }
 
-    private Token generateToken(final User user) {
-        try {
-            final Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
-            );
+    private Token generateToken(final String username) {
+        return jwtProvider.generateToken(username);
+    }
 
-            return jwtProvider.generateToken(authentication.getName());
-        } catch (BadCredentialsException exception) {
-            logger.warn("애플 로그인 실패: [{}]", user.getEmail());
-            throw exception;
-        } catch (AccountStatusException exception) {
-            logger.error("애플 로그인 오류: {}", exception.getMessage());
-            throw exception;
-        }
+    private User findUserByProviderId(final String oAuthToken, final String providerId) {
+        return userRepository.findByProviderId(providerId)
+                .orElseThrow(() -> new UserNotFoundException(oAuthToken));
     }
 
     private String getProviderId(String oAuthToken) {
         return appleClient.getAuthId(oAuthToken);
     }
 
-    private void validateUserExistByProviderId(final String providerId) {
-        userRepository.findByProviderId(providerId).ifPresent(user -> {
-            throw new UserFoundException(user.getEmail(), user.getProvider());
-        });
-    }
-
-    private void validateUserExistByEmail(String email) {
-        userRepository.findByEmail(email).ifPresent(user -> {
-            if (user.isInactive()) {
-                throw new UserInactiveException();
-            }
+    private void validateNewUser(final String email, final String providerId) {
+        userRepository.findByEmailAndProviderId(email, providerId).ifPresent(user -> {
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });
     }
