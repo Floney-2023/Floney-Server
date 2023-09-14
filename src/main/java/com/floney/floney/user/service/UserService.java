@@ -32,11 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +45,6 @@ public class UserService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder bCryptPasswordEncoder;
     private final RedisProvider redisProvider;
@@ -57,32 +52,31 @@ public class UserService {
     private final BookUserRepository bookUserRepository;
     private final BookService bookService;
 
-    public Token login(LoginRequest request) {
+    @Transactional
+    public Token login(final LoginRequest request) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
+            final User user = findUserByEmail(request.getEmail());
+            validatePasswordMatches(request, user.getPassword());
 
-            return jwtProvider.generateToken(authentication);
+            user.active();
+            userRepository.save(user);
+
+            return jwtProvider.generateToken(user.getEmail());
         } catch (BadCredentialsException exception) {
             logger.warn("로그인 실패: [{}]", request.getEmail());
-            throw exception;
-        } catch (AccountStatusException exception) {
-            logger.error("로그인 오류: {}", exception.getMessage());
             throw exception;
         }
     }
 
-    public String logout(String accessToken) {
+    public String logout(final String accessToken) {
         jwtProvider.validateToken(accessToken);
-        Authentication authentication = jwtProvider.getAuthentication(accessToken);
-        String email = authentication.getName();
+        final String email = jwtProvider.getUsername(accessToken);
 
         if (redisProvider.get(email) != null) {
             redisProvider.delete(email);
         }
 
-        long expiration = jwtProvider.getExpiration(accessToken);
+        final long expiration = jwtProvider.getExpiration(accessToken);
         redisProvider.set(accessToken, "logout", expiration);
 
         return email;
@@ -106,17 +100,17 @@ public class UserService {
     }
 
     public Token reissueToken(Token token) {
-        String accessToken = token.getAccessToken();
-        String refreshToken = token.getRefreshToken();
+        final String accessToken = token.getAccessToken();
+        final String refreshToken = token.getRefreshToken();
 
-        Authentication authentication = jwtProvider.getAuthentication(accessToken);
-        String redisRefreshToken = redisProvider.get(authentication.getName());
+        final String username = jwtProvider.getUsername(accessToken);
+        final String redisRefreshToken = redisProvider.get(username);
 
         if (!refreshToken.equals(redisRefreshToken)) {
             throw new MalformedJwtException("");
         }
 
-        return jwtProvider.generateToken(authentication);
+        return jwtProvider.generateToken(username);
     }
 
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
@@ -214,15 +208,24 @@ public class UserService {
 
     @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+        User user = findUserByEmail(username);
         user.saveRecentBookKey(request);
         userRepository.save(user);
     }
 
+    private User findUserByEmail(final String request) {
+        return userRepository.findByEmail(request)
+                .orElseThrow(() -> new UserNotFoundException(request));
+    }
+
+    private void validatePasswordMatches(final LoginRequest request, final String user) {
+        if (!bCryptPasswordEncoder.matches(request.getPassword(), user)) {
+            throw new BadCredentialsException(request.getEmail());
+        }
+    }
+
     private User findActiveUser(final String username) {
-        final User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
+        final User user = findUserByEmail(username);
 
         if (user.isInactive()) {
             throw new UserInactiveException();
@@ -232,9 +235,6 @@ public class UserService {
 
     private void validateUserExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
-            if (user.isInactive()) {
-                throw new UserInactiveException();
-            }
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });
     }

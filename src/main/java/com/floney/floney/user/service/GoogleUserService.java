@@ -70,7 +70,7 @@ public class GoogleUserService implements OAuthUserService {
                     new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
             );
 
-            return jwtProvider.generateToken(authentication);
+            return jwtProvider.generateToken(authentication.getName());
         } catch (BadCredentialsException exception) {
             logger.warn("구글 로그인 실패: [{}]", user.getEmail());
             throw exception;

@@ -132,6 +132,11 @@ public class User extends BaseEntity {
         this.inactiveTime = LocalDateTime.now();
     }
 
+    public void active() {
+        this.status = Status.ACTIVE;
+        this.lastLoginTime = LocalDateTime.now();
+    }
+
     public void subscribe() {
         this.subscribe = true;
     }
