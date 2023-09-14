@@ -43,13 +43,6 @@ public class AppleUserService implements OAuthUserService {
         return generateToken(user.getEmail());
     }
 
-    private User createUser(final SignupRequest request, final String providerId) {
-        final User user = request.to(Provider.APPLE, providerId);
-        user.encodePassword(passwordEncoder);
-        userRepository.save(user);
-        return user;
-    }
-
     @Override
     @Transactional
     public Token login(final String oAuthToken) {
@@ -60,6 +53,13 @@ public class AppleUserService implements OAuthUserService {
         userRepository.save(user);
 
         return generateToken(user.getEmail());
+    }
+
+    private User createUser(final SignupRequest request, final String providerId) {
+        final User user = request.to(Provider.APPLE, providerId);
+        user.encodePassword(passwordEncoder);
+        userRepository.save(user);
+        return user;
     }
 
     private Token generateToken(final String username) {
