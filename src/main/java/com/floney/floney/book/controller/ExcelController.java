@@ -34,7 +34,7 @@ public class ExcelController {
 
             bookExcel.write(response.getOutputStream());
         } catch (final IOException exception) {
-            throw new ExcelMakingException();
+            throw new ExcelMakingException(exception.getLocalizedMessage());
         }
     }
 }
