@@ -36,7 +36,7 @@ public class KakaoUserService implements OAuthUserService {
     @Transactional
     public Token signup(final String oAuthToken, final SignupRequest request) {
         final String providerId = getProviderId(oAuthToken);
-        validateNewUser(request.getEmail(), providerId);
+        validateNewUser(request.getEmail());
 
         final User user = createUser(request, providerId);
         return generateToken(user.getEmail());
@@ -74,8 +74,8 @@ public class KakaoUserService implements OAuthUserService {
         return kakaoClient.getAuthId(oAuthToken);
     }
 
-    private void validateNewUser(final String email, final String providerId) {
-        userRepository.findByEmailAndProviderId(email, providerId).ifPresent(user -> {
+    private void validateNewUser(final String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });
     }
