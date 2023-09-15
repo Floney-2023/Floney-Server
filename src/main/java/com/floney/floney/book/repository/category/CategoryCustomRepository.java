@@ -14,7 +14,7 @@ public interface CategoryCustomRepository {
 
     Optional<Category> findFlowCategory(String name);
 
-    Category findAssetCategory(String name);
+    Optional<Category> findAssetCategory(String name,String bookKey);
 
     Optional<Category> findLineCategory(String name, String bookKey, String parent);
 
