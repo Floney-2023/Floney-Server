@@ -49,7 +49,7 @@ public class AppleUserService implements OAuthUserService {
         final String providerId = getProviderId(oAuthToken);
         final User user = findUserByProviderId(oAuthToken, providerId);
 
-        user.active();
+        user.login();
         userRepository.save(user);
 
         return generateToken(user.getEmail());

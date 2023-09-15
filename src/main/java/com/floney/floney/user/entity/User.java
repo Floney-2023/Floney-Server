@@ -1,7 +1,6 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.dto.constant.Provider;
 import com.querydsl.core.annotations.QueryProjection;
@@ -66,9 +65,6 @@ public class User extends BaseEntity {
 
     private String recentBookKey;
 
-    @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime inactiveTime;
-
     @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)
     @Builder.Default
@@ -84,7 +80,6 @@ public class User extends BaseEntity {
                  Provider provider,
                  String providerId,
                  String recentBookKey,
-                 LocalDateTime inactiveTime,
                  LocalDateTime lastLoginTime) {
         this.email = email;
         this.nickname = nickname;
@@ -95,7 +90,6 @@ public class User extends BaseEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.recentBookKey = recentBookKey;
-        this.inactiveTime = inactiveTime;
         this.lastLoginTime = lastLoginTime;
     }
 
@@ -127,13 +121,7 @@ public class User extends BaseEntity {
         this.recentBookKey = bookKey;
     }
 
-    public void inactive(){
-        this.status = Status.INACTIVE;
-        this.inactiveTime = LocalDateTime.now();
-    }
-
-    public void active() {
-        this.status = Status.ACTIVE;
+    public void login() {
         this.lastLoginTime = LocalDateTime.now();
     }
 

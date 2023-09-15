@@ -12,7 +12,6 @@ import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
@@ -58,7 +57,7 @@ public class UserService {
             final User user = findUserByEmail(request.getEmail());
             validatePasswordMatches(request, user.getPassword());
 
-            user.active();
+            user.login();
             userRepository.save(user);
 
             return jwtProvider.generateToken(user.getEmail());
@@ -93,9 +92,9 @@ public class UserService {
 
     @Transactional
     public void signout(String email) {
-        User user = findActiveUser(email);
+        User user = findUserByEmail(email);
         deleteAllBookLinesAndAccountBy(user);
-        user.inactive();
+        // TODO: 유저 엔티티 삭제
         userRepository.save(user);
     }
 
@@ -141,7 +140,7 @@ public class UserService {
     }
 
     public void updatePassword(String password, String email) {
-        User user = findActiveUser(email);
+        User user = findUserByEmail(email);
         updatePassword(password, user);
     }
 
@@ -222,15 +221,6 @@ public class UserService {
         if (!passwordEncoder.matches(request.getPassword(), user)) {
             throw new BadCredentialsException(request.getEmail());
         }
-    }
-
-    private User findActiveUser(final String username) {
-        final User user = findUserByEmail(username);
-
-        if (user.isInactive()) {
-            throw new UserInactiveException();
-        }
-        return user;
     }
 
     private void validateUserExistByEmail(String email) {

@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,7 +13,6 @@ import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
@@ -94,25 +93,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입에 실패한다 - 휴면 회원")
-    void signup_fail_throws_userFoundException2() {
-        // given
-        User user = UserFixture.getUser();
-        user.inactive();
-
-        SignupRequest signupRequest = SignupRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .build();
-
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
-        // when & then
-        assertThatThrownBy(() -> userService.signup(signupRequest)).isInstanceOf(UserFoundException.class);
-    }
-
-    @Test
     @DisplayName("로그인에 성공한다")
     void login_success() {
         // given
@@ -178,19 +158,8 @@ class UserServiceTest {
         userService.signout(user.getEmail());
 
         // then
-        assertThat(user.getStatus()).isEqualTo(INACTIVE);
-    }
-
-    @Test
-    @DisplayName("회원탈퇴에 실패한다 - 비활성화된 회원")
-    void signout_fail_throws_userInactiveException() {
-        // given
-        User user = UserFixture.createUser();
-        user.inactive();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
-        // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserInactiveException.class);
+        // TODO: 탈퇴시 데이터 삭제로 수정
+        assertThat(user.getStatus()).isEqualTo(ACTIVE);
     }
 
     @Test
