@@ -1,5 +1,18 @@
 package com.floney.floney.book;
 
+import static com.floney.floney.book.CategoryFixture.ROOT;
+import static com.floney.floney.book.CategoryFixture.categoryChildResponse;
+import static com.floney.floney.book.CategoryFixture.categoryRootResponse;
+import static com.floney.floney.book.CategoryFixture.createBookCategory;
+import static com.floney.floney.book.CategoryFixture.createChildCategory;
+import static com.floney.floney.book.CategoryFixture.createDefaultRoot;
+import static com.floney.floney.book.CategoryFixture.createRootCategory;
+import static com.floney.floney.book.CategoryFixture.createRootRequest;
+import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
+import static java.util.Optional.ofNullable;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.RootCategory;
@@ -10,6 +23,8 @@ import com.floney.floney.book.service.CategoryServiceImpl;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.fixture.BookFixture;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,14 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-
-import static com.floney.floney.book.BookFixture.BOOK_KEY;
-import static com.floney.floney.book.CategoryFixture.*;
-import static java.util.Optional.ofNullable;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {

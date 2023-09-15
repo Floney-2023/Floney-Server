@@ -7,16 +7,19 @@ import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.SubscribeService;
 import com.floney.floney.user.service.UserService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -25,7 +28,6 @@ public class UserController {
 
     private final UserService userService;
     private final SubscribeService subscribeService;
-    private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * 회원가입
@@ -35,7 +37,6 @@ public class UserController {
      */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
-        customUserDetailsService.validateIfNewUser(request.getEmail());
         return new ResponseEntity<>(userService.login(userService.signup(request)), HttpStatus.CREATED);
     }
 
@@ -46,7 +47,6 @@ public class UserController {
      */
     @GetMapping("/email/mail")
     public ResponseEntity<?> sendEmailAuthMail(@RequestParam String email) {
-        customUserDetailsService.validateIfNewUser(email);
         userService.sendEmailAuthMail(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }

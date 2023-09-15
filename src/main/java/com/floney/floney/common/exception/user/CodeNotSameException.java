@@ -11,7 +11,7 @@ public class CodeNotSameException extends RuntimeException {
     private final String anotherCode;
 
     public CodeNotSameException(final String code, final String anotherCode) {
-        this.errorType = ErrorType.NOT_FOUND_SUBSCRIBE;
+        this.errorType = ErrorType.INVALID_CODE;
         this.code = code;
         this.anotherCode = anotherCode;
     }

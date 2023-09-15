@@ -1,14 +1,17 @@
 package com.floney.floney.book;
 
+import static com.floney.floney.fixture.BookFixture.UPDATE_URL;
+import static com.floney.floney.fixture.BookFixture.createBook;
+import static com.floney.floney.fixture.BookFixture.updateBookImgRequest;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.common.exception.common.NoAuthorityException;
+import com.floney.floney.fixture.BookFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static com.floney.floney.book.BookFixture.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class BookTest {
 

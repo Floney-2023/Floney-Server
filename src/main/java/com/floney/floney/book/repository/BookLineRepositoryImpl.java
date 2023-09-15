@@ -41,7 +41,6 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 @RequiredArgsConstructor
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
-    private final static int DELETE_TERM = 3;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -242,7 +241,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .where(book.bookKey.eq(request.getBookKey()))
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(bookLineCategory.name.in(children))
+            .where(bookLineCategory.name.in(children),bookLine.status.eq(ACTIVE))
             .where(bookLine.lineDate.between(datesRequest.getStartDate(), datesRequest.getEndDate()))
             .groupBy(bookLineCategory.name)
             .fetch();
@@ -326,28 +325,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.exceptStatus.eq(false)
             )
             .fetchOne();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<BookLine> findLineHaveToDelete() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
-        return jpaQueryFactory
-            .selectFrom(bookLine)
-            .where(bookLine.updatedAt.before(threeMonthsAgo),
-                bookLine.status.eq(INACTIVE))
-            .fetch();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<BookLineCategory> findCategoryHaveToDelete() {
-        LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(DELETE_TERM);
-        return jpaQueryFactory
-            .selectFrom(bookLineCategory)
-            .where(bookLineCategory.updatedAt.before(threeMonthsAgo),
-                bookLineCategory.status.eq(INACTIVE))
-            .fetch();
     }
 
     @Override

@@ -28,7 +28,8 @@ public class BookLine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
+    @MapKeyEnumerated(EnumType.STRING)
     private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
     @Column(nullable = false)
@@ -66,13 +67,6 @@ public class BookLine extends BaseEntity {
         this.lineDate = request.getLineDate();
         this.description = request.getDescription();
         this.exceptStatus = request.getExcept();
-    }
-
-    public BookLine deleteForever() {
-        this.writer = null;
-        this.bookLineCategories = null;
-        this.book = null;
-        return this;
     }
 
     public String getWriter() {

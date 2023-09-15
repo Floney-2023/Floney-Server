@@ -1,14 +1,17 @@
 package com.floney.floney.user.service;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
-import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.PasswordSameException;
+import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
@@ -22,66 +25,57 @@ import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
+import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Random;
-
-import static com.floney.floney.common.constant.Status.ACTIVE;
-
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-    private final PasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
-    private final CustomUserDetailsService customUserDetailsService;
     private final BookService bookService;
 
-    public Token login(LoginRequest request) {
+    @Transactional
+    public Token login(final LoginRequest request) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
+            final User user = findUserByEmail(request.getEmail());
+            validatePasswordMatches(request, user.getPassword());
 
-            return jwtProvider.generateToken(authentication);
+            user.login();
+            userRepository.save(user);
+
+            return jwtProvider.generateToken(user.getEmail());
         } catch (BadCredentialsException exception) {
-            logger.warn("카카오 로그인 실패: [{}]", request.getEmail());
-            throw exception;
-        } catch (AccountStatusException exception) {
-            logger.error("카카오 로그인 오류: {}", exception.getMessage());
+            logger.warn("로그인 실패: [{}]", request.getEmail());
             throw exception;
         }
     }
 
-    public String logout(String accessToken) {
+    public String logout(final String accessToken) {
         jwtProvider.validateToken(accessToken);
-        Authentication authentication = jwtProvider.getAuthentication(accessToken);
-        String email = authentication.getName();
+        final String email = jwtProvider.getUsername(accessToken);
 
         if (redisProvider.get(email) != null) {
             redisProvider.delete(email);
         }
 
-        long expiration = jwtProvider.getExpiration(accessToken);
+        final long expiration = jwtProvider.getExpiration(accessToken);
         redisProvider.set(accessToken, "logout", expiration);
 
         return email;
@@ -89,32 +83,33 @@ public class UserService {
 
     @Transactional
     public LoginRequest signup(SignupRequest request) {
+        validateUserExistByEmail(request.getEmail());
         User user = request.to();
-        user.encodePassword(bCryptPasswordEncoder);
+        user.encodePassword(passwordEncoder);
         userRepository.save(user);
         return request.toLoginRequest();
     }
 
     @Transactional
     public void signout(String email) {
-        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        User user = findUserByEmail(email);
         deleteAllBookLinesAndAccountBy(user);
-        user.delete();
+        // TODO: 유저 엔티티 삭제
         userRepository.save(user);
     }
 
     public Token reissueToken(Token token) {
-        String accessToken = token.getAccessToken();
-        String refreshToken = token.getRefreshToken();
+        final String accessToken = token.getAccessToken();
+        final String refreshToken = token.getRefreshToken();
 
-        Authentication authentication = jwtProvider.getAuthentication(accessToken);
-        String redisRefreshToken = redisProvider.get(authentication.getName());
+        final String username = jwtProvider.getUsername(accessToken);
+        final String redisRefreshToken = redisProvider.get(username);
 
         if (!refreshToken.equals(redisRefreshToken)) {
             throw new MalformedJwtException("");
         }
 
-        return jwtProvider.generateToken(authentication);
+        return jwtProvider.generateToken(username);
     }
 
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
@@ -134,18 +129,18 @@ public class UserService {
     public void updatePassword(String password, User user) {
         validatePassword(password, user.getPassword());
         user.updatePassword(password);
-        user.encodePassword(bCryptPasswordEncoder);
+        user.encodePassword(passwordEncoder);
         userRepository.save(user);
     }
 
     private void validatePassword(String newPassword, String oldPassword) {
-        if (bCryptPasswordEncoder.matches(newPassword, oldPassword)) {
+        if (passwordEncoder.matches(newPassword, oldPassword)) {
             throw new PasswordSameException();
         }
     }
 
     public void updatePassword(String password, String email) {
-        User user = ((CustomUserDetails) customUserDetailsService.loadUserByUsername(email)).getUser();
+        User user = findUserByEmail(email);
         updatePassword(password, user);
     }
 
@@ -163,6 +158,8 @@ public class UserService {
     }
 
     public String sendEmailAuthMail(String email) {
+        validateUserExistByEmail(email);
+
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         String code = String.format("%06d", random.nextInt(1_000_000) % 1_000_000);
@@ -190,10 +187,12 @@ public class UserService {
         final String requestCode = emailAuthenticationRequest.getCode();
 
         if (!redisProvider.hasKey(requestEmail)) {
-            throw new EmailNotFoundException(requestEmail);
+            throw new CodeNotFoundException(requestEmail);
         }
-        if (!redisProvider.get(requestEmail).equals(requestCode)) {
-            throw new CodeNotSameException(requestEmail, requestCode);
+
+        final String code = redisProvider.get(requestEmail);
+        if (!code.equals(requestCode)) {
+            throw new CodeNotSameException(code, requestCode);
         }
     }
 
@@ -202,16 +201,31 @@ public class UserService {
         userRepository.save(user);
         List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
         myBookAccounts
-            .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
+                .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
 
     }
 
     @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
-        User user = userRepository.findByEmail(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
+        User user = findUserByEmail(username);
         user.saveRecentBookKey(request);
         userRepository.save(user);
     }
 
+    private User findUserByEmail(final String request) {
+        return userRepository.findByEmail(request)
+                .orElseThrow(() -> new UserNotFoundException(request));
+    }
+
+    private void validatePasswordMatches(final LoginRequest request, final String user) {
+        if (!passwordEncoder.matches(request.getPassword(), user)) {
+            throw new BadCredentialsException(request.getEmail());
+        }
+    }
+
+    private void validateUserExistByEmail(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            throw new UserFoundException(user.getEmail(), user.getProvider());
+        });
+    }
 }

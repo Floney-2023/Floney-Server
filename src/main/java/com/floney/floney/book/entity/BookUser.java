@@ -2,14 +2,18 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.entity.User;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-
-import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,7 +22,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookUser extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -38,10 +42,10 @@ public class BookUser extends BaseEntity {
 
     public static BookUser of(User user, Book book) {
         return BookUser.builder()
-            .user(user)
-            .book(book)
-            .profileImg(user.getProfileImg())
-            .build();
+                .user(user)
+                .book(book)
+                .profileImg(user.getProfileImg())
+                .build();
     }
 
     public String getNickName() {
@@ -50,11 +54,5 @@ public class BookUser extends BaseEntity {
 
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
-    }
-
-    public BookUser deleteForever() {
-        this.book = null;
-        this.user = null;
-        return this;
     }
 }

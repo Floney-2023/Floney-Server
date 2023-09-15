@@ -1,26 +1,26 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.dto.constant.Provider;
+import com.querydsl.core.annotations.QueryProjection;
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.querydsl.core.annotations.QueryProjection;
-import lombok.*;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -32,6 +32,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
+
+    private static final String DELETE_VALUE = "admin";
 
     @Column(nullable = false, length = 100)
     private String email;
@@ -58,16 +60,27 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @Column(updatable = false, unique = true, length = 30)
+    @Column(updatable = false, unique = true)
     private String providerId;
 
     private String recentBookKey;
 
+    @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime deleteTime;
+    @Builder.Default
+    private LocalDateTime lastLoginTime = LocalDateTime.now();
 
     @QueryProjection
-    private User(String email, String nickname, String password, String profileImg, LocalDateTime lastAdTime, boolean subscribe, Provider provider, String providerId, String recentBookKey, LocalDateTime deleteTime) {
+    private User(String email,
+                 String nickname,
+                 String password,
+                 String profileImg,
+                 LocalDateTime lastAdTime,
+                 boolean subscribe,
+                 Provider provider,
+                 String providerId,
+                 String recentBookKey,
+                 LocalDateTime lastLoginTime) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -77,7 +90,7 @@ public class User extends BaseEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.recentBookKey = recentBookKey;
-        this.deleteTime = deleteTime;
+        this.lastLoginTime = lastLoginTime;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -108,14 +121,8 @@ public class User extends BaseEntity {
         this.recentBookKey = bookKey;
     }
 
-    //유저 탈퇴시, 개인정보 즉시 삭제
-    public void delete(){
-        this.status = Status.INACTIVE;
-        this.email = null;
-        this.nickname = null;
-        this.password = null;
-        this.profileImg = null;
-        this.deleteTime = LocalDateTime.now();
+    public void login() {
+        this.lastLoginTime = LocalDateTime.now();
     }
 
     public void subscribe() {

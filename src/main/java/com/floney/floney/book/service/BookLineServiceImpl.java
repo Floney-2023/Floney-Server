@@ -94,6 +94,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     @Override
+    @Transactional
     public BookLineResponse changeLine(ChangeBookLineRequest request) {
         BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
             .orElseThrow(() -> new NotFoundBookLineException());
@@ -104,6 +105,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     @Override
+    @Transactional
     public void deleteLine(Long bookLineKey) {
         BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookLineException());

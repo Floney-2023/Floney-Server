@@ -18,7 +18,7 @@ public enum ErrorType {
     INVALID_JWT_TOKEN("U007", "올바르지 않은 토큰입니다"),
     USER_NOT_FOUND("U008", "해당 이메일로 가입된 유저가 없습니다"),
     INVALID_LOGIN("U009", "잘못된 정보로 로그인에 실패했습니다"),
-    USER_SIGNOUT("U010", "탈퇴한 회원입니다"),
+    USER_INACTIVE("U010", "휴면 회원입니다"),
     INVALID_PROVIDER("U011", "올바르지 않은 회원 유형입니다"),
     EMAIL_NOT_FOUND("U012", "이메일이 존재하지 않습니다"),
     INVALID_CODE("U013", "올바르지 않은 인증 코드입니다"),
@@ -26,6 +26,7 @@ public enum ErrorType {
     INVALID_OAUTH_RESPONSE("U015", "인증서버에서 받은 응답이 올바르지 않습니다"),
     INVALID_OAUTH_TOKEN("U016", "provider 토큰이 올바르지 않습니다"),
     SAME_PASSWORD("U017", "이전 비밀번호와 같습니다"),
+    CODE_NOT_FOUND("U018", "코드가 존재하지 않습니다"),
 
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),
@@ -43,6 +44,8 @@ public enum ErrorType {
 
     NOT_FOUND_SETTLEMENT("ST001", "정산 내역이 존재하지 않습니다"),
     NOT_FOUND_OUTCOME_USER("ST002", "지출 내역의 유저가 유저 목록에 존재하지 않습니다"),
+
+    FAIL_TO_GENERATE_TOKEN("A001", "외부 서버에서 토큰을 요청하는 중 에러가 발생했습니다"),
 
     SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다");
 

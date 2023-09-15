@@ -1,31 +1,23 @@
 package com.floney.floney.settlement.domain.entity;
 
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.settlement.dto.request.OutcomeRequest;
 import com.floney.floney.settlement.dto.request.SettlementRequest;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -75,13 +67,13 @@ public class Settlement extends BaseEntity {
         final Long avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
 
         return Settlement.builder()
-                .book(book)
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .userCount(userCount)
-                .totalOutcome(totalOutcome)
-                .avgOutcome(avgOutcome)
-                .build();
+            .book(book)
+            .startDate(request.getStartDate())
+            .endDate(request.getEndDate())
+            .userCount(userCount)
+            .totalOutcome(totalOutcome)
+            .avgOutcome(avgOutcome)
+            .build();
     }
 
     private static Integer calculateUserCount(Set<String> userEmails) {
@@ -90,8 +82,8 @@ public class Settlement extends BaseEntity {
 
     private static Long calculateTotalOutcome(List<OutcomeRequest> request) {
         return request.stream()
-                .mapToLong(OutcomeRequest::getOutcome)
-                .sum();
+            .mapToLong(OutcomeRequest::getOutcome)
+            .sum();
     }
 
     private static Long calculateAvgOutcome(Long totalOutcome, Integer userCount) {
@@ -104,8 +96,4 @@ public class Settlement extends BaseEntity {
         book.updateLastSettlementDate(getCreatedAt().toLocalDate());
     }
 
-    public Settlement deleteForever() {
-        this.book = null;
-        return this;
-    }
 }

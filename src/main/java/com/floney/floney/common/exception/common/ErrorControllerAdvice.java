@@ -1,10 +1,26 @@
 package com.floney.floney.common.exception.common;
 
-import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.user.*;
+import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
+import com.floney.floney.common.exception.book.AlreadyJoinException;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
+import com.floney.floney.common.exception.book.ExcelMakingException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.user.CodeNotFoundException;
+import com.floney.floney.common.exception.user.CodeNotSameException;
+import com.floney.floney.common.exception.user.EmailNotFoundException;
+import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.NotFoundSubscribeException;
+import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
+import com.floney.floney.common.exception.user.UserFoundException;
+import com.floney.floney.common.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -85,7 +101,14 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(CodeNotSameException.class)
     protected ResponseEntity<ErrorResponse> invalidCode(CodeNotSameException exception) {
-        logger.debug("일치하지 않는 코드: [{}], [{}]", exception.getCode(), exception.getAnotherCode());
+        logger.debug("일치하지 않는 이메일 인증 코드: [{}], [{}]", exception.getCode(), exception.getAnotherCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(CodeNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> notExistCode(CodeNotFoundException exception) {
+        logger.debug("이메일[{}] 인증 시간 만료", exception.getEmail());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
@@ -185,13 +208,6 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error(Arrays.toString(exception.getStackTrace()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
-    }
-
     @ExceptionHandler(AlreadyJoinException.class)
     protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
         logger.error("{}는 {}",exception.getUserEmail(),ErrorType.ALREADY_JOIN.getMessage());
@@ -204,6 +220,20 @@ public class ErrorControllerAdvice {
         logger.error("{} User = {}",ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(),exception.getUserEmail());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    // ALARM
+    @ExceptionHandler(GoogleAccessTokenGenerateException.class)
+    protected ResponseEntity<ErrorResponse> failToGenerateGoogleAccessTokenException(GoogleAccessTokenGenerateException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
+        logger.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
     }
 }
 

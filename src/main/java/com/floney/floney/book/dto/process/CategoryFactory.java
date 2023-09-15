@@ -27,15 +27,17 @@ public class CategoryFactory {
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     public void saveCategories(BookLine bookLine, CreateLineRequest request) {
+        String bookKey = request.getBookKey();
         bookLine.add(FLOW, saveFlowBookLineCategory(bookLine, request.getFlow()));
-        bookLine.add(ASSET, saveAssetBookLineCategory(bookLine, request.getAsset()));
-        bookLine.add(FLOW_LINE, saveLineBookLineCategory(bookLine, request.getLine(), request.getBookKey(), request.getFlow()));
+        bookLine.add(ASSET, saveAssetBookLineCategory(bookLine, request.getAsset(), bookKey));
+        bookLine.add(FLOW_LINE, saveLineBookLineCategory(bookLine, request.getLine(), bookKey, request.getFlow()));
     }
 
     public void changeCategories(BookLine bookLine, ChangeBookLineRequest request) {
+        String bookKey = request.getBookKey();
         bookLine.add(FLOW, changeFlowCategory(bookLine, request.getFlow()));
-        bookLine.add(ASSET, changeAssetCategory(bookLine, request.getAsset()));
-        bookLine.add(FLOW_LINE, changeLineCategory(bookLine, request.getBookKey(), request.getLine()));
+        bookLine.add(ASSET, changeAssetCategory(bookLine, request.getAsset(), bookKey));
+        bookLine.add(FLOW_LINE, changeLineCategory(bookLine, bookKey, request.getLine()));
     }
 
     private BookLineCategory changeFlowCategory(BookLine bookLine, String requestCategory) {
@@ -47,11 +49,11 @@ public class CategoryFactory {
         return currentCategory;
     }
 
-    private BookLineCategory changeAssetCategory(BookLine bookLine, String requestCategory) {
+    private BookLineCategory changeAssetCategory(BookLine bookLine, String requestCategory, String bookKey) {
         Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(ASSET);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
-            return saveAssetBookLineCategory(bookLine, requestCategory);
+            return saveAssetBookLineCategory(bookLine, requestCategory, bookKey);
         }
         return currentCategory;
     }
@@ -78,8 +80,8 @@ public class CategoryFactory {
         return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
-    private BookLineCategory saveAssetBookLineCategory(BookLine bookLine, String asset) {
-        Category category = findAssetCategory(asset);
+    private BookLineCategory saveAssetBookLineCategory(BookLine bookLine, String asset, String bookKey) {
+        Category category = findAssetCategory(asset, bookKey);
         return bookLineCategoryRepository.save(of(bookLine, category));
     }
 
@@ -93,8 +95,9 @@ public class CategoryFactory {
             .orElseThrow(() -> new NotFoundCategoryException(flow));
     }
 
-    private Category findAssetCategory(String asset) {
-        return categoryRepository.findAssetCategory(asset);
+    private Category findAssetCategory(String asset, String bookKey) {
+        return categoryRepository.findAssetCategory(asset, bookKey)
+            .orElseThrow(() -> new NotFoundCategoryException(asset));
     }
 
 }

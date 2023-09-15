@@ -1,21 +1,44 @@
 package com.floney.floney.book;
 
+import static com.floney.floney.book.CategoryFixture.createChildCategory;
+import static com.floney.floney.book.CategoryFixture.createChildLineCategory;
+import static com.floney.floney.book.CategoryFixture.createLineCategory;
+import static com.floney.floney.book.CategoryFixture.incomeBookCategory;
+import static com.floney.floney.book.CategoryFixture.outComeBookCategory;
+import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
+import static com.floney.floney.fixture.BookFixture.EMAIL;
+import static com.floney.floney.fixture.BookFixture.createBookUser;
+import static com.floney.floney.fixture.BookLineFixture.LOCAL_DATE;
+import static com.floney.floney.fixture.BookLineFixture.createBookLine;
+import static com.floney.floney.fixture.BookLineFixture.createBookLineWith;
+import static com.floney.floney.fixture.BookLineFixture.createBookLineWithWriter;
+
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.entity.*;
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookLine;
+import com.floney.floney.book.entity.BookLineCategory;
+import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.entity.DefaultCategory;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.config.TestConfig;
-import com.floney.floney.config.UserFixture;
+import com.floney.floney.fixture.BookFixture;
+import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,15 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.floney.floney.book.BookFixture.*;
-import static com.floney.floney.book.BookLineFixture.*;
-import static com.floney.floney.book.CategoryFixture.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
