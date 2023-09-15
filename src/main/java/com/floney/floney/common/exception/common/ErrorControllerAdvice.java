@@ -18,7 +18,6 @@ import com.floney.floney.common.exception.user.NotFoundSubscribeException;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserInactiveException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -56,12 +55,6 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> notFoundUser(UserNotFoundException exception) {
         logger.warn("저장되지 않은 유저 정보: [{}]", exception.getUsername());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(UserInactiveException.class)
-    protected ResponseEntity<ErrorResponse> signoutUser(UserInactiveException exception) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
