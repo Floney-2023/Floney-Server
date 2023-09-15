@@ -3,7 +3,6 @@ package com.floney.floney.user.service;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.GoogleClient;
 import com.floney.floney.user.dto.constant.Provider;
@@ -13,11 +12,6 @@ import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +24,6 @@ public class GoogleUserService implements OAuthUserService {
 
     private final GoogleClient googleClient;
     private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -41,60 +34,48 @@ public class GoogleUserService implements OAuthUserService {
 
     @Override
     @Transactional
-    public Token signup(String oAuthToken, SignupRequest request) {
-        validateUserExistByEmail(request.getEmail());
+    public Token signup(final String oAuthToken, final SignupRequest request) {
+        final String providerId = getProviderId(oAuthToken);
+        validateNewUser(request.getEmail());
 
-        String providerId = getProviderId(oAuthToken);
-        validateUserExistByProviderId(providerId);
-
-        User user = request.to(Provider.GOOGLE, providerId);
-        user.encodePassword(passwordEncoder);
-        userRepository.save(user);
-
-        return generateToken(user);
+        final User user = createUser(request, providerId);
+        return generateToken(user.getEmail());
     }
 
     @Override
-    public Token login(String oAuthToken) {
-        String providerId = getProviderId(oAuthToken);
+    @Transactional
+    public Token login(final String oAuthToken) {
+        final String providerId = getProviderId(oAuthToken);
+        final User user = findUserByProviderId(oAuthToken, providerId);
 
-        User user = userRepository.findByProviderId(providerId)
-                .orElseThrow(() -> new UserNotFoundException(oAuthToken));
+        user.login();
+        userRepository.save(user);
 
-        return generateToken(user);
+        return generateToken(user.getEmail());
     }
 
-    private Token generateToken(final User user) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), "auth")
-            );
+    private User createUser(final SignupRequest request, final String providerId) {
+        final User user = request.to(Provider.GOOGLE, providerId);
+        user.encodePassword(passwordEncoder);
+        userRepository.save(user);
+        return user;
+    }
 
-            return jwtProvider.generateToken(authentication);
-        } catch (BadCredentialsException exception) {
-            logger.warn("구글 로그인 실패: [{}]", user.getEmail());
-            throw exception;
-        } catch (AccountStatusException exception) {
-            logger.error("구글 로그인 오류: {}", exception.getMessage());
-            throw exception;
-        }
+    private Token generateToken(final String username) {
+        return jwtProvider.generateToken(username);
+    }
+
+    private User findUserByProviderId(final String oAuthToken, final String providerId) {
+        return userRepository.findByProviderId(providerId)
+                .orElseThrow(() -> new UserNotFoundException(oAuthToken));
     }
 
     private String getProviderId(String oAuthToken) {
         return googleClient.getAuthId(oAuthToken);
     }
 
-    private void validateUserExistByProviderId(final String providerId) {
-        userRepository.findByProviderId(providerId).ifPresent(user -> {
-            throw new UserFoundException(user.getEmail(), user.getProvider());
-        });
-    }
-
-    private void validateUserExistByEmail(String email) {
+    private void validateNewUser(final String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
-            if (user.isInactive()) {
-                throw new UserSignoutException();
-            }
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });
     }

@@ -1,7 +1,6 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.dto.constant.Provider;
 import com.querydsl.core.annotations.QueryProjection;
@@ -66,11 +65,22 @@ public class User extends BaseEntity {
 
     private String recentBookKey;
 
+    @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)
-    private LocalDateTime deleteTime;
+    @Builder.Default
+    private LocalDateTime lastLoginTime = LocalDateTime.now();
 
     @QueryProjection
-    private User(String email, String nickname, String password, String profileImg, LocalDateTime lastAdTime, boolean subscribe, Provider provider, String providerId, String recentBookKey, LocalDateTime deleteTime) {
+    private User(String email,
+                 String nickname,
+                 String password,
+                 String profileImg,
+                 LocalDateTime lastAdTime,
+                 boolean subscribe,
+                 Provider provider,
+                 String providerId,
+                 String recentBookKey,
+                 LocalDateTime lastLoginTime) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -80,7 +90,7 @@ public class User extends BaseEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.recentBookKey = recentBookKey;
-        this.deleteTime = deleteTime;
+        this.lastLoginTime = lastLoginTime;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -111,14 +121,8 @@ public class User extends BaseEntity {
         this.recentBookKey = bookKey;
     }
 
-    //유저 탈퇴시, 개인정보 즉시 삭제
-    public void delete(){
-        this.status = Status.INACTIVE;
-        this.email = DELETE_VALUE;
-        this.nickname = DELETE_VALUE;
-        this.password = DELETE_VALUE;
-        this.profileImg = DELETE_VALUE;
-        this.deleteTime = LocalDateTime.now();
+    public void login() {
+        this.lastLoginTime = LocalDateTime.now();
     }
 
     public void subscribe() {

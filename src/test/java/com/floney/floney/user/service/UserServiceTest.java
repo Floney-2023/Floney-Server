@@ -1,30 +1,31 @@
-package com.floney.floney.User.service;
+package com.floney.floney.user.service;
 
-import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.floney.floney.book.BookFixture;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.exception.user.UserSignoutException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
-import com.floney.floney.config.UserFixture;
+import com.floney.floney.fixture.BookFixture;
+import com.floney.floney.fixture.UserFixture;
+import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import com.floney.floney.user.service.CustomUserDetailsService;
-import com.floney.floney.user.service.UserService;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,17 +48,13 @@ class UserServiceTest {
     @Mock
     private BookUserRepository bookUserRepository;
     @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private JwtProvider jwtProvider;
-    @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private RedisProvider redisProvider;
     @Mock
     private MailProvider mailProvider;
     @Mock
-    private CustomUserDetailsService customUserDetailsService;
+    private RedisProvider redisProvider;
+    @Mock
+    private JwtProvider jwtProvider;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -81,7 +78,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원가입에 실패한다 - 이미 가입된 회원")
-    void signup_fail_throws_userFoundException() {
+    void signup_fail_throws_userFoundException1() {
         // given
         User user = UserFixture.getUser();
         SignupRequest signupRequest = SignupRequest.builder()
@@ -92,8 +89,61 @@ class UserServiceTest {
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
-        assertThatThrownBy(() -> userService.signup(signupRequest))
-                .isInstanceOf(UserFoundException.class);
+        assertThatThrownBy(() -> userService.signup(signupRequest)).isInstanceOf(UserFoundException.class);
+    }
+
+    @Test
+    @DisplayName("로그인에 성공한다")
+    void login_success() {
+        // given
+        User user = UserFixture.createUser();
+
+        LoginRequest request = LoginRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .build();
+
+        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
+        given(jwtProvider.generateToken(anyString())).willReturn(new Token("accessToken", "refreshToken"));
+
+        // when & then
+        assertThatNoException().isThrownBy(() -> userService.login(request));
+        assertThat(user.isInactive()).isFalse();
+        assertThat(user.getLastLoginTime()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("로그인에 실패한다 - 존재하지 않는 회원")
+    void login_fail_throws_userNotFoundException() {
+        // given
+        LoginRequest request = LoginRequest.builder()
+                .email("fail@fail.com")
+                .password("fail")
+                .build();
+
+        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> userService.login(request)).isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("로그인에 실패한다 - 일치하지 않는 비밀번호")
+    void login_fail_throws_badCredentialException() {
+        // given
+        User user = UserFixture.getUser();
+
+        LoginRequest request = LoginRequest.builder()
+                .email(user.getEmail())
+                .password("fail")
+                .build();
+
+        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
+
+        // when & then
+        assertThatThrownBy(() -> userService.login(request)).isInstanceOf(BadCredentialsException.class);
     }
 
     @Test
@@ -108,19 +158,8 @@ class UserServiceTest {
         userService.signout(user.getEmail());
 
         // then
-        assertThat(user.getStatus()).isEqualTo(INACTIVE);
-    }
-
-    @Test
-    @DisplayName("회원탈퇴에 실패한다 - 이미 탈퇴한 회원")
-    void signout_fail_throws_userSignoutException() {
-        // given
-        User user = UserFixture.createUser();
-        user.delete();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
-
-        // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserSignoutException.class);
+        // TODO: 탈퇴시 데이터 삭제로 수정
+        assertThat(user.getStatus()).isEqualTo(ACTIVE);
     }
 
     @Test

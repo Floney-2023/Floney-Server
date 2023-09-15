@@ -35,12 +35,12 @@ public class JwtProvider {
         this.redisProvider = redisProvider;
     }
 
-    public Token generateToken(Authentication authentication) {
-        return new Token(generateAccessToken(authentication), generateRefreshToken(authentication));
+    public Token generateToken(String subject) {
+        return new Token(generateAccessToken(subject), generateRefreshToken(subject));
     }
 
-    public String generateAccessToken(Authentication authentication) {
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
+    private String generateAccessToken(String subject) {
+        Claims claims = Jwts.claims().setSubject(subject);
 
         Date now = new Date();
         Date expiresIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
@@ -53,8 +53,8 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(Authentication authentication) {
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
+    private String generateRefreshToken(String subject) {
+        Claims claims = Jwts.claims().setSubject(subject);
 
         Date now = new Date();
         Date expiresIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
@@ -66,7 +66,7 @@ public class JwtProvider {
                 .signWith(key)
                 .compact();
 
-        redisProvider.set(authentication.getName(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        redisProvider.set(subject, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
 
         return refreshToken;
     }
@@ -76,6 +76,11 @@ public class JwtProvider {
         CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(claims.getSubject());
 
         return new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+    }
+
+    public String getUsername(final String token) {
+        final Claims claims = parseClaims(token);
+        return claims.getSubject();
     }
 
     public Claims parseClaims(String token) {
