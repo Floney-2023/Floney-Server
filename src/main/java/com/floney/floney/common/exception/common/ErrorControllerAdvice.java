@@ -10,6 +10,7 @@ import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.MailAddressException;
@@ -108,6 +109,13 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(CodeNotSameException.class)
     protected ResponseEntity<ErrorResponse> invalidCode(CodeNotSameException exception) {
         logger.debug("일치하지 않는 이메일 인증 코드: [{}], [{}]", exception.getCode(), exception.getAnotherCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(CodeNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> notExistCode(CodeNotFoundException exception) {
+        logger.debug("이메일[{}] 인증 시간 만료", exception.getEmail());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }

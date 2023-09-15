@@ -8,8 +8,8 @@ import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
-import com.floney.floney.common.exception.user.EmailNotFoundException;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserInactiveException;
@@ -188,7 +188,7 @@ public class UserService {
         final String requestCode = emailAuthenticationRequest.getCode();
 
         if (!redisProvider.hasKey(requestEmail)) {
-            throw new EmailNotFoundException(requestEmail);
+            throw new CodeNotFoundException(requestEmail);
         }
 
         final String code = redisProvider.get(requestEmail);
