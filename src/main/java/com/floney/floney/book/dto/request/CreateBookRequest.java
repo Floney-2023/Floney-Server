@@ -12,19 +12,19 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class CreateBookRequest {
     private String name;
-    private String bookImg;
+    private String profileImg;
 
     @Builder
-    private CreateBookRequest(String name, String bookImg) {
+    private CreateBookRequest(String name, String profileImg) {
         this.name = name;
-        this.bookImg = bookImg;
+        this.profileImg = profileImg;
     }
 
     public Book of(String email) {
         return Book.builder()
             .bookKey(CodeFactory.generateCode())
             .name(name)
-            .bookImg(bookImg)
+            .profileImg(profileImg)
             .owner(email)
             .code(CodeFactory.generateCode())
             .build();

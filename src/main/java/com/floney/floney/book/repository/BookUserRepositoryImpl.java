@@ -35,18 +35,14 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public void isMax(Book book) {
-        int memberCount = jpaQueryFactory
+    public int getCurrentJoinUserCount(Book book) {
+        return jpaQueryFactory
             .select(bookUser)
             .from(bookUser)
             .where(bookUser.book.eq(book),
                 bookUser.status.eq(ACTIVE))
             .fetch()
             .size();
-
-        if (memberCount >= book.getUserCapacity()) {
-            throw new MaxMemberException(book.getBookKey(), memberCount);
-        }
     }
 
     @Override

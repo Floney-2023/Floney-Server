@@ -26,9 +26,6 @@ import com.floney.floney.user.entity.User;
 import java.util.List;
 
 public interface BookService {
-
-    CreateBookResponse createBook(final User user, final CreateBookRequest request);
-
     CreateBookResponse addBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);

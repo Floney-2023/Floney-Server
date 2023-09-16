@@ -70,11 +70,11 @@ public class Book extends BaseEntity {
     private Status bookStatus;
 
     @Builder
-    private Book(String name, String bookImg, String owner,
+    private Book(String name, String profileImg, String owner,
                  String bookKey, boolean seeProfile,
                  boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
         this.name = name;
-        this.bookImg = bookImg;
+        this.bookImg = profileImg;
         this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;
