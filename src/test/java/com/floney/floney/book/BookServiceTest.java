@@ -16,6 +16,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -71,6 +72,28 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("구독을 하지 않으면, 참여한 가계부가 1 초과일 시 가계부를 만들 수 없다")
+    void default_book_create_exception() {
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class),any(ACTIVE.getClass())))
+            .willReturn(2);
+
+        assertThatThrownBy(() -> bookService.addBook(UserFixture.createUser(), createBookRequest()))
+            .isInstanceOf(NotSubscribeException.class);
+    }
+
+    @Test
+    @DisplayName("구독을 하지 않으면, 참여한 가계부가 1미만 일 시 가계부를 만들 수 없다")
+    void default_book_create() {
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class),any(ACTIVE.getClass())))
+            .willReturn(0);
+        given(bookRepository.save(any(Book.class)))
+            .willReturn(BookFixture.createBook());
+
+        Assertions.assertThat(bookService.addBook(UserFixture.createUser(), createBookRequest()).getClass())
+            .isEqualTo(CreateBookResponse.class);
+    }
+
+    @Test
     @DisplayName("구독을 했어도, 참여한 가계부가 2 초과일 시 가계부를 만들 수 없다")
     void subscribe_book_create_exception() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class),any(ACTIVE.getClass())))
@@ -88,5 +111,7 @@ public class BookServiceTest {
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
+
+
 
 }
