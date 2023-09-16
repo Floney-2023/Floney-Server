@@ -35,7 +35,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public int isMax(Book book) {
+    public int getCurrentJoinUserCount(Book book) {
         return jpaQueryFactory
             .select(bookUser)
             .from(bookUser)

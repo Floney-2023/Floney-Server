@@ -109,7 +109,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void isMaxBookCapacity(Book book){
-        int memberCount = bookUserRepository.isMax(book);
+        int memberCount = bookUserRepository.getCurrentJoinUserCount(book);
 
         if (memberCount >= book.getUserCapacity()) {
             throw new MaxMemberException(book.getBookKey(), memberCount);

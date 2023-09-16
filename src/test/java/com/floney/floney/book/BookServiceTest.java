@@ -56,9 +56,13 @@ public class BookServiceTest {
 
         given(bookRepository.findBookByCodeAndStatus(CODE, ACTIVE))
             .willReturn(Optional.ofNullable(testBook));
+
         given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
             .willReturn(Optional.empty());
-        assertThat(bookService.joinWithCode(new CustomUserDetails(testUser, null), codeJoinRequest()).getCode())
+
+        given(bookUserRepository.getCurrentJoinUserCount(any(Book.class))).willReturn(1);
+
+        assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
             .isEqualTo(bookResponse().getCode());
     }
 
@@ -128,7 +132,7 @@ public class BookServiceTest {
         given(bookRepository.findBookByCodeAndStatus(any(String.class), any(Status.class)))
             .willReturn(Optional.ofNullable(createBook()));
 
-        given(bookUserRepository.isMax(any(Book.class))).willReturn(4);
+        given(bookUserRepository.getCurrentJoinUserCount(any(Book.class))).willReturn(4);
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
