@@ -49,6 +49,7 @@ public class BookFixture {
             .bookKey(BOOK_KEY)
             .owner(EMAIL)
             .code(CODE)
+            .userCapacity(2)
             .build();
     }
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface BookUserCustomRepository {
 
-    void isMax(Book book);
+    int isMax(Book book);
 
     List<OurBookUser> findAllUser(String bookKey);
 
