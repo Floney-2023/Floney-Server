@@ -50,17 +50,6 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse createBook(User user, CreateBookRequest request) {
-        Book newBook = request.of(user.getEmail());
-        Book savedBook = bookRepository.save(newBook);
-        saveDefaultBookKey(user, savedBook);
-
-        bookUserRepository.save(BookUser.of(user, savedBook));
-        return CreateBookResponse.of(savedBook);
-    }
-
-    @Override
-    @Transactional
     public CreateBookResponse addBook(User user, CreateBookRequest request) {
         checkCreateBookMaximum(user);
         if (user.isSubscribe()) {
@@ -313,6 +302,15 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public BookStatusResponse getBookStatus(String bookKey) {
         return BookStatusResponse.of(findBook(bookKey));
+    }
+
+    private CreateBookResponse createBook(User user, CreateBookRequest request) {
+        Book newBook = request.of(user.getEmail());
+        Book savedBook = bookRepository.save(newBook);
+        saveDefaultBookKey(user, savedBook);
+
+        bookUserRepository.save(BookUser.of(user, savedBook));
+        return CreateBookResponse.of(savedBook);
     }
 
     private Book findBook(String bookKey) {

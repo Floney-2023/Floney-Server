@@ -19,24 +19,12 @@ public class BookController {
     private final BookLineService bookLineService;
 
     /**
-     * 최초 가계부 생성
-     *
-     * @return CreateBookResponse 생성된 가게부 정보
-     * @body CreateBookRequest 가계부 생성 요청용 기본 정보
-     */
-    @PostMapping()
-    public ResponseEntity<?> initBook(@RequestBody CreateBookRequest request,
-                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.createBook(userDetails.getUser(), request), HttpStatus.CREATED);
-    }
-
-    /**
      * 가계부 추가
      *
      * @return CreateBookResponse 생성된 가게부 정보
      * @body CreateBootRequest 가계부 생성 요청용 기본 정보
      */
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.addBook(userDetails.getUser(), request), HttpStatus.CREATED);
