@@ -26,8 +26,7 @@ public class AppleController implements AuthController {
     @Override
     @PostMapping("/signup")
     public ResponseEntity<?> signup(final String token, final SignupRequest request) {
-        appleUserService.signup(token, request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(appleUserService.signup(token, request), HttpStatus.CREATED);
     }
 
     @Override

@@ -26,8 +26,7 @@ public class GoogleController implements AuthController {
     @Override
     @PostMapping("/signup")
     public ResponseEntity<?> signup(String token, SignupRequest request) {
-        googleUserService.signup(token, request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(googleUserService.signup(token, request), HttpStatus.CREATED);
     }
 
     @Override
