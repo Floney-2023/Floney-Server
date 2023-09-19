@@ -11,19 +11,15 @@ import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateAssetRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.request.UpdateBudgetRequest;
-import com.floney.floney.book.dto.response.BookInfoResponse;
-import com.floney.floney.book.dto.response.BookUserResponse;
-import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.dto.response.CurrencyResponse;
-import com.floney.floney.book.dto.response.InviteCodeResponse;
-import com.floney.floney.book.dto.response.InvolveBookResponse;
-import com.floney.floney.book.dto.response.LastSettlementDateResponse;
-import com.floney.floney.book.dto.response.BookStatusResponse;
+import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+
+import java.time.Month;
 import java.util.List;
+import java.util.Map;
 
 public interface BookService {
 
@@ -70,4 +66,6 @@ public interface BookService {
     LastSettlementDateResponse getPassedDaysAfterLastSettlementDate(String userEmail, String bookKey);
 
     BookStatusResponse getBookStatus(String bookKey);
+
+    Map<Month, Long> getBudgetByYear(String bookKey, String year);
 }

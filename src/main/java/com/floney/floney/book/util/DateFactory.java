@@ -29,6 +29,16 @@ public class DateFactory {
             .build();
     }
 
+    public static DatesDuration getYearDuration(LocalDate firstDate) {
+        LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY);
+        LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());
+
+        return DatesDuration.builder()
+            .startDate(startDate)
+            .endDate(endDate)
+            .build();
+    }
+
     public static DatesDuration getBeforeDateDuration(LocalDate targetDate) {
         LocalDate before = getBeforeMonth(targetDate);
         YearMonth yearMonth = YearMonth.from(before);

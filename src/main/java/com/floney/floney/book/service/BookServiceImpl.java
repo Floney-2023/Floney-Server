@@ -11,6 +11,7 @@ import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
@@ -22,10 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
@@ -293,6 +293,29 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public BookStatusResponse getBookStatus(String bookKey) {
         return BookStatusResponse.of(findBook(bookKey));
+    }
+
+    @Override
+    public Map<Month, Long> getBudgetByYear(String bookKey, String firstDate) {
+        LocalDate date = LocalDate.parse(firstDate);
+        Map<Month, Long> monthlyMap = getInitBudgetFrame();
+
+        List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateFactory.getYearDuration(date));
+
+        for (BudgetYearResponse budget : savedBudget) {
+            Month month = budget.getDate().getMonth();
+            monthlyMap.replace(month, budget.getMoney());
+        }
+
+        return monthlyMap;
+    }
+
+    private Map<Month, Long> getInitBudgetFrame() {
+        Map<Month, Long> monthlyMap = new LinkedHashMap<>();
+        for (Month month : Month.values()) {
+            monthlyMap.put(month, 0L);
+        }
+        return monthlyMap;
     }
 
     private Book findBook(String bookKey) {
