@@ -63,7 +63,7 @@ public class Book extends BaseEntity {
 
     private String currency;
 
-    private int userCapacity;
+    private Integer userCapacity;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -72,7 +72,7 @@ public class Book extends BaseEntity {
     @Builder
     private Book(String name, String profileImg, String owner,
                  String bookKey, boolean seeProfile,
-                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Status bookStatus) {
+                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, Integer userCapacity, Status bookStatus) {
         this.name = name;
         this.bookImg = profileImg;
         this.owner = owner;
