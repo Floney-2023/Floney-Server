@@ -8,7 +8,8 @@ public class ExcelMakingException extends RuntimeException {
 
     private final ErrorType errorType;
 
-    public ExcelMakingException() {
+    public ExcelMakingException(final String message) {
+        super(message);
         this.errorType = ErrorType.FAIL_TO_CREATE_EXCEL;
     }
 }

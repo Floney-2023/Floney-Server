@@ -63,7 +63,7 @@ public class Book extends BaseEntity {
 
     private String currency;
 
-    private int userCapacity;
+    private Integer userCapacity;
 
     private Long asset;
 
@@ -72,11 +72,11 @@ public class Book extends BaseEntity {
     private Status bookStatus;
 
     @Builder
-    private Book(String name, String bookImg, String owner,
+    private Book(String name, String profileImg, String owner,
                  String bookKey, boolean seeProfile,
-                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, int userCapacity, Long asset, Status bookStatus) {
+                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, Integer userCapacity, Long asset, Status bookStatus) {
         this.name = name;
-        this.bookImg = bookImg;
+        this.bookImg = profileImg;
         this.owner = owner;
         this.bookKey = bookKey;
         this.seeProfile = seeProfile;

@@ -178,6 +178,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(ExcelMakingException.class)
     protected ResponseEntity<ErrorResponse> notFoundLine(ExcelMakingException exception) {
+        logger.error(exception.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }

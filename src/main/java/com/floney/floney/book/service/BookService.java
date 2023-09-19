@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface BookService {
-
-    CreateBookResponse createBook(final User user, final CreateBookRequest request);
-
     CreateBookResponse addBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);

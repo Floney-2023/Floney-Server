@@ -26,8 +26,7 @@ public class KakaoController implements AuthController {
     @Override
     @PostMapping("/signup")
     public ResponseEntity<?> signup(String token, SignupRequest request) {
-        kakaoUserService.signup(token, request);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(kakaoUserService.signup(token, request), HttpStatus.CREATED);
     }
 
     @Override

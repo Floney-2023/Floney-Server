@@ -28,14 +28,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
+import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
-
-    private static final int SUBSCRIBE_MAX = 2;
-    private static final int DEFAULT_MAX = 1;
     private static final int OWNER = 1;
 
     private final BookRepository bookRepository;
@@ -47,17 +46,6 @@ public class BookServiceImpl implements BookService {
     private final BudgetRepository budgetRepository;
     private final SettlementRepository settlementRepository;
     private final CarryOverRepository carryOverRepository;
-
-    @Override
-    @Transactional
-    public CreateBookResponse createBook(User user, CreateBookRequest request) {
-        Book newBook = request.of(user.getEmail());
-        Book savedBook = bookRepository.save(newBook);
-        saveDefaultBookKey(user, savedBook);
-
-        bookUserRepository.save(BookUser.of(user, savedBook));
-        return CreateBookResponse.of(savedBook);
-    }
 
     @Override
     @Transactional
@@ -95,7 +83,7 @@ public class BookServiceImpl implements BookService {
         checkCreateBookMaximum(user);
 
         // 참여 희망 가계부 정원 체크
-        bookUserRepository.isMax(book);
+        isMaxBookCapacity(book);
 
         // 이미 존재하는 가계부 유저인지 체크
         if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
@@ -106,6 +94,14 @@ public class BookServiceImpl implements BookService {
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
         return CreateBookResponse.of(book);
+    }
+
+    private void isMaxBookCapacity(Book book){
+        int memberCount = bookUserRepository.getCurrentJoinUserCount(book);
+
+        if (memberCount >= book.getUserCapacity()) {
+            throw new MaxMemberException(book.getBookKey(), memberCount);
+        }
     }
 
     @Override
@@ -295,6 +291,15 @@ public class BookServiceImpl implements BookService {
         return BookStatusResponse.of(findBook(bookKey));
     }
 
+    private CreateBookResponse createBook(User user, CreateBookRequest request) {
+        Book newBook = request.of(user.getEmail());
+        Book savedBook = bookRepository.save(newBook);
+        saveDefaultBookKey(user, savedBook);
+
+        bookUserRepository.save(BookUser.of(user, savedBook));
+        return CreateBookResponse.of(savedBook);
+    }
+
     @Override
     public Map<Month, Long> getBudgetByYear(String bookKey, String firstDate) {
         LocalDate date = LocalDate.parse(firstDate);
@@ -366,14 +371,15 @@ public class BookServiceImpl implements BookService {
     }
 
     private void checkCreateBookMaximum(User user) {
-        int currentParticipateCount = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
+        // 유저가 참여중인 가게부 개수
+        int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
         if (user.isSubscribe()) {
-            if (currentParticipateCount >= SUBSCRIBE_MAX) {
+            if (currentJoinBook >= SUBSCRIBE_MAX_BOOK.getValue()) {
                 throw new LimitRequestException();
             }
         } else {
-            if (currentParticipateCount >= DEFAULT_MAX) {
+            if (currentJoinBook >= DEFAULT_MAX_BOOK.getValue()) {
                 throw new NotSubscribeException();
             }
         }
