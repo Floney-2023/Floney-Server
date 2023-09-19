@@ -315,6 +315,7 @@ public class BookController {
                                                @RequestParam String bookKey) {
         return ResponseEntity.ok(bookService.getPassedDaysAfterLastSettlementDate(userDetails.getUsername(), bookKey));
     }
+
     /**
      * 가계부 비활성화 / 활성화 여부 조회
      * @param bookKey 가계부 키
