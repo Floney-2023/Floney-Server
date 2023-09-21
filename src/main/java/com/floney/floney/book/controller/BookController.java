@@ -10,6 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -303,6 +307,7 @@ public class BookController {
                                                @RequestParam String bookKey) {
         return ResponseEntity.ok(bookService.getPassedDaysAfterLastSettlementDate(userDetails.getUsername(), bookKey));
     }
+
     /**
      * 가계부 비활성화 / 활성화 여부 조회
      * @param bookKey 가계부 키
@@ -311,6 +316,11 @@ public class BookController {
     @GetMapping("/bookStatus")
     public ResponseEntity<?> getBookStatus(@RequestParam String bookKey) {
         return new ResponseEntity<>(bookService.getBookStatus(bookKey), HttpStatus.OK);
+    }
+
+    @GetMapping("/budget")
+    public ResponseEntity<?> getBudget(@RequestParam String bookKey, @RequestParam String startYear){
+        return new ResponseEntity<>(bookService.getBudgetByYear(bookKey,startYear),HttpStatus.OK);
     }
 
 }

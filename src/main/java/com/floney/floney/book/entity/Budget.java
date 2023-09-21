@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.request.UpdateBudgetRequest;
 import com.floney.floney.common.entity.BaseEntity;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +31,8 @@ public class Budget extends BaseEntity {
     private Book book;
 
     @Builder
-    private Budget(LocalDate date, Long money, Book book) {
+    @QueryProjection
+    public Budget(LocalDate date, Long money, Book book) {
         this.date = date;
         this.money = money;
         this.book = book;

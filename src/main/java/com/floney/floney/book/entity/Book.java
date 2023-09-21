@@ -65,6 +65,8 @@ public class Book extends BaseEntity {
 
     private Integer userCapacity;
 
+    private Long asset;
+
     @Column
     @Enumerated(EnumType.STRING)
     private Status bookStatus;
@@ -72,7 +74,7 @@ public class Book extends BaseEntity {
     @Builder
     private Book(String name, String profileImg, String owner,
                  String bookKey, boolean seeProfile,
-                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, Integer userCapacity, Status bookStatus) {
+                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, Integer userCapacity, Long asset, Status bookStatus) {
         this.name = name;
         this.bookImg = profileImg;
         this.owner = owner;
@@ -83,6 +85,7 @@ public class Book extends BaseEntity {
         this.carryOverMoney = carryOverMoney;
         this.currency = currency;
         this.userCapacity = userCapacity;
+        this.asset = asset;
         this.bookStatus = bookStatus;
     }
 
@@ -98,6 +101,10 @@ public class Book extends BaseEntity {
 
     public void updateImg(UpdateBookImgRequest request) {
         this.bookImg = request.getNewUrl();
+    }
+
+    public void updateAsset(Long asset) {
+        this.asset = asset;
     }
 
     public void changeSeeProfile(boolean status) {
@@ -121,6 +128,7 @@ public class Book extends BaseEntity {
     }
 
     public void initBook() {
+        this.asset = DEFAULT;
         this.carryOverStatus = Boolean.FALSE;
     }
 

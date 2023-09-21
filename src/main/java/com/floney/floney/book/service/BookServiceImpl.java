@@ -4,7 +4,6 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.entity.Asset;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Budget;
@@ -12,6 +11,7 @@ import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
@@ -23,13 +23,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Subscribe.*;
+import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
+import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,7 +43,6 @@ public class BookServiceImpl implements BookService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
-    private final AssetRepository assetRepository;
     private final BudgetRepository budgetRepository;
     private final SettlementRepository settlementRepository;
     private final CarryOverRepository carryOverRepository;
@@ -162,14 +161,8 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void saveOrUpdateAsset(UpdateAssetRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        Optional<Asset> asset = assetRepository.findAssetByBookAndDate(savedBook, request.getDate());
-
-        if (asset.isPresent()) {
-            updateAsset(asset.get(), request);
-        } else {
-            Asset newAsset = Asset.of(savedBook, request);
-            assetRepository.save(newAsset);
-        }
+        savedBook.updateAsset(request.getAsset());
+        bookRepository.save(savedBook);
     }
 
     @Override
@@ -262,12 +255,6 @@ public class BookServiceImpl implements BookService {
             .toList();
         budgetRepository.saveAll(initBudgets);
 
-        List<Asset> initAssets = assetRepository.findAllByBook(book)
-            .stream()
-            .map(Asset::initMoney)
-            .toList();
-        assetRepository.saveAll(initAssets);
-
         return bookRepository.save(book);
     }
 
@@ -311,6 +298,29 @@ public class BookServiceImpl implements BookService {
 
         bookUserRepository.save(BookUser.of(user, savedBook));
         return CreateBookResponse.of(savedBook);
+    }
+
+    @Override
+    public Map<Month, Long> getBudgetByYear(String bookKey, String firstDate) {
+        LocalDate date = LocalDate.parse(firstDate);
+        Map<Month, Long> monthlyMap = getInitBudgetFrame();
+
+        List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateFactory.getYearDuration(date));
+
+        for (BudgetYearResponse budget : savedBudget) {
+            Month month = budget.getDate().getMonth();
+            monthlyMap.replace(month, budget.getMoney());
+        }
+
+        return monthlyMap;
+    }
+
+    private Map<Month, Long> getInitBudgetFrame() {
+        Map<Month, Long> monthlyMap = new LinkedHashMap<>();
+        for (Month month : Month.values()) {
+            monthlyMap.put(month, 0L);
+        }
+        return monthlyMap;
     }
 
     private Book findBook(String bookKey) {
@@ -360,7 +370,6 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-
     private void checkCreateBookMaximum(User user) {
         // 유저가 참여중인 가게부 개수
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
@@ -378,11 +387,6 @@ public class BookServiceImpl implements BookService {
 
     private void deleteAllLinesByOnly(Book bookUserBook, BookUser bookUser) {
         bookLineRepository.deleteAllLinesByBookAndBookUser(bookUserBook, bookUser);
-    }
-
-    private void updateAsset(Asset savedAsset, UpdateAssetRequest request) {
-        savedAsset.update(request);
-        assetRepository.save(savedAsset);
     }
 
     private void updateBudget(Budget savedBudget, UpdateBudgetRequest request) {
