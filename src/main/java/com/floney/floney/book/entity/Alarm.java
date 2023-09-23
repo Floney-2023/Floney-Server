@@ -13,7 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,18 +32,21 @@ public class Alarm extends BaseEntity {
 
     private String imgUrl;
 
-    private LocalDate date;
+    private LocalDateTime date;
+
+    private Boolean isReceived;
 
     @Builder
-    public Alarm(Book book, User user, String content, String imgUrl, LocalDate date) {
+    public Alarm(Book book, User user, String content, String imgUrl, LocalDateTime date, Boolean isReceived) {
         this.book = book;
         this.user = user;
         this.content = content;
         this.imgUrl = imgUrl;
         this.date = date;
+        this.isReceived = isReceived;
     }
 
-    public static Alarm of(Book book, User user, SaveAlarmRequest request){
+    public static Alarm of(Book book, User user, SaveAlarmRequest request) {
         return Alarm.builder()
             .user(user)
             .book(book)
@@ -51,5 +54,9 @@ public class Alarm extends BaseEntity {
             .content(request.getContent())
             .date(request.getDate())
             .build();
+    }
+
+    public void updateReceived(boolean isReceived) {
+        this.isReceived = isReceived;
     }
 }
