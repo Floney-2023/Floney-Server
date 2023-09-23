@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.entity.Alarm;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Budget;
@@ -46,6 +47,7 @@ public class BookServiceImpl implements BookService {
     private final BudgetRepository budgetRepository;
     private final SettlementRepository settlementRepository;
     private final CarryOverRepository carryOverRepository;
+    private final AlarmRepository alarmRepository;
 
     @Override
     @Transactional
@@ -96,7 +98,7 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(book);
     }
 
-    private void isMaxBookCapacity(Book book){
+    private void isMaxBookCapacity(Book book) {
         int memberCount = bookUserRepository.getCurrentJoinUserCount(book);
 
         if (memberCount >= book.getUserCapacity()) {
@@ -313,6 +315,13 @@ public class BookServiceImpl implements BookService {
         }
 
         return monthlyMap;
+    }
+
+    @Override
+    @Transactional
+    public void saveAlarm(SaveAlarmRequest request, User user) {
+        Alarm alarm = Alarm.of(findBook(request.getBookKey()),user,request);
+        alarmRepository.save(alarm);
     }
 
     private Map<Month, Long> getInitBudgetFrame() {
