@@ -16,6 +16,7 @@ import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
+import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
@@ -320,8 +322,25 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void saveAlarm(SaveAlarmRequest request, User user) {
-        Alarm alarm = Alarm.of(findBook(request.getBookKey()),user,request);
+        Alarm alarm = Alarm.of(findBook(request.getBookKey()), user, request);
         alarmRepository.save(alarm);
+    }
+
+    @Override
+    @Transactional
+    public void updateAlarmReceived(UpdateAlarmReceived request){
+        Alarm alarm = alarmRepository.findById(request.getId())
+            .orElseThrow(() -> new NotFoundAlarmException(request.getId()));
+        alarm.updateReceived(request.isReceived());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AlarmResponse> getAlarmByBook(String bookKey, User user) {
+        return alarmRepository.findAllByBookAndUser(findBook(bookKey),user)
+            .stream()
+            .map(AlarmResponse::of).
+            collect(Collectors.toList());
     }
 
     private Map<Month, Long> getInitBudgetFrame() {

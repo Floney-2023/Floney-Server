@@ -5,9 +5,9 @@ import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Month;
 import java.util.List;
@@ -58,6 +58,9 @@ public interface BookService {
 
     Map<Month, Long> getBudgetByYear(String bookKey, String year);
 
-    @Transactional
     void saveAlarm(SaveAlarmRequest request, User user);
+
+    void updateAlarmReceived(UpdateAlarmReceived request);
+
+    List<AlarmResponse> getAlarmByBook(String bookKey, User user);
 }
