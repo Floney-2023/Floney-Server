@@ -323,10 +323,22 @@ public class BookController {
         return new ResponseEntity<>(bookService.getBudgetByYear(bookKey, startYear), HttpStatus.OK);
     }
 
+    @GetMapping("/alarm")
+    public ResponseEntity<?> getAlarm(@RequestParam String bookKey, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.getAlarmByBook(bookKey, userDetails.getUser()), HttpStatus.OK);
+    }
+
     @PostMapping("/alarm")
     public ResponseEntity<?> saveAlarm(@AuthenticationPrincipal CustomUserDetails userDetails,
                                        @RequestBody SaveAlarmRequest request) {
         bookService.saveAlarm(request, userDetails.getUser());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/alarm/update")
+    public ResponseEntity<?> updateAlarm(
+        @RequestBody UpdateAlarmReceived request) {
+        bookService.updateAlarmReceived(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
