@@ -337,8 +337,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AlarmResponse> getAlarmByBook(String bookKey, User user) {
-        return alarmRepository.findAllByBookAndUser(findBook(bookKey), user)
+    public List<AlarmResponse> getAlarmByBook(String bookKey, String email) {
+        BookUser bookUser = bookUserRepository.findBookUserByEmail(email, bookKey);
+        return alarmRepository.findAllByBookAndBookUser(findBook(bookKey), bookUser)
             .stream()
             .map(AlarmResponse::of).
             collect(Collectors.toList());

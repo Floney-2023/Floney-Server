@@ -25,7 +25,7 @@ public class Alarm extends BaseEntity {
     private Book book;
 
     @OneToOne
-    private BookUser user;
+    private BookUser bookUser;
 
     private String content;
 
@@ -36,9 +36,9 @@ public class Alarm extends BaseEntity {
     private Boolean isReceived;
 
     @Builder
-    public Alarm(Book book, BookUser user, String content, String imgUrl, LocalDateTime date, Boolean isReceived) {
+    public Alarm(Book book, BookUser bookUser, String content, String imgUrl, LocalDateTime date, Boolean isReceived) {
         this.book = book;
-        this.user = user;
+        this.bookUser = bookUser;
         this.content = content;
         this.imgUrl = imgUrl;
         this.date = date;
@@ -47,7 +47,7 @@ public class Alarm extends BaseEntity {
 
     public static Alarm of(Book book, BookUser user, SaveAlarmRequest request) {
         return Alarm.builder()
-            .user(user)
+            .bookUser(user)
             .book(book)
             .imgUrl(request.getImgUrl())
             .content(request.getContent())

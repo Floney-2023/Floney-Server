@@ -325,7 +325,7 @@ public class BookController {
 
     @GetMapping("/alarm")
     public ResponseEntity<?> getAlarm(@RequestParam String bookKey, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.getAlarmByBook(bookKey, userDetails.getUser()), HttpStatus.OK);
+        return new ResponseEntity<>(bookService.getAlarmByBook(bookKey, userDetails.getUsername()), HttpStatus.OK);
     }
 
     @PostMapping("/alarm")

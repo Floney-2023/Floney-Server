@@ -62,5 +62,5 @@ public interface BookService {
 
     void updateAlarmReceived(UpdateAlarmReceived request);
 
-    List<AlarmResponse> getAlarmByBook(String bookKey, User user);
+    List<AlarmResponse> getAlarmByBook(String bookKey,String email);
 }
