@@ -39,6 +39,7 @@ import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private static final int OWNER = 1;
+    private static final long DEFAULT_BUDGET = 0L;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
@@ -348,7 +349,7 @@ public class BookServiceImpl implements BookService {
     private Map<Month, Long> getInitBudgetFrame() {
         Map<Month, Long> monthlyMap = new LinkedHashMap<>();
         for (Month month : Month.values()) {
-            monthlyMap.put(month, 0L);
+            monthlyMap.put(month, DEFAULT_BUDGET);
         }
         return monthlyMap;
     }
