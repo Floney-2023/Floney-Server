@@ -15,6 +15,8 @@ public interface BookUserCustomRepository {
 
     List<OurBookUser> findAllUser(String bookKey);
 
+    BookUser findBookUserByEmail(String userEmail, String bookKey);
+
     Optional<BookUser> findBookUserByKey(String auth, String bookKey);
 
     Optional<BookUser> findBookUserByCode(String currentUserEmail, String bookCode);

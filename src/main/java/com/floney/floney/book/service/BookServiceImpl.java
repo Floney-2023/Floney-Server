@@ -321,14 +321,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void saveAlarm(SaveAlarmRequest request, User user) {
-        Alarm alarm = Alarm.of(findBook(request.getBookKey()), user, request);
+    public void saveAlarm(SaveAlarmRequest request) {
+        BookUser bookUser = bookUserRepository.findBookUserByEmail(request.getUserEmail(), request.getBookKey());
+        Alarm alarm = Alarm.of(findBook(request.getBookKey()), bookUser, request);
         alarmRepository.save(alarm);
     }
 
     @Override
     @Transactional
-    public void updateAlarmReceived(UpdateAlarmReceived request){
+    public void updateAlarmReceived(UpdateAlarmReceived request) {
         Alarm alarm = alarmRepository.findById(request.getId())
             .orElseThrow(() -> new NotFoundAlarmException(request.getId()));
         alarm.updateReceived(request.isReceived());
@@ -337,7 +338,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public List<AlarmResponse> getAlarmByBook(String bookKey, User user) {
-        return alarmRepository.findAllByBookAndUser(findBook(bookKey),user)
+        return alarmRepository.findAllByBookAndUser(findBook(bookKey), user)
             .stream()
             .map(AlarmResponse::of).
             collect(Collectors.toList());

@@ -329,9 +329,8 @@ public class BookController {
     }
 
     @PostMapping("/alarm")
-    public ResponseEntity<?> saveAlarm(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                       @RequestBody SaveAlarmRequest request) {
-        bookService.saveAlarm(request, userDetails.getUser());
+    public ResponseEntity<?> saveAlarm(@RequestBody SaveAlarmRequest request) {
+        bookService.saveAlarm(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

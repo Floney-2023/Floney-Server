@@ -2,7 +2,6 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.common.entity.BaseEntity;
-import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class Alarm extends BaseEntity {
     private Book book;
 
     @OneToOne
-    private User user;
+    private BookUser user;
 
     private String content;
 
@@ -37,7 +36,7 @@ public class Alarm extends BaseEntity {
     private Boolean isReceived;
 
     @Builder
-    public Alarm(Book book, User user, String content, String imgUrl, LocalDateTime date, Boolean isReceived) {
+    public Alarm(Book book, BookUser user, String content, String imgUrl, LocalDateTime date, Boolean isReceived) {
         this.book = book;
         this.user = user;
         this.content = content;
@@ -46,7 +45,7 @@ public class Alarm extends BaseEntity {
         this.isReceived = isReceived;
     }
 
-    public static Alarm of(Book book, User user, SaveAlarmRequest request) {
+    public static Alarm of(Book book, BookUser user, SaveAlarmRequest request) {
         return Alarm.builder()
             .user(user)
             .book(book)
