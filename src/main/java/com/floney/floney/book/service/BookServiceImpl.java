@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.entity.Alarm;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Budget;
@@ -15,6 +16,7 @@ import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
+import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
@@ -36,6 +39,7 @@ import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private static final int OWNER = 1;
+    private static final long DEFAULT_BUDGET = 0L;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
@@ -46,6 +50,7 @@ public class BookServiceImpl implements BookService {
     private final BudgetRepository budgetRepository;
     private final SettlementRepository settlementRepository;
     private final CarryOverRepository carryOverRepository;
+    private final AlarmRepository alarmRepository;
 
     @Override
     @Transactional
@@ -96,7 +101,7 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(book);
     }
 
-    private void isMaxBookCapacity(Book book){
+    private void isMaxBookCapacity(Book book) {
         int memberCount = bookUserRepository.getCurrentJoinUserCount(book);
 
         if (memberCount >= book.getUserCapacity()) {
@@ -315,10 +320,36 @@ public class BookServiceImpl implements BookService {
         return monthlyMap;
     }
 
+    @Override
+    @Transactional
+    public void saveAlarm(SaveAlarmRequest request) {
+        BookUser bookUser = bookUserRepository.findBookUserByEmail(request.getUserEmail(), request.getBookKey());
+        Alarm alarm = Alarm.of(findBook(request.getBookKey()), bookUser, request);
+        alarmRepository.save(alarm);
+    }
+
+    @Override
+    @Transactional
+    public void updateAlarmReceived(UpdateAlarmReceived request) {
+        Alarm alarm = alarmRepository.findById(request.getId())
+            .orElseThrow(() -> new NotFoundAlarmException(request.getId()));
+        alarm.updateReceived(request.isReceived());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AlarmResponse> getAlarmByBook(String bookKey, String email) {
+        BookUser bookUser = bookUserRepository.findBookUserByEmail(email, bookKey);
+        return alarmRepository.findAllByBookAndBookUser(findBook(bookKey), bookUser)
+            .stream()
+            .map(AlarmResponse::of).
+            collect(Collectors.toList());
+    }
+
     private Map<Month, Long> getInitBudgetFrame() {
         Map<Month, Long> monthlyMap = new LinkedHashMap<>();
         for (Month month : Month.values()) {
-            monthlyMap.put(month, 0L);
+            monthlyMap.put(month, DEFAULT_BUDGET);
         }
         return monthlyMap;
     }

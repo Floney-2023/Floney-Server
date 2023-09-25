@@ -1,15 +1,7 @@
 package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
-import com.floney.floney.common.exception.book.AlreadyJoinException;
-import com.floney.floney.common.exception.book.CannotDeleteBookException;
-import com.floney.floney.common.exception.book.ExcelMakingException;
-import com.floney.floney.common.exception.book.LimitRequestException;
-import com.floney.floney.common.exception.book.MaxMemberException;
-import com.floney.floney.common.exception.book.NotFoundBookException;
-import com.floney.floney.common.exception.book.NotFoundBookLineException;
-import com.floney.floney.common.exception.book.NotFoundBookUserException;
-import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
@@ -219,6 +211,13 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(NotFoundSubscribeException.class)
     protected ResponseEntity<ErrorResponse> subscribeException(NotFoundSubscribeException exception) {
         logger.error("{} User = {}",ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(),exception.getUserEmail());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(NotFoundAlarmException.class)
+    protected ResponseEntity<ErrorResponse> alarmException(NotFoundAlarmException exception) {
+        logger.error("{} id = {}",ErrorType.NOT_FOUND_ALARM.getMessage(),exception.getRequestKey());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }

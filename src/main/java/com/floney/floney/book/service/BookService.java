@@ -1,19 +1,11 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.OurBookInfo;
-import com.floney.floney.book.dto.request.BookNameChangeRequest;
-import com.floney.floney.book.dto.request.BookUserOutRequest;
-import com.floney.floney.book.dto.request.CarryOverRequest;
-import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateAssetRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 
@@ -65,4 +57,10 @@ public interface BookService {
     BookStatusResponse getBookStatus(String bookKey);
 
     Map<Month, Long> getBudgetByYear(String bookKey, String year);
+
+    void saveAlarm(SaveAlarmRequest request);
+
+    void updateAlarmReceived(UpdateAlarmReceived request);
+
+    List<AlarmResponse> getAlarmByBook(String bookKey,String email);
 }

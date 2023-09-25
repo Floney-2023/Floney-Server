@@ -10,10 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -246,14 +242,15 @@ public class BookController {
 
     /**
      * 화폐 통화 변경
-     * @body ChangeCurrencyRequest 변경할 통화 정보
+     *
      * @return 변경한 통화 정보
+     * @body ChangeCurrencyRequest 변경할 통화 정보
      */
     @PostMapping("/info/currency")
     public ResponseEntity<?> changeCurrency(@RequestBody ChangeCurrencyRequest request) {
         return new ResponseEntity<>(bookService.changeCurrency(request), HttpStatus.OK);
     }
-  
+
     /**
      * 가계부 내역 수정
      *
@@ -278,6 +275,7 @@ public class BookController {
 
     /**
      * 가계부 화폐정보 조회
+     *
      * @param bookKey 가계부 키
      * @return CurrencyResponse 화폐정보
      */
@@ -288,6 +286,7 @@ public class BookController {
 
     /**
      * 참여코드로 가계부 정보 조회
+     *
      * @param code 가계부 참여코드
      * @return BookResponse 가계부 정보
      */
@@ -310,6 +309,7 @@ public class BookController {
 
     /**
      * 가계부 비활성화 / 활성화 여부 조회
+     *
      * @param bookKey 가계부 키
      * @return BookStatusResponse 비활성화 / 활성화 여부
      */
@@ -318,9 +318,47 @@ public class BookController {
         return new ResponseEntity<>(bookService.getBookStatus(bookKey), HttpStatus.OK);
     }
 
+    /**
+     * 가계부 예산 조회
+     *
+     * @param bookKey 가계부 키
+     * @param startYear 타겟 년도
+     * @return Map<Month, Long>  월 / 예산
+     */
     @GetMapping("/budget")
-    public ResponseEntity<?> getBudget(@RequestParam String bookKey, @RequestParam String startYear){
-        return new ResponseEntity<>(bookService.getBudgetByYear(bookKey,startYear),HttpStatus.OK);
+    public ResponseEntity<?> getBudget(@RequestParam String bookKey, @RequestParam String startYear) {
+        return new ResponseEntity<>(bookService.getBudgetByYear(bookKey, startYear), HttpStatus.OK);
+    }
+
+    /**
+     * 가계부 알람 조회
+     * @param bookKey 가계부 키
+     * @param userDetails 유저 정보
+     * @return List<AlarmResponse> 알람 정보
+     */
+    @GetMapping("/alarm")
+    public ResponseEntity<?> getAlarm(@RequestParam String bookKey, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.getAlarmByBook(bookKey, userDetails.getUsername()), HttpStatus.OK);
+    }
+
+    /**
+     * 알람 저장
+     * @body SaveAlarmRequest 알람 저장 정보
+     */
+    @PostMapping("/alarm")
+    public ResponseEntity<?> saveAlarm(@RequestBody SaveAlarmRequest request) {
+        bookService.saveAlarm(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 알람 읽음 처리
+     * @body UpdateAlarmReceived 알람 읽음 상태
+     */
+    @PostMapping("/alarm/update")
+    public ResponseEntity<?> updateAlarm(@RequestBody UpdateAlarmReceived request) {
+        bookService.updateAlarmReceived(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

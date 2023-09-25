@@ -6,8 +6,6 @@ import com.floney.floney.book.dto.process.QMyBookInfo;
 import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -15,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +56,18 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .innerJoin(bookUser.user, user)
             .where(user.status.eq(ACTIVE))
             .fetch();
+    }
+
+    @Override
+    public BookUser findBookUserByEmail(String userEmail, String bookKey) {
+        return jpaQueryFactory.select(
+                bookUser)
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(book.bookKey.eq(bookKey), book.status.eq(ACTIVE))
+            .innerJoin(bookUser.user, user)
+            .where(user.status.eq(ACTIVE),user.email.eq(userEmail))
+            .fetchOne();
     }
 
     @Override
