@@ -335,8 +335,7 @@ public class BookController {
     }
 
     @PostMapping("/alarm/update")
-    public ResponseEntity<?> updateAlarm(
-        @RequestBody UpdateAlarmReceived request) {
+    public ResponseEntity<?> updateAlarm(@RequestBody UpdateAlarmReceived request) {
         bookService.updateAlarmReceived(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
