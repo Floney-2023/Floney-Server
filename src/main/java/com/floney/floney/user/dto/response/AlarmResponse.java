@@ -11,7 +11,9 @@ public class AlarmResponse {
 
     private Long id;
 
-    private String content;
+    private String title;
+
+    private String body;
 
     private String imgUrl;
 
@@ -20,9 +22,10 @@ public class AlarmResponse {
     private boolean isReceived;
 
     @Builder
-    private AlarmResponse(Long id, String content, String imgUrl, LocalDateTime date, boolean isReceived) {
+    private AlarmResponse(Long id, String title, String body, String imgUrl, LocalDateTime date, boolean isReceived) {
         this.id = id;
-        this.content = content;
+        this.title = title;
+        this.body = body;
         this.imgUrl = imgUrl;
         this.date = date;
         this.isReceived = isReceived;
@@ -30,7 +33,8 @@ public class AlarmResponse {
 
     public static AlarmResponse of(Alarm alarm) {
         return AlarmResponse.builder()
-            .content(alarm.getContent())
+            .title(alarm.getTitle())
+            .body(alarm.getBody())
             .id(alarm.getId())
             .imgUrl(alarm.getImgUrl())
             .date(alarm.getDate())

@@ -7,8 +7,14 @@ import java.time.LocalDateTime;
 @Getter
 public class SaveAlarmRequest {
     private String bookKey;
+
     private String userEmail;
-    private String content;
+
+    private String title;
+
+    private String body;
+
     private String imgUrl;
+
     private LocalDateTime date;
 }
