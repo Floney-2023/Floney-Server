@@ -130,5 +130,4 @@ class UserControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
-
 }
