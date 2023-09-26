@@ -19,12 +19,15 @@ import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
+import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.Collections;
 import java.util.Optional;
@@ -55,6 +58,8 @@ class UserServiceTest {
     private RedisProvider redisProvider;
     @Mock
     private JwtProvider jwtProvider;
+    @Mock
+    private SignoutReasonRepository signoutReasonRepository;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -153,9 +158,10 @@ class UserServiceTest {
         User user = UserFixture.createUser();
         given(userRepository.findByEmail(user.getEmail()))
                 .willReturn(Optional.of(user));
+        SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when
-        userService.signout(user.getEmail());
+        userService.signout(user.getEmail(), request);
 
         // then
         // TODO: 탈퇴시 데이터 삭제로 수정
@@ -168,9 +174,11 @@ class UserServiceTest {
         // given
         User user = UserFixture.createUser();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
+        SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.signout(user.getEmail(), request))
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
