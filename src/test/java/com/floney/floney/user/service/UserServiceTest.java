@@ -12,6 +12,7 @@ import static org.mockito.BDDMockito.then;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.PasswordSameException;
+import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
@@ -34,6 +35,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -156,8 +159,7 @@ class UserServiceTest {
     void signout_success() {
         // given
         User user = UserFixture.createUser();
-        given(userRepository.findByEmail(user.getEmail()))
-                .willReturn(Optional.of(user));
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when
@@ -179,6 +181,21 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.signout(user.getEmail(), request))
                 .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @DisplayName("회원탈퇴에 실패한다 - 비어있는 기타 탈퇴 사유")
+    void signout_fail_throws_signoutOtherReasonEmptyException(final String value) {
+        // given
+        User user = UserFixture.createUser();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        SignoutRequest request = new SignoutRequest(SignoutType.OTHER, value);
+
+        // when & then
+        assertThatThrownBy(() -> userService.signout(user.getEmail(), request))
+                .isInstanceOf(SignoutOtherReasonEmptyException.class);
     }
 
     @Test
