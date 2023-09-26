@@ -3,7 +3,6 @@ package com.floney.floney.user.entity;
 import com.floney.floney.common.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +20,12 @@ import org.hibernate.annotations.DynamicUpdate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignoutOtherReason extends BaseEntity {
 
-    @Lob
     @Column(nullable = false)
     private String reason;
+
+    public static SignoutOtherReason from(final String reason) {
+        return SignoutOtherReason.builder()
+                .reason(reason)
+                .build();
+    }
 }

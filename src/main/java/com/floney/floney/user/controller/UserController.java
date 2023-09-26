@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.request.SubscribeRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -101,8 +102,9 @@ public class UserController {
      * @param accessToken 탈퇴할 유저의 access token
      */
     @GetMapping("/signout")
-    public ResponseEntity<?> signout(@RequestParam String accessToken) {
-        userService.signout(userService.logout(accessToken));
+    public ResponseEntity<?> signout(@RequestParam String accessToken,
+                                     @RequestBody final SignoutRequest request) {
+        userService.signout(userService.logout(accessToken), request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
