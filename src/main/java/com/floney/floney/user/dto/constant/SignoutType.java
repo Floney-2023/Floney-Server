@@ -1,10 +1,11 @@
 package com.floney.floney.user.dto.constant;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum SignoutType {
 
     OTHER("기타"),
