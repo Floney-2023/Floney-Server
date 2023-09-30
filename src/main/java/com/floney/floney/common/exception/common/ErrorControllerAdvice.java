@@ -9,6 +9,7 @@ import com.floney.floney.common.exception.user.MailAddressException;
 import com.floney.floney.common.exception.user.NotFoundSubscribeException;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
+import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -116,6 +117,13 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> invalidOAuthToken(OAuthTokenNotValidException exception) {
         logger.warn("외부 로그인 서버에서 잘못된 토큰으로 인한 인증 실패");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(SignoutOtherReasonEmptyException.class)
+    protected ResponseEntity<ErrorResponse> signoutOtherReasonEmpty(SignoutOtherReasonEmptyException exception) {
+        logger.warn("회원 탈퇴 요청에서 value가 비어있음");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 

@@ -6,10 +6,9 @@ import com.floney.floney.settlement.domain.entity.Settlement;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface SettlementRepository extends JpaRepository<Settlement, Long> ,SettlementCustomRepository{
+public interface SettlementRepository extends JpaRepository<Settlement, Long>, SettlementCustomRepository {
 
     List<Settlement> findAllByBookAndStatus(Book book, Status status);
 }

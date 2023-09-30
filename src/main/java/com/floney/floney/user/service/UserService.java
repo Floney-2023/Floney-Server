@@ -16,13 +16,18 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
+import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.entity.SignoutOtherReason;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.SignoutOtherReasonRepository;
+import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
 import java.util.List;
@@ -50,6 +55,8 @@ public class UserService {
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
     private final BookService bookService;
+    private final SignoutReasonRepository signoutReasonRepository;
+    private final SignoutOtherReasonRepository signoutOtherReasonRepository;
 
     @Transactional
     public Token login(final LoginRequest request) {
@@ -91,11 +98,28 @@ public class UserService {
     }
 
     @Transactional
-    public void signout(String email) {
+    public void signout(final String email, final SignoutRequest request) {
         User user = findUserByEmail(email);
         deleteAllBookLinesAndAccountBy(user);
+        addSignoutReason(request);
         // TODO: 유저 엔티티 삭제
         userRepository.save(user);
+    }
+
+    private void addSignoutReason(final SignoutRequest request) {
+        final SignoutType requestType = request.getType();
+
+        if (SignoutType.OTHER.equals(requestType)) {
+            addSignoutOtherReason(request);
+        }
+
+        signoutReasonRepository.increaseCount(requestType);
+    }
+
+    private void addSignoutOtherReason(final SignoutRequest request) {
+        request.validateReasonNotEmpty();
+        final SignoutOtherReason signoutOtherReason = SignoutOtherReason.from(request.getReason());
+        signoutOtherReasonRepository.save(signoutOtherReason);
     }
 
     public Token reissueToken(Token token) {

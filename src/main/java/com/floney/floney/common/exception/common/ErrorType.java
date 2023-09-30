@@ -27,6 +27,7 @@ public enum ErrorType {
     INVALID_OAUTH_TOKEN("U016", "provider 토큰이 올바르지 않습니다"),
     SAME_PASSWORD("U017", "이전 비밀번호와 같습니다"),
     CODE_NOT_FOUND("U018", "코드가 존재하지 않습니다"),
+    EMPTY_SIGNOUT_OTHER_REASON("U019", "기타 탈퇴 사유가 없습니다"),
 
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),

@@ -12,6 +12,7 @@ import static org.mockito.BDDMockito.then;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.PasswordSameException;
+import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
@@ -19,18 +20,23 @@ import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
+import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,6 +61,8 @@ class UserServiceTest {
     private RedisProvider redisProvider;
     @Mock
     private JwtProvider jwtProvider;
+    @Mock
+    private SignoutReasonRepository signoutReasonRepository;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -151,11 +159,11 @@ class UserServiceTest {
     void signout_success() {
         // given
         User user = UserFixture.createUser();
-        given(userRepository.findByEmail(user.getEmail()))
-                .willReturn(Optional.of(user));
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when
-        userService.signout(user.getEmail());
+        userService.signout(user.getEmail(), request);
 
         // then
         // TODO: 탈퇴시 데이터 삭제로 수정
@@ -168,9 +176,26 @@ class UserServiceTest {
         // given
         User user = UserFixture.createUser();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
+        SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail())).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.signout(user.getEmail(), request))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @DisplayName("회원탈퇴에 실패한다 - 비어있는 기타 탈퇴 사유")
+    void signout_fail_throws_signoutOtherReasonEmptyException(final String value) {
+        // given
+        User user = UserFixture.createUser();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        SignoutRequest request = new SignoutRequest(SignoutType.OTHER, value);
+
+        // when & then
+        assertThatThrownBy(() -> userService.signout(user.getEmail(), request))
+                .isInstanceOf(SignoutOtherReasonEmptyException.class);
     }
 
     @Test
