@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -29,6 +28,5 @@ public class SignoutReason extends BaseEntity {
     private SignoutType reasonType;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
     private Long count;
 }
