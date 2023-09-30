@@ -11,7 +11,6 @@ import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.PasswordSameException;
-import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
@@ -118,10 +117,8 @@ public class UserService {
     }
 
     private void addSignoutOtherReason(final SignoutRequest request) {
-        if(request.getValue() == null || request.getValue().isBlank()) {
-            throw new SignoutOtherReasonEmptyException();
-        }
-        final SignoutOtherReason signoutOtherReason = SignoutOtherReason.from(request.getValue());
+        request.validateReasonNotEmpty();
+        final SignoutOtherReason signoutOtherReason = SignoutOtherReason.from(request.getReason());
         signoutOtherReasonRepository.save(signoutOtherReason);
     }
 
