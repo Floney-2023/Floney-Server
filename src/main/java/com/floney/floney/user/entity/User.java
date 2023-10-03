@@ -25,7 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @Entity
 @Table(indexes = {
-    @Index(name = "email", columnList = "email", unique = true)
+    @Index(name = "index_email_in_user", columnList = "email")
 })
 @DynamicInsert
 @DynamicUpdate
@@ -33,7 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    private static final String DELETE_VALUE = "admin";
+    private static final String DELETE_VALUE = "알수없음";
 
     @Column(nullable = false, length = 100)
     private String email;
@@ -131,5 +131,15 @@ public class User extends BaseEntity {
 
     public void unSubscribe() {
         this.subscribe = false;
+    }
+
+    public void signout() {
+        this.email = DELETE_VALUE;
+        this.password = DELETE_VALUE;
+        this.nickname = DELETE_VALUE;
+        this.profileImg = null;
+        this.providerId = null;
+        this.recentBookKey = null;
+        this.inactive();
     }
 }

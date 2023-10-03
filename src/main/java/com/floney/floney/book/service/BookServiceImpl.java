@@ -1,38 +1,71 @@
 package com.floney.floney.book.service;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
+import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
+
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CarryOverRequest;
+import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.SaveAlarmRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAlarmReceived;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.BookInfoResponse;
+import com.floney.floney.book.dto.response.BookStatusResponse;
+import com.floney.floney.book.dto.response.BookUserResponse;
+import com.floney.floney.book.dto.response.BudgetYearResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.CurrencyResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
+import com.floney.floney.book.dto.response.LastSettlementDateResponse;
 import com.floney.floney.book.entity.Alarm;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.entity.category.BookCategory;
-import com.floney.floney.book.repository.*;
+import com.floney.floney.book.repository.AlarmRepository;
+import com.floney.floney.book.repository.BookLineRepository;
+import com.floney.floney.book.repository.BookRepository;
+import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.BudgetRepository;
+import com.floney.floney.book.repository.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.book.AlreadyJoinException;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundAlarmException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
-import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -126,7 +159,7 @@ public class BookServiceImpl implements BookService {
         BookUser bookUser = findBookUserByKey(email, bookKey);
         deleteBookUser(bookUser);
 
-        book.delete();
+        book.inactive();
 
         bookRepository.save(book);
     }
@@ -378,7 +411,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void deleteBookUser(BookUser bookUser) {
-        bookUser.delete();
+        bookUser.inactive();
         bookUserRepository.save(bookUser);
     }
 

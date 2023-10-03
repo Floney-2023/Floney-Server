@@ -1,6 +1,14 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.*;
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static java.time.LocalDate.parse;
+
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.CarryOverFactory;
+import com.floney.floney.book.dto.process.CategoryFactory;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.process.DayLines;
+import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.dto.request.CreateLineRequest;
@@ -10,28 +18,19 @@ import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryCustomRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static java.time.LocalDate.parse;
 
 @Service
 @RequiredArgsConstructor
@@ -109,7 +108,7 @@ public class BookLineServiceImpl implements BookLineService {
     public void deleteLine(Long bookLineKey) {
         BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookLineException());
-        savedBookLine.delete();
+        savedBookLine.inactive();
         bookLineCategoryRepository.deleteBookLineCategoryById(bookLineKey);
         bookLineRepository.save(savedBookLine);
     }

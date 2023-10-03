@@ -99,10 +99,10 @@ public class UserService {
 
     @Transactional
     public void signout(final String email, final SignoutRequest request) {
-        User user = findUserByEmail(email);
-        deleteAllBookLinesAndAccountBy(user);
+        final User user = findUserByEmail(email);
+        inactiveAllBookLinesAndAccountBy(user);
         addSignoutReason(request);
-        // TODO: 유저 엔티티 삭제
+        user.signout();
         userRepository.save(user);
     }
 
@@ -220,12 +220,11 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public void deleteAllBookLinesAndAccountBy(User user) {
-        userRepository.save(user);
-        List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
-        myBookAccounts
-                .forEach(bookUser -> bookService.deleteBookLine(bookUser.getBook(), bookUser));
+    private void inactiveAllBookLinesAndAccountBy(final User user) {
+        final List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
+        myBookAccounts.forEach(bookUser ->
+                bookService.deleteBookLine(bookUser.getBook(), bookUser)
+        );
 
     }
 
