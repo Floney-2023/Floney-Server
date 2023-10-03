@@ -1,6 +1,6 @@
 package com.floney.floney.user.service;
 
-import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -166,8 +166,12 @@ class UserServiceTest {
         userService.signout(user.getEmail(), request);
 
         // then
-        // TODO: 탈퇴시 데이터 삭제로 수정
-        assertThat(user.getStatus()).isEqualTo(ACTIVE);
+        assertThat(user.getStatus()).isEqualTo(INACTIVE);
+        assertThat(user.getEmail()).isEqualTo(UserFixture.DELETE_VALUE);
+        assertThat(user.getPassword()).isEqualTo(UserFixture.DELETE_VALUE);
+        assertThat(user.getNickname()).isEqualTo(UserFixture.DELETE_VALUE);
+        assertThat(user.getProfileImg()).isNull();
+        assertThat(user.getProviderId()).isNull();
     }
 
     @Test

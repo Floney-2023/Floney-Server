@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 
 public class UserFixture {
 
+    public static final String DELETE_VALUE = "알수없음";
+
     private static final User user = createUser();
 
     public static User getUser() {
