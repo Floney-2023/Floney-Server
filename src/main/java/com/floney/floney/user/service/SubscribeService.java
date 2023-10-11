@@ -1,5 +1,7 @@
 package com.floney.floney.user.service;
 
+import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
+
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserCustomRepository;
@@ -12,17 +14,15 @@ import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.SubscribeRepository;
 import com.floney.floney.user.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
-
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
@@ -52,7 +52,7 @@ public class SubscribeService {
     @Transactional(readOnly = true)
     public SubscribeResponse getSubscribe(User user) {
         Subscribe subscribe = subscribeRepository.findSubscribeByUser(user)
-            .orElseThrow(() -> new NotFoundSubscribeException(user.getEmail()));
+                .orElseThrow(() -> new NotFoundSubscribeException(user.getEmail()));
         return SubscribeResponse.of(subscribe);
     }
 
@@ -60,19 +60,19 @@ public class SubscribeService {
         // 사용자 구독 해지
         if (SubscribeStatus.isExpired(status)) {
             return unsubscribeAndDelegateBooks(user);
-        } else {
-            // 사용자 구독
-            user.subscribe();
-            userRepository.save(user);
+        }
 
-            // 사용자 참여한 비활성화 가계부 모두, 구독 혜택 적용 & 방장을 사용자로
-            return bookUserRepository.findMyInactiveBooks(user)
+        // 사용자 구독
+        user.subscribe();
+        userRepository.save(user);
+
+        // 사용자 참여한 비활성화 가계부 모두, 구독 혜택 적용 & 방장을 사용자로
+        return bookUserRepository.findMyInactiveBooks(user)
                 .stream()
                 .map((book) -> book.subscribe(user))
                 .map(bookRepository::save)
-                .map(book -> DelegateResponse.of(book,user))
+                .map(book -> DelegateResponse.of(book, user))
                 .collect(Collectors.toList());
-        }
     }
 
     private List<DelegateResponse> unsubscribeAndDelegateBooks(User user) {
@@ -85,9 +85,9 @@ public class SubscribeService {
 
         // 사용자의 구독 혜택을 받는 중인 가계부 위임을 처리하고 결과를 반환
         return books.stream()
-            .filter(this::isOverSubscribeLimit)
-            .map(this::delegateOwner)
-            .collect(Collectors.toList());
+                .filter(this::isOverSubscribeLimit)
+                .map(this::delegateOwner)
+                .collect(Collectors.toList());
     }
 
     // 구독 혜택을 받는 가게부(가계부원 2명 이상)
@@ -105,15 +105,13 @@ public class SubscribeService {
             User delegateTarget = wantDelegateWhoSubscribe.get();
             book.delegateOwner(delegateTarget);
             bookRepository.save(book);
-            return DelegateResponse.of(book,delegateTarget);
+            return DelegateResponse.of(book, delegateTarget);
         }
         // 미존재시, 가계부 비활성화
         else {
             book.inactiveBookStatus();
             bookRepository.save(book);
-            return DelegateResponse.of(book,null);
+            return DelegateResponse.of(book, null);
         }
-
     }
-
 }

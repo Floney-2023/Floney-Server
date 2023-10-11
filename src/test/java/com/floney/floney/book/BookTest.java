@@ -21,7 +21,7 @@ public class BookTest {
         Book book = createBook();
         String other = "sienna011022@naver.com";
 
-        assertThatThrownBy(() -> book.isOwner(other))
+        assertThatThrownBy(() -> book.validateOwner(other))
             .isInstanceOf(NoAuthorityException.class);
     }
 
