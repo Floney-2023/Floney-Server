@@ -130,6 +130,7 @@ public class Book extends BaseEntity {
     public void initBook() {
         this.asset = DEFAULT;
         this.carryOverStatus = Boolean.FALSE;
+        this.lastSettlementDate = null;
     }
 
     public Book subscribe(User user) {

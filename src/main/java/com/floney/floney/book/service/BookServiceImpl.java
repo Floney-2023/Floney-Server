@@ -259,6 +259,7 @@ public class BookServiceImpl implements BookService {
             .forEach(categoryRepository::delete);
 
         settlementRepository.deleteAllSettlement(bookKey);
+
         bookLineRepository.deleteAllLines(bookKey);
         carryOverRepository.deleteAllCarryOver(bookKey);
 
