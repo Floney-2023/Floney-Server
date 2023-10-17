@@ -1,5 +1,6 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
@@ -219,10 +220,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void bookUserOut(BookUserOutRequest request, String userEmail) {
-        BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
+    public void bookUserOut(BookUserOutRequest request, User user) {
+        BookUser bookUser = findBookUserByKey(user.getEmail(), request.getBookKey());
         deleteBookLineBy(bookUser, request.getBookKey());
         deleteBookUser(bookUser);
+
+        // 유효 가계부 초기화 하기(다른 참여 가계부가 없다면 null로 초기화)
+        List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
+        myBookInfos.stream()
+            .findFirst()
+            .ifPresent(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()));
+        userRepository.save(user);
     }
 
     @Override

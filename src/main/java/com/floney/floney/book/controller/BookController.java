@@ -225,7 +225,7 @@ public class BookController {
     @PostMapping("/users/out")
     public ResponseEntity<?> bookUserOut(@AuthenticationPrincipal CustomUserDetails userDetails,
                                          @RequestBody BookUserOutRequest request) {
-        bookService.bookUserOut(request, userDetails.getUsername());
+        bookService.bookUserOut(request, userDetails.getUser());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

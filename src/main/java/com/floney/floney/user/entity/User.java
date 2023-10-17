@@ -113,8 +113,8 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
     }
 
-    public void saveRecentBookKey(SaveRecentBookKeyRequest request) {
-        this.recentBookKey = request.getBookKey();
+    public void saveRecentBookKey(String bookKey) {
+        this.recentBookKey = bookKey;
     }
 
     public void saveDefaultBookKey(String bookKey) {
@@ -131,5 +131,9 @@ public class User extends BaseEntity {
 
     public void unSubscribe() {
         this.subscribe = false;
+    }
+
+    public void initRecentBookKey() {
+        this.recentBookKey = null;
     }
 }
