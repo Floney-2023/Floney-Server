@@ -2,7 +2,7 @@ package com.floney.floney.user.service;
 
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserCustomRepository;
+import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.DelegateResponse;
 import com.floney.floney.common.exception.user.NotFoundSubscribeException;
 import com.floney.floney.user.dto.constant.SubscribeStatus;
@@ -27,7 +27,7 @@ import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
     private final UserRepository userRepository;
-    private final BookUserCustomRepository bookUserRepository;
+    private final BookUserRepository bookUserRepository;
     private final BookRepository bookRepository;
 
     @Transactional
@@ -70,7 +70,7 @@ public class SubscribeService {
                 .stream()
                 .map((book) -> book.subscribe(user))
                 .map(bookRepository::save)
-                .map(book -> DelegateResponse.of(book,user))
+                .map(book -> DelegateResponse.of(book, user))
                 .collect(Collectors.toList());
         }
     }
@@ -105,13 +105,13 @@ public class SubscribeService {
             User delegateTarget = wantDelegateWhoSubscribe.get();
             book.delegateOwner(delegateTarget);
             bookRepository.save(book);
-            return DelegateResponse.of(book,delegateTarget);
+            return DelegateResponse.of(book, delegateTarget);
         }
         // 미존재시, 가계부 비활성화
         else {
             book.inactiveBookStatus();
             bookRepository.save(book);
-            return DelegateResponse.of(book,null);
+            return DelegateResponse.of(book, null);
         }
 
     }

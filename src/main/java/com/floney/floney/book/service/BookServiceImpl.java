@@ -246,7 +246,8 @@ public class BookServiceImpl implements BookService {
         book.initBook();
         bookLineCategoryRepository.deleteBookLineCategory(bookKey);
 
-        categoryRepository.findAllCustomCategory(book).stream()
+        categoryRepository.findAllCustomCategory(book)
+            .stream()
             .map(BookCategory::delete)
             .forEach(categoryRepository::delete);
 

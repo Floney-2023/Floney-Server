@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.LockModeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .where(bookUser.book.eq(book),
                 bookUser.status.eq(ACTIVE))
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
             .fetch()
             .size();
     }
@@ -164,7 +166,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     }
 
-
     @Override
     public long countBookUser(Book target) {
         return jpaQueryFactory.select(count(bookUser))
@@ -172,6 +173,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .innerJoin(bookUser.book, book)
             .where(book.eq(target),
                 bookUser.status.eq(ACTIVE))
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
             .fetchOne();
     }
 
@@ -211,6 +213,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                         )
                 )
             )
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
             .fetchFirst());
     }
 
