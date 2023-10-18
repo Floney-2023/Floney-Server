@@ -54,8 +54,8 @@ public class AnalyzeServiceImpl implements AnalyzeService {
             .orElse(Budget.init());
 
         // 총 수입 조회
-        Long totalIncome = bookLineRepository.totalIncomeMoneyForBudget(request, duration);
-        return AnalyzeResponseByBudget.of(totalIncome, budget.getMoney());
+        Long totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
+        return AnalyzeResponseByBudget.of(totalOutcome, budget.getMoney());
     }
 
     @Override

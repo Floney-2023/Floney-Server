@@ -254,6 +254,11 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
+    public Long totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration) {
+        return totalOutcomeMoney(duration, request.getBookKey());
+    }
+
+    @Override
     public Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request) {
         DatesDuration duration = DateFactory.getDateDuration(request.getDate());
 
@@ -261,19 +266,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
         Long totalIncomeMoney = totalIncomeMoney(duration, request.getBookKey());
 
-        Long totalOutcomeMoney = jpaQueryFactory
-            .select(bookLine.money.sum().coalesce(0L))
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLine.lineDate.between(duration.start(), duration.end()),
-                bookLineCategory.name.eq(OUTCOME.getKind()),
-                book.bookKey.eq(request.getBookKey()),
-                book.status.eq(Status.ACTIVE),
-                bookLine.status.eq(Status.ACTIVE)
-            )
-            .fetchOne();
+        Long totalOutcomeMoney = totalOutcomeMoney(duration,request.getBookKey());
 
         totalExpenses.put(INCOME.getKind(), totalIncomeMoney);
         totalExpenses.put(OUTCOME.getKind(), totalOutcomeMoney);
@@ -327,6 +320,23 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             )
             .fetchOne();
     }
+
+    private Long totalOutcomeMoney(DatesDuration duration,String bookKey){
+        return jpaQueryFactory
+            .select(bookLine.money.sum().coalesce(0L))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.eq(OUTCOME.getKind()),
+                book.bookKey.eq(bookKey),
+                book.status.eq(Status.ACTIVE),
+                bookLine.status.eq(Status.ACTIVE)
+            )
+            .fetchOne();
+    }
+
 
     @Override
     @Transactional
