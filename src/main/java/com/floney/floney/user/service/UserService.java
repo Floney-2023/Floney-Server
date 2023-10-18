@@ -6,7 +6,6 @@ import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
@@ -54,7 +53,6 @@ public class UserService {
     private final RedisProvider redisProvider;
     private final MailProvider mailProvider;
     private final BookUserRepository bookUserRepository;
-    private final BookService bookService;
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
 
@@ -100,10 +98,8 @@ public class UserService {
     @Transactional
     public void signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
-        inactiveAllBookLinesAndAccountBy(user);
-        addSignoutReason(request);
         user.signout();
-        userRepository.save(user);
+        addSignoutReason(request);
     }
 
     private void addSignoutReason(final SignoutRequest request) {
@@ -218,14 +214,6 @@ public class UserService {
         if (!code.equals(requestCode)) {
             throw new CodeNotSameException(code, requestCode);
         }
-    }
-
-    private void inactiveAllBookLinesAndAccountBy(final User user) {
-        final List<BookUser> myBookAccounts = bookUserRepository.findByUserAndStatus(user, ACTIVE);
-        myBookAccounts.forEach(bookUser ->
-                bookService.deleteBookLine(bookUser.getBook(), bookUser)
-        );
-
     }
 
     @Transactional

@@ -2,7 +2,10 @@ package com.floney.floney.user.entity;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.common.exception.user.SubscribeException;
+import com.floney.floney.common.util.Events;
 import com.floney.floney.user.dto.constant.Provider;
+import com.floney.floney.user.event.UserSignedOutEvent;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -25,7 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @Entity
 @Table(indexes = {
-    @Index(name = "index_email_in_user", columnList = "email")
+        @Index(name = "index_email_in_user", columnList = "email")
 })
 @DynamicInsert
 @DynamicUpdate
@@ -134,12 +137,26 @@ public class User extends BaseEntity {
     }
 
     public void signout() {
-        this.email = DELETE_VALUE;
-        this.password = DELETE_VALUE;
-        this.nickname = DELETE_VALUE;
-        this.profileImg = null;
-        this.providerId = null;
-        this.recentBookKey = null;
-        this.inactive();
+        validateNotSubscribe();
+
+        deleteInformation();
+        inactive();
+
+        Events.raise(new UserSignedOutEvent(getId()));
+    }
+
+    private void deleteInformation() {
+        email = DELETE_VALUE;
+        password = DELETE_VALUE;
+        nickname = DELETE_VALUE;
+        profileImg = null;
+        providerId = null;
+        recentBookKey = null;
+    }
+
+    private void validateNotSubscribe() {
+        if (isSubscribe()) {
+            throw new SubscribeException();
+        }
     }
 }
