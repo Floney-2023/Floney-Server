@@ -5,14 +5,12 @@ import static com.floney.floney.book.entity.QBookUser.bookUser;
 import static com.floney.floney.book.entity.QBudget.budget;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
-import static com.querydsl.core.group.GroupBy.groupBy;
 
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.response.BudgetYearResponse;
 import com.floney.floney.book.dto.response.QBudgetYearResponse;
 import com.floney.floney.book.entity.Book;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class BookRepositoryImpl implements BookCustomRepository {
+public class BookCustomRepositoryImpl implements BookCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -39,13 +37,13 @@ public class BookRepositoryImpl implements BookCustomRepository {
     }
 
     @Override
-    public List<BudgetYearResponse> findBudgetByYear(String bookKey, DatesDuration duration){
+    public List<BudgetYearResponse> findBudgetByYear(String bookKey, DatesDuration duration) {
         return jpaQueryFactory
-            .select(new QBudgetYearResponse(budget.date,budget.money))
-            .from(budget)
-            .innerJoin(budget.book,book)
-            .where(book.bookKey.eq(bookKey))
-            .where(budget.date.between(duration.getStartDate(),duration.getEndDate()))
-            .fetch();
+                .select(new QBudgetYearResponse(budget.date, budget.money))
+                .from(budget)
+                .innerJoin(budget.book, book)
+                .where(book.bookKey.eq(bookKey))
+                .where(budget.date.between(duration.getStartDate(), duration.getEndDate()))
+                .fetch();
     }
 }
