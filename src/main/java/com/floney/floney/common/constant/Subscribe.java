@@ -10,6 +10,7 @@ public enum Subscribe {
     DEFAULT_MAX_BOOK(1);
 
     private final int value;
+
     Subscribe(int value) {
         this.value = value;
     }
