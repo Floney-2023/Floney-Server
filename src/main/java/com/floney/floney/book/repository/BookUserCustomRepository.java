@@ -5,7 +5,6 @@ import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public interface BookUserCustomRepository {
 
     List<Book> findBookByOwner(User user);
 
-    long countBookUser(Book book);
+    long countInBook(Book book);
 
     BookUser findBookUserBy(String email, Book targetBook);
 
@@ -35,4 +34,7 @@ public interface BookUserCustomRepository {
 
     Optional<User> findBookUserWhoSubscribe(Book targetBook);
 
+    List<BookUser> findAllByUserId(Long userId);
+
+    void inactiveAllByBook(Book book);
 }
