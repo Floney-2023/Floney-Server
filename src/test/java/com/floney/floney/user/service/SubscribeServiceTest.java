@@ -118,7 +118,7 @@ public class SubscribeServiceTest {
             .willReturn(Collections.singletonList(book));
 
         // 해당 가계부는 구독 혜택을 받는 중
-        given(bookUserRepository.countBookUser(any(Book.class)))
+        given(bookUserRepository.countInBook(any(Book.class)))
             .willReturn(4L);
 
         // 위임 할 가계부원이 없을 경우
@@ -148,7 +148,7 @@ public class SubscribeServiceTest {
             .willReturn(Collections.singletonList(book));
 
         // 해당 가계부는 구독 혜택을 받는 중
-        given(bookUserRepository.countBookUser(any(Book.class)))
+        given(bookUserRepository.countInBook(any(Book.class)))
             .willReturn(4L);
 
         // 위임 할 가계부원이 존재할 경우
