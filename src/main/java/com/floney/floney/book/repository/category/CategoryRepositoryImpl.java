@@ -1,5 +1,9 @@
 package com.floney.floney.book.repository.category;
 
+import static com.floney.floney.book.entity.QBook.book;
+import static com.floney.floney.book.entity.QCategory.category;
+import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
+
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.process.QCategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
@@ -12,23 +16,21 @@ import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
-
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QCategory.category;
-import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
-    private final JPAQueryFactory jpaQueryFactory;
     private static final boolean DEFAULT = true;
     private static final boolean CUSTOM = false;
+
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public List<CategoryInfo> findAllCategory(String name, String bookKey) {
@@ -126,7 +128,9 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
+    @Transactional
     public void deleteCustomCategory(DeleteCategoryRequest request) {
+        // TODO: 논리 삭제로 리팩토링
         Category targetRoot = jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(request.getRoot()),
                 category.instanceOf(RootCategory.class))
@@ -159,5 +163,9 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .fetchOne());
     }
 
-
+    @Override
+    @Transactional
+    public void inactiveAllByBook(final Book book) {
+        // TODO: 카테고리에 active, updatedAt, createdAt 컬럼 추가 이후 구현
+    }
 }

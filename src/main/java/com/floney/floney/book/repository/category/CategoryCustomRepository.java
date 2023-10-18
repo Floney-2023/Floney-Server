@@ -5,11 +5,11 @@ import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.category.BookCategory;
-
 import java.util.List;
 import java.util.Optional;
 
 public interface CategoryCustomRepository {
+
     List<CategoryInfo> findAllCategory(String name, String bookKey);
 
     Optional<Category> findFlowCategory(String name);
@@ -26,4 +26,5 @@ public interface CategoryCustomRepository {
 
     Optional<Category> findParentCategory(String parentName);
 
+    void inactiveAllByBook(Book book);
 }
