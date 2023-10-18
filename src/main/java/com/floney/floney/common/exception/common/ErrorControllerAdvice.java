@@ -1,7 +1,16 @@
 package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
-import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.book.AlreadyJoinException;
+import com.floney.floney.common.exception.book.CannotDeleteBookException;
+import com.floney.floney.common.exception.book.ExcelMakingException;
+import com.floney.floney.common.exception.book.LimitRequestException;
+import com.floney.floney.common.exception.book.MaxMemberException;
+import com.floney.floney.common.exception.book.NotFoundAlarmException;
+import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.floney.floney.common.exception.user.CodeNotFoundException;
 import com.floney.floney.common.exception.user.CodeNotSameException;
 import com.floney.floney.common.exception.user.EmailNotFoundException;
@@ -154,7 +163,6 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(CannotDeleteBookException.class)
     protected ResponseEntity<ErrorResponse> cannotDeleteBook(CannotDeleteBookException exception) {
-        logger.warn("[{}]명의 {}", exception.getLeftMemberCount(), ErrorType.NO_DELETE_BOOK.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }

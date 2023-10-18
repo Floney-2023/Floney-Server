@@ -5,10 +5,12 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.event.BookDeletedEvent;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
+import com.floney.floney.common.util.Events;
 import com.floney.floney.user.entity.User;
 import java.time.LocalDate;
 import javax.persistence.Column;
@@ -29,7 +31,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @Table(indexes = {
-    @Index(name = "book_keys", columnList = "bookKey")
+        @Index(name = "book_keys", columnList = "bookKey")
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
@@ -72,9 +74,18 @@ public class Book extends BaseEntity {
     private Status bookStatus;
 
     @Builder
-    private Book(String name, String profileImg, String owner,
-                 String bookKey, boolean seeProfile,
-                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, Integer userCapacity, Long asset, Status bookStatus) {
+    private Book(String name,
+                 String profileImg,
+                 String owner,
+                 String bookKey,
+                 boolean seeProfile,
+                 boolean carryOverStatus,
+                 String code,
+                 Long carryOverMoney,
+                 String currency,
+                 Integer userCapacity,
+                 Long asset,
+                 Status bookStatus) {
         this.name = name;
         this.bookImg = profileImg;
         this.owner = owner;
@@ -93,12 +104,6 @@ public class Book extends BaseEntity {
         this.name = requestName;
     }
 
-    public void isOwner(String email) {
-        if (!owner.equals(email)) {
-            throw new NoAuthorityException(owner, email);
-        }
-    }
-
     public void updateImg(UpdateBookImgRequest request) {
         this.bookImg = request.getNewUrl();
     }
@@ -113,6 +118,12 @@ public class Book extends BaseEntity {
 
     public void updateLastSettlementDate(LocalDate lastSettlementDate) {
         this.lastSettlementDate = lastSettlementDate;
+    }
+
+    public void validateOwner(String email) {
+        if (!isOwner(email)) {
+            throw new NoAuthorityException(owner, email);
+        }
     }
 
     public boolean getCarryOverStatus() {
@@ -143,7 +154,16 @@ public class Book extends BaseEntity {
         this.owner = user.getEmail();
     }
 
-    public void inactiveBookStatus(){
+    public void inactiveBookStatus() {
         this.bookStatus = INACTIVE;
+    }
+
+    public void delete() {
+        inactive();
+        Events.raise(new BookDeletedEvent(getId()));
+    }
+
+    public boolean isOwner(final String email) {
+        return owner.equals(email);
     }
 }

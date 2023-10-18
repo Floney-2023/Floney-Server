@@ -1,19 +1,36 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.OurBookInfo;
-import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.*;
+import com.floney.floney.book.dto.request.BookNameChangeRequest;
+import com.floney.floney.book.dto.request.BookUserOutRequest;
+import com.floney.floney.book.dto.request.CarryOverRequest;
+import com.floney.floney.book.dto.request.ChangeCurrencyRequest;
+import com.floney.floney.book.dto.request.CodeJoinRequest;
+import com.floney.floney.book.dto.request.CreateBookRequest;
+import com.floney.floney.book.dto.request.SaveAlarmRequest;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
+import com.floney.floney.book.dto.request.UpdateAlarmReceived;
+import com.floney.floney.book.dto.request.UpdateAssetRequest;
+import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.BookInfoResponse;
+import com.floney.floney.book.dto.response.BookStatusResponse;
+import com.floney.floney.book.dto.response.BookUserResponse;
+import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.CurrencyResponse;
+import com.floney.floney.book.dto.response.InviteCodeResponse;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
+import com.floney.floney.book.dto.response.LastSettlementDateResponse;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
-
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
 
 public interface BookService {
+
     CreateBookResponse addBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
@@ -38,8 +55,6 @@ public interface BookService {
 
     void bookUserOut(final BookUserOutRequest request, final String username);
 
-    void deleteBookLine(Book bookUserBook, BookUser bookUser);
-
     InviteCodeResponse inviteCode(final String bookKey);
 
     List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey);
@@ -62,5 +77,7 @@ public interface BookService {
 
     void updateAlarmReceived(UpdateAlarmReceived request);
 
-    List<AlarmResponse> getAlarmByBook(String bookKey,String email);
+    List<AlarmResponse> getAlarmByBook(String bookKey, String email);
+
+    void leaveBooksBy(long userId);
 }
