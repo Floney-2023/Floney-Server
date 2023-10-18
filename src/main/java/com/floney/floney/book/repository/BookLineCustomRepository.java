@@ -4,12 +4,15 @@ import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
-import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.process.DayLine;
+import com.floney.floney.book.dto.process.DayLineByDayView;
+import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookUser;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +28,11 @@ public interface BookLineCustomRepository {
 
     List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesDuration dates);
 
-    void deleteAllLines(String bookKey);
+    void inactiveAllLines(String bookKey);
 
     List<DayLine> allOutcomes(AllOutcomesRequest request);
 
-    void deleteAllLinesByUser(BookUser bookUser, String bookKey);
+    void inactiveAllByBookUser(BookUser bookUser);
 
     Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
@@ -41,7 +44,7 @@ public interface BookLineCustomRepository {
 
     Optional<BookLine> findByIdWithCategories(Long id);
 
-    void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser);
-
     List<BookLine> findAllByBook(String bookKey);
+
+    void inactiveAllByBook(Book book);
 }
