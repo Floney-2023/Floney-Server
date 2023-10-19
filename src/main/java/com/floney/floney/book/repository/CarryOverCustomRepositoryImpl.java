@@ -1,10 +1,13 @@
 package com.floney.floney.book.repository;
 
+import static com.floney.floney.book.entity.QBook.book;
 import static com.floney.floney.book.entity.QCarryOver.carryOver;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 
 import com.floney.floney.book.entity.Book;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +24,15 @@ public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository 
     @Override
     @Transactional
     public void inactiveAllByBookKey(String bookKey) {
+        final JPQLQuery<Long> bookByBookKey = JPAExpressions.select(book.id)
+                .from(book)
+                .where(book.bookKey.eq(bookKey));
+
         jpaQueryFactory.update(carryOver)
                 .set(carryOver.status, INACTIVE)
                 .set(carryOver.updatedAt, LocalDateTime.now())
                 .where(
-                        carryOver.book.bookKey.eq(bookKey),
+                        carryOver.book.id.eq(bookByBookKey),
                         carryOver.status.eq(ACTIVE)
                 )
                 .execute();
