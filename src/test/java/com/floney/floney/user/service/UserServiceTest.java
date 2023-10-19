@@ -42,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -159,6 +160,7 @@ class UserServiceTest {
     void signout_success() {
         // given
         User user = UserFixture.createUser();
+        ReflectionTestUtils.setField(user, "id", 1L);
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
@@ -178,12 +180,12 @@ class UserServiceTest {
     @DisplayName("회원탈퇴에 실패한다 - 존재하지 않는 회원")
     void signout_fail_throws_usernameNotFoundException() {
         // given
-        User user = UserFixture.createUser();
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
+        final String email = "email";
+        given(userRepository.findByEmail(email)).willReturn(Optional.empty());
         SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when & then
-        assertThatThrownBy(() -> userService.signout(user.getEmail(), request))
+        assertThatThrownBy(() -> userService.signout(email, request))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
@@ -193,6 +195,7 @@ class UserServiceTest {
     void signout_fail_throws_signoutOtherReasonEmptyException(final String value) {
         // given
         User user = UserFixture.createUser();
+        ReflectionTestUtils.setField(user, "id", 1L);
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         SignoutRequest request = new SignoutRequest(SignoutType.OTHER, value);
