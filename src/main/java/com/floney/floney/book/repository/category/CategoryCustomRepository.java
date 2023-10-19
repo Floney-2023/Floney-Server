@@ -20,7 +20,7 @@ public interface CategoryCustomRepository {
 
     boolean findCustomTarget(Category targetRoot, String bookKey, String target);
 
-    void deleteCustomCategory(DeleteCategoryRequest request);
+    void inactiveCustomCategory(DeleteCategoryRequest request);
 
     List<BookCategory> findAllCustomCategory(Book book);
 

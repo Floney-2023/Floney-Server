@@ -155,21 +155,26 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional
-    public void deleteCustomCategory(DeleteCategoryRequest request) {
-        // TODO: 논리 삭제로 리팩토링
+    public void inactiveCustomCategory(DeleteCategoryRequest request) {
         Category targetRoot = jpaQueryFactory.selectFrom(category)
-                .where(category.name.eq(request.getRoot()),
-                        category.instanceOf(RootCategory.class))
+                .where(
+                        category.name.eq(request.getRoot()),
+                        category.instanceOf(RootCategory.class)
+                )
                 .fetchOne();
 
-        jpaQueryFactory.delete(bookCategory)
-                .where(bookCategory.name.eq(request.getName()),
+        jpaQueryFactory.update(bookCategory)
+                .set(bookCategory.status, INACTIVE)
+                .set(bookCategory.updatedAt, LocalDateTime.now())
+                .where(
+                        bookCategory.name.eq(request.getName()),
                         bookCategory.book.id.eq(
                                 JPAExpressions.select(book.id)
                                         .from(book)
                                         .where(book.bookKey.eq(request.getBookKey()))
                         ),
-                        bookCategory.parent.eq(targetRoot))
+                        bookCategory.parent.eq(targetRoot)
+                )
                 .execute();
     }
 
