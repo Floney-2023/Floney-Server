@@ -25,7 +25,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
             .where(bookLineCategory.bookLine.id.in(
                 JPAExpressions.select(bookLine.id)
                     .from(bookLine)
-                    .leftJoin(bookLine.book, book)
+                    .innerJoin(bookLine.book, book)
                     .where(book.bookKey.eq(bookKey))
             ))
             .execute();

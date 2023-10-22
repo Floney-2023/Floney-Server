@@ -1,10 +1,8 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.CarryOver;
-import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +10,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static com.floney.floney.book.dto.constant.AssetType.*;
+import static com.floney.floney.book.dto.constant.AssetType.BANK;
 
 @RequiredArgsConstructor
 @Component
@@ -27,7 +28,7 @@ public class CarryOverFactory {
         LocalDate localDate = LocalDate.parse(date);
         // 1일일 경우, 이월 내역 포함하여 전송
         if (carryOverStatus && DateFactory.isFirstDay(date)) {
-            Optional<CarryOver> carryOverOptional = carryOverRepository.findCarryOverByDate(localDate);
+            Optional<CarryOver> carryOverOptional = carryOverRepository.findCarryOverByDateAndBook(localDate, book);
             if (carryOverOptional.isPresent()) {
                 return CarryOverInfo.of(true, carryOverOptional.get());
             }
@@ -47,7 +48,7 @@ public class CarryOverFactory {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDate(targetDate);
+            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, book);
 
             if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.name())) {
                 CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
