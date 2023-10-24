@@ -1,8 +1,5 @@
 package com.floney.floney.book.entity;
 
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Status.INACTIVE;
-
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.event.BookDeletedEvent;
@@ -12,19 +9,18 @@ import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.common.util.Events;
 import com.floney.floney.user.entity.User;
-import java.time.LocalDate;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Index;
-import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Entity
 @Getter

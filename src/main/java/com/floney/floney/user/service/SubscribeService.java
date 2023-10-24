@@ -1,7 +1,5 @@
 package com.floney.floney.user.service;
 
-import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
-
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserCustomRepository;
@@ -14,12 +12,15 @@ import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.SubscribeRepository;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 
 @Service
 @Transactional(readOnly = true)

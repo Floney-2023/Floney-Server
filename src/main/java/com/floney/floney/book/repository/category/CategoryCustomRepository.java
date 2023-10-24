@@ -5,6 +5,7 @@ import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.category.BookCategory;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public interface CategoryCustomRepository {
 
     Optional<Category> findFlowCategory(String name);
 
-    Optional<Category> findAssetCategory(String name,String bookKey);
+    Optional<Category> findAssetCategory(String name, String bookKey);
 
     Optional<Category> findLineCategory(String name, String bookKey, String parent);
 

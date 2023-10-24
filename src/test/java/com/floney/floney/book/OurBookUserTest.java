@@ -1,12 +1,12 @@
 package com.floney.floney.book;
 
-import static com.floney.floney.fixture.BookFixture.EMAIL;
-
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.fixture.BookFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static com.floney.floney.fixture.BookFixture.EMAIL;
 
 public class OurBookUserTest {
 

@@ -1,8 +1,5 @@
 package com.floney.floney.book;
 
-import static com.floney.floney.book.CategoryFixture.CHILD;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
@@ -17,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
+import static com.floney.floney.book.CategoryFixture.CHILD;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(TestConfig.class)

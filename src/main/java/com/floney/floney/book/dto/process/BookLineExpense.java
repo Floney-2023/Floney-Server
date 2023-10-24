@@ -31,7 +31,7 @@ public class BookLineExpense {
     }
 
     public static BookLineExpense initExpense(LocalDate targetDate, AssetType type) {
-        return new BookLineExpense(targetDate,type);
+        return new BookLineExpense(targetDate, type);
     }
 
 

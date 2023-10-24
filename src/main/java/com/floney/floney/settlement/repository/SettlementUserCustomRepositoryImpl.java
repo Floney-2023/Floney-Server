@@ -1,14 +1,15 @@
 package com.floney.floney.settlement.repository;
 
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Status.INACTIVE;
-import static com.floney.floney.settlement.domain.entity.QSettlementUser.settlementUser;
-
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.settlement.domain.entity.QSettlementUser.settlementUser;
 
 @Repository
 @RequiredArgsConstructor

@@ -1,11 +1,5 @@
 package com.floney.floney.book.repository;
 
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QBookUser.bookUser;
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Status.INACTIVE;
-import static com.floney.floney.user.entity.QUser.user;
-
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.process.QMyBookInfo;
@@ -15,14 +9,21 @@ import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
+import static com.floney.floney.book.entity.QBook.book;
+import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.user.entity.QUser.user;
 
 @Repository
 @Transactional(readOnly = true)

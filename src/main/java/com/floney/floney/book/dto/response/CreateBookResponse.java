@@ -20,9 +20,9 @@ public class CreateBookResponse {
 
     public static CreateBookResponse of(Book book) {
         return CreateBookResponse.builder()
-            .bookKey(book.getBookKey())
-            .code(book.getCode())
-            .build();
+                .bookKey(book.getBookKey())
+                .code(book.getCode())
+                .build();
     }
 
 }

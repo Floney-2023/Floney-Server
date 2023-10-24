@@ -1,11 +1,8 @@
 package com.floney.floney.user.dto.request;
 
+import lombok.*;
+
 import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -13,13 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoginRequest {
 
-    @NotNull private String email;
-    @NotNull private String password;
+    @NotNull
+    private String email;
+    @NotNull
+    private String password;
 
     @Override
     public String toString() {
         return "LoginRequest{" +
-            "email='" + email + '\'' +
-            '}';
+                "email='" + email + '\'' +
+                '}';
     }
 }

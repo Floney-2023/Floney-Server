@@ -51,7 +51,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
         // 자산 조회
         Budget budget = budgetRepository.findBudgetByBookAndDate(savedBook, LocalDate.parse(request.getDate()))
-            .orElse(Budget.init());
+                .orElse(Budget.init());
 
         // 총 수입 조회
         Long totalIncome = bookLineRepository.totalIncomeMoneyForBudget(request, duration);
@@ -72,7 +72,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private long calculateDifference(AnalyzeByCategoryRequest request, Long totalMoney) {
@@ -82,7 +82,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     private Long calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
         return result.stream()
-            .mapToLong(AnalyzeResponseByCategory::getMoney)
-            .sum();
+                .mapToLong(AnalyzeResponseByCategory::getMoney)
+                .sum();
     }
 }

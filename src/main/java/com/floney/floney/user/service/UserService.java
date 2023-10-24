@@ -1,17 +1,11 @@
 package com.floney.floney.user.service;
 
-import static com.floney.floney.common.constant.Status.ACTIVE;
-
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.dto.Token;
-import com.floney.floney.common.exception.user.CodeNotFoundException;
-import com.floney.floney.common.exception.user.CodeNotSameException;
-import com.floney.floney.common.exception.user.PasswordSameException;
-import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.*;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -29,8 +23,6 @@ import com.floney.floney.user.repository.SignoutOtherReasonRepository;
 import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
-import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -39,6 +31,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Random;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
 @Transactional(readOnly = true)

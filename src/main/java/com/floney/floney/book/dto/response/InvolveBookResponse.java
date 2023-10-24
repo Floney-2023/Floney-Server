@@ -21,6 +21,6 @@ public class InvolveBookResponse {
 
     public static InvolveBookResponse of(Optional<Book> book) {
         return book.map(value -> new InvolveBookResponse(value.getBookKey(), value.getBookStatus()))
-            .orElseGet(() -> new InvolveBookResponse(null, null));
+                .orElseGet(() -> new InvolveBookResponse(null, null));
     }
 }

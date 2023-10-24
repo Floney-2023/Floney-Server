@@ -1,7 +1,5 @@
 package com.floney.floney.book.service;
 
-import static com.floney.floney.book.entity.DefaultCategory.rootParent;
-
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
@@ -14,10 +12,13 @@ import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.floney.floney.book.entity.DefaultCategory.rootParent;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category parent = rootParent();
         if (request.hasParent()) {
             parent = categoryRepository.findParentCategory(request.getParent())
-                .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
+                    .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
         }
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
         return CreateCategoryResponse.of(newCategory);
@@ -52,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
 }

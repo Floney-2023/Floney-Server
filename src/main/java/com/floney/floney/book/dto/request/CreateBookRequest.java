@@ -22,12 +22,12 @@ public class CreateBookRequest {
 
     public Book of(String email) {
         return Book.builder()
-            .bookKey(CodeFactory.generateCode())
-            .name(name)
-            .profileImg(profileImg)
-            .owner(email)
-            .code(CodeFactory.generateCode())
-            .build();
+                .bookKey(CodeFactory.generateCode())
+                .name(name)
+                .profileImg(profileImg)
+                .owner(email)
+                .code(CodeFactory.generateCode())
+                .build();
 
     }
 

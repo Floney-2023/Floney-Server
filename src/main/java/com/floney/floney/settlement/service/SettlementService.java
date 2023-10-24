@@ -17,12 +17,13 @@ import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.settlement.repository.SettlementUserRepository;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,9 +46,9 @@ public class SettlementService {
         final Book book = findBookByBookKey(bookKey);
 
         return findSettlementsByBook(book)
-            .stream()
-            .map(SettlementResponse::from)
-            .toList();
+                .stream()
+                .map(SettlementResponse::from)
+                .toList();
     }
 
     public SettlementResponse find(Long id) {
@@ -76,7 +77,7 @@ public class SettlementService {
 
     private Settlement findSettlementById(final Long id) {
         return settlementRepository.findById(id)
-            .orElseThrow(SettlementNotFoundException::new);
+                .orElseThrow(SettlementNotFoundException::new);
     }
 
     private List<Settlement> findSettlementsByBook(final Book book) {
@@ -89,7 +90,7 @@ public class SettlementService {
 
     private Book findBookByBookKey(final String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void validateBookUsers(final Set<String> emails, final Book book) {
@@ -126,6 +127,6 @@ public class SettlementService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 }
