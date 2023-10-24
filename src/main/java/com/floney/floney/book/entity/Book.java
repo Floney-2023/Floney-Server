@@ -16,7 +16,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDate;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -26,9 +29,6 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@Table(indexes = {
-        @Index(name = "book_keys", columnList = "bookKey")
-})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
