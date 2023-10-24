@@ -8,6 +8,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -140,7 +141,6 @@ public class BookUserCustomRepositoryImpl implements BookUserCustomRepository {
             }
         }
         return myBooks;
-
     }
 
     @Override
@@ -200,16 +200,17 @@ public class BookUserCustomRepositoryImpl implements BookUserCustomRepository {
 
     @Override
     public Optional<User> findRandomBookUserWhoSubscribe(Book targetBook) {
+        final JPQLQuery<User> userByBook = JPAExpressions.select(bookUser.user)
+                .from(bookUser)
+                .where(
+                        bookUser.book.eq(targetBook)
+                );
+
         return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
                 .where(
                         user.subscribe.eq(true),
-                        user.in(
-                                JPAExpressions.select(bookUser.user)
-                                        .from(bookUser)
-                                        .where(
-                                                bookUser.book.eq(targetBook)
-                                        )
-                        )
+                        user.in(userByBook),
+                        user.status.eq(ACTIVE)
                 )
                 .fetchFirst());
     }
