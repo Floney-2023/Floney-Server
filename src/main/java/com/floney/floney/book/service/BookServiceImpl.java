@@ -39,7 +39,7 @@ import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private static final int OWNER = 1;
+    private static final int ONLY_OWNER_COUNT = 1;
     private static final long DEFAULT_BUDGET = 0L;
 
     private final BookRepository bookRepository;
@@ -346,7 +346,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void delegateOwner(Book book) {
-        final Optional<User> subscribersNotBookOwner = bookUserRepository.findBookUserWhoSubscribe(book);
+        final Optional<User> subscribersNotBookOwner = bookUserRepository.findRandomBookUserWhoSubscribe(book);
 
         // 위임할 유저가 존재할 경우 방장 위임
         if (subscribersNotBookOwner.isPresent()) {
@@ -389,7 +389,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private boolean canDeleteBookBy(final BookUser bookUser) {
-        return !bookUser.isInactive() && bookUserRepository.countInBook(bookUser.getBook()) == OWNER;
+        return !bookUser.isInactive() && bookUserRepository.countInBook(bookUser.getBook()) == ONLY_OWNER_COUNT;
     }
 
     private Map<Month, Long> getInitBudgetFrame() {
