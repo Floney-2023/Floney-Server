@@ -92,13 +92,13 @@ public class SubscribeService {
 
     // 구독 혜택을 받는 가게부(가계부원 2명 이상)
     private boolean isOverSubscribeLimit(Book book) {
-        long count = bookUserRepository.countInBook(book);
+        long count = bookUserRepository.countInBookExclusively(book);
         return count > SUBSCRIBE_MAX_BOOK.getValue();
     }
 
     private DelegateResponse delegateOwner(Book book) {
         // 구독을 한 다른 멤버 조회
-        Optional<User> wantDelegateWhoSubscribe = bookUserRepository.findBookUserWhoSubscribe(book);
+        Optional<User> wantDelegateWhoSubscribe = bookUserRepository.findBookUserWhoSubscribeExclusively(book);
 
         // 존재할 경우 방장 위임
         if (wantDelegateWhoSubscribe.isPresent()) {

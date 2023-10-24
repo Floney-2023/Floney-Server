@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface BookUserCustomRepository {
 
-    int getCurrentJoinUserCount(Book book);
+    int getCurrentJoinUserCountExclusively(Book book);
 
     List<OurBookUser> findAllUser(String bookKey);
 
@@ -27,12 +27,12 @@ public interface BookUserCustomRepository {
 
     List<Book> findBookByOwner(User user);
 
-    long countInBook(Book book);
+    long countInBookExclusively(Book book);
 
     BookUser findBookUserBy(String email, Book targetBook);
 
     boolean existsByUserEmailAndBookKey(String email, String bookKey);
 
-    Optional<User> findBookUserWhoSubscribe(Book targetBook);
+    Optional<User> findBookUserWhoSubscribeExclusively(Book targetBook);
 
 }

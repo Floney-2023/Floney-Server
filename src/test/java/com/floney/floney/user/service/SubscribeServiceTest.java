@@ -118,11 +118,11 @@ public class SubscribeServiceTest {
             .willReturn(Collections.singletonList(book));
 
         // 해당 가계부는 구독 혜택을 받는 중
-        given(bookUserRepository.countInBook(any(Book.class)))
+        given(bookUserRepository.countInBookExclusively(any(Book.class)))
             .willReturn(4L);
 
         // 위임 할 가계부원이 없을 경우
-        given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
+        given(bookUserRepository.findBookUserWhoSubscribeExclusively(any(Book.class)))
             .willReturn(Optional.empty());
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
@@ -148,12 +148,12 @@ public class SubscribeServiceTest {
             .willReturn(Collections.singletonList(book));
 
         // 해당 가계부는 구독 혜택을 받는 중
-        given(bookUserRepository.countInBook(any(Book.class)))
+        given(bookUserRepository.countInBookExclusively(any(Book.class)))
             .willReturn(4L);
 
         // 위임 할 가계부원이 존재할 경우
         User delegateUser = UserFixture.createUser2();
-        given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
+        given(bookUserRepository.findBookUserWhoSubscribeExclusively(any(Book.class)))
             .willReturn(Optional.of(delegateUser));
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
