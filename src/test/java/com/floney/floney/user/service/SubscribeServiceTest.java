@@ -123,7 +123,7 @@ public class SubscribeServiceTest {
                 .willReturn(4L);
 
         // 위임 할 가계부원이 없을 경우
-        given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
+        given(bookUserRepository.findRandomBookUserWhoSubscribe(any(Book.class)))
                 .willReturn(Optional.empty());
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
@@ -154,7 +154,7 @@ public class SubscribeServiceTest {
 
         // 위임 할 가계부원이 존재할 경우
         User delegateUser = UserFixture.createUser2();
-        given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
+        given(bookUserRepository.findRandomBookUserWhoSubscribe(any(Book.class)))
                 .willReturn(Optional.of(delegateUser));
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
