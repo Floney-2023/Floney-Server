@@ -184,7 +184,6 @@ public class BookUserCustomRepositoryImpl implements BookUserCustomRepository {
                 .where(user.email.eq(email),
                         user.status.eq(ACTIVE))
                 .fetchOne();
-
     }
 
     @Override
@@ -192,12 +191,15 @@ public class BookUserCustomRepositoryImpl implements BookUserCustomRepository {
         return jpaQueryFactory.selectFrom(bookUser)
                 .innerJoin(bookUser.book, book)
                 .innerJoin(bookUser.user, user)
-                .where(book.bookKey.eq(bookKey), user.email.eq(email))
+                .where(
+                        book.bookKey.eq(bookKey),
+                        user.email.eq(email)
+                )
                 .fetchOne() != null;
     }
 
     @Override
-    public Optional<User> findBookUserWhoSubscribe(Book targetBook) {
+    public Optional<User> findRandomBookUserWhoSubscribe(Book targetBook) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
                 .where(
                         user.subscribe.eq(true),

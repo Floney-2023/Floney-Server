@@ -33,7 +33,7 @@ public interface BookUserCustomRepository {
 
     boolean existsByUserEmailAndBookKey(String email, String bookKey);
 
-    Optional<User> findBookUserWhoSubscribe(Book targetBook);
+    Optional<User> findRandomBookUserWhoSubscribe(Book targetBook);
 
     List<BookUser> findAllByUserId(Long userId);
 
