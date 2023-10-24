@@ -171,7 +171,7 @@ public class BookUserCustomRepositoryImpl implements BookUserCustomRepository {
                         book.eq(target),
                         bookUser.status.eq(ACTIVE)
                 )
-                .fetchFirst();
+                .fetchOne();
     }
 
     @Override
