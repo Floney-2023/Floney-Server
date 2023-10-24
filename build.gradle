@@ -22,42 +22,55 @@ repositories {
 }
 
 dependencies {
+
+    // spring boot
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // login
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
+
+    // jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    compileOnly 'org.projectlombok:lombok'
+
+    // excel
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // db
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    implementation 'org.apache.poi:poi-ooxml:5.2.3'
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
-
 
     // QueryDsl
     implementation 'com.h2database:h2'
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
-
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 //querydsl
