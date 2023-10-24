@@ -65,7 +65,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(owner);
         bookUserRepository.save(member);
 
-        assertThat(bookUserRepository.countBookUser(savedBook))
+        assertThat(bookUserRepository.countInBook(savedBook))
             .isEqualTo(2);
     }
 

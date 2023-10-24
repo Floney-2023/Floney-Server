@@ -27,7 +27,7 @@ public interface BookUserCustomRepository {
 
     List<Book> findBookByOwner(User user);
 
-    long countBookUser(Book book);
+    long countInBook(Book book);
 
     BookUser findBookUserBy(String email, Book targetBook);
 

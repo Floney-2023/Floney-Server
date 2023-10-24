@@ -275,7 +275,7 @@ public class BookServiceImpl implements BookService {
     public BookInfoResponse getBookInfoByCode(String code) {
         Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
-        long memberCount = bookUserRepository.countBookUser(book);
+        long memberCount = bookUserRepository.countInBook(book);
         return BookInfoResponse.of(book, memberCount);
     }
 
@@ -362,7 +362,7 @@ public class BookServiceImpl implements BookService {
 
     private void isValidToDeleteBook(Book book, String email) {
         book.isOwner(email);
-        long count = bookUserRepository.countBookUser(book);
+        long count = bookUserRepository.countInBook(book);
         if (count > OWNER) {
             throw new CannotDeleteBookException(count);
         }

@@ -167,14 +167,18 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public long countBookUser(Book target) {
-        return jpaQueryFactory.select(count(bookUser))
+    public long countInBook(Book target) {
+        return jpaQueryFactory
+            .select(bookUser.id)
             .from(bookUser)
             .innerJoin(bookUser.book, book)
-            .where(book.eq(target),
-                bookUser.status.eq(ACTIVE))
+            .where(
+                book.eq(target),
+                bookUser.status.eq(ACTIVE)
+            )
             .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-            .fetchOne();
+            .fetch()
+            .size();
     }
 
     @Override

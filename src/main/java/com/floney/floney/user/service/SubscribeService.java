@@ -92,7 +92,7 @@ public class SubscribeService {
 
     // 구독 혜택을 받는 가게부(가계부원 2명 이상)
     private boolean isOverSubscribeLimit(Book book) {
-        long count = bookUserRepository.countBookUser(book);
+        long count = bookUserRepository.countInBook(book);
         return count > SUBSCRIBE_MAX_BOOK.getValue();
     }
 
