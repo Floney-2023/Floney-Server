@@ -84,7 +84,7 @@ public class SettlementService {
     }
 
     private Book findBookByBookKey(final String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 

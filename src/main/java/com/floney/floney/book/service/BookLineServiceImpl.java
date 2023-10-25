@@ -10,11 +10,9 @@ import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryCustomRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -24,11 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
@@ -120,7 +115,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
+        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 

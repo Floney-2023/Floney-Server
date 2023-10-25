@@ -71,7 +71,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 

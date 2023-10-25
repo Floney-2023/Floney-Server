@@ -441,6 +441,6 @@ class SettlementServiceTest {
     }
 
     private Book findBookByBookKey(final SettlementRequest request) {
-        return bookRepository.findBookByBookKeyAndStatus(request.getBookKey(), Status.ACTIVE).orElseThrow();
+        return bookRepository.findBookExclusivelyByBookKeyAndStatus(request.getBookKey(), Status.ACTIVE).orElseThrow();
     }
 }

@@ -1,9 +1,9 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.CategoryInfo;
-import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
+import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.category.BookCategory;
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 

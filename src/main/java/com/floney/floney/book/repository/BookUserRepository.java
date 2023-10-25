@@ -17,7 +17,7 @@ public interface BookUserRepository extends JpaRepository<BookUser, Long>, BookU
     List<BookUser> findByUserAndStatus(User user,Status status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<BookUser> findAllByBookAndStatus(Book book, Status status);
+    List<BookUser> findAllExclusivelyByBookAndStatus(Book book, Status status);
 
     boolean existsByBookAndUser_EmailAndStatus(final Book book, final String user_email, final Status status);
 }

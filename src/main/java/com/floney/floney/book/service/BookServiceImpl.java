@@ -81,7 +81,7 @@ public class BookServiceImpl implements BookService {
         String userEmail = userDetails.getUsername();
         User user = userDetails.getUser();
 
-        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
+        Book book = bookRepository.findBookExclusivelyByCodeAndStatus(code, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
@@ -188,7 +188,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public InvolveBookResponse findInvolveBook(User user) {
         String recentBookKey = user.getRecentBookKey();
-        Optional<Book> book = bookRepository.findBookByBookKeyAndStatus(recentBookKey, ACTIVE);
+        Optional<Book> book = bookRepository.findBookExclusivelyByBookKeyAndStatus(recentBookKey, ACTIVE);
         return InvolveBookResponse.of(book);
 
     }
@@ -273,7 +273,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public BookInfoResponse getBookInfoByCode(String code) {
-        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
+        Book book = bookRepository.findBookExclusivelyByCodeAndStatus(code, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(code));
         long memberCount = bookUserRepository.countInBookExclusively(book);
         return BookInfoResponse.of(book, memberCount);
@@ -356,7 +356,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
+        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
@@ -375,7 +375,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private List<BookUser> findAllByBookAndStatus(String bookKey) {
-        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), ACTIVE);
+        return bookUserRepository.findAllExclusivelyByBookAndStatus(findBook(bookKey), ACTIVE);
     }
 
     private void deleteBookUser(BookUser bookUser) {
