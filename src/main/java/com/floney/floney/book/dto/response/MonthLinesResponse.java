@@ -39,20 +39,20 @@ public class MonthLinesResponse {
 
     public static MonthLinesResponse of(String monthDate, List<BookLineExpense> dayExpenses, Map<String, Long> totalExpenses, CarryOverInfo carryOverInfo) {
         return MonthLinesResponse.builder()
-            .expenses(reflectDB(monthDate, dayExpenses))
-            .totalIncome(totalExpenses.getOrDefault(INCOME, DEFAULT_MONEY))
-            .totalOutcome(totalExpenses.getOrDefault(OUTCOME, DEFAULT_MONEY))
-            .carryOverInfo(carryOverInfo)
-            .build();
+                .expenses(reflectDB(monthDate, dayExpenses))
+                .totalIncome(totalExpenses.getOrDefault(INCOME, DEFAULT_MONEY))
+                .totalOutcome(totalExpenses.getOrDefault(OUTCOME, DEFAULT_MONEY))
+                .carryOverInfo(carryOverInfo)
+                .build();
     }
 
     public static List<BookLineExpense> reflectDB(String monthDate, List<BookLineExpense> dayExpenses) {
         Map<MonthKey, BookLineExpense> initDatesFrame = DateFactory.initDates(monthDate);
 
-        dayExpenses.forEach(dayExpense -> initDatesFrame.replace(toMonthKey(dayExpense),dayExpense));
+        dayExpenses.forEach(dayExpense -> initDatesFrame.replace(toMonthKey(dayExpense), dayExpense));
 
         return initDatesFrame.values()
-            .stream()
-            .toList();
+                .stream()
+                .toList();
     }
 }

@@ -50,13 +50,13 @@ public class Alarm extends BaseEntity {
 
     public static Alarm of(Book book, BookUser user, SaveAlarmRequest request) {
         return Alarm.builder()
-            .bookUser(user)
-            .book(book)
-            .imgUrl(request.getImgUrl())
-            .title(request.getTitle())
-            .body(request.getBody())
-            .date(request.getDate())
-            .build();
+                .bookUser(user)
+                .book(book)
+                .imgUrl(request.getImgUrl())
+                .title(request.getTitle())
+                .body(request.getBody())
+                .date(request.getDate())
+                .build();
     }
 
     public void updateReceived(boolean isReceived) {

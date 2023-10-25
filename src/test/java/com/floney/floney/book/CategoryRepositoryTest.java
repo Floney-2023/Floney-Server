@@ -1,7 +1,5 @@
 package com.floney.floney.book;
 
-import static com.floney.floney.book.CategoryFixture.CHILD;
-
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
@@ -10,28 +8,28 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.fixture.BookFixture;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import static com.floney.floney.book.CategoryFixture.CHILD;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(TestConfig.class)
 public class CategoryRepositoryTest {
+
     @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
     private BookRepository bookRepository;
 
-    Book savedBook;
-    RootCategory savedRoot;
-
+    private Book savedBook;
+    private RootCategory savedRoot;
 
     @BeforeEach
     void init() {
@@ -45,10 +43,9 @@ public class CategoryRepositoryTest {
         Book savedBook2 = bookRepository.save(BookFixture.createBookWith("2222"));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook.getBookKey())
-            .size()).isEqualTo(2);
-        Assertions.assertThat(categoryRepository.findAllCategory("ROOT", savedBook2.getBookKey())
-            .size()).isEqualTo(0);
+
+        assertThat(categoryRepository.findAllCategory("ROOT", savedBook.getBookKey())).hasSize(2);
+        assertThat(categoryRepository.findAllCategory("ROOT", savedBook2.getBookKey())).hasSize(0);
     }
 
     @Test
@@ -59,8 +56,7 @@ public class CategoryRepositoryTest {
         categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD1"));
         categoryRepository.save(CategoryFixture.createDefaultChild(root, "CHILD2"));
 
-        Assertions.assertThat(categoryRepository.findAllCategory("ROOT1", "book").size())
-            .isEqualTo(2);
+        assertThat(categoryRepository.findAllCategory("ROOT1", "book").size()).isEqualTo(2);
     }
 
     @Test
@@ -69,18 +65,17 @@ public class CategoryRepositoryTest {
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
         categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
 
-        Assertions.assertThat(categoryRepository.findCustomTarget(savedRoot, savedBook.getBookKey(), CHILD))
-            .isFalse();
+        assertThat(categoryRepository.findCustomTarget(savedRoot, savedBook.getBookKey(), CHILD)).isFalse();
     }
 
     @Test
     @DisplayName("커스텀 카테고리를 삭제한다")
     void delete_custom() {
         Category custom = categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        categoryRepository.deleteCustomCategory(new DeleteCategoryRequest(savedBook.getBookKey(),savedRoot.getName(), CHILD));
-        Assertions.assertThat(categoryRepository.findAllCategory(savedRoot.getName(), savedBook.getBookKey())
-                .contains(custom))
-            .isFalse();
+        final DeleteCategoryRequest request = new DeleteCategoryRequest(savedBook.getBookKey(), savedRoot.getName(), CHILD);
+        categoryRepository.inactiveCustomCategory(request);
+
+        assertThat(categoryRepository.findAllCategory(savedRoot.getName(), savedBook.getBookKey()).contains(custom)).isFalse();
     }
 
 

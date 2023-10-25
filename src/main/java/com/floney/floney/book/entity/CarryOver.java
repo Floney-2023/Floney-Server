@@ -44,27 +44,27 @@ public class CarryOver extends BaseEntity {
     public static CarryOver of(CreateLineRequest request, Book book, LocalDate date) {
         if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
             return CarryOver
-                .builder()
-                .money(-1 * request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
+                    .builder()
+                    .money(-1 * request.getMoney())
+                    .book(book)
+                    .date(date)
+                    .build();
         } else {
             return CarryOver
-                .builder()
-                .money(request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
+                    .builder()
+                    .money(request.getMoney())
+                    .book(book)
+                    .date(date)
+                    .build();
         }
 
     }
 
     public static CarryOver init() {
         return CarryOver
-            .builder()
-            .money(0L)
-            .build();
+                .builder()
+                .money(0L)
+                .build();
     }
 
     public void update(Long updateMoney, String flow) {

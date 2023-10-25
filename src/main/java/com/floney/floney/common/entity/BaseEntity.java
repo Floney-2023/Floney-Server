@@ -1,8 +1,10 @@
 package com.floney.floney.common.entity;
 
 import com.floney.floney.common.constant.Status;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,12 +17,13 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 
-@AllArgsConstructor
 @Getter
 @MappedSuperclass
 @DynamicInsert
 @DynamicUpdate
+@SuperBuilder
 @EntityListeners(AuditingEntityListener.class)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity {
 
     @Id
@@ -44,7 +47,7 @@ public abstract class BaseEntity {
         this.status = Status.ACTIVE;
     }
 
-    public void delete() {
+    public void inactive() {
         this.status = Status.INACTIVE;
     }
 

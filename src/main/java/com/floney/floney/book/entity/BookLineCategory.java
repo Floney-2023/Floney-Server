@@ -36,9 +36,9 @@ public class BookLineCategory extends BaseEntity {
 
     public static BookLineCategory of(BookLine bookLine, Category category) {
         return BookLineCategory.builder()
-            .bookLine(bookLine)
-            .category(category)
-            .name(category.getName())
-            .build();
+                .bookLine(bookLine)
+                .category(category)
+                .name(category.getName())
+                .build();
     }
 }

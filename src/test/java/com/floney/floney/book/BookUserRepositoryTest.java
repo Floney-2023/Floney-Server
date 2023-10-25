@@ -1,9 +1,5 @@
 package com.floney.floney.book;
 
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Status.INACTIVE;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
@@ -21,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -43,14 +43,14 @@ public class BookUserRepositoryTest {
         Book savedBook = bookRepository.save(BookFixture.createBook());
 
         BookUser newBookUser = BookUser.builder()
-            .book(savedBook)
-            .user(savedUser)
-            .build();
+                .book(savedBook)
+                .user(savedUser)
+                .build();
 
         bookUserRepository.save(newBookUser);
         BookUser find = bookUserRepository.findBookUserByKey(savedUser.getEmail(), savedBook.getBookKey()).get();
         Assertions.assertThat(find.getBook().getName())
-            .isEqualTo(savedBook.getName());
+                .isEqualTo(savedBook.getName());
     }
 
     @Test
@@ -65,8 +65,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(owner);
         bookUserRepository.save(member);
 
-        assertThat(bookUserRepository.countBookUser(savedBook))
-            .isEqualTo(2);
+        assertThat(bookUserRepository.countInBook(savedBook)).isEqualTo(2);
     }
 
     @Test
@@ -80,7 +79,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(owner);
 
         Assertions.assertThat(bookUserRepository.findBookUserBy(savedUser.getEmail(), savedBook))
-            .isEqualTo(owner);
+                .isEqualTo(owner);
     }
 
     @Test
@@ -94,7 +93,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(owner);
 
         Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, ACTIVE))
-            .isEqualTo(1);
+                .isEqualTo(1);
     }
 
     @Test
@@ -108,7 +107,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(owner);
 
         Assertions.assertThat(bookUserRepository.countBookUserByUserAndStatus(savedUser, INACTIVE))
-            .isEqualTo(0);
+                .isEqualTo(0);
     }
 
     @Test
@@ -126,7 +125,7 @@ public class BookUserRepositoryTest {
         bookUserRepository.save(bookUser2);
 
         assertThat(bookUserRepository.findAllUser(savedBook.getBookKey()).size())
-            .isEqualTo(2);
+                .isEqualTo(2);
 
     }
 

@@ -9,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.Objects;
-
-import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @Getter
 @ToString
@@ -49,12 +46,12 @@ public class CreateLineRequest {
 
     public BookLine to(BookUser bookUser, Book book) {
         return BookLine.builder()
-            .book(book)
-            .lineDate(lineDate)
-            .money(money)
-            .exceptStatus(except)
-            .writer(bookUser)
-            .description(description)
-            .build();
+                .book(book)
+                .lineDate(lineDate)
+                .money(money)
+                .exceptStatus(except)
+                .writer(bookUser)
+                .description(description)
+                .build();
     }
 }

@@ -321,7 +321,7 @@ public class BookController {
     /**
      * 가계부 예산 조회
      *
-     * @param bookKey 가계부 키
+     * @param bookKey   가계부 키
      * @param startYear 타겟 년도
      * @return Map<Month, Long>  월 / 예산
      */
@@ -332,7 +332,8 @@ public class BookController {
 
     /**
      * 가계부 알람 조회
-     * @param bookKey 가계부 키
+     *
+     * @param bookKey     가계부 키
      * @param userDetails 유저 정보
      * @return List<AlarmResponse> 알람 정보
      */
@@ -343,6 +344,7 @@ public class BookController {
 
     /**
      * 알람 저장
+     *
      * @body SaveAlarmRequest 알람 저장 정보
      */
     @PostMapping("/alarm")
@@ -353,6 +355,7 @@ public class BookController {
 
     /**
      * 알람 읽음 처리
+     *
      * @body UpdateAlarmReceived 알람 읽음 상태
      */
     @PostMapping("/alarm/update")

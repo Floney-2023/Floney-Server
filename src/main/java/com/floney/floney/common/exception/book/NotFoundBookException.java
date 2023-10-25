@@ -2,8 +2,6 @@ package com.floney.floney.common.exception.book;
 
 import com.floney.floney.common.exception.common.ErrorType;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Getter
 public class NotFoundBookException extends RuntimeException {

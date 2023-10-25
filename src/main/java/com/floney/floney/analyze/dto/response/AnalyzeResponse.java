@@ -24,13 +24,13 @@ public class AnalyzeResponse {
 
     public static AnalyzeResponse of(List<AnalyzeResponseByCategory> result, long totalMoney, Long differance) {
         List<AnalyzeResponseByCategory> sortedResult = result.stream()
-            .sorted(comparing(AnalyzeResponseByCategory::getMoney).reversed())
-            .collect(toList());
+                .sorted(comparing(AnalyzeResponseByCategory::getMoney).reversed())
+                .collect(toList());
 
         return AnalyzeResponse.builder()
-            .analyzeResult(sortedResult)
-            .total(totalMoney)
-            .differance(differance)
-            .build();
+                .analyzeResult(sortedResult)
+                .total(totalMoney)
+                .differance(differance)
+                .build();
     }
 }

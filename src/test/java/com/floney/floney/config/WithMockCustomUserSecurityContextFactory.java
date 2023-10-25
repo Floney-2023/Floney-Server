@@ -1,7 +1,5 @@
 package com.floney.floney.config;
 
-import com.floney.floney.common.constant.Status;
-import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;

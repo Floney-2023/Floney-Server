@@ -2,20 +2,9 @@ package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
 import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.user.CodeNotFoundException;
-import com.floney.floney.common.exception.user.CodeNotSameException;
-import com.floney.floney.common.exception.user.EmailNotFoundException;
-import com.floney.floney.common.exception.user.MailAddressException;
-import com.floney.floney.common.exception.user.NotFoundSubscribeException;
-import com.floney.floney.common.exception.user.OAuthResponseException;
-import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
-import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
-import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,6 +13,9 @@ import org.springframework.mail.MailException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ErrorControllerAdvice {
@@ -154,7 +146,6 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(CannotDeleteBookException.class)
     protected ResponseEntity<ErrorResponse> cannotDeleteBook(CannotDeleteBookException exception) {
-        logger.warn("[{}]명의 {}", exception.getLeftMemberCount(), ErrorType.NO_DELETE_BOOK.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
@@ -211,23 +202,23 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(AlreadyJoinException.class)
     protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
-        logger.error("{}는 {}",exception.getUserEmail(),ErrorType.ALREADY_JOIN.getMessage());
+        logger.error("{}는 {}", exception.getUserEmail(), ErrorType.ALREADY_JOIN.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(NotFoundSubscribeException.class)
     protected ResponseEntity<ErrorResponse> subscribeException(NotFoundSubscribeException exception) {
-        logger.error("{} User = {}",ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(),exception.getUserEmail());
+        logger.error("{} User = {}", ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(), exception.getUserEmail());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(NotFoundAlarmException.class)
     protected ResponseEntity<ErrorResponse> alarmException(NotFoundAlarmException exception) {
-        logger.error("{} id = {}",ErrorType.NOT_FOUND_ALARM.getMessage(),exception.getRequestKey());
+        logger.error("{} id = {}", ErrorType.NOT_FOUND_ALARM.getMessage(), exception.getRequestKey());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     // ALARM

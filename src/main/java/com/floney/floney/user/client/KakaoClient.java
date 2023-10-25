@@ -3,9 +3,6 @@ package com.floney.floney.user.client;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.dto.response.KakaoUserResponse;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor

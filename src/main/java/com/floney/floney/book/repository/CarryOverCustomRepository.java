@@ -1,10 +1,10 @@
 package com.floney.floney.book.repository;
 
-import com.floney.floney.book.entity.CarryOver;
-
-import java.util.List;
+import com.floney.floney.book.entity.Book;
 
 public interface CarryOverCustomRepository {
 
-    void deleteAllCarryOver(String bookKey);
+    void inactiveAllByBookKey(String bookKey);
+
+    void inactiveAllByBook(Book book);
 }

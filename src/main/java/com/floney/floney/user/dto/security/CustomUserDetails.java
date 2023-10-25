@@ -2,14 +2,15 @@ package com.floney.floney.user.dto.security;
 
 import com.floney.floney.user.dto.constant.Role;
 import com.floney.floney.user.entity.User;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
@@ -20,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
 
-        if(user.isSubscribe()) {
+        if (user.isSubscribe()) {
             roles.add(Role.SUBSCRIBER);
         }
 

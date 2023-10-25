@@ -2,9 +2,9 @@ package com.floney.floney.user.dto.request;
 
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
-import javax.validation.constraints.NotNull;
-
 import lombok.*;
+
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Builder
@@ -48,8 +48,8 @@ public class SignupRequest {
     @Override
     public String toString() {
         return "SignupRequest{" +
-            "email='" + email + '\'' +
-            ", nickname='" + nickname + '\'' +
-            '}';
+                "email='" + email + '\'' +
+                ", nickname='" + nickname + '\'' +
+                '}';
     }
 }

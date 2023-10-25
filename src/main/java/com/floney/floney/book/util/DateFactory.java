@@ -24,9 +24,9 @@ public class DateFactory {
         LocalDate endDate = yearMonth.atEndOfMonth();
 
         return DatesDuration.builder()
-            .startDate(startDate)
-            .endDate(endDate)
-            .build();
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
     }
 
     public static DatesDuration getYearDuration(LocalDate firstDate) {
@@ -34,9 +34,9 @@ public class DateFactory {
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());
 
         return DatesDuration.builder()
-            .startDate(startDate)
-            .endDate(endDate)
-            .build();
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
     }
 
     public static DatesDuration getBeforeDateDuration(LocalDate targetDate) {
@@ -45,9 +45,9 @@ public class DateFactory {
         LocalDate endDate = yearMonth.atEndOfMonth();
 
         return DatesDuration.builder()
-            .startDate(before)
-            .endDate(endDate)
-            .build();
+                .startDate(before)
+                .endDate(endDate)
+                .build();
     }
 
     public static LocalDate getBeforeMonth(LocalDate targetDate) {
@@ -61,10 +61,10 @@ public class DateFactory {
         LocalDate currentDate = dates.start();
         while (!currentDate.isAfter(dates.end())) {
             initDates.put(MonthKey.of(currentDate, INCOME),
-                BookLineExpense.initExpense(currentDate, INCOME));
+                    BookLineExpense.initExpense(currentDate, INCOME));
 
             initDates.put(MonthKey.of(currentDate, OUTCOME),
-                BookLineExpense.initExpense(currentDate, OUTCOME));
+                    BookLineExpense.initExpense(currentDate, OUTCOME));
 
             currentDate = currentDate.plusDays(NEXT_DAY);
         }

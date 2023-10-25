@@ -41,14 +41,14 @@ public class Subscribe extends BaseEntity {
 
     public static Subscribe of(User user, SubscribeRequest request) {
         return Subscribe.builder()
-            .expiresDate(request.getExpiresDate())
-            .originalTransactionId(request.getOriginalTransactionId())
-            .productId(request.getProductId())
-            .renewalStatus(request.isRenewalStatus())
-            .transactionId(request.getTransactionId())
-            .user(user)
-            .subscriptionStatus(request.getSubscriptionStatus())
-            .build();
+                .expiresDate(request.getExpiresDate())
+                .originalTransactionId(request.getOriginalTransactionId())
+                .productId(request.getProductId())
+                .renewalStatus(request.isRenewalStatus())
+                .transactionId(request.getTransactionId())
+                .user(user)
+                .subscriptionStatus(request.getSubscriptionStatus())
+                .build();
     }
 
     public void update(SubscribeRequest request) {

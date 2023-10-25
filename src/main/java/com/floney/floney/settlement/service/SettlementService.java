@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SettlementService {
 
@@ -41,17 +42,15 @@ public class SettlementService {
         return outcomesWithUser;
     }
 
-    @Transactional(readOnly = true)
     public List<SettlementResponse> findAll(String bookKey) {
         final Book book = findBookByBookKey(bookKey);
 
         return findSettlementsByBook(book)
-            .stream()
-            .map(SettlementResponse::from)
-            .toList();
+                .stream()
+                .map(SettlementResponse::from)
+                .toList();
     }
 
-    @Transactional(readOnly = true)
     public SettlementResponse find(Long id) {
         final Settlement settlement = findSettlementById(id);
         final List<SettlementUser> settlementUsers = findSettlementUsersBySettlement(settlement);
@@ -70,9 +69,15 @@ public class SettlementService {
         return SettlementResponse.of(settlement, settlementUsers);
     }
 
+    @Transactional
+    public void deleteAllBy(final long bookId) {
+        settlementRepository.inactiveAllByBookId(bookId);
+        settlementUserRepository.inactiveAllByBookId(bookId);
+    }
+
     private Settlement findSettlementById(final Long id) {
         return settlementRepository.findById(id)
-            .orElseThrow(SettlementNotFoundException::new);
+                .orElseThrow(SettlementNotFoundException::new);
     }
 
     private List<Settlement> findSettlementsByBook(final Book book) {
@@ -85,10 +90,10 @@ public class SettlementService {
 
     private Book findBookByBookKey(final String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    public void validateBookUsers(final Set<String> emails, final Book book) {
+    private void validateBookUsers(final Set<String> emails, final Book book) {
         emails.forEach(email -> findBookUserByBookAndUserEmail(book, email));
     }
 
@@ -122,6 +127,6 @@ public class SettlementService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 }

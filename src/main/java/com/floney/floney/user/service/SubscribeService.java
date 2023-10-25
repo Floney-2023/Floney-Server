@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
@@ -52,7 +53,7 @@ public class SubscribeService {
     @Transactional(readOnly = true)
     public SubscribeResponse getSubscribe(User user) {
         Subscribe subscribe = subscribeRepository.findSubscribeByUser(user)
-            .orElseThrow(() -> new NotFoundSubscribeException(user.getEmail()));
+                .orElseThrow(() -> new NotFoundSubscribeException(user.getEmail()));
         return SubscribeResponse.of(subscribe);
     }
 
@@ -60,19 +61,19 @@ public class SubscribeService {
         // 사용자 구독 해지
         if (SubscribeStatus.isExpired(status)) {
             return unsubscribeAndDelegateBooks(user);
-        } else {
-            // 사용자 구독
-            user.subscribe();
-            userRepository.save(user);
+        }
 
-            // 사용자 참여한 비활성화 가계부 모두, 구독 혜택 적용 & 방장을 사용자로
-            return bookUserRepository.findMyInactiveBooks(user)
+        // 사용자 구독
+        user.subscribe();
+        userRepository.save(user);
+
+        // 사용자 참여한 비활성화 가계부 모두, 구독 혜택 적용 & 방장을 사용자로
+        return bookUserRepository.findMyInactiveBooks(user)
                 .stream()
                 .map((book) -> book.subscribe(user))
                 .map(bookRepository::save)
-                .map(book -> DelegateResponse.of(book,user))
+                .map(book -> DelegateResponse.of(book, user))
                 .collect(Collectors.toList());
-        }
     }
 
     private List<DelegateResponse> unsubscribeAndDelegateBooks(User user) {
@@ -85,35 +86,33 @@ public class SubscribeService {
 
         // 사용자의 구독 혜택을 받는 중인 가계부 위임을 처리하고 결과를 반환
         return books.stream()
-            .filter(this::isOverSubscribeLimit)
-            .map(this::delegateOwner)
-            .collect(Collectors.toList());
+                .filter(this::isOverSubscribeLimit)
+                .map(this::delegateOwner)
+                .collect(Collectors.toList());
     }
 
     // 구독 혜택을 받는 가게부(가계부원 2명 이상)
-    private boolean isOverSubscribeLimit(Book book) {
-        long count = bookUserRepository.countBookUser(book);
-        return count > SUBSCRIBE_MAX_BOOK.getValue();
+    private boolean isOverSubscribeLimit(final Book book) {
+        final long bookUserCount = bookUserRepository.countInBook(book);
+        return bookUserCount > SUBSCRIBE_MAX_BOOK.getValue();
     }
 
     private DelegateResponse delegateOwner(Book book) {
         // 구독을 한 다른 멤버 조회
-        Optional<User> wantDelegateWhoSubscribe = bookUserRepository.findBookUserWhoSubscribe(book);
+        Optional<User> wantDelegateWhoSubscribe = bookUserRepository.findRandomBookUserWhoSubscribe(book);
 
         // 존재할 경우 방장 위임
         if (wantDelegateWhoSubscribe.isPresent()) {
             User delegateTarget = wantDelegateWhoSubscribe.get();
             book.delegateOwner(delegateTarget);
             bookRepository.save(book);
-            return DelegateResponse.of(book,delegateTarget);
+            return DelegateResponse.of(book, delegateTarget);
         }
         // 미존재시, 가계부 비활성화
         else {
             book.inactiveBookStatus();
             bookRepository.save(book);
-            return DelegateResponse.of(book,null);
+            return DelegateResponse.of(book, null);
         }
-
     }
-
 }
