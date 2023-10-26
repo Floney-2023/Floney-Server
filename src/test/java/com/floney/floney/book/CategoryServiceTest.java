@@ -45,7 +45,7 @@ public class CategoryServiceTest {
         CreateCategoryRequest request = createRootRequest();
         Book savedBook = BookFixture.createBookWith("1234");
 
-        given(bookRepository.findBookExclusivelyByBookKeyAndStatus(BOOK_KEY, Status.ACTIVE))
+        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY, Status.ACTIVE))
             .willReturn(ofNullable(savedBook));
 
         BookCategory rootCategory = createRootCategory(savedBook);
@@ -67,7 +67,7 @@ public class CategoryServiceTest {
         given(categoryRepository.findParentCategory(ROOT))
             .willReturn(ofNullable(rootCategory));
 
-        given(bookRepository.findBookExclusivelyByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
+        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
             .willReturn(ofNullable(savedBook));
 
         given(categoryRepository.save(any(BookCategory.class)))
@@ -85,7 +85,7 @@ public class CategoryServiceTest {
         given(categoryRepository.findParentCategory(ROOT))
             .willReturn(ofNullable(rootCategory));
 
-        given(bookRepository.findBookExclusivelyByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
+        given(bookRepository.findBookByBookKeyAndStatus(BOOK_KEY,Status.ACTIVE))
             .willReturn(Optional.empty());
 
         CreateCategoryRequest request = createBookCategory();

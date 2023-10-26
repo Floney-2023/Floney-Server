@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 

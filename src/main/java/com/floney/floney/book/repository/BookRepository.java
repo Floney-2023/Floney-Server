@@ -15,4 +15,8 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookCustomRep
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Book> findBookExclusivelyByBookKeyAndStatus(String bookKey, Status status);
+
+    Optional<Book> findBookByBookKeyAndStatus(String bookKey, Status status);
+
+
 }

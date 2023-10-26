@@ -356,7 +356,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookExclusivelyByBookKeyAndStatus(bookKey, ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
