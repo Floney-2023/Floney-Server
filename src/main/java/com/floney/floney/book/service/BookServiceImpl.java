@@ -88,7 +88,7 @@ public class BookServiceImpl implements BookService {
         checkCreateBookMaximum(user);
 
         // 참여 희망 가계부 정원 체크
-        isMaxBookCapacity(book);
+        validateMaxBookCapacity(book);
 
         // 이미 존재하는 가계부 유저인지 체크
         if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
@@ -101,12 +101,9 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(book);
     }
 
-    private void isMaxBookCapacity(Book book) {
-        int memberCount = bookUserRepository.getCurrentJoinUserCountExclusively(book);
-
-        if (memberCount >= book.getUserCapacity()) {
-            throw new MaxMemberException(book.getBookKey(), memberCount);
-        }
+    private void validateMaxBookCapacity(Book book) {
+        final int memberCount = bookUserRepository.getCurrentJoinUserCountExclusively(book);
+        book.validateCanJoinMember(memberCount);
     }
 
     @Override
