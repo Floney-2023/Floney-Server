@@ -180,7 +180,21 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public int countInBookExclusively(Book target) {
+    public int countByBook(final Book target) {
+        return jpaQueryFactory
+                .select(bookUser.id)
+                .from(bookUser)
+                .innerJoin(bookUser.book, book)
+                .where(
+                        book.eq(target),
+                        bookUser.status.eq(ACTIVE)
+                )
+                .fetch()
+                .size();
+    }
+
+    @Override
+    public int countInBookExclusively(final Book target) {
         return jpaQueryFactory
                 .select(bookUser.id)
                 .from(bookUser)
@@ -219,6 +233,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Override
     @Transactional
     public Optional<User> findBookUserWhoSubscribeExclusively(Book targetBook) {
+        // TODO: 반환 타입 User에서 BookUser로 변경
         return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
                 .where(
                         user.subscribe.eq(true),

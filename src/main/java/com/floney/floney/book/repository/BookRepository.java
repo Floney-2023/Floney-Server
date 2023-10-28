@@ -10,11 +10,10 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long>, BookCustomRepository {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Book> findBookExclusivelyByCodeAndStatus(String code, Status status);
+    Optional<Book> findBookByCodeAndStatus(String code, Status status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Book> findBookExclusivelyByBookKeyAndStatus(String bookKey, Status status);
+    Optional<Book> findBookExclusivelyByCodeAndStatus(String code, Status status);
 
     Optional<Book> findBookByBookKeyAndStatus(String bookKey, Status status);
 }

@@ -118,7 +118,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteBook(String email, String bookKey) {
         Book book = findBook(bookKey);
-        isValidToDeleteBook(book, email);
+        validateToDeleteBook(book, email);
 
         BookUser bookUser = findBookUserByKey(email, bookKey);
         deleteBookUser(bookUser);
@@ -183,11 +183,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
+    // TODO: '마지막'으로 참여한 내용이 포함되도록 용어 수정
     public InvolveBookResponse findInvolveBook(User user) {
         String recentBookKey = user.getRecentBookKey();
-        Optional<Book> book = bookRepository.findBookExclusivelyByBookKeyAndStatus(recentBookKey, ACTIVE);
+        Optional<Book> book = bookRepository.findBookByBookKeyAndStatus(recentBookKey, ACTIVE);
         return InvolveBookResponse.of(book);
-
     }
 
     @Override
@@ -269,10 +269,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public BookInfoResponse getBookInfoByCode(String code) {
-        Book book = bookRepository.findBookExclusivelyByCodeAndStatus(code, ACTIVE)
+    public BookInfoResponse getBookInfoByCode(final String code) {
+        final Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
                 .orElseThrow(() -> new NotFoundBookException(code));
-        long memberCount = bookUserRepository.countInBookExclusively(book);
+        final int memberCount = bookUserRepository.countByBook(book);
         return BookInfoResponse.of(book, memberCount);
     }
 
@@ -364,9 +364,9 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private void isValidToDeleteBook(Book book, String email) {
-        book.isOwner(email);
-        long count = bookUserRepository.countInBookExclusively(book);
+    private void validateToDeleteBook(final Book book, final String email) {
+        book.validateOwner(email);
+        final int count = bookUserRepository.countInBookExclusively(book);
         if (count > OWNER) {
             throw new CannotDeleteBookException(count);
         }
