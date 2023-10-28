@@ -375,7 +375,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private List<BookUser> findAllByBookAndStatus(String bookKey) {
-        return bookUserRepository.findAllExclusivelyByBookAndStatus(findBook(bookKey), ACTIVE);
+        return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), ACTIVE);
     }
 
     private void deleteBookUser(BookUser bookUser) {
