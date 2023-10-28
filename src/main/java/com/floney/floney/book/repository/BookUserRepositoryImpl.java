@@ -33,18 +33,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public int getCurrentJoinUserCountExclusively(Book book) {
-        return jpaQueryFactory
-                .select(bookUser)
-                .from(bookUser)
-                .where(bookUser.book.eq(book),
-                        bookUser.status.eq(ACTIVE))
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .fetch()
-                .size();
-    }
-
-    @Override
     public List<OurBookUser> findAllUser(String bookKey) {
         return jpaQueryFactory.select(
                         new QOurBookUser(
@@ -192,7 +180,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public long countInBookExclusively(Book target) {
+    public int countInBookExclusively(Book target) {
         return jpaQueryFactory
                 .select(bookUser.id)
                 .from(bookUser)

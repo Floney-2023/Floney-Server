@@ -102,7 +102,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void validateMaxBookCapacity(Book book) {
-        final int memberCount = bookUserRepository.getCurrentJoinUserCountExclusively(book);
+        final int memberCount = bookUserRepository.countInBookExclusively(book);
         book.validateCanJoinMember(memberCount);
     }
 

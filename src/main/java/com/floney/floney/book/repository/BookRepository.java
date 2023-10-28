@@ -17,6 +17,4 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookCustomRep
     Optional<Book> findBookExclusivelyByBookKeyAndStatus(String bookKey, Status status);
 
     Optional<Book> findBookByBookKeyAndStatus(String bookKey, Status status);
-
-
 }
