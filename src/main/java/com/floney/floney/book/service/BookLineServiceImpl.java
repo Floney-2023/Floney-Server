@@ -62,10 +62,12 @@ public class BookLineServiceImpl implements BookLineService {
         Book book = findBook(bookKey);
         DatesDuration dates = DateFactory.getDateDuration(date);
 
-        return MonthLinesResponse.of(date
-            , daysExpense(bookKey, dates)
-            , totalExpense(bookKey, dates)
-            , carryOverFactory.getCarryOverInfo(book, date));
+        return MonthLinesResponse.of(
+                date,
+                daysExpense(bookKey, dates),
+                totalExpense(bookKey, dates),
+                carryOverFactory.getCarryOverInfo(book, date)
+        );
     }
 
     @Override
@@ -77,9 +79,9 @@ public class BookLineServiceImpl implements BookLineService {
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
         return TotalDayLinesResponse.of(dayLines,
-            totalExpenses,
-            book.getSeeProfile(),
-            carryOverFactory.getCarryOverInfo(book, date));
+                totalExpenses,
+                book.getSeeProfile(),
+                carryOverFactory.getCarryOverInfo(book, date));
     }
 
     @Override
@@ -92,7 +94,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public BookLineResponse changeLine(ChangeBookLineRequest request) {
         BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
-            .orElseThrow(() -> new NotFoundBookLineException());
+                .orElseThrow(NotFoundBookLineException::new);
         categoryFactory.changeCategories(bookLine, request);
         bookLine.update(request);
         BookLine savedBookLine = bookLineRepository.save(bookLine);
@@ -103,7 +105,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public void deleteLine(Long bookLineKey) {
         BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
-            .orElseThrow(() -> new NotFoundBookLineException());
+                .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.delete();
         bookLineCategoryRepository.deleteBookLineCategoryById(bookLineKey);
         bookLineRepository.save(savedBookLine);
@@ -111,12 +113,12 @@ public class BookLineServiceImpl implements BookLineService {
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
-            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
+                .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {
@@ -126,7 +128,6 @@ public class BookLineServiceImpl implements BookLineService {
     private Map<String, Long> totalExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
-
 
 
 }

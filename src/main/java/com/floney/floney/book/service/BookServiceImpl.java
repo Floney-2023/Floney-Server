@@ -102,7 +102,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void validateMaxBookCapacity(Book book) {
-        final int memberCount = bookUserRepository.countInBookExclusively(book);
+        final int memberCount = bookUserRepository.countByBookExclusively(book);
         book.validateCanJoinMember(memberCount);
     }
 
@@ -366,7 +366,7 @@ public class BookServiceImpl implements BookService {
 
     private void validateToDeleteBook(final Book book, final String email) {
         book.validateOwner(email);
-        final int count = bookUserRepository.countInBookExclusively(book);
+        final int count = bookUserRepository.countByBookExclusively(book);
         if (count > OWNER) {
             throw new CannotDeleteBookException(count);
         }

@@ -194,7 +194,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public int countInBookExclusively(final Book target) {
+    public int countByBookExclusively(final Book target) {
         return jpaQueryFactory
                 .select(bookUser.id)
                 .from(bookUser)

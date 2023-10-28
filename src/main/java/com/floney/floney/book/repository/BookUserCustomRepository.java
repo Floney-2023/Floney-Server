@@ -29,7 +29,7 @@ public interface BookUserCustomRepository {
 
     int countByBook(Book book);
 
-    int countInBookExclusively(Book book);
+    int countByBookExclusively(Book book);
 
     BookUser findBookUserBy(String email, Book targetBook);
 

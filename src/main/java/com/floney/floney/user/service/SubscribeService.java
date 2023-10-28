@@ -87,12 +87,12 @@ public class SubscribeService {
         return books.stream()
             .filter(this::isOverSubscribeLimit)
             .map(this::delegateOwner)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     // 구독 혜택을 받는 가게부(가계부원 2명 이상)
-    private boolean isOverSubscribeLimit(Book book) {
-        long count = bookUserRepository.countInBookExclusively(book);
+    private boolean isOverSubscribeLimit(final Book book) {
+        final int count = bookUserRepository.countByBookExclusively(book);
         return count > SUBSCRIBE_MAX_BOOK.getValue();
     }
 
