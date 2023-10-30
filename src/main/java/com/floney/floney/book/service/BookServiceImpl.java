@@ -213,8 +213,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void bookUserOut(BookUserOutRequest request, String userEmail) {
-        final BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
+    public void bookUserOut(final BookUserOutRequest request, final User user) {
+        final BookUser bookUser = findBookUserByKey(user.getEmail(), request.getBookKey());
         inactiveAllBy(bookUser);
         bookUser.inactive();
 

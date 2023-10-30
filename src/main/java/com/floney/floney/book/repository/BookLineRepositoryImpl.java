@@ -94,7 +94,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 new QTotalExpense(
                     bookLine.money.sum(),
                     bookLineCategory.name
-                )
+                ))
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
                 .innerJoin(bookLine.bookLineCategories,
@@ -337,24 +337,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.lineDate.between(duration.start(), duration.end()),
                 bookLineCategory.name.eq(OUTCOME.getKind()),
                 book.bookKey.eq(bookKey),
-                book.status.eq(Status.ACTIVE),
-                bookLine.status.eq(Status.ACTIVE)
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE)
             )
             .fetchOne();
-    }
-
-
-    @Override
-    @Transactional
-    public void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser) {
-        jpaQueryFactory.update(bookLine)
-            .set(bookLine.status, INACTIVE)
-            .set(bookLine.updatedAt, LocalDateTime.now())
-            .where(bookLine.book.eq(
-                bookUserBook
-            ), bookLine.writer.id.eq(
-                targetBookUser.getId()
-            ))
-            .execute();
     }
 }
