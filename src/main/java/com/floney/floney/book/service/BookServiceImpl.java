@@ -186,7 +186,7 @@ public class BookServiceImpl implements BookService {
     // TODO: '마지막'으로 참여한 내용이 포함되도록 용어 수정
     public InvolveBookResponse findInvolveBook(User user) {
         String recentBookKey = user.getRecentBookKey();
-        Optional<Book> book = bookRepository.findBookByBookKeyAndStatus(recentBookKey, ACTIVE);
+        Optional<Book> book = bookRepository.findBookExclusivelyByBookKeyAndStatus(recentBookKey, ACTIVE);
         return InvolveBookResponse.of(book);
     }
 
