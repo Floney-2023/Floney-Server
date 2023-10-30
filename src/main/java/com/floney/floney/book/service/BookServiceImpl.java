@@ -178,8 +178,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    // TODO: '마지막'으로 참여한 내용이 포함되도록 용어 수정
+    @Transactional
+    // TODO: 좀 더 구체적인 내용이 드러나도록 용어 수정
     public InvolveBookResponse findInvolveBook(User user) {
         String recentBookKey = user.getRecentBookKey();
         Optional<Book> book = bookRepository.findBookExclusivelyByBookKeyAndStatus(recentBookKey, ACTIVE);
