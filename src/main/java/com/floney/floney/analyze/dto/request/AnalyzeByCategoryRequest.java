@@ -15,7 +15,7 @@ public class AnalyzeByCategoryRequest {
 
     private String date;
 
-    public LocalDate getLocalDate(){
+    public LocalDate getLocalDate() {
         return LocalDate.parse(date);
     }
 

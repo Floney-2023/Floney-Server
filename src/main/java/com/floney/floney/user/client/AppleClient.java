@@ -8,8 +8,6 @@ import com.floney.floney.user.client.dto.ApplePublicKeys;
 import com.floney.floney.user.client.dto.AppleTokenHeader;
 import com.floney.floney.user.client.util.AppleOAuthPublicKeyGenerator;
 import io.jsonwebtoken.Jwts;
-import java.net.URI;
-import java.security.PublicKey;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.security.PublicKey;
 
 @Component
 @RequiredArgsConstructor

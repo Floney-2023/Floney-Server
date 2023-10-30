@@ -1,7 +1,15 @@
 package com.floney.floney.book.repository.category;
 
-public interface BookLineCategoryCustomRepository {
-    void deleteBookLineCategory(String bookKey);
+import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookUser;
 
-    void deleteBookLineCategoryById(Long id);
+public interface BookLineCategoryCustomRepository {
+
+    void inactiveAllByBookKey(String bookKey);
+
+    void inactiveAllByBookLineId(Long bookLineId);
+
+    void inactiveAllByBookUser(BookUser bookUser);
+
+    void inactiveAllByBook(Book book);
 }

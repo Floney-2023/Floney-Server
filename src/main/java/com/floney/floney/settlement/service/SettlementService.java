@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SettlementService {
 
@@ -41,7 +42,6 @@ public class SettlementService {
         return outcomesWithUser;
     }
 
-    @Transactional(readOnly = true)
     public List<SettlementResponse> findAll(String bookKey) {
         final Book book = findBookByBookKey(bookKey);
 
@@ -51,7 +51,6 @@ public class SettlementService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public SettlementResponse find(Long id) {
         final Settlement settlement = findSettlementById(id);
         final List<SettlementUser> settlementUsers = findSettlementUsersBySettlement(settlement);
@@ -68,6 +67,12 @@ public class SettlementService {
         settlement.updateBookLastSettlementDate();
 
         return SettlementResponse.of(settlement, settlementUsers);
+    }
+
+    @Transactional
+    public void deleteAllBy(final long bookId) {
+        settlementRepository.inactiveAllByBookId(bookId);
+        settlementUserRepository.inactiveAllByBookId(bookId);
     }
 
     private Settlement findSettlementById(final Long id) {

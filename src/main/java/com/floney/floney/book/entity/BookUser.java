@@ -51,4 +51,8 @@ public class BookUser extends BaseEntity {
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
+
+    public boolean isOwner() {
+        return book.isOwner(user.getEmail());
+    }
 }

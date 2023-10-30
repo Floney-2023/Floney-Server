@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.validation.constraints.NotNull;
-
 @Getter
 @ToString
 public class SubscribeResponse {
@@ -33,15 +31,15 @@ public class SubscribeResponse {
         this.renewalStatus = renewalStatus;
     }
 
-    public static SubscribeResponse of(Subscribe subscribe){
+    public static SubscribeResponse of(Subscribe subscribe) {
         return SubscribeResponse.builder()
-            .expiresDate(subscribe.getExpiresDate())
-            .originalTransactionId(subscribe.getOriginalTransactionId())
-            .productId(subscribe.getProductId())
-            .renewalStatus(subscribe.isRenewalStatus())
-            .transactionId(subscribe.getTransactionId())
-            .subscriptionStatus(subscribe.getSubscriptionStatus())
-            .build();
+                .expiresDate(subscribe.getExpiresDate())
+                .originalTransactionId(subscribe.getOriginalTransactionId())
+                .productId(subscribe.getProductId())
+                .renewalStatus(subscribe.isRenewalStatus())
+                .transactionId(subscribe.getTransactionId())
+                .subscriptionStatus(subscribe.getSubscriptionStatus())
+                .build();
 
     }
 

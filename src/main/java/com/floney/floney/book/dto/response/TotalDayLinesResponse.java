@@ -25,11 +25,11 @@ public class TotalDayLinesResponse {
 
     public static TotalDayLinesResponse of(List<DayLines> dayLinesResponse, List<TotalExpense> totalExpense, boolean seeProfile, CarryOverInfo carryOverInfo) {
         return TotalDayLinesResponse.builder()
-            .dayLinesResponse(dayLinesResponse)
-            .totalExpense(totalExpense)
-            .seeProfileImg(seeProfile)
-            .carryOverInfo(carryOverInfo)
-            .build();
+                .dayLinesResponse(dayLinesResponse)
+                .totalExpense(totalExpense)
+                .seeProfileImg(seeProfile)
+                .carryOverInfo(carryOverInfo)
+                .build();
     }
 
 

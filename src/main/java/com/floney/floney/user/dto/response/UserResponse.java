@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 

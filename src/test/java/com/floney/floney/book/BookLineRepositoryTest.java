@@ -1,29 +1,11 @@
 package com.floney.floney.book;
 
-import static com.floney.floney.book.CategoryFixture.createChildCategory;
-import static com.floney.floney.book.CategoryFixture.createChildLineCategory;
-import static com.floney.floney.book.CategoryFixture.createLineCategory;
-import static com.floney.floney.book.CategoryFixture.incomeBookCategory;
-import static com.floney.floney.book.CategoryFixture.outComeBookCategory;
-import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
-import static com.floney.floney.fixture.BookFixture.EMAIL;
-import static com.floney.floney.fixture.BookFixture.createBookUser;
-import static com.floney.floney.fixture.BookLineFixture.LOCAL_DATE;
-import static com.floney.floney.fixture.BookLineFixture.createBookLine;
-import static com.floney.floney.fixture.BookLineFixture.createBookLineWith;
-import static com.floney.floney.fixture.BookLineFixture.createBookLineWithWriter;
-
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookLineCategory;
-import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
+import com.floney.floney.book.entity.*;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
@@ -35,10 +17,6 @@ import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,6 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.floney.floney.book.CategoryFixture.*;
+import static com.floney.floney.fixture.BookFixture.*;
+import static com.floney.floney.fixture.BookLineFixture.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -101,24 +88,24 @@ public class BookLineRepositoryTest {
         LocalDate end = LOCAL_DATE;
 
         DatesDuration dates = DatesDuration.builder()
-            .startDate(start)
-            .endDate(end)
-            .build();
+                .startDate(start)
+                .endDate(end)
+                .build();
 
         BookLineExpense income = BookLineExpense.builder()
-            .money(1000L)
-            .assetType("수입")
-            .date(LOCAL_DATE)
-            .build();
+                .money(1000L)
+                .assetType("수입")
+                .date(LOCAL_DATE)
+                .build();
 
         BookLineExpense outcome = BookLineExpense.builder()
-            .money(1000L)
-            .assetType("지출")
-            .date(LOCAL_DATE)
-            .build();
+                .money(1000L)
+                .assetType("지출")
+                .date(LOCAL_DATE)
+                .build();
 
         Assertions.assertThat(bookLineRepository.dayIncomeAndOutcome(BOOK_KEY, dates))
-            .isEqualTo(Arrays.asList(income, outcome));
+                .isEqualTo(Arrays.asList(income, outcome));
 
     }
 
@@ -141,16 +128,16 @@ public class BookLineRepositoryTest {
         LocalDate end = LOCAL_DATE;
 
         DatesDuration dates = DatesDuration.builder()
-            .startDate(start)
-            .endDate(end)
-            .build();
+                .startDate(start)
+                .endDate(end)
+                .build();
 
         Map<String, Long> totals = new HashMap<>();
         totals.put("수입", 1000L);
         totals.put("지출", 1000L);
 
         Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
-            .isEqualTo(totals);
+                .isEqualTo(totals);
 
     }
 
@@ -172,17 +159,17 @@ public class BookLineRepositoryTest {
         LocalDate target = LOCAL_DATE;
 
         TotalExpense income = TotalExpense.builder()
-            .money(1000L)
-            .assetType("수입")
-            .build();
+                .money(1000L)
+                .assetType("수입")
+                .build();
 
         TotalExpense outcome = TotalExpense.builder()
-            .money(1000L)
-            .assetType("지출")
-            .build();
+                .money(1000L)
+                .assetType("지출")
+                .build();
 
         Assertions.assertThat(bookLineRepository.totalExpenseByDay(target, BOOK_KEY))
-            .isEqualTo(Arrays.asList(income, outcome));
+                .isEqualTo(Arrays.asList(income, outcome));
     }
 
     @Test
@@ -205,7 +192,7 @@ public class BookLineRepositoryTest {
 
         LocalDate targetDate = LOCAL_DATE;
         Assertions.assertThat(bookLineRepository.allLinesByDay(targetDate, BOOK_KEY).size())
-            .isEqualTo(3);
+                .isEqualTo(3);
 
     }
 
@@ -224,13 +211,13 @@ public class BookLineRepositoryTest {
         LocalDate end = LOCAL_DATE;
 
         DatesDuration datesRequest = DatesDuration.builder()
-            .startDate(start)
-            .endDate(end)
-            .build();
+                .startDate(start)
+                .endDate(end)
+                .build();
         AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY, Arrays.asList(EMAIL), datesRequest);
 
         Assertions.assertThat(bookLineRepository.allOutcomes(request).size())
-            .isEqualTo(2);
+                .isEqualTo(2);
     }
 }
 

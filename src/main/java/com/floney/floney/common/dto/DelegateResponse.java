@@ -30,10 +30,10 @@ public class DelegateResponse {
         }
 
         return DelegateResponse.builder()
-            .isDelegate(delegate)
-            .bookName(book.getName())
-            .bookKey(book.getBookKey())
-            .delegateTo(nickName)
-            .build();
+                .isDelegate(delegate)
+                .bookName(book.getName())
+                .bookKey(book.getBookKey())
+                .delegateTo(nickName)
+                .build();
     }
 }

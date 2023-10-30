@@ -25,7 +25,7 @@ public class BookTest {
 
     @Test
     @DisplayName("가계부 이미지를 변경한다")
-    void update_img(){
+    void update_img() {
         Book book = createBook();
         book.updateImg(updateBookImgRequest());
         Assertions.assertThat(book.getBookImg())
@@ -34,9 +34,9 @@ public class BookTest {
 
     @Test
     @DisplayName("화폐설정을 변경한다")
-    void change_currency(){
+    void change_currency() {
         Currency changeTo = Currency.CNY;
-        Book book= BookFixture.createBook();
+        Book book = BookFixture.createBook();
         book.changeCurrency(changeTo);
         Assertions.assertThat(book.getCurrency()).isEqualTo(changeTo.toString());
     }

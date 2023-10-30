@@ -148,6 +148,4 @@ public class BookServiceTest {
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
-
-
 }

@@ -38,7 +38,7 @@ import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
-    private static final int OWNER = 1;
+    private static final int ONLY_OWNER_COUNT = 1;
     private static final long DEFAULT_BUDGET = 0L;
 
     private final BookRepository bookRepository;
@@ -116,16 +116,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteBook(String email, String bookKey) {
-        Book book = findBook(bookKey);
-        validateToDeleteBook(book, email);
+    public void deleteBook(final String email, final String bookKey) {
+        final BookUser bookUser = findBookUserByKey(email, bookKey);
 
-        BookUser bookUser = findBookUserByKey(email, bookKey);
-        deleteBookUser(bookUser);
-
-        book.delete();
-
-        bookRepository.save(book);
+        validateCanDeleteBookBy(bookUser);
+        bookUser.inactive();
+        deleteBook(bookUser.getBook());
     }
 
     @Override
@@ -217,16 +213,9 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void bookUserOut(BookUserOutRequest request, String userEmail) {
-        BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
-        deleteBookLineBy(bookUser, request.getBookKey());
-        deleteBookUser(bookUser);
-    }
-
-    @Override
-    @Transactional
-    public void deleteBookLine(Book bookUserBook, BookUser bookUser) {
-        deleteAllLinesByOnly(bookUserBook, bookUser);
-        deleteBookUser(bookUser);
+        final BookUser bookUser = findBookUserByKey(userEmail, request.getBookKey());
+        inactiveAllBy(bookUser);
+        bookUser.inactive();
     }
 
     @Override
@@ -241,16 +230,16 @@ public class BookServiceImpl implements BookService {
     public Book makeInitBook(String bookKey) {
         Book book = findBook(bookKey);
         book.initBook();
-        bookLineCategoryRepository.deleteBookLineCategory(bookKey);
+        bookLineCategoryRepository.inactiveAllByBookKey(bookKey);
 
         categoryRepository.findAllCustomCategory(book)
                 .stream()
                 .map(BookCategory::delete)
                 .forEach(categoryRepository::delete);
 
-        settlementRepository.deleteAllSettlement(bookKey);
-        bookLineRepository.deleteAllLines(bookKey);
-        carryOverRepository.deleteAllCarryOver(bookKey);
+        settlementRepository.inactiveAllByBookKey(bookKey);
+        bookLineRepository.inactiveAllLines(bookKey);
+        carryOverRepository.inactiveAllByBookKey(bookKey);
 
         List<Budget> initBudgets = budgetRepository.findAllByBook(book)
                 .stream()
@@ -351,6 +340,72 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public void leaveBooksBy(final long userId) {
+        final List<BookUser> bookUsers = bookUserRepository.findAllByUserId(userId);
+        bookUsers.forEach(bookUser -> {
+            final Book book = bookUser.getBook();
+            if (canDeleteBookBy(bookUser)) {
+                deleteBook(book);
+                return;
+            }
+            // 가계부 탈퇴
+            inactiveAllBy(bookUser);
+            bookUser.inactive();
+            if (bookUser.isOwner()) {
+                delegateOwner(book);
+            }
+        });
+    }
+
+    private void delegateOwner(Book book) {
+        final Optional<User> subscribersNotBookOwner = bookUserRepository.findRandomBookUserWhoSubscribe(book);
+
+        // 위임할 유저가 존재할 경우 방장 위임
+        if (subscribersNotBookOwner.isPresent()) {
+            final User delegatedBookOwner = subscribersNotBookOwner.get();
+            book.delegateOwner(delegatedBookOwner);
+            return;
+        }
+        // 위임할 유저가 없으면 가계부 비활성화
+        book.inactiveBookStatus();
+    }
+
+    private void deleteBook(final Book book) {
+        inactiveAllBy(book);
+        book.delete();
+    }
+
+    private void inactiveAllBy(final Book book) {
+        alarmRepository.inactiveAllByBook(book);
+        bookLineRepository.inactiveAllByBook(book);
+        bookLineCategoryRepository.inactiveAllByBook(book);
+        bookUserRepository.inactiveAllByBook(book);
+        budgetRepository.inactiveAllByBook(book);
+        carryOverRepository.inactiveAllByBook(book);
+        categoryRepository.inactiveAllByBook(book);
+    }
+
+    private void inactiveAllBy(final BookUser bookUser) {
+        alarmRepository.inactiveAllByBookUser(bookUser);
+        bookLineRepository.inactiveAllByBookUser(bookUser);
+        bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
+    }
+
+    private CreateBookResponse createBook(User user, CreateBookRequest request) {
+        Book newBook = request.of(user.getEmail());
+        Book savedBook = bookRepository.save(newBook);
+        saveDefaultBookKey(user, savedBook);
+
+        bookUserRepository.save(BookUser.of(user, savedBook));
+        return CreateBookResponse.of(savedBook);
+    }
+
+    private boolean canDeleteBookBy(final BookUser bookUser) {
+        return !bookUser.isInactive() && bookUserRepository.countInBook(bookUser.getBook()) == ONLY_OWNER_COUNT;
+    }
+
     private Map<Month, Long> getInitBudgetFrame() {
         Map<Month, Long> monthlyMap = new LinkedHashMap<>();
         for (Month month : Month.values()) {
@@ -364,11 +419,9 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private void validateToDeleteBook(final Book book, final String email) {
-        book.validateOwner(email);
-        final int count = bookUserRepository.countByBookExclusively(book);
-        if (count > OWNER) {
-            throw new CannotDeleteBookException(count);
+    private void validateCanDeleteBookBy(final BookUser bookUser) {
+        if (!canDeleteBookBy(bookUser)) {
+            throw new CannotDeleteBookException();
         }
     }
 
@@ -382,11 +435,6 @@ public class BookServiceImpl implements BookService {
         return bookUserRepository.findAllByBookAndStatus(findBook(bookKey), ACTIVE);
     }
 
-    private void deleteBookUser(BookUser bookUser) {
-        bookUser.delete();
-        bookUserRepository.save(bookUser);
-    }
-
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
                 .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
@@ -395,10 +443,6 @@ public class BookServiceImpl implements BookService {
     private Book findBook(String userEmail, String bookKey) {
         return bookRepository.findByBookUserEmailAndBookKey(userEmail, bookKey)
                 .orElseThrow(() -> new NotFoundBookException(bookKey));
-    }
-
-    private void deleteBookLineBy(BookUser bookUser, String bookKey) {
-        bookLineRepository.deleteAllLinesByUser(bookUser, bookKey);
     }
 
     private void saveDefaultBookKey(User user, Book book) {
@@ -419,10 +463,6 @@ public class BookServiceImpl implements BookService {
                 throw new NotSubscribeException();
             }
         }
-    }
-
-    private void deleteAllLinesByOnly(Book bookUserBook, BookUser bookUser) {
-        bookLineRepository.deleteAllLinesByBookAndBookUser(bookUserBook, bookUser);
     }
 
     private void updateBudget(Budget savedBudget, UpdateBudgetRequest request) {

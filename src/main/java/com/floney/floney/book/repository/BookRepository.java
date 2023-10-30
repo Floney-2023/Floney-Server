@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Lock;
 import javax.persistence.LockModeType;
 import java.util.Optional;
 
+import java.util.Optional;
+
 public interface BookRepository extends JpaRepository<Book, Long>, BookCustomRepository {
 
     Optional<Book> findBookByCodeAndStatus(String code, Status status);

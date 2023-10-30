@@ -29,6 +29,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BookLineServiceImpl implements BookLineService {
 
@@ -57,7 +58,6 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public MonthLinesResponse showByMonth(String bookKey, String date) {
         Book book = findBook(bookKey);
         DatesDuration dates = DateFactory.getDateDuration(date);
@@ -71,17 +71,18 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
         Book book = findBook(bookKey);
 
         List<DayLines> dayLines = DayLines.forDayView(bookLineRepository.allLinesByDay(parse(date), bookKey));
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
-        return TotalDayLinesResponse.of(dayLines,
+        return TotalDayLinesResponse.of(
+                dayLines,
                 totalExpenses,
                 book.getSeeProfile(),
-                carryOverFactory.getCarryOverInfo(book, date));
+                carryOverFactory.getCarryOverInfo(book, date)
+        );
     }
 
     @Override
@@ -103,12 +104,11 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public void deleteLine(Long bookLineKey) {
-        BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
+    public void deleteLine(final Long bookLineKey) {
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
                 .orElseThrow(NotFoundBookLineException::new);
-        savedBookLine.delete();
-        bookLineCategoryRepository.deleteBookLineCategoryById(bookLineKey);
-        bookLineRepository.save(savedBookLine);
+        savedBookLine.inactive();
+        bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
     private BookUser findBookUser(String currentUser, CreateLineRequest request) {
@@ -128,6 +128,4 @@ public class BookLineServiceImpl implements BookLineService {
     private Map<String, Long> totalExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
-
-
 }

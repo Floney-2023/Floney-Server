@@ -19,7 +19,7 @@ public class MailProvider {
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(text);
 
-        try{
+        try {
             javaMailSender.send(simpleMailMessage);
         } catch (MailSendException exception) {
             throw new MailAddressException(email);

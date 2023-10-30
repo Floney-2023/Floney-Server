@@ -25,11 +25,11 @@ public interface BookLineCustomRepository {
 
     List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesDuration dates);
 
-    void deleteAllLines(String bookKey);
+    void inactiveAllLines(String bookKey);
 
     List<DayLine> allOutcomes(AllOutcomesRequest request);
 
-    void deleteAllLinesByUser(BookUser bookUser, String bookKey);
+    void inactiveAllByBookUser(BookUser bookUser);
 
     Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
@@ -41,7 +41,7 @@ public interface BookLineCustomRepository {
 
     Optional<BookLine> findByIdWithCategories(Long id);
 
-    void deleteAllLinesByBookAndBookUser(Book bookUserBook, BookUser targetBookUser);
-
     List<BookLine> findAllByBook(String bookKey);
+
+    void inactiveAllByBook(Book book);
 }

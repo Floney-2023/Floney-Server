@@ -33,13 +33,13 @@ public class AlarmResponse {
 
     public static AlarmResponse of(Alarm alarm) {
         return AlarmResponse.builder()
-            .title(alarm.getTitle())
-            .body(alarm.getBody())
-            .id(alarm.getId())
-            .imgUrl(alarm.getImgUrl())
-            .date(alarm.getDate())
-            .isReceived(alarm.getIsReceived())
-            .build();
+                .title(alarm.getTitle())
+                .body(alarm.getBody())
+                .id(alarm.getId())
+                .imgUrl(alarm.getImgUrl())
+                .date(alarm.getDate())
+                .isReceived(alarm.getIsReceived())
+                .build();
 
     }
 

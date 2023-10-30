@@ -2,25 +2,17 @@ package com.floney.floney.user.controller;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
-import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
-import com.floney.floney.user.dto.request.LoginRequest;
-import com.floney.floney.user.dto.request.SignoutRequest;
-import com.floney.floney.user.dto.request.SignupRequest;
-import com.floney.floney.user.dto.request.SubscribeRequest;
+import com.floney.floney.user.dto.request.*;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.SubscribeService;
 import com.floney.floney.user.service.UserService;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/users")

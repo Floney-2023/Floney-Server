@@ -2,11 +2,13 @@ package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
+import com.floney.floney.book.event.BookDeletedEvent;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
+import com.floney.floney.common.util.Events;
 import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +17,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDate;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -25,9 +30,6 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 @Getter
 @DynamicInsert
 @DynamicUpdate
-@Table(indexes = {
-        @Index(name = "book_keys", columnList = "bookKey")
-})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
@@ -69,9 +71,18 @@ public class Book extends BaseEntity {
     private Status bookStatus;
 
     @Builder
-    private Book(String name, String profileImg, String owner,
-                 String bookKey, boolean seeProfile,
-                 boolean carryOverStatus, String code, Long carryOverMoney, String currency, Integer userCapacity, Long asset, Status bookStatus) {
+    private Book(String name,
+                 String profileImg,
+                 String owner,
+                 String bookKey,
+                 boolean seeProfile,
+                 boolean carryOverStatus,
+                 String code,
+                 Long carryOverMoney,
+                 String currency,
+                 Integer userCapacity,
+                 Long asset,
+                 Status bookStatus) {
         this.name = name;
         this.bookImg = profileImg;
         this.owner = owner;
@@ -149,5 +160,14 @@ public class Book extends BaseEntity {
         if (memberCount >= userCapacity) {
             throw new MaxMemberException(bookKey, memberCount);
         }
+    }
+
+    public void delete() {
+        inactive();
+        Events.raise(new BookDeletedEvent(getId()));
+    }
+
+    public boolean isOwner(final String email) {
+        return owner.equals(email);
     }
 }

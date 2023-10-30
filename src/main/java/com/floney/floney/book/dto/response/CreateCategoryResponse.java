@@ -19,8 +19,8 @@ public class CreateCategoryResponse {
 
     public static CreateCategoryResponse of(Category category) {
         return CreateCategoryResponse.builder()
-            .name(category.getName())
-            .build();
+                .name(category.getName())
+                .build();
     }
 
     @Override

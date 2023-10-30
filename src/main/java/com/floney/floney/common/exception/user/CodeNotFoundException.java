@@ -4,7 +4,7 @@ import com.floney.floney.common.exception.common.ErrorType;
 import lombok.Getter;
 
 @Getter
-public class CodeNotFoundException extends RuntimeException{
+public class CodeNotFoundException extends RuntimeException {
 
     private final ErrorType errorType;
     private final String email;
