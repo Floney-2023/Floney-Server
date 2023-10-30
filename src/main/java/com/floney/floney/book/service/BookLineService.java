@@ -22,5 +22,5 @@ public interface BookLineService {
 
     BookLineResponse changeLine(ChangeBookLineRequest request);
 
-    void deleteLine(Long bookLineKey);
+    void deleteLine(Long bookLineId);
 }

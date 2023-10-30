@@ -54,16 +54,16 @@ public class BookServiceTest {
         Book testBook = BookFixture.createBookWith("1234");
         User testUser = UserFixture.getUser();
 
-        given(bookRepository.findBookByCodeAndStatus(CODE, ACTIVE))
-                .willReturn(Optional.ofNullable(testBook));
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(CODE, ACTIVE))
+            .willReturn(Optional.ofNullable(testBook));
 
         given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
-                .willReturn(Optional.empty());
+            .willReturn(Optional.empty());
 
-        given(bookUserRepository.getCurrentJoinUserCount(any(Book.class))).willReturn(1);
+        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
         assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
-                .isEqualTo(bookResponse().getCode());
+            .isEqualTo(bookResponse().getCode());
     }
 
     @Test
@@ -72,72 +72,72 @@ public class BookServiceTest {
         given(bookRepository.save(any(Book.class))).willReturn(createBookRequest().of(userDetails.getUsername()));
 
         assertThat(bookService.subscribeCreateBook(userDetails.getUser(), createBookRequest()).getClass())
-                .isEqualTo(CreateBookResponse.class);
+            .isEqualTo(CreateBookResponse.class);
     }
 
     @Test
     @DisplayName("가계부 생성시 구독을 했다면 , 유저가 참여한 가계부가 2 초과일 시 제공하지 않는 서비스 예외 발생")
     void subscribe_book_create_exception() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(3);
+            .willReturn(3);
 
         assertThatThrownBy(() -> bookService.addBook(UserFixture.createSubscribeUser(), createBookRequest()))
-                .isInstanceOf(LimitRequestException.class);
+            .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
     @DisplayName("가계부 생성시 구독을 안했다면, 참여한 가계부가 1 초과일 시 가계부를 만들 수 없다")
     void default_book_create_exception() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(2);
+            .willReturn(2);
 
         assertThatThrownBy(() -> bookService.addBook(UserFixture.createUser(), createBookRequest()))
-                .isInstanceOf(NotSubscribeException.class);
+            .isInstanceOf(NotSubscribeException.class);
     }
 
     @Test
     @DisplayName("가계부 생성시 구독을 안했다면, 참여한 가계부가 1미만 일 시 가계부를 만든다")
     void default_book_create() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(0);
+            .willReturn(0);
         given(bookRepository.save(any(Book.class)))
-                .willReturn(BookFixture.createBook());
+            .willReturn(BookFixture.createBook());
 
         Assertions.assertThat(bookService.addBook(UserFixture.createUser(), createBookRequest()).getClass())
-                .isEqualTo(CreateBookResponse.class);
+            .isEqualTo(CreateBookResponse.class);
     }
 
     @Test
     @DisplayName("가계부 참여 시 구독을 안했다면, 유저가 현재 참여한 가계부가 2 초과일시, 구독 제한 예외가 터진다")
     void default_book_join_exception() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(3);
+            .willReturn(3);
 
-        given(bookRepository.findBookByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(Optional.ofNullable(createBook()));
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
+            .willReturn(Optional.ofNullable(createBook()));
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(NotSubscribeException.class);
+            .isInstanceOf(NotSubscribeException.class);
     }
 
     @Test
     @DisplayName("가계부 참여 시 참여 하려는 가계부의 정원 초과 시 가계부 정원 초과 예외 발생")
     void default_book_join() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(0);
+            .willReturn(0);
 
         // 가계부 정원이 2인 가계부 생성
-        given(bookRepository.findBookByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(Optional.ofNullable(createBook()));
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
+            .willReturn(Optional.ofNullable(createBook()));
 
-        given(bookUserRepository.getCurrentJoinUserCount(any(Book.class))).willReturn(4);
+        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(4);
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(MaxMemberException.class);
+            .isInstanceOf(MaxMemberException.class);
     }
 
     @Test
@@ -148,6 +148,4 @@ public class BookServiceTest {
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
-
-
 }

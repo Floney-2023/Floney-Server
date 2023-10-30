@@ -20,7 +20,7 @@ public class BookTest {
         String other = "sienna011022@naver.com";
 
         assertThatThrownBy(() -> book.validateOwner(other))
-                .isInstanceOf(NoAuthorityException.class);
+            .isInstanceOf(NoAuthorityException.class);
     }
 
     @Test
@@ -29,7 +29,7 @@ public class BookTest {
         Book book = createBook();
         book.updateImg(updateBookImgRequest());
         Assertions.assertThat(book.getBookImg())
-                .isEqualTo(UPDATE_URL);
+            .isEqualTo(UPDATE_URL);
     }
 
     @Test

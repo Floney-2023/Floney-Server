@@ -61,7 +61,7 @@ public class SettlementService {
     public SettlementResponse create(SettlementRequest request) {
         final Settlement settlement = createSettlement(request);
 
-        validateBookUsers(request.getUserEmails(), settlement.getBook());
+        validateBookUsers(settlement.getBook().getBookKey(), request.getUserEmails());
         final List<SettlementUser> settlementUsers = createSettlementUsers(request, settlement);
 
         settlement.updateBookLastSettlementDate();
@@ -93,13 +93,13 @@ public class SettlementService {
                 .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private void validateBookUsers(final Set<String> emails, final Book book) {
-        emails.forEach(email -> findBookUserByBookAndUserEmail(book, email));
+    private void validateBookUsers(final String bookKey, final Set<String> emails) {
+        emails.forEach(email -> validateBookUser(bookKey, email));
     }
 
-    private void findBookUserByBookAndUserEmail(final Book book, final String email) {
-        if (!bookUserRepository.existsByBookAndUser_EmailAndStatus(book, email, Status.ACTIVE)) {
-            throw new NotFoundBookUserException(book.getBookKey(), email);
+    private void validateBookUser(final String bookKey, final String email) {
+        if (!bookUserRepository.existsByBookKeyAndUserEmail(bookKey, email)) {
+            throw new NotFoundBookUserException(bookKey, email);
         }
     }
 

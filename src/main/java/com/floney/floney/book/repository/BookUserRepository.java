@@ -15,6 +15,4 @@ public interface BookUserRepository extends JpaRepository<BookUser, Long>, BookU
     List<BookUser> findByUserAndStatus(User user, Status status);
 
     List<BookUser> findAllByBookAndStatus(Book book, Status status);
-
-    boolean existsByBookAndUser_EmailAndStatus(final Book book, final String user_email, final Status status);
 }

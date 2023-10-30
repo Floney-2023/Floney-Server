@@ -6,6 +6,7 @@ import com.floney.floney.book.event.BookDeletedEvent;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.common.util.Events;
 import com.floney.floney.user.entity.User;
@@ -100,6 +101,12 @@ public class Book extends BaseEntity {
         this.name = requestName;
     }
 
+    public void validateOwner(String email) {
+        if (!owner.equals(email)) {
+            throw new NoAuthorityException(owner, email);
+        }
+    }
+
     public void updateImg(UpdateBookImgRequest request) {
         this.bookImg = request.getNewUrl();
     }
@@ -114,12 +121,6 @@ public class Book extends BaseEntity {
 
     public void updateLastSettlementDate(LocalDate lastSettlementDate) {
         this.lastSettlementDate = lastSettlementDate;
-    }
-
-    public void validateOwner(String email) {
-        if (!isOwner(email)) {
-            throw new NoAuthorityException(owner, email);
-        }
     }
 
     public boolean getCarryOverStatus() {
@@ -152,6 +153,13 @@ public class Book extends BaseEntity {
 
     public void inactiveBookStatus() {
         this.bookStatus = INACTIVE;
+    }
+
+    public void validateCanJoinMember(final int memberCount) {
+        // TODO: memberCount > userCapacity인 경우는 서버 에러로 변경
+        if (memberCount >= userCapacity) {
+            throw new MaxMemberException(bookKey, memberCount);
+        }
     }
 
     public void delete() {

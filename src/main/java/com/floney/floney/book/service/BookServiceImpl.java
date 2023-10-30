@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
@@ -82,14 +81,14 @@ public class BookServiceImpl implements BookService {
         String userEmail = userDetails.getUsername();
         User user = userDetails.getUser();
 
-        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
+        Book book = bookRepository.findBookExclusivelyByCodeAndStatus(code, ACTIVE)
                 .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
         checkCreateBookMaximum(user);
 
         // 참여 희망 가계부 정원 체크
-        isMaxBookCapacity(book);
+        validateMaxBookCapacity(book);
 
         // 이미 존재하는 가계부 유저인지 체크
         if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
@@ -102,12 +101,9 @@ public class BookServiceImpl implements BookService {
         return CreateBookResponse.of(book);
     }
 
-    private void isMaxBookCapacity(Book book) {
-        int memberCount = bookUserRepository.getCurrentJoinUserCount(book);
-
-        if (memberCount >= book.getUserCapacity()) {
-            throw new MaxMemberException(book.getBookKey(), memberCount);
-        }
+    private void validateMaxBookCapacity(Book book) {
+        final int memberCount = bookUserRepository.countByBookExclusively(book);
+        book.validateCanJoinMember(memberCount);
     }
 
     @Override
@@ -183,9 +179,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
+    // TODO: '마지막'으로 참여한 내용이 포함되도록 용어 수정
     public InvolveBookResponse findInvolveBook(User user) {
         String recentBookKey = user.getRecentBookKey();
-        Optional<Book> book = bookRepository.findBookByBookKeyAndStatus(recentBookKey, ACTIVE);
+        Optional<Book> book = bookRepository.findBookExclusivelyByBookKeyAndStatus(recentBookKey, ACTIVE);
         return InvolveBookResponse.of(book);
     }
 
@@ -235,7 +232,8 @@ public class BookServiceImpl implements BookService {
         book.initBook();
         bookLineCategoryRepository.inactiveAllByBookKey(bookKey);
 
-        categoryRepository.findAllCustomCategory(book).stream()
+        categoryRepository.findAllCustomCategory(book)
+                .stream()
                 .map(BookCategory::delete)
                 .forEach(categoryRepository::delete);
 
@@ -260,10 +258,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public BookInfoResponse getBookInfoByCode(String code) {
-        Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
+    public BookInfoResponse getBookInfoByCode(final String code) {
+        final Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
                 .orElseThrow(() -> new NotFoundBookException(code));
-        long memberCount = bookUserRepository.countInBook(book);
+        final int memberCount = bookUserRepository.countByBook(book);
         return BookInfoResponse.of(book, memberCount);
     }
 
@@ -303,8 +301,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void saveAlarm(SaveAlarmRequest request) {
-        BookUser bookUser = bookUserRepository.findBookUserByEmail(request.getUserEmail(), request.getBookKey());
-        Alarm alarm = Alarm.of(findBook(request.getBookKey()), bookUser, request);
+        final String bookKey = request.getBookKey();
+        final String userEmail = request.getUserEmail();
+
+        final BookUser bookUser = bookUserRepository.findBookUserByEmailAndBookKey(userEmail, bookKey)
+                .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
+
+        final Alarm alarm = Alarm.of(findBook(bookKey), bookUser, request);
         alarmRepository.save(alarm);
     }
 
@@ -319,11 +322,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public List<AlarmResponse> getAlarmByBook(String bookKey, String email) {
-        BookUser bookUser = bookUserRepository.findBookUserByEmail(email, bookKey);
+        final BookUser bookUser = bookUserRepository.findBookUserByEmailAndBookKey(email, bookKey)
+                .orElseThrow(() -> new NotFoundBookUserException(bookKey, email));
+
         return alarmRepository.findAllByBookAndBookUser(findBook(bookKey), bookUser)
                 .stream()
                 .map(AlarmResponse::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -346,7 +351,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void delegateOwner(Book book) {
-        final Optional<User> subscribersNotBookOwner = bookUserRepository.findRandomBookUserWhoSubscribe(book);
+        final Optional<User> subscribersNotBookOwner = bookUserRepository.findRandomBookUserWhoSubscribeExclusively(book);
 
         // 위임할 유저가 존재할 경우 방장 위임
         if (subscribersNotBookOwner.isPresent()) {
@@ -389,7 +394,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private boolean canDeleteBookBy(final BookUser bookUser) {
-        return !bookUser.isInactive() && bookUserRepository.countInBook(bookUser.getBook()) == ONLY_OWNER_COUNT;
+        return !bookUser.isInactive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
     }
 
     private Map<Month, Long> getInitBudgetFrame() {

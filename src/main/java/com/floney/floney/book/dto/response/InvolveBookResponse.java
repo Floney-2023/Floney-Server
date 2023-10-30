@@ -20,6 +20,7 @@ public class InvolveBookResponse {
     }
 
     public static InvolveBookResponse of(Optional<Book> book) {
+        // TODO: 파라미터의 Optional 제거
         return book.map(value -> new InvolveBookResponse(value.getBookKey(), value.getBookStatus()))
                 .orElseGet(() -> new InvolveBookResponse(null, null));
     }
