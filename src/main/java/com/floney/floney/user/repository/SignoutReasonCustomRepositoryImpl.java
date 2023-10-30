@@ -1,12 +1,12 @@
 package com.floney.floney.user.repository;
 
-import static com.floney.floney.user.entity.QSignoutReason.signoutReason;
-
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.floney.floney.user.entity.QSignoutReason.signoutReason;
 
 @Repository
 @Transactional(readOnly = true)

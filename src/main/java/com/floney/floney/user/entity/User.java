@@ -2,15 +2,11 @@ package com.floney.floney.user.entity;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.common.exception.user.SubscribeException;
+import com.floney.floney.common.util.Events;
 import com.floney.floney.user.dto.constant.Provider;
+import com.floney.floney.user.event.UserSignedOutEvent;
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Index;
-import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,18 +18,21 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
-@Table(indexes = {
-    @Index(name = "email", columnList = "email", unique = true)
-})
 @DynamicInsert
 @DynamicUpdate
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    private static final String DELETE_VALUE = "admin";
+    private static final String DELETE_VALUE = "알수없음";
 
     @Column(nullable = false, length = 100)
     private String email;
@@ -131,6 +130,30 @@ public class User extends BaseEntity {
 
     public void unSubscribe() {
         this.subscribe = false;
+    }
+
+    public void signout() {
+        validateNotSubscribe();
+
+        deleteInformation();
+        inactive();
+
+        Events.raise(new UserSignedOutEvent(getId()));
+    }
+
+    private void deleteInformation() {
+        email = DELETE_VALUE;
+        password = DELETE_VALUE;
+        nickname = DELETE_VALUE;
+        profileImg = null;
+        providerId = null;
+        recentBookKey = null;
+    }
+
+    private void validateNotSubscribe() {
+        if (isSubscribe()) {
+            throw new SubscribeException();
+        }
     }
 
     public void initRecentBookKey() {

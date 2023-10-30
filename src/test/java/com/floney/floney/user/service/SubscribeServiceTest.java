@@ -1,8 +1,5 @@
 package com.floney.floney.user.service;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -14,8 +11,6 @@ import com.floney.floney.user.entity.Subscribe;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.SubscribeRepository;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.Collections;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +19,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class SubscribeServiceTest {
@@ -118,11 +119,11 @@ public class SubscribeServiceTest {
             .willReturn(Collections.singletonList(book));
 
         // 해당 가계부는 구독 혜택을 받는 중
-        given(bookUserRepository.countBookUser(any(Book.class)))
-            .willReturn(4L);
+        given(bookUserRepository.countByBookExclusively(any(Book.class)))
+            .willReturn(4);
 
         // 위임 할 가계부원이 없을 경우
-        given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
+        given(bookUserRepository.findRandomBookUserWhoSubscribeExclusively(any(Book.class)))
             .willReturn(Optional.empty());
 
         SubscribeRequest newRequest = SubscribeRequest.builder()
@@ -148,12 +149,12 @@ public class SubscribeServiceTest {
             .willReturn(Collections.singletonList(book));
 
         // 해당 가계부는 구독 혜택을 받는 중
-        given(bookUserRepository.countBookUser(any(Book.class)))
-            .willReturn(4L);
+        given(bookUserRepository.countByBookExclusively(any(Book.class)))
+            .willReturn(4);
 
         // 위임 할 가계부원이 존재할 경우
         User delegateUser = UserFixture.createUser2();
-        given(bookUserRepository.findBookUserWhoSubscribe(any(Book.class)))
+        given(bookUserRepository.findRandomBookUserWhoSubscribeExclusively(any(Book.class)))
             .willReturn(Optional.of(delegateUser));
 
         SubscribeRequest newRequest = SubscribeRequest.builder()

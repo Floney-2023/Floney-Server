@@ -4,7 +4,6 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.dto.response.AlarmResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface BookService {
+
     CreateBookResponse addBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
@@ -38,8 +38,6 @@ public interface BookService {
 
     void bookUserOut(final BookUserOutRequest request, final User user);
 
-    void deleteBookLine(Book bookUserBook, BookUser bookUser);
-
     InviteCodeResponse inviteCode(final String bookKey);
 
     List<BookUserResponse> findUsersByBook(final CustomUserDetails userDetails, final String bookKey);
@@ -62,5 +60,7 @@ public interface BookService {
 
     void updateAlarmReceived(UpdateAlarmReceived request);
 
-    List<AlarmResponse> getAlarmByBook(String bookKey,String email);
+    List<AlarmResponse> getAlarmByBook(String bookKey, String email);
+
+    void leaveBooksBy(long userId);
 }

@@ -34,13 +34,13 @@ public class OurBookInfo {
         iSMyAccount(bookUsers, myEmail);
 
         return OurBookInfo.builder()
-            .bookImg(book.getBookImg())
-            .bookName(book.getName())
-            .startDay(formatToDate(book.getCreatedAt()))
-            .bookUsers(bookUsers)
-            .seeProfileStatus(book.getSeeProfile())
-            .carryOver(book.getCarryOverStatus())
-            .build();
+                .bookImg(book.getBookImg())
+                .bookName(book.getName())
+                .startDay(formatToDate(book.getCreatedAt()))
+                .bookUsers(bookUsers)
+                .seeProfileStatus(book.getSeeProfile())
+                .carryOver(book.getCarryOverStatus())
+                .build();
     }
 
     private static void checkRole(Book book, List<OurBookUser> bookUsers) {

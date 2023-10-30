@@ -11,11 +11,11 @@ import java.util.Optional;
 
 public interface BookUserCustomRepository {
 
-    int getCurrentJoinUserCount(Book book);
-
     List<OurBookUser> findAllUser(String bookKey);
 
-    BookUser findBookUserByEmail(String userEmail, String bookKey);
+    Optional<BookUser> findBookUserByEmailAndBookKey(String userEmail, String bookKey);
+
+    boolean existsByBookKeyAndUserEmail(String bookKey, String userEmail);
 
     Optional<BookUser> findBookUserByKey(String auth, String bookKey);
 
@@ -27,12 +27,17 @@ public interface BookUserCustomRepository {
 
     List<Book> findBookByOwner(User user);
 
-    long countBookUser(Book book);
+    int countByBook(Book book);
+
+    int countByBookExclusively(Book book);
 
     BookUser findBookUserBy(String email, Book targetBook);
 
     boolean existsByUserEmailAndBookKey(String email, String bookKey);
 
-    Optional<User> findBookUserWhoSubscribe(Book targetBook);
+    Optional<User> findRandomBookUserWhoSubscribeExclusively(Book targetBook);
 
+    List<BookUser> findAllByUserId(Long userId);
+
+    void inactiveAllByBook(Book book);
 }

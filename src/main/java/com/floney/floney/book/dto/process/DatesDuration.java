@@ -19,11 +19,11 @@ public class DatesDuration {
         this.endDate = endDate;
     }
 
-    public LocalDate start(){
+    public LocalDate start() {
         return startDate;
     }
 
-    public LocalDate end(){
+    public LocalDate end() {
         return endDate;
     }
 }

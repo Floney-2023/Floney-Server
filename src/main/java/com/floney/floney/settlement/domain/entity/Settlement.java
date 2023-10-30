@@ -67,13 +67,13 @@ public class Settlement extends BaseEntity {
         final Long avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
 
         return Settlement.builder()
-            .book(book)
-            .startDate(request.getStartDate())
-            .endDate(request.getEndDate())
-            .userCount(userCount)
-            .totalOutcome(totalOutcome)
-            .avgOutcome(avgOutcome)
-            .build();
+                .book(book)
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .userCount(userCount)
+                .totalOutcome(totalOutcome)
+                .avgOutcome(avgOutcome)
+                .build();
     }
 
     private static Integer calculateUserCount(Set<String> userEmails) {
@@ -82,8 +82,8 @@ public class Settlement extends BaseEntity {
 
     private static Long calculateTotalOutcome(List<OutcomeRequest> request) {
         return request.stream()
-            .mapToLong(OutcomeRequest::getOutcome)
-            .sum();
+                .mapToLong(OutcomeRequest::getOutcome)
+                .sum();
     }
 
     private static Long calculateAvgOutcome(Long totalOutcome, Integer userCount) {

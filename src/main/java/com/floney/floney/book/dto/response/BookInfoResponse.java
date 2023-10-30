@@ -23,10 +23,10 @@ public class BookInfoResponse {
 
     public static BookInfoResponse of(Book book, long memberCount) {
         return BookInfoResponse.builder()
-            .bookImg(book.getBookImg())
-            .bookName(book.getName())
-            .memberCount(memberCount)
-            .startDay(book.getCreatedAt())
-            .build();
+                .bookImg(book.getBookImg())
+                .bookName(book.getName())
+                .memberCount(memberCount)
+                .startDay(book.getCreatedAt())
+                .build();
     }
 }

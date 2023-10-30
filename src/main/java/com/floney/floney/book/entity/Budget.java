@@ -40,16 +40,16 @@ public class Budget extends BaseEntity {
 
     public static Budget of(Book book, UpdateBudgetRequest request) {
         return Budget.builder()
-            .money(request.getBudget())
-            .date(request.getDate())
-            .book(book)
-            .build();
+                .money(request.getBudget())
+                .date(request.getDate())
+                .book(book)
+                .build();
     }
 
     public static Budget init() {
         return Budget.builder()
-            .money(0L)
-            .build();
+                .money(0L)
+                .build();
     }
 
     public void update(UpdateBudgetRequest request) {

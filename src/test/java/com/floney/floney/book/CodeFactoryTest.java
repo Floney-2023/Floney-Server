@@ -2,7 +2,6 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.util.CodeFactory;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

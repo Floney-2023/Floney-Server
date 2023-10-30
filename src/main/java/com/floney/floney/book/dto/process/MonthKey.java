@@ -19,7 +19,7 @@ public class MonthKey {
     }
 
     public static MonthKey toMonthKey(BookLineExpense expense) {
-        return new MonthKey(expense.getDate(),expense.getAssetType());
+        return new MonthKey(expense.getDate(), expense.getAssetType());
     }
 
 }

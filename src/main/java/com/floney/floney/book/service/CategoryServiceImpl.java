@@ -1,9 +1,9 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.dto.process.CategoryInfo;
-import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
+import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Category;
 import com.floney.floney.book.entity.category.BookCategory;
@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category parent = rootParent();
         if (request.hasParent()) {
             parent = categoryRepository.findParentCategory(request.getParent())
-                .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
+                    .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
         }
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
         return CreateCategoryResponse.of(newCategory);
@@ -47,13 +47,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCustomCategory(DeleteCategoryRequest request) {
-        categoryRepository.deleteCustomCategory(request);
+        categoryRepository.inactiveCustomCategory(request);
 
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
 }

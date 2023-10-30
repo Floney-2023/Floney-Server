@@ -63,8 +63,8 @@ public class CategoryFactory {
         BookLineCategory currentCategory = categories.get(FLOW_LINE);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
             String flowCategory = bookLine.getBookLineCategories()
-                .get(FLOW)
-                .getName();
+                    .get(FLOW)
+                    .getName();
             return saveLineBookLineCategory(bookLine, requestCategory, bookKey, flowCategory);
         }
         return currentCategory;
@@ -87,17 +87,17 @@ public class CategoryFactory {
 
     private Category findLineCategory(String line, String bookKey, String flow) {
         return categoryRepository.findLineCategory(line, bookKey, flow)
-            .orElseThrow(() -> new NotFoundCategoryException(line));
+                .orElseThrow(() -> new NotFoundCategoryException(line));
     }
 
     private Category findFlowCategory(String flow) {
         return categoryRepository.findFlowCategory(flow)
-            .orElseThrow(() -> new NotFoundCategoryException(flow));
+                .orElseThrow(() -> new NotFoundCategoryException(flow));
     }
 
     private Category findAssetCategory(String asset, String bookKey) {
         return categoryRepository.findAssetCategory(asset, bookKey)
-            .orElseThrow(() -> new NotFoundCategoryException(asset));
+                .orElseThrow(() -> new NotFoundCategoryException(asset));
     }
 
 }

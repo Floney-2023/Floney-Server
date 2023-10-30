@@ -54,13 +54,13 @@ public class BookServiceTest {
         Book testBook = BookFixture.createBookWith("1234");
         User testUser = UserFixture.getUser();
 
-        given(bookRepository.findBookByCodeAndStatus(CODE, ACTIVE))
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(CODE, ACTIVE))
             .willReturn(Optional.ofNullable(testBook));
 
         given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
             .willReturn(Optional.empty());
 
-        given(bookUserRepository.getCurrentJoinUserCount(any(Book.class))).willReturn(1);
+        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
         assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
             .isEqualTo(bookResponse().getCode());
@@ -113,7 +113,7 @@ public class BookServiceTest {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
             .willReturn(3);
 
-        given(bookRepository.findBookByCodeAndStatus(any(String.class), any(Status.class)))
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
             .willReturn(Optional.ofNullable(createBook()));
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
@@ -129,10 +129,10 @@ public class BookServiceTest {
             .willReturn(0);
 
         // 가계부 정원이 2인 가계부 생성
-        given(bookRepository.findBookByCodeAndStatus(any(String.class), any(Status.class)))
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
             .willReturn(Optional.ofNullable(createBook()));
 
-        given(bookUserRepository.getCurrentJoinUserCount(any(Book.class))).willReturn(4);
+        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(4);
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
@@ -148,6 +148,4 @@ public class BookServiceTest {
         book.updateName(changeTo);
         Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
-
-
 }

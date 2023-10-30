@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class CannotDeleteBookException extends RuntimeException {
-    private final ErrorType errorType;
-    private final long leftMemberCount;
 
-    public CannotDeleteBookException(long leftMemberCount) {
+    private final ErrorType errorType;
+
+    public CannotDeleteBookException() {
         this.errorType = ErrorType.NO_DELETE_BOOK;
-        this.leftMemberCount = leftMemberCount;
     }
 }

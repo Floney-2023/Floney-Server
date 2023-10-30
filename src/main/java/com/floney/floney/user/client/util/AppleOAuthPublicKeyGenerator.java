@@ -3,6 +3,9 @@ package com.floney.floney.user.client.util;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.client.dto.ApplePublicKey;
 import com.floney.floney.user.client.dto.AppleTokenHeader;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Base64Utils;
+
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -11,8 +14,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
-import org.springframework.util.Base64Utils;
 
 @Component
 public class AppleOAuthPublicKeyGenerator {

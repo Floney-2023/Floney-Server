@@ -1,7 +1,6 @@
 package com.floney.floney.common.exception.user;
 
 import com.floney.floney.common.exception.common.ErrorType;
-import com.floney.floney.user.entity.User;
 import lombok.Getter;
 
 @Getter

@@ -3,10 +3,6 @@ package com.floney.floney.book.controller;
 import com.floney.floney.book.service.ExcelService;
 import com.floney.floney.common.exception.book.ExcelMakingException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 @RequestMapping("/books/excel")
@@ -30,7 +31,7 @@ public class ExcelController {
                          HttpServletResponse response) {
         try (final Workbook bookExcel = excelService.createBookExcel(userDetails.getUsername(), bookKey)) {
             response.setContentType("application/vnd.ms-excel");
-            response.setHeader("Content-Disposition", "attachment;filename="+ FILENAME +".xlsx");
+            response.setHeader("Content-Disposition", "attachment;filename=" + FILENAME + ".xlsx");
 
             bookExcel.write(response.getOutputStream());
         } catch (final IOException exception) {
