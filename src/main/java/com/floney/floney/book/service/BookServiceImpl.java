@@ -283,15 +283,6 @@ public class BookServiceImpl implements BookService {
         return BookStatusResponse.of(findBook(bookKey));
     }
 
-    private CreateBookResponse createBook(User user, CreateBookRequest request) {
-        Book newBook = request.of(user.getEmail());
-        Book savedBook = bookRepository.save(newBook);
-        saveDefaultBookKey(user, savedBook);
-
-        bookUserRepository.save(BookUser.of(user, savedBook));
-        return CreateBookResponse.of(savedBook);
-    }
-
     @Override
     public Map<Month, Long> getBudgetByYear(String bookKey, String firstDate) {
         LocalDate date = LocalDate.parse(firstDate);
@@ -360,7 +351,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void delegateOwner(Book book) {
-        final Optional<User> subscribersNotBookOwner = bookUserRepository.findRandomBookUserWhoSubscribe(book);
+        final Optional<User> subscribersNotBookOwner = bookUserRepository.findRandomBookUserWhoSubscribeExclusively(book);
 
         // 위임할 유저가 존재할 경우 방장 위임
         if (subscribersNotBookOwner.isPresent()) {
@@ -403,7 +394,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private boolean canDeleteBookBy(final BookUser bookUser) {
-        return !bookUser.isInactive() && bookUserRepository.countInBook(bookUser.getBook()) == ONLY_OWNER_COUNT;
+        return !bookUser.isInactive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
     }
 
     private Map<Month, Long> getInitBudgetFrame() {

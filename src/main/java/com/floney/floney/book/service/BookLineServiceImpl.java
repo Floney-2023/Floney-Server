@@ -104,8 +104,8 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public void deleteLine(final Long bookLineKey) {
-        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineKey, ACTIVE)
+    public void deleteLine(final Long bookLineId) {
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
                 .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);

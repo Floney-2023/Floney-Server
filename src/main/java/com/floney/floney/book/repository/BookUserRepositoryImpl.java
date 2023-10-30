@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.LockModeType;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -232,7 +233,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     @Override
     @Transactional
-    public Optional<User> findBookUserWhoSubscribeExclusively(Book targetBook) {
+    public Optional<User> findRandomBookUserWhoSubscribeExclusively(Book targetBook) {
         // TODO: 반환 타입 User에서 BookUser로 변경
         return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
                 .where(
@@ -249,4 +250,27 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 .fetchFirst());
     }
 
+    @Override
+    public List<BookUser> findAllByUserId(final Long userId) {
+        return jpaQueryFactory.selectFrom(bookUser)
+                .innerJoin(book)
+                .on(book.eq(bookUser.book)).fetchJoin()
+                .innerJoin(user)
+                .on(user.id.eq(userId))
+                .where(bookUser.status.eq(ACTIVE))
+                .fetch();
+    }
+
+    @Override
+    @Transactional
+    public void inactiveAllByBook(final Book book) {
+        jpaQueryFactory.update(bookUser)
+                .set(bookUser.status, INACTIVE)
+                .set(bookUser.updatedAt, LocalDateTime.now())
+                .where(
+                        bookUser.book.eq(book),
+                        bookUser.status.eq(ACTIVE)
+                )
+                .execute();
+    }
 }

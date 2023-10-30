@@ -99,7 +99,7 @@ public class SubscribeService {
 
     private DelegateResponse delegateOwner(Book book) {
         // 구독을 한 다른 멤버 조회
-        Optional<User> wantDelegateWhoSubscribe = bookUserRepository.findBookUserWhoSubscribeExclusively(book);
+        Optional<User> wantDelegateWhoSubscribe = bookUserRepository.findRandomBookUserWhoSubscribeExclusively(book);
 
         // 존재할 경우 방장 위임
         if (wantDelegateWhoSubscribe.isPresent()) {
