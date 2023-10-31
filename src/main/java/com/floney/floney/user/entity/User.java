@@ -1,6 +1,5 @@
 package com.floney.floney.user.entity;
 
-import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.user.SubscribeException;
 import com.floney.floney.common.util.Events;
@@ -154,9 +153,5 @@ public class User extends BaseEntity {
         if (isSubscribe()) {
             throw new SubscribeException();
         }
-    }
-
-    public void initRecentBookKey() {
-        this.recentBookKey = null;
     }
 }
