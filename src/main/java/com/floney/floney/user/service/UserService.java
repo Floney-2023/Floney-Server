@@ -144,18 +144,13 @@ public class UserService {
 
     @Transactional
     public void updatePassword(String password, User user) {
-        validatePassword(password, user.getPassword());
+        validatePasswordNotSame(password, user.getPassword());
         user.updatePassword(password);
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
     }
 
-    private void validatePassword(String newPassword, String oldPassword) {
-        if (passwordEncoder.matches(newPassword, oldPassword)) {
-            throw new PasswordSameException();
-        }
-    }
-
+    @Transactional
     public void updatePassword(String password, String email) {
         User user = findUserByEmail(email);
         updatePassword(password, user);
@@ -218,6 +213,12 @@ public class UserService {
         User user = findUserByEmail(username);
         user.saveRecentBookKey(request.getBookKey());
         userRepository.save(user);
+    }
+
+    private void validatePasswordNotSame(String newPassword, String oldPassword) {
+        if (passwordEncoder.matches(newPassword, oldPassword)) {
+            throw new PasswordSameException();
+        }
     }
 
     private User findUserByEmail(final String request) {
