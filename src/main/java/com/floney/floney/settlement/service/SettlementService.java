@@ -36,16 +36,10 @@ public class SettlementService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
 
-    private static OutcomesWithUser createOutcomesWithUser(SettlementRequest request) {
-        final OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserEmails());
-        outcomesWithUser.fillOutcomes(request.getOutcomes());
-        return outcomesWithUser;
-    }
-
     public List<SettlementResponse> findAll(String bookKey) {
         final Book book = findBookByBookKey(bookKey);
 
-        return findSettlementsByBook(book)
+        return findSettlementsOrderByRecentTime(book)
                 .stream()
                 .map(SettlementResponse::from)
                 .toList();
@@ -75,13 +69,19 @@ public class SettlementService {
         settlementUserRepository.inactiveAllByBookId(bookId);
     }
 
+    private static OutcomesWithUser createOutcomesWithUser(SettlementRequest request) {
+        final OutcomesWithUser outcomesWithUser = OutcomesWithUser.init(request.getUserEmails());
+        outcomesWithUser.fillOutcomes(request.getOutcomes());
+        return outcomesWithUser;
+    }
+
     private Settlement findSettlementById(final Long id) {
         return settlementRepository.findById(id)
                 .orElseThrow(SettlementNotFoundException::new);
     }
 
-    private List<Settlement> findSettlementsByBook(final Book book) {
-        return settlementRepository.findAllByBookAndStatus(book, Status.ACTIVE);
+    private List<Settlement> findSettlementsOrderByRecentTime(final Book book) {
+        return settlementRepository.findAllByBookAndStatusOrderByIdDesc(book, Status.ACTIVE);
     }
 
     private List<SettlementUser> findSettlementUsersBySettlement(final Settlement settlement) {

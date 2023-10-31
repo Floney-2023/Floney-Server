@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface SettlementRepository extends JpaRepository<Settlement, Long>, SettlementCustomRepository {
 
-    List<Settlement> findAllByBookAndStatus(Book book, Status status);
+    List<Settlement> findAllByBookAndStatusOrderByIdDesc(Book book, Status status);
 }
