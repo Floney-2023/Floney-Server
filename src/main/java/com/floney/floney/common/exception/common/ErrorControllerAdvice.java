@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -226,6 +227,16 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> failToGenerateGoogleAccessTokenException(GoogleAccessTokenGenerateException exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    // OTHER
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> validationException(MethodArgumentNotValidException exception) {
+        final String message = exception.getBindingResult().getFieldError().getDefaultMessage();
+        logger.warn("@Valid 에러 - [{}] : {} ", exception.getTarget(), message);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorType.REQUEST_BODY_ERROR, message));
     }
 
     @ExceptionHandler(Exception.class)

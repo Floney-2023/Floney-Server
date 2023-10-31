@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth/apple")
@@ -25,7 +27,7 @@ public class AppleController implements AuthController {
 
     @Override
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(final String token, final SignupRequest request) {
+    public ResponseEntity<?> signup(final String token, @Valid final SignupRequest request) {
         return new ResponseEntity<>(appleUserService.signup(token, request), HttpStatus.CREATED);
     }
 
