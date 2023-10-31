@@ -54,12 +54,14 @@ public class SettlementResponse {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     private static class DetailResponse {
 
-        private String UserNickname;
+        private String userNickname;
+        private String userProfileImg;
         private Long money;
 
         private static DetailResponse from(SettlementUser settlementUser) {
             return DetailResponse.builder()
-                    .UserNickname(settlementUser.getUser().getNickname())
+                    .userNickname(settlementUser.getUser().getNickname())
+                    .userProfileImg(settlementUser.getUser().getProfileImg())
                     .money(settlementUser.getMoney())
                     .build();
         }
