@@ -71,6 +71,7 @@ class UserServiceTest {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
+                .receiveMarketing(user.isReceiveMarketing())
                 .build();
 
         given(userRepository.save(any(User.class))).willReturn(null);
@@ -91,6 +92,7 @@ class UserServiceTest {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
+                .receiveMarketing(user.isReceiveMarketing())
                 .build();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 

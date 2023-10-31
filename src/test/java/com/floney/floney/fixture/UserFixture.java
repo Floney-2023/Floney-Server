@@ -26,6 +26,7 @@ public class UserFixture {
                 .subscribe(false)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
                 .provider(Provider.EMAIL)
+                .receiveMarketing(true)
                 .build();
     }
 
@@ -38,6 +39,7 @@ public class UserFixture {
                 .subscribe(true)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
                 .provider(Provider.EMAIL)
+                .receiveMarketing(true)
                 .build();
     }
 
@@ -50,6 +52,7 @@ public class UserFixture {
                 .subscribe(false)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
                 .provider(Provider.EMAIL)
+                .receiveMarketing(false)
                 .build();
     }
 
