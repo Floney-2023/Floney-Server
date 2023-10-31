@@ -168,7 +168,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 .where(
                         book.bookKey.eq(request.getBookKey()),
                         bookLine.lineDate.between(duration.start(), duration.end()),
-                        user.email.in(request.users()),
+                        user.email.in(request.getUsersEmails()),
                         bookLine.status.eq(ACTIVE)
                 )
                 .groupBy(bookLine.id, bookLineCategory.name)

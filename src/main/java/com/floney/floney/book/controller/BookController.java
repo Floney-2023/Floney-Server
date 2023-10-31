@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books")
@@ -200,7 +202,7 @@ public class BookController {
      * @body AllOutcomesRequest 기간, 가계부 식별키 정보
      */
     @PostMapping("/outcomes")
-    public ResponseEntity<?> allOutcomes(@RequestBody AllOutcomesRequest allOutcomesRequest) {
+    public ResponseEntity<?> allOutcomes(@RequestBody @Valid AllOutcomesRequest allOutcomesRequest) {
         return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesRequest), HttpStatus.OK);
     }
 

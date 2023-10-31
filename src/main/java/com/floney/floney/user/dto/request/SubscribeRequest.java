@@ -12,22 +12,22 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 public class SubscribeRequest {
 
-    @NotNull
+    @NotNull(message = "originalTransactionId를 입력해주세요")
     private String originalTransactionId;
 
-    @NotNull
+    @NotNull(message = "transactionId를 입력해주세요")
     private String transactionId;
 
-    @NotNull
+    @NotNull(message = "productId를 입력해주세요")
     private String productId;
 
-    @NotNull
+    @NotNull(message = "expiresDate를 입력해주세요")
     private String expiresDate;
 
-    @NotNull
+    @NotNull(message = "subscriptionStatus를 입력해주세요")
     private String subscriptionStatus;
 
-    @NotNull
+    @NotNull(message = "renewalStatus를 입력해주세요")
     private boolean renewalStatus;
 
     @Builder

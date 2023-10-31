@@ -95,7 +95,7 @@ public class UserController {
      */
     @GetMapping("/signout")
     public ResponseEntity<?> signout(@RequestParam String accessToken,
-                                     @RequestBody final SignoutRequest request) {
+                                     @RequestBody @Valid final SignoutRequest request) {
         userService.signout(userService.logout(accessToken), request);
         return new ResponseEntity<>(HttpStatus.OK);
     }

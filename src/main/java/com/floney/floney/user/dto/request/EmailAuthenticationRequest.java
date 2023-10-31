@@ -4,15 +4,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
 @ToString
 public class EmailAuthenticationRequest {
 
-    @NotNull
+    @NotNull(message = "이메일을 입력해주세요")
+    @NotBlank(message = "이메일을 입력해주세요")
     private final String email;
-    @NotNull
+
+    @NotNull(message = "인증 코드를 입력해주세요")
     private final String code;
 
     @Builder

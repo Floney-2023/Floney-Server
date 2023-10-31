@@ -11,20 +11,16 @@ import java.util.List;
 @ToString
 public class AllOutcomesRequest {
 
-    private String bookKey;
+    private final String bookKey;
 
-    private List<String> usersEmails;
+    private final List<String> usersEmails;
 
-    @NotNull
-    private DatesDuration duration;
+    @NotNull(message = "duration을 입력해주세요")
+    private final DatesDuration duration;
 
     public AllOutcomesRequest(String bookKey, List<String> usersEmails, DatesDuration duration) {
         this.bookKey = bookKey;
         this.usersEmails = usersEmails;
         this.duration = duration;
-    }
-
-    public List<String> users() {
-        return usersEmails;
     }
 }

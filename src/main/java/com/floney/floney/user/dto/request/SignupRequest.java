@@ -4,6 +4,7 @@ import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -13,12 +14,15 @@ import javax.validation.constraints.NotNull;
 public class SignupRequest {
 
     @NotNull(message = "이메일을 입력해주세요")
+    @NotBlank(message = "이메일을 입력해주세요")
     private String email;
 
     @NotNull(message = "닉네임을 입력해주세요")
+    @NotBlank(message = "닉네임을 입력해주세요")
     private String nickname;
 
     @NotNull(message = "비밀번호를 입력해주세요")
+    @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
 
     @NotNull(message = "마케팅 수신 동의 여부를 입력해주세요")
