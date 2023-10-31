@@ -1,9 +1,7 @@
 package com.floney.floney.common.entity;
 
 import com.floney.floney.common.constant.Status;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -24,6 +22,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity {
 
     @Id
@@ -41,11 +40,8 @@ public abstract class BaseEntity {
 
     @Column
     @Enumerated(EnumType.STRING)
-    protected Status status;
-
-    protected BaseEntity() {
-        this.status = Status.ACTIVE;
-    }
+    @Builder.Default
+    protected Status status = Status.ACTIVE;
 
     public void inactive() {
         this.status = Status.INACTIVE;

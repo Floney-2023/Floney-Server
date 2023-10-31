@@ -49,11 +49,10 @@ public enum ErrorType {
 
     FAIL_TO_GENERATE_TOKEN("A001", "외부 서버에서 토큰을 요청하는 중 에러가 발생했습니다"),
 
-    SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다");
-
+    SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다"),
+    REQUEST_BODY_ERROR("1", "요청 body의 내용이 올바르지 않습니다");
 
     private final String code;
     private final String message;
-
 }
 

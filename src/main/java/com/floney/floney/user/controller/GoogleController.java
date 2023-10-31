@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "/auth/google")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class GoogleController implements AuthController {
 
     @Override
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(String token, SignupRequest request) {
+    public ResponseEntity<?> signup(String token, @Valid SignupRequest request) {
         return new ResponseEntity<>(googleUserService.signup(token, request), HttpStatus.CREATED);
     }
 

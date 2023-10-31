@@ -14,8 +14,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class SignoutRequest {
 
-    @NotNull
+    @NotNull(message = "회원 탈퇴 사유를 입력해주세요")
     private SignoutType type;
+
     private String reason;
 
     public void validateReasonNotEmpty() {

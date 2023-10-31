@@ -68,6 +68,9 @@ public class User extends BaseEntity {
     @Builder.Default
     private LocalDateTime lastLoginTime = LocalDateTime.now();
 
+    @Column(nullable = false)
+    private boolean receiveMarketing;
+
     @QueryProjection
     private User(String email,
                  String nickname,
@@ -78,7 +81,8 @@ public class User extends BaseEntity {
                  Provider provider,
                  String providerId,
                  String recentBookKey,
-                 LocalDateTime lastLoginTime) {
+                 LocalDateTime lastLoginTime,
+                 boolean receiveMarketing) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
@@ -89,6 +93,7 @@ public class User extends BaseEntity {
         this.providerId = providerId;
         this.recentBookKey = recentBookKey;
         this.lastLoginTime = lastLoginTime;
+        this.receiveMarketing = receiveMarketing;
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

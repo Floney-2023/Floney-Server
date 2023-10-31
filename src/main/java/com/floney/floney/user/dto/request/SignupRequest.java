@@ -4,6 +4,7 @@ import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -12,12 +13,20 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SignupRequest {
 
-    @NotNull
+    @NotNull(message = "이메일을 입력해주세요")
+    @NotBlank(message = "이메일을 입력해주세요")
     private String email;
-    @NotNull
+
+    @NotNull(message = "닉네임을 입력해주세요")
+    @NotBlank(message = "닉네임을 입력해주세요")
     private String nickname;
-    @NotNull
+
+    @NotNull(message = "비밀번호를 입력해주세요")
+    @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
+
+    @NotNull(message = "마케팅 수신 동의 여부를 입력해주세요")
+    private Boolean receiveMarketing;
 
     public LoginRequest toLoginRequest() {
         return LoginRequest.builder()
@@ -32,6 +41,7 @@ public class SignupRequest {
                 .password(password)
                 .nickname(nickname)
                 .provider(Provider.EMAIL)
+                .receiveMarketing(receiveMarketing)
                 .build();
     }
 
@@ -42,6 +52,7 @@ public class SignupRequest {
                 .nickname(nickname)
                 .provider(provider)
                 .providerId(providerId)
+                .receiveMarketing(receiveMarketing)
                 .build();
     }
 
