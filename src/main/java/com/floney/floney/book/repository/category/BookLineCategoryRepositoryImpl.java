@@ -30,7 +30,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     public void inactiveAllByBookKey(final String bookKey) {
         final JPQLQuery<Long> bookLineByBookKey = JPAExpressions.select(bookLine.id)
                 .from(bookLine)
-                .leftJoin(bookLine.book, book)
+                .innerJoin(bookLine.book, book)
                 .where(book.bookKey.eq(bookKey));
 
         jpaQueryFactory.update(bookLineCategory)

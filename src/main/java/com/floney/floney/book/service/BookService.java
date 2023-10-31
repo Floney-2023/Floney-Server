@@ -36,7 +36,7 @@ public interface BookService {
 
     InvolveBookResponse findInvolveBook(final User user);
 
-    void bookUserOut(final BookUserOutRequest request, final String username);
+    void bookUserOut(final BookUserOutRequest request, final User user);
 
     InviteCodeResponse inviteCode(final String bookKey);
 

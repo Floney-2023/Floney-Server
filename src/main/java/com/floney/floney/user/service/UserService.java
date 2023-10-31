@@ -216,7 +216,7 @@ public class UserService {
     @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
         User user = findUserByEmail(username);
-        user.saveRecentBookKey(request);
+        user.saveRecentBookKey(request.getBookKey());
         userRepository.save(user);
     }
 

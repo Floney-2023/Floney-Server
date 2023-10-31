@@ -135,7 +135,7 @@ public class BookUserRepositoryTest {
     void my_exist_book() {
         User user = UserFixture.createUser();
         SaveRecentBookKeyRequest request = new SaveRecentBookKeyRequest("book-key");
-        user.saveRecentBookKey(request);
+        user.saveRecentBookKey(request.getBookKey());
         User savedUser = userRepository.save(user);
         Assertions.assertThat(savedUser.getRecentBookKey()).isEqualTo("book-key");
     }

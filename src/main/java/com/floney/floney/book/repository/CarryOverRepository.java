@@ -1,5 +1,6 @@
 package com.floney.floney.book.repository;
 
+import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.CarryOver;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -7,6 +8,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface CarryOverRepository extends JpaRepository<CarryOver, Long>, CarryOverCustomRepository {
-    Optional<CarryOver> findCarryOverByDate(LocalDate targetDate);
+    Optional<CarryOver> findCarryOverByDateAndBook(LocalDate targetDate, Book book);
 
 }

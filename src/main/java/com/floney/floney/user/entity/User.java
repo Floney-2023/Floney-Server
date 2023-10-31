@@ -1,6 +1,5 @@
 package com.floney.floney.user.entity;
 
-import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.user.SubscribeException;
 import com.floney.floney.common.util.Events;
@@ -112,8 +111,8 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
     }
 
-    public void saveRecentBookKey(SaveRecentBookKeyRequest request) {
-        this.recentBookKey = request.getBookKey();
+    public void saveRecentBookKey(String bookKey) {
+        this.recentBookKey = bookKey;
     }
 
     public void saveDefaultBookKey(String bookKey) {
