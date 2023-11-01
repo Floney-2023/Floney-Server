@@ -57,8 +57,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 )
                 .groupBy(bookLineCategory.name)
                 .orderBy(bookLineCategory.name.asc())
-                .transform(groupBy(bookLineCategory.name)
-                        .as(bookLine.money.sum()));
+                .transform(
+                        groupBy(bookLineCategory.name).as(bookLine.money.sum())
+                );
     }
 
 
@@ -98,13 +99,15 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                         ))
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
-                .innerJoin(bookLine.bookLineCategories,
-                        bookLineCategory)
+                .innerJoin(bookLine.bookLineCategories, bookLineCategory)
                 .where(
                         bookLine.status.eq(ACTIVE),
                         book.status.eq(ACTIVE),
                         bookLine.lineDate.eq(date),
-                        bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
+                        bookLineCategory.name.in(
+                                INCOME.getKind(),
+                                OUTCOME.getKind()
+                        ),
                         book.bookKey.eq(bookKey)
                 )
                 .groupBy(bookLineCategory.name)
@@ -128,8 +131,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                         bookLine.status.eq(ACTIVE),
                         book.status.eq(ACTIVE),
                         bookLine.lineDate.between(dates.start(), dates.end()),
-                        bookLineCategory.name.in(INCOME.getKind(),
-                                OUTCOME.getKind()),
+                        bookLineCategory.name.in(
+                                INCOME.getKind(),
+                                OUTCOME.getKind()
+                        ),
                         book.bookKey.eq(bookKey)
                 )
                 .groupBy(bookLine.lineDate, bookLineCategory.name)
@@ -181,12 +186,14 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
 
     @Override
+    @Transactional
     public void inactiveAllByBookUser(BookUser bookUser) {
         jpaQueryFactory.update(bookLine)
                 .set(bookLine.status, INACTIVE)
                 .set(bookLine.updatedAt, LocalDateTime.now())
                 .where(
-                        bookLine.writer.id.eq(bookUser.getId())
+                        bookLine.writer.eq(bookUser),
+                        bookLine.status.eq(ACTIVE)
                 )
                 .execute();
     }
