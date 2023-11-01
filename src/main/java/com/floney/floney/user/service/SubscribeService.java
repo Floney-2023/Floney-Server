@@ -86,10 +86,17 @@ public class SubscribeService {
         List<Book> books = bookUserRepository.findBookByOwner(user);
 
         // 사용자의 구독 혜택을 받는 중인 가계부 위임을 처리하고 결과를 반환
-        return books.stream()
+        List<DelegateResponse> delegateResult = books.stream()
             .filter(this::isOverSubscribeLimit)
             .map(this::delegateOwner)
-            .toList();
+            .collect(Collectors.toList());
+
+        // 위임 로직을 지나쳤음에도, 활성 가계부가 2개라면 랜덤 1개 비활성화
+        List<Book> remainBooks = bookUserRepository.findBookByOwner(user);
+        if(remainBooks.size()>= SUBSCRIBE_MAX_BOOK.getValue()) {
+            remainBooks.get(0).inactiveBookStatus();
+        }
+        return delegateResult;
     }
 
     // 구독 혜택을 받는 가게부(가계부원 2명 이상)
