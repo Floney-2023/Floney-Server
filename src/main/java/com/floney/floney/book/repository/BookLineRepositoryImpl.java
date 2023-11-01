@@ -92,10 +92,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Override
     public List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey) {
         return jpaQueryFactory.select(
-                new QTotalExpense(
-                    bookLine.money.sum(),
-                    bookLineCategory.name
-                ))
+                        new QTotalExpense(
+                                bookLine.money.sum(),
+                                bookLineCategory.name
+                        ))
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
                 .innerJoin(bookLine.bookLineCategories,
@@ -246,11 +246,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public Long totalIncomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration) {
-        return totalIncomeMoney(duration, request.getBookKey());
-    }
-
-    @Override
     public Long totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration) {
         return totalOutcomeMoney(duration, request.getBookKey());
     }
@@ -263,7 +258,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
         Long totalIncomeMoney = totalIncomeMoney(duration, request.getBookKey());
 
-        Long totalOutcomeMoney = totalOutcomeMoney(duration,request.getBookKey());
+        Long totalOutcomeMoney = totalOutcomeMoney(duration, request.getBookKey());
 
         totalExpenses.put(INCOME.getKind(), totalIncomeMoney);
         totalExpenses.put(OUTCOME.getKind(), totalOutcomeMoney);
@@ -331,19 +326,19 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 .fetchOne();
     }
 
-    private Long totalOutcomeMoney(DatesDuration duration,String bookKey){
+    private Long totalOutcomeMoney(DatesDuration duration, String bookKey) {
         return jpaQueryFactory
-            .select(bookLine.money.sum().coalesce(0L))
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLine.lineDate.between(duration.start(), duration.end()),
-                bookLineCategory.name.eq(OUTCOME.getKind()),
-                book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE)
-            )
-            .fetchOne();
+                .select(bookLine.money.sum().coalesce(0L))
+                .from(bookLine)
+                .innerJoin(bookLine.book, book)
+                .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+                .where(
+                        bookLine.lineDate.between(duration.start(), duration.end()),
+                        bookLineCategory.name.eq(OUTCOME.getKind()),
+                        book.bookKey.eq(bookKey),
+                        book.status.eq(ACTIVE),
+                        bookLine.status.eq(ACTIVE)
+                )
+                .fetchOne();
     }
 }

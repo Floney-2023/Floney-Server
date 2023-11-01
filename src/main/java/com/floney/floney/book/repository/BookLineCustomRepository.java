@@ -35,8 +35,6 @@ public interface BookLineCustomRepository {
 
     List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request);
 
-    Long totalIncomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
-
     Long totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 
     Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
