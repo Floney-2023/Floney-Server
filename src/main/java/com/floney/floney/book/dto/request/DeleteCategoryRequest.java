@@ -1,13 +1,15 @@
 package com.floney.floney.book.dto.request;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DeleteCategoryRequest {
+
     private String bookKey;
     private String root;
     private String name;

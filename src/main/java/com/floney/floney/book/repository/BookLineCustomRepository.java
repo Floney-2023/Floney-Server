@@ -25,7 +25,7 @@ public interface BookLineCustomRepository {
 
     List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DatesDuration dates);
 
-    void inactiveAllLines(String bookKey);
+    void inactiveAllBy(String bookKey);
 
     List<DayLine> allOutcomes(AllOutcomesRequest request);
 
@@ -34,8 +34,6 @@ public interface BookLineCustomRepository {
     Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
     List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request);
-
-    Long totalIncomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 
     Long totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 

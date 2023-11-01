@@ -246,7 +246,7 @@ public class BookServiceImpl implements BookService {
                 .forEach(categoryRepository::delete);
 
         settlementRepository.inactiveAllByBookKey(bookKey);
-        bookLineRepository.inactiveAllLines(bookKey);
+        bookLineRepository.inactiveAllBy(bookKey);
         carryOverRepository.inactiveAllByBookKey(bookKey);
 
         List<Budget> initBudgets = budgetRepository.findAllByBook(book)

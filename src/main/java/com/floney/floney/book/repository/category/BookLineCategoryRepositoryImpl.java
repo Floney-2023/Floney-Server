@@ -1,6 +1,7 @@
 package com.floney.floney.book.repository.category;
 
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookUser;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
@@ -28,8 +29,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     @Override
     @Transactional
     public void inactiveAllByBookKey(final String bookKey) {
-        final JPQLQuery<Long> bookLineByBookKey = JPAExpressions.select(bookLine.id)
-                .from(bookLine)
+        final JPQLQuery<BookLine> bookLineByBookKey = JPAExpressions.selectFrom(bookLine)
                 .innerJoin(bookLine.book, book)
                 .where(book.bookKey.eq(bookKey));
 
@@ -37,7 +37,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
                 .set(bookLineCategory.status, INACTIVE)
                 .set(bookLineCategory.updatedAt, LocalDateTime.now())
                 .where(
-                        bookLineCategory.bookLine.id.in(bookLineByBookKey),
+                        bookLineCategory.bookLine.in(bookLineByBookKey),
                         bookLineCategory.status.eq(ACTIVE)
                 )
                 .execute();
@@ -59,8 +59,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     @Override
     @Transactional
     public void inactiveAllByBookUser(final BookUser targetBookUser) {
-        final JPQLQuery<Long> bookLineByBookUser = JPAExpressions.select(bookLine.id)
-                .from(bookLine)
+        final JPQLQuery<BookLine> bookLineByBookUser = JPAExpressions.selectFrom(bookLine)
                 .innerJoin(bookLine.writer, bookUser)
                 .where(bookUser.eq(targetBookUser));
 
@@ -68,7 +67,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
                 .set(bookLineCategory.status, INACTIVE)
                 .set(bookLineCategory.updatedAt, LocalDateTime.now())
                 .where(
-                        bookLineCategory.bookLine.id.in(bookLineByBookUser),
+                        bookLineCategory.bookLine.in(bookLineByBookUser),
                         bookLineCategory.status.eq(ACTIVE)
                 )
                 .execute();
@@ -77,8 +76,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     @Override
     @Transactional
     public void inactiveAllByBook(final Book targetBook) {
-        final JPQLQuery<Long> bookLineByBook = JPAExpressions.select(bookLine.id)
-                .from(bookLine)
+        final JPQLQuery<BookLine> bookLineByBook = JPAExpressions.selectFrom(bookLine)
                 .leftJoin(bookLine.book, book)
                 .where(book.eq(targetBook));
 
@@ -86,7 +84,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
                 .set(bookLineCategory.status, INACTIVE)
                 .set(bookLineCategory.updatedAt, LocalDateTime.now())
                 .where(
-                        bookLineCategory.bookLine.id.in(bookLineByBook),
+                        bookLineCategory.bookLine.in(bookLineByBook),
                         bookLineCategory.status.eq(ACTIVE)
                 )
                 .execute();
