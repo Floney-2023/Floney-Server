@@ -47,6 +47,7 @@ public class SubscribeService {
             Subscribe subscribe = Subscribe.of(user, request);
             subscribeRepository.save(subscribe);
         }
+        updateCapacityBySubscribe(user);
         return responses;
     }
 
@@ -115,4 +116,10 @@ public class SubscribeService {
             return DelegateResponse.of(book, null);
         }
     }
+
+    private void updateCapacityBySubscribe(User user){
+        bookUserRepository.findBookByOwner(user).stream()
+            .forEach(Book::updateCapacity);
+    }
+
 }
