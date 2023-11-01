@@ -11,6 +11,7 @@ import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -157,24 +158,24 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     @Override
     @Transactional
     public void inactiveCustomCategory(DeleteCategoryRequest request) {
-        Category targetRoot = jpaQueryFactory.selectFrom(category)
+        final JPQLQuery<Category> rootCategoryByCategoryName = JPAExpressions.selectFrom(category)
                 .where(
                         category.name.eq(request.getRoot()),
                         category.instanceOf(RootCategory.class)
-                )
-                .fetchOne();
+                );
+
+        final JPQLQuery<Book> bookByBookKey = JPAExpressions
+                .selectFrom(book)
+                .where(book.bookKey.eq(request.getBookKey()));
 
         jpaQueryFactory.update(bookCategory)
                 .set(bookCategory.status, INACTIVE)
                 .set(bookCategory.updatedAt, LocalDateTime.now())
                 .where(
                         bookCategory.name.eq(request.getName()),
-                        bookCategory.book.id.eq(
-                                JPAExpressions.select(book.id)
-                                        .from(book)
-                                        .where(book.bookKey.eq(request.getBookKey()))
-                        ),
-                        bookCategory.parent.eq(targetRoot)
+                        bookCategory.book.eq(bookByBookKey),
+                        bookCategory.parent.eq(rootCategoryByCategoryName),
+                        bookCategory.status.eq(ACTIVE)
                 )
                 .execute();
     }
@@ -206,7 +207,10 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
         jpaQueryFactory.update(bookCategory)
                 .set(bookCategory.status, INACTIVE)
                 .set(bookCategory.updatedAt, LocalDateTime.now())
-                .where(bookCategory.book.eq(book))
+                .where(
+                        bookCategory.book.eq(book),
+                        bookCategory.status.eq(ACTIVE)
+                )
                 .execute();
     }
 }

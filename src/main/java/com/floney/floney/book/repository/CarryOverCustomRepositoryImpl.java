@@ -25,15 +25,15 @@ public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository 
     @Override
     @Transactional
     public void inactiveAllByBookKey(String bookKey) {
-        final JPQLQuery<Long> bookByBookKey = JPAExpressions.select(book.id)
-                .from(book)
+        final JPQLQuery<Book> bookByBookKey = JPAExpressions
+                .selectFrom(book)
                 .where(book.bookKey.eq(bookKey));
 
         jpaQueryFactory.update(carryOver)
                 .set(carryOver.status, INACTIVE)
                 .set(carryOver.updatedAt, LocalDateTime.now())
                 .where(
-                        carryOver.book.id.eq(bookByBookKey),
+                        carryOver.book.eq(bookByBookKey),
                         carryOver.status.eq(ACTIVE)
                 )
                 .execute();
