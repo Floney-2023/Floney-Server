@@ -331,39 +331,4 @@ public class BookController {
     public ResponseEntity<?> getBudget(@RequestParam String bookKey, @RequestParam String startYear) {
         return new ResponseEntity<>(bookService.getBudgetByYear(bookKey, startYear), HttpStatus.OK);
     }
-
-    /**
-     * 가계부 알람 조회
-     *
-     * @param bookKey     가계부 키
-     * @param userDetails 유저 정보
-     * @return List<AlarmResponse> 알람 정보
-     */
-    @GetMapping("/alarm")
-    public ResponseEntity<?> getAlarm(@RequestParam String bookKey, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.getAlarmByBook(bookKey, userDetails.getUsername()), HttpStatus.OK);
-    }
-
-    /**
-     * 알람 저장
-     *
-     * @body SaveAlarmRequest 알람 저장 정보
-     */
-    @PostMapping("/alarm")
-    public ResponseEntity<?> saveAlarm(@RequestBody SaveAlarmRequest request) {
-        bookService.saveAlarm(request);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * 알람 읽음 처리
-     *
-     * @body UpdateAlarmReceived 알람 읽음 상태
-     */
-    @PostMapping("/alarm/update")
-    public ResponseEntity<?> updateAlarm(@RequestBody UpdateAlarmReceived request) {
-        bookService.updateAlarmReceived(request);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
 }
