@@ -74,7 +74,7 @@ public class SubscribeService {
                 .map((book) -> book.subscribe(user))
                 .map(bookRepository::save)
                 .map(book -> DelegateResponse.of(book, user))
-                .collect(Collectors.toList());
+            .toList();
     }
 
     private List<DelegateResponse> unsubscribeAndDelegateBooks(User user) {
@@ -89,7 +89,7 @@ public class SubscribeService {
         List<DelegateResponse> delegateResult = books.stream()
             .filter(this::isOverSubscribeLimit)
             .map(this::delegateOwner)
-            .collect(Collectors.toList());
+            .toList();
 
         // 위임 로직을 지나쳤음에도, 활성 가계부가 2개라면 랜덤 1개 비활성화
         List<Book> remainBooks = bookUserRepository.findBookByOwner(user);
@@ -126,7 +126,7 @@ public class SubscribeService {
 
     private void updateCapacityBySubscribe(User user){
         bookUserRepository.findBookByOwner(user).stream()
-            .forEach(Book::updateCapacity);
+            .forEach(Book::updateToSubscribeCapacity);
     }
 
 }

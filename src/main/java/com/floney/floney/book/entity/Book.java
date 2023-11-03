@@ -172,7 +172,7 @@ public class Book extends BaseEntity {
         return owner.equals(email);
     }
 
-    public void updateCapacity() {
+    public void updateToSubscribeCapacity() {
         this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
     }
 }
