@@ -1,6 +1,6 @@
-package com.floney.floney.alarm.controller;
+package com.floney.floney.googleAlarm.controller;
 
-import com.floney.floney.alarm.service.AlarmService;
+import com.floney.floney.googleAlarm.service.GoogleAlarmService;
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.book.dto.request.UpdateAlarmReceived;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/alarm")
 @RequiredArgsConstructor
-public class AlarmController {
+public class GoogleAlarmController {
 
-    private final AlarmService alarmService;
+    private final GoogleAlarmService alarmService;
 
     @GetMapping("/tokens")
     public ResponseEntity<?> generateToken(@AuthenticationPrincipal CustomUserDetails userDetails) {

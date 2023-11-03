@@ -1,6 +1,6 @@
-package com.floney.floney.alarm.service;
+package com.floney.floney.googleAlarm.service;
 
-import com.floney.floney.alarm.dto.response.AlarmTokenResponse;
+import com.floney.floney.googleAlarm.dto.response.GoogleAlarmTokenResponse;
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.book.dto.request.UpdateAlarmReceived;
 import com.floney.floney.user.dto.response.AlarmResponse;
@@ -8,9 +8,9 @@ import com.floney.floney.user.entity.User;
 
 import java.util.List;
 
-public interface AlarmService {
+public interface GoogleAlarmService {
 
-    AlarmTokenResponse generateToken(final User user);
+    GoogleAlarmTokenResponse generateToken(final User user);
 
     void saveAlarm(SaveAlarmRequest request);
 
