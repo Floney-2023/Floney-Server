@@ -12,9 +12,4 @@ public interface GoogleAlarmService {
 
     GoogleAlarmTokenResponse generateToken(final User user);
 
-    void saveAlarm(SaveAlarmRequest request);
-
-    void updateAlarmReceived(UpdateAlarmReceived request);
-
-    List<AlarmResponse> getAlarmByBook(String bookKey, String email);
 }

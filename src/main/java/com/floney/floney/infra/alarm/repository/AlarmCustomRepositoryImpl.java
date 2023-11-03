@@ -1,4 +1,4 @@
-package com.floney.floney.book.repository;
+package com.floney.floney.infra.alarm.repository;
 
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
