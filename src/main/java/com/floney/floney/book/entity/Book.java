@@ -171,4 +171,8 @@ public class Book extends BaseEntity {
     public boolean isOwner(final String email) {
         return owner.equals(email);
     }
+
+    public void updateToSubscribeCapacity() {
+        this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
+    }
 }

@@ -56,11 +56,5 @@ public interface BookService {
 
     Map<Month, Long> getBudgetByYear(String bookKey, String year);
 
-    void saveAlarm(SaveAlarmRequest request);
-
-    void updateAlarmReceived(UpdateAlarmReceived request);
-
-    List<AlarmResponse> getAlarmByBook(String bookKey, String email);
-
     void leaveBooksBy(long userId);
 }

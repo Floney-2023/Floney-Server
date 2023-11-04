@@ -1,4 +1,4 @@
-package com.floney.floney.alarm.dto.response;
+package com.floney.floney.infra.googleAlarm.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlarmTokenResponse {
+public class GoogleAlarmTokenResponse {
 
     private String token;
 }
