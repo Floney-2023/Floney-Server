@@ -1,4 +1,4 @@
-package com.floney.floney.googleAlarm.dto.response;
+package com.floney.floney.infra.googleAlarm.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

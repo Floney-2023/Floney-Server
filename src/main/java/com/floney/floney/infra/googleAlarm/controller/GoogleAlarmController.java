@@ -1,11 +1,8 @@
-package com.floney.floney.googleAlarm.controller;
+package com.floney.floney.infra.googleAlarm.controller;
 
-import com.floney.floney.googleAlarm.service.GoogleAlarmService;
-import com.floney.floney.book.dto.request.SaveAlarmRequest;
-import com.floney.floney.book.dto.request.UpdateAlarmReceived;
+import com.floney.floney.infra.googleAlarm.service.GoogleAlarmService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

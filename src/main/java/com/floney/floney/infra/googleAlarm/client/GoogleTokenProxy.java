@@ -1,4 +1,4 @@
-package com.floney.floney.googleAlarm.client;
+package com.floney.floney.infra.googleAlarm.client;
 
 public interface GoogleTokenProxy {
 

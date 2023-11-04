@@ -1,4 +1,4 @@
-package com.floney.floney.googleAlarm.client;
+package com.floney.floney.infra.googleAlarm.client;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
 import com.google.auth.oauth2.GoogleCredentials;

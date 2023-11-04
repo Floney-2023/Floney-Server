@@ -15,7 +15,7 @@ import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
-import com.floney.floney.infra.alarm.repository.AlarmRepository;
+import com.floney.floney.alarm.repository.AlarmRepository;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;

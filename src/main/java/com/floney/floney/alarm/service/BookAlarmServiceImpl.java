@@ -1,11 +1,11 @@
-package com.floney.floney.infra.alarm.service;
+package com.floney.floney.alarm.service;
 
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.book.dto.request.UpdateAlarmReceived;
 import com.floney.floney.book.entity.Alarm;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
-import com.floney.floney.infra.alarm.repository.AlarmRepository;
+import com.floney.floney.alarm.repository.AlarmRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.book.NotFoundAlarmException;

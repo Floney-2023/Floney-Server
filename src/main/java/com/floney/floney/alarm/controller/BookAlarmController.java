@@ -1,8 +1,8 @@
-package com.floney.floney.infra.alarm.controller;
+package com.floney.floney.alarm.controller;
 
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.book.dto.request.UpdateAlarmReceived;
-import com.floney.floney.infra.alarm.service.BookAlarmService;
+import com.floney.floney.alarm.service.BookAlarmService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

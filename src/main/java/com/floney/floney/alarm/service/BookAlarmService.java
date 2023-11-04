@@ -1,4 +1,4 @@
-package com.floney.floney.infra.alarm.service;
+package com.floney.floney.alarm.service;
 
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.book.dto.request.UpdateAlarmReceived;

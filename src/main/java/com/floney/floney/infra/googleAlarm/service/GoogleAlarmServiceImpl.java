@@ -1,7 +1,7 @@
-package com.floney.floney.googleAlarm.service;
+package com.floney.floney.infra.googleAlarm.service;
 
-import com.floney.floney.googleAlarm.client.GoogleTokenProxy;
-import com.floney.floney.googleAlarm.dto.response.GoogleAlarmTokenResponse;
+import com.floney.floney.infra.googleAlarm.client.GoogleTokenProxy;
+import com.floney.floney.infra.googleAlarm.dto.response.GoogleAlarmTokenResponse;
 import com.floney.floney.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
