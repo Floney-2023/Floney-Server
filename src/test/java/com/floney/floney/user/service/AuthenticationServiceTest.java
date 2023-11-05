@@ -119,7 +119,7 @@ public class AuthenticationServiceTest {
         given(userRepository.findByEmail(email)).willReturn(Optional.of(UserFixture.createUser()));
 
         // when
-        String newPassword = authenticationService.sendPasswordFindEmail(email);
+        String newPassword = authenticationService.regeneratePassword(email);
 
         // then
         assertThat(newPassword.length()).isEqualTo(passwordLength);
@@ -129,7 +129,7 @@ public class AuthenticationServiceTest {
     @DisplayName("새 비밀번호를 올바르게 생성하는 데 실패한다 - 존재하지 않는 회원")
     void generateNewPassword_fail_throws_userNotFoundException() {
         // when & then
-        assertThatThrownBy(() -> authenticationService.sendPasswordFindEmail("notUser"))
+        assertThatThrownBy(() -> authenticationService.regeneratePassword("notUser"))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
@@ -144,7 +144,7 @@ public class AuthenticationServiceTest {
         given(userRepository.findByEmail(email)).willReturn(Optional.of(notEmailUser));
 
         // when & then
-        assertThatThrownBy(() -> authenticationService.sendPasswordFindEmail(email))
+        assertThatThrownBy(() -> authenticationService.regeneratePassword(email))
                 .isInstanceOf(NotEmailUserException.class);
     }
 }

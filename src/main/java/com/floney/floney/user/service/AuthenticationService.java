@@ -95,7 +95,7 @@ public class AuthenticationService {
         return code;
     }
 
-    public String sendPasswordFindEmail(String email) {
+    public String regeneratePassword(String email) {
         validateEmailUser(email);
 
         String newPassword = RandomStringUtils.random(50, true, true);

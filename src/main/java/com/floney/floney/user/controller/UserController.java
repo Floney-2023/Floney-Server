@@ -133,7 +133,7 @@ public class UserController {
      */
     @GetMapping("/password/find")
     public ResponseEntity<?> findPassword(@RequestParam String email) {
-        String password = authenticationService.sendPasswordFindEmail(email);
+        String password = authenticationService.regeneratePassword(email);
         userService.updatePassword(password, email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
