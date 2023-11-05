@@ -6,6 +6,7 @@ import com.floney.floney.common.exception.user.MailAddressException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.service.AuthenticationService;
 import com.floney.floney.user.service.CustomUserDetailsService;
 import com.floney.floney.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +41,9 @@ class UserControllerTest {
     private UserService userService;
 
     @MockBean
+    private AuthenticationService authenticationService;
+
+    @MockBean
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
@@ -56,7 +60,7 @@ class UserControllerTest {
                 .email("success@email.com")
                 .password("success")
                 .build();
-        given(userService.login(any(LoginRequest.class))).willReturn(new Token("", ""));
+        given(authenticationService.login(any(LoginRequest.class))).willReturn(new Token("", ""));
 
         // when & then
         mockMvc.perform(post("/users/login")
@@ -74,7 +78,7 @@ class UserControllerTest {
                 .email("wrong@email.com")
                 .password("wrong")
                 .build();
-        given(userService.login(any(LoginRequest.class))).willThrow(BadCredentialsException.class);
+        given(authenticationService.login(any(LoginRequest.class))).willThrow(BadCredentialsException.class);
 
         // when & then
         mockMvc.perform(post("/users/login")
@@ -89,7 +93,7 @@ class UserControllerTest {
         // given
         String email = "right@email.com";
         given(customUserDetailsService.loadUserByUsername(email)).willReturn(any(UserDetails.class));
-        given(userService.sendEmailAuthMail(email)).willReturn("");
+        given(authenticationService.sendEmailAuthMail(email)).willReturn("");
 
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))
@@ -101,7 +105,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_fail_invalidEmail() throws Exception {
         // given
         String email = "wrong@email.com";
-        given(userService.sendEmailAuthMail(email)).willThrow(new MailAddressException(""));
+        given(authenticationService.sendEmailAuthMail(email)).willThrow(new MailAddressException(""));
 
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))
@@ -114,7 +118,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_fail_mailServerError() throws Exception {
         // given
         String email = "right@email.com";
-        given(userService.sendEmailAuthMail(email)).willThrow(MailSendException.class);
+        given(authenticationService.sendEmailAuthMail(email)).willThrow(MailSendException.class);
 
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))

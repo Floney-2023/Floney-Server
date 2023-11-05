@@ -1,7 +1,6 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
 import com.floney.floney.common.exception.user.UserFoundException;
@@ -12,7 +11,6 @@ import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.constant.SignoutType;
-import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
@@ -29,7 +27,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -37,8 +34,8 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.INACTIVE;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -101,60 +98,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("로그인에 성공한다")
-    void login_success() {
-        // given
-        User user = UserFixture.createUser();
-
-        LoginRequest request = LoginRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .build();
-
-        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
-        given(jwtProvider.generateToken(anyString())).willReturn(new Token("accessToken", "refreshToken"));
-
-        // when & then
-        assertThatNoException().isThrownBy(() -> userService.login(request));
-        assertThat(user.isInactive()).isFalse();
-        assertThat(user.getLastLoginTime()).isNotNull();
-    }
-
-    @Test
-    @DisplayName("로그인에 실패한다 - 존재하지 않는 회원")
-    void login_fail_throws_userNotFoundException() {
-        // given
-        LoginRequest request = LoginRequest.builder()
-                .email("fail@fail.com")
-                .password("fail")
-                .build();
-
-        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() -> userService.login(request)).isInstanceOf(UserNotFoundException.class);
-    }
-
-    @Test
-    @DisplayName("로그인에 실패한다 - 일치하지 않는 비밀번호")
-    void login_fail_throws_badCredentialException() {
-        // given
-        User user = UserFixture.getUser();
-
-        LoginRequest request = LoginRequest.builder()
-                .email(user.getEmail())
-                .password("fail")
-                .build();
-
-        given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
-        given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);
-
-        // when & then
-        assertThatThrownBy(() -> userService.login(request)).isInstanceOf(BadCredentialsException.class);
-    }
-
-    @Test
     @DisplayName("회원탈퇴에 성공한다")
     void signout_success() {
         // given
@@ -214,32 +157,6 @@ class UserServiceTest {
         // when & then
         assertThat(userService.getUserInfo(CustomUserDetails.of(user)))
                 .isEqualTo(MyPageResponse.from(UserResponse.from(user), Collections.singletonList(BookFixture.myBookInfo())));
-    }
-
-    @Test
-    @DisplayName("이메일 인증코드를 올바르게 생성하는 데 성공한다")
-    void generateEmailAuthenticationCode_success() {
-        // given
-        int codeLength = 6;
-
-        // when
-        String code = userService.sendEmailAuthMail("email");
-
-        // then
-        assertThat(code.length()).isEqualTo(codeLength);
-    }
-
-    @Test
-    @DisplayName("새 비밀번호를 올바르게 생성하는 데 성공한다")
-    void generateNewPassword_success() {
-        // given
-        int passwordLength = 50;
-
-        // when
-        String newPassword = userService.sendPasswordFindEmail("email");
-
-        // then
-        assertThat(newPassword.length()).isEqualTo(passwordLength);
     }
 
     @Test
