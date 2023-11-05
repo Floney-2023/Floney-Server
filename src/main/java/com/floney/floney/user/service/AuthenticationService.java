@@ -81,7 +81,7 @@ public class AuthenticationService {
     }
 
     public String sendEmailAuthMail(String email) {
-        validateUserExistByEmail(email);
+        validateUserNotExistByEmail(email);
 
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
@@ -96,6 +96,8 @@ public class AuthenticationService {
     }
 
     public String sendPasswordFindEmail(String email) {
+        validateEmailUser(email);
+
         String newPassword = RandomStringUtils.random(50, true, true);
 
         String mailSubject = "[Floney] 새 비밀번호 안내";
@@ -119,7 +121,13 @@ public class AuthenticationService {
         }
     }
 
-    private void validateUserExistByEmail(String email) {
+    private void validateEmailUser(final String email) {
+        final User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        user.validateEmailUser();
+    }
+
+    private void validateUserNotExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });
