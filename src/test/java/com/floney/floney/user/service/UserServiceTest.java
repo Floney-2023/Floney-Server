@@ -5,9 +5,6 @@ import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.common.util.JwtProvider;
-import com.floney.floney.common.util.MailProvider;
-import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.constant.SignoutType;
@@ -50,12 +47,6 @@ class UserServiceTest {
     private BookUserRepository bookUserRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private MailProvider mailProvider;
-    @Mock
-    private RedisProvider redisProvider;
-    @Mock
-    private JwtProvider jwtProvider;
     @Mock
     private SignoutReasonRepository signoutReasonRepository;
 
