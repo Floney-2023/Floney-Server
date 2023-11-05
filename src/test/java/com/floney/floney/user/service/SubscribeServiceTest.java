@@ -153,7 +153,7 @@ public class SubscribeServiceTest {
             .willReturn(4);
 
         // 위임 할 가계부원이 존재할 경우
-        User delegateUser = UserFixture.createUser2();
+        User delegateUser = UserFixture.createKakaoUser();
         given(bookUserRepository.findRandomBookUserWhoSubscribeExclusively(any(Book.class)))
             .willReturn(Optional.of(delegateUser));
 

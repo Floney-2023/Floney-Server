@@ -1,6 +1,7 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.user.NotEmailUserException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
@@ -119,5 +120,28 @@ public class AuthenticationServiceTest {
 
         // then
         assertThat(newPassword.length()).isEqualTo(passwordLength);
+    }
+
+    @Test
+    @DisplayName("새 비밀번호를 올바르게 생성하는 데 실패한다 - 존재하지 않는 회원")
+    void generateNewPassword_fail_throws_userNotFoundException() {
+        // when & then
+        assertThatThrownBy(() -> authenticationService.sendPasswordFindEmail("notUser"))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+
+    @Test
+    @DisplayName("새 비밀번호를 올바르게 생성하는 데 실패한다 - 간편 회원")
+    void generateNewPassword_fail_throws_notEmailUserException() {
+        // given
+        final String email = "notEmailUser";
+        final User notEmailUser = UserFixture.createKakaoUser();
+
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(notEmailUser));
+
+        // when & then
+        assertThatThrownBy(() -> authenticationService.sendPasswordFindEmail(email))
+                .isInstanceOf(NotEmailUserException.class);
     }
 }
