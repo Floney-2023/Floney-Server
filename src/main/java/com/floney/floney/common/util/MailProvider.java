@@ -1,5 +1,6 @@
 package com.floney.floney.common.util;
 
+import com.floney.floney.common.domain.vo.Mail;
 import com.floney.floney.common.exception.user.MailAddressException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailSendException;
@@ -12,6 +13,10 @@ import org.springframework.stereotype.Component;
 public class MailProvider {
 
     private final JavaMailSender javaMailSender;
+
+    public void sendMail(Mail mail) {
+        sendMail(mail.getEmail(), mail.getSubject(), mail.getContent());
+    }
 
     public void sendMail(String email, String subject, String text) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();

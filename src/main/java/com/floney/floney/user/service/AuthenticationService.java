@@ -8,6 +8,7 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
+import com.floney.floney.user.domain.vo.RegeneratePasswordMail;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.entity.User;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Random;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthenticationService {
 
@@ -96,14 +98,13 @@ public class AuthenticationService {
     }
 
     public String regeneratePassword(String email) {
-        validateEmailUser(email);
+        final User user = findUserByEmail(email);
+        user.validateEmailUser();
 
-        String newPassword = RandomStringUtils.random(50, true, true);
+        final String newPassword = RandomStringUtils.random(50, true, true);
+        final RegeneratePasswordMail mail = RegeneratePasswordMail.create(email, newPassword);
+        mailProvider.sendMail(mail);
 
-        String mailSubject = "[Floney] 새 비밀번호 안내";
-        String mailText = String.format("새 비밀번호: %s\n바뀐 비밀번호로 로그인 해주세요.\n", newPassword);
-
-        mailProvider.sendMail(email, mailSubject, mailText);
         return newPassword;
     }
 
@@ -121,21 +122,15 @@ public class AuthenticationService {
         }
     }
 
-    private void validateEmailUser(final String email) {
-        final User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
-        user.validateEmailUser();
-    }
-
     private void validateUserNotExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             throw new UserFoundException(user.getEmail(), user.getProvider());
         });
     }
 
-    private User findUserByEmail(final String request) {
-        return userRepository.findByEmail(request)
-                .orElseThrow(() -> new UserNotFoundException(request));
+    private User findUserByEmail(final String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validatePasswordMatches(final LoginRequest request, final String user) {
