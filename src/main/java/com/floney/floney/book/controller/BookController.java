@@ -101,7 +101,7 @@ public class BookController {
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteBook(@RequestParam("bookKey") String bookKey,
                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
-        bookService.deleteBook(userDetails.getUsername(), bookKey);
+        bookService.deleteBook(userDetails.getUser(), bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

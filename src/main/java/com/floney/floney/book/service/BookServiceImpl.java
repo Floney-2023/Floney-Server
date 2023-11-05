@@ -1,5 +1,6 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.alarm.repository.AlarmRepository;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
@@ -15,7 +16,6 @@ import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
-import com.floney.floney.alarm.repository.AlarmRepository;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -116,12 +116,25 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteBook(final String email, final String bookKey) {
-        final BookUser bookUser = findBookUserByKey(email, bookKey);
+    public void deleteBook(final User user, final String bookKey) {
+        final BookUser bookUser = findBookUserByKey(user.getEmail(), bookKey);
 
         validateCanDeleteBookBy(bookUser);
         bookUser.inactive();
         deleteBook(bookUser.getBook());
+
+        List<Book> userBooks = bookUserRepository.findBookByOwner(user);
+
+        // 삭제한 가계부의 키가 최근 접근한 가계부 키였다면
+        // 최근 접근 가계부 키 => 다른 가계부 키로 교체
+        if (!userBooks.isEmpty()) {
+            user.saveRecentBookKey(userBooks.get(0).getBookKey());
+        }
+        // 다른 가계부가 없다면 null
+        else {
+            user.saveRecentBookKey(null);
+        }
+        userRepository.save(user);
     }
 
     @Override

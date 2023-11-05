@@ -20,7 +20,7 @@ public interface BookService {
 
     void changeBookName(final BookNameChangeRequest request);
 
-    void deleteBook(final String email, final String bookKey);
+    void deleteBook(final User user, final String bookKey);
 
     OurBookInfo getBookInfo(final String bookKey, final String myEmail);
 
