@@ -113,10 +113,13 @@ public class AuthenticationServiceTest {
     @DisplayName("새 비밀번호를 올바르게 생성하는 데 성공한다")
     void generateNewPassword_success() {
         // given
-        int passwordLength = 50;
+        final int passwordLength = 50;
+        final String email = "email";
+
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(UserFixture.createUser()));
 
         // when
-        String newPassword = authenticationService.sendPasswordFindEmail("email");
+        String newPassword = authenticationService.sendPasswordFindEmail(email);
 
         // then
         assertThat(newPassword.length()).isEqualTo(passwordLength);
