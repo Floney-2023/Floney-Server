@@ -43,7 +43,7 @@ public class UserFixture {
                 .build();
     }
 
-    public static User createUser2() {
+    public static User createKakaoUser() {
         return User.builder()
                 .nickname("floney")
                 .email("floney2@naver.com")
@@ -51,7 +51,7 @@ public class UserFixture {
                 .profileImg("img")
                 .subscribe(false)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-                .provider(Provider.EMAIL)
+                .provider(Provider.KAKAO)
                 .receiveMarketing(false)
                 .build();
     }

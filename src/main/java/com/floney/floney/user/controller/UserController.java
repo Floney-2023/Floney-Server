@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.*;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.service.AuthenticationService;
 import com.floney.floney.user.service.SubscribeService;
 import com.floney.floney.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationService authenticationService;
     private final SubscribeService subscribeService;
 
     /**
@@ -30,7 +32,7 @@ public class UserController {
      */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
-        return new ResponseEntity<>(userService.login(userService.signup(request)), HttpStatus.CREATED);
+        return new ResponseEntity<>(authenticationService.login(userService.signup(request)), HttpStatus.CREATED);
     }
 
     /**
@@ -40,7 +42,7 @@ public class UserController {
      */
     @GetMapping("/email/mail")
     public ResponseEntity<?> sendEmailAuthMail(@RequestParam String email) {
-        userService.sendEmailAuthMail(email);
+        authenticationService.sendEmailAuthMail(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -51,7 +53,7 @@ public class UserController {
      */
     @PostMapping("/email/mail")
     public ResponseEntity<?> authenticateEmail(@RequestBody @Valid EmailAuthenticationRequest request) {
-        userService.authenticateEmail(request);
+        authenticationService.authenticateEmail(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -63,7 +65,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
-        return new ResponseEntity<>(userService.login(request), HttpStatus.OK);
+        return new ResponseEntity<>(authenticationService.login(request), HttpStatus.OK);
     }
 
     /**
@@ -73,7 +75,7 @@ public class UserController {
      */
     @GetMapping("/logout")
     public ResponseEntity<?> logout(@RequestParam String accessToken) {
-        userService.logout(accessToken);
+        authenticationService.logout(accessToken);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -85,7 +87,7 @@ public class UserController {
      */
     @PostMapping("/reissue")
     public ResponseEntity<?> reissueToken(@RequestBody @Valid Token token) {
-        return new ResponseEntity<>(userService.reissueToken(token), HttpStatus.CREATED);
+        return new ResponseEntity<>(authenticationService.reissueToken(token), HttpStatus.CREATED);
     }
 
     /**
@@ -96,7 +98,7 @@ public class UserController {
     @GetMapping("/signout")
     public ResponseEntity<?> signout(@RequestParam String accessToken,
                                      @RequestBody @Valid final SignoutRequest request) {
-        userService.signout(userService.logout(accessToken), request);
+        userService.signout(authenticationService.logout(accessToken), request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -131,7 +133,7 @@ public class UserController {
      */
     @GetMapping("/password/find")
     public ResponseEntity<?> findPassword(@RequestParam String email) {
-        String password = userService.sendPasswordFindEmail(email);
+        String password = authenticationService.regeneratePassword(email);
         userService.updatePassword(password, email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -194,6 +196,4 @@ public class UserController {
     public ResponseEntity<?> updateSubscribe(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(subscribeService.getSubscribe(userDetails.getUser()), HttpStatus.OK);
     }
-
-
 }

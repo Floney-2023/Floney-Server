@@ -1,6 +1,7 @@
 package com.floney.floney.user.entity;
 
 import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.common.exception.user.NotEmailUserException;
 import com.floney.floney.common.exception.user.SubscribeException;
 import com.floney.floney.common.util.Events;
 import com.floney.floney.user.dto.constant.Provider;
@@ -22,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -157,6 +159,12 @@ public class User extends BaseEntity {
     private void validateNotSubscribe() {
         if (isSubscribe()) {
             throw new SubscribeException();
+        }
+    }
+
+    public void validateEmailUser() {
+        if (!Objects.equals(Provider.EMAIL, provider)) {
+            throw new NotEmailUserException(provider);
         }
     }
 }

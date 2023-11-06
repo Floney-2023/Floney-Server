@@ -119,7 +119,7 @@ public class BookUserRepositoryTest {
         User user1 = userRepository.save(UserFixture.createUser());
         BookUser bookUser1 = BookFixture.createBookUser(user1, savedBook);
 
-        User user2 = userRepository.save(UserFixture.createUser2());
+        User user2 = userRepository.save(UserFixture.createKakaoUser());
         BookUser bookUser2 = BookFixture.createBookUser(user2, savedBook);
 
         bookUserRepository.save(bookUser1);
