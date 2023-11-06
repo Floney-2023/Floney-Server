@@ -120,6 +120,13 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(NotEmailUserException.class)
+    protected ResponseEntity<ErrorResponse> notEmailUser(NotEmailUserException exception) {
+        logger.warn("이메일 유저가 아니라 간편 유저({})임", exception.getProvider());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {
