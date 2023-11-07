@@ -48,7 +48,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deleteCustomCategory(DeleteCategoryRequest request) {
         categoryRepository.inactiveCustomCategory(request);
-
     }
 
     private Book findBook(String bookKey) {

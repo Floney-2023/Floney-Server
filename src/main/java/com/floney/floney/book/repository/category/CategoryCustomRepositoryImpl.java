@@ -158,27 +158,22 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     @Override
     @Transactional
     public void inactiveCustomCategory(DeleteCategoryRequest request) {
-        final JPQLQuery<Category> rootCategoryByCategoryName = JPAExpressions.selectFrom(category)
-                .where(
-                        category.name.eq(request.getRoot()),
-                        category.instanceOf(RootCategory.class)
-                );
+        Category targetRoot = jpaQueryFactory.selectFrom(category)
+            .where(category.name.eq(request.getRoot()),
+                category.instanceOf(RootCategory.class))
+            .fetchOne();
 
-        final JPQLQuery<Book> bookByBookKey = JPAExpressions
-                .selectFrom(book)
-                .where(book.bookKey.eq(request.getBookKey()));
-
-        jpaQueryFactory.update(bookCategory)
-                .set(bookCategory.status, INACTIVE)
-                .set(bookCategory.updatedAt, LocalDateTime.now())
-                .where(
-                        bookCategory.name.eq(request.getName()),
-                        bookCategory.book.eq(bookByBookKey),
-                        bookCategory.parent.eq(rootCategoryByCategoryName),
-                        bookCategory.status.eq(ACTIVE)
-                )
-                .execute();
+        jpaQueryFactory.delete(bookCategory)
+            .where(bookCategory.name.eq(request.getName()),
+                bookCategory.book.id.eq(
+                    JPAExpressions.select(book.id)
+                        .from(book)
+                        .where(book.bookKey.eq(request.getBookKey()))
+                ),
+                bookCategory.parent.eq(targetRoot))
+            .execute();
     }
+
 
     @Override
     public List<BookCategory> findAllCustomCategory(Book book) {
