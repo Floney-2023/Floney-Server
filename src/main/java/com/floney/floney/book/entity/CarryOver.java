@@ -1,7 +1,7 @@
 package com.floney.floney.book.entity;
 
 import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
@@ -41,7 +41,7 @@ public class CarryOver extends BaseEntity {
         this.date = date;
     }
 
-    public static CarryOver of(CreateLineRequest request, Book book, LocalDate date) {
+    public static CarryOver of(ChangeBookLineRequest request, Book book, LocalDate date) {
         if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
             return CarryOver
                     .builder()

@@ -51,7 +51,7 @@ public class BookController {
      * @body CreateLineRequest 가계부 내역
      */
     @PostMapping("/lines")
-    public ResponseEntity<?> createBookLine(@RequestBody CreateLineRequest request,
+    public ResponseEntity<?> createBookLine(@RequestBody ChangeBookLineRequest request,
                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(), request), HttpStatus.CREATED);
     }

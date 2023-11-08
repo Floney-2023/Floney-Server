@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.CarryOver;
@@ -38,8 +38,15 @@ public class CarryOverFactory {
         return CarryOverInfo.of(carryOverStatus, CarryOver.init());
     }
 
+    // 가계부 내역 수정시
     @Transactional
-    public void updateCarryOver(CreateLineRequest request, Book book) {
+    public void updateCarryOver(ChangeBookLineRequest request, BookLine savedBookLine) {
+        deleteCarryOver(savedBookLine);
+        createCarryOverByAddBookLine(request, savedBookLine.getBook());
+    }
+
+    @Transactional
+    public void createCarryOverByAddBookLine(ChangeBookLineRequest request, Book book) {
         LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
 

@@ -3,7 +3,6 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
@@ -42,11 +41,11 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse createBookLine(String currentUser, CreateLineRequest request) {
+    public BookLineResponse createBookLine(String currentUser, ChangeBookLineRequest request) {
         Book book = findBook(request.getBookKey());
 
         if (book.getCarryOverStatus()) {
-            carryOverFactory.updateCarryOver(request, book);
+            carryOverFactory.createCarryOverByAddBookLine(request, book);
         }
 
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
@@ -96,6 +95,7 @@ public class BookLineServiceImpl implements BookLineService {
     public BookLineResponse changeLine(ChangeBookLineRequest request) {
         BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
+        carryOverFactory.updateCarryOver(request,bookLine);
         categoryFactory.changeCategories(bookLine, request);
         bookLine.update(request);
         BookLine savedBookLine = bookLineRepository.save(bookLine);
@@ -112,7 +112,7 @@ public class BookLineServiceImpl implements BookLineService {
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
-    private BookUser findBookUser(String currentUser, CreateLineRequest request) {
+    private BookUser findBookUser(String currentUser, ChangeBookLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
             .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
