@@ -2,6 +2,7 @@ package com.floney.floney.book.dto.process;
 
 import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
+import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 
 @RequiredArgsConstructor
 @Component
@@ -33,10 +35,8 @@ public class CarryOverFactory {
                 return CarryOverInfo.of(true, carryOverOptional.get());
             }
         }
-
         return CarryOverInfo.of(carryOverStatus, CarryOver.init());
     }
-
 
     @Transactional
     public void updateCarryOver(CreateLineRequest request, Book book) {
@@ -64,4 +64,20 @@ public class CarryOverFactory {
         carryOverRepository.saveAll(carryOvers);
     }
 
+    public void deleteCarryOver(BookLine savedBookLine) {
+        LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
+        targetDate = targetDate.plusMonths(1);
+        List<CarryOver> carryOvers = new ArrayList<>();
+
+        // 5년(60개월) 동안의 엔티티 생성
+        for (int i = 0; i < FIVE_YEARS; i++) {
+            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, savedBookLine.getBook());
+            CarryOver saved = savedCarryOver.get();
+            saved.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
+            carryOvers.add(saved);
+            targetDate = targetDate.plusMonths(1);
+        }
+
+        carryOverRepository.saveAll(carryOvers);
+    }
 }

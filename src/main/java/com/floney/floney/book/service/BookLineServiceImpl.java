@@ -107,6 +107,7 @@ public class BookLineServiceImpl implements BookLineService {
     public void deleteLine(final Long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
+        carryOverFactory.deleteCarryOver(savedBookLine);
         savedBookLine.inactive();
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
