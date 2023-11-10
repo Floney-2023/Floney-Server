@@ -26,7 +26,7 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CarryOver extends BaseEntity {
 
-    private Long money;
+    private Float money;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
@@ -35,7 +35,7 @@ public class CarryOver extends BaseEntity {
 
     @Builder
     @QueryProjection
-    private CarryOver(long money, Book book, LocalDate date) {
+    private CarryOver(float money, Book book, LocalDate date) {
         this.money = money;
         this.book = book;
         this.date = date;
@@ -67,7 +67,7 @@ public class CarryOver extends BaseEntity {
                 .build();
     }
 
-    public void update(Long updateMoney, String flow) {
+    public void update(float updateMoney, String flow) {
         if (Objects.equals(flow, AssetType.INCOME.name())) {
             money += updateMoney;
         } else {
@@ -76,7 +76,7 @@ public class CarryOver extends BaseEntity {
     }
 
     // 내역을 삭제하는 경우, 이월된 값을 되돌리기
-    public void delete(Long updateMoney, BookLineCategory flow){
+    public void delete(float updateMoney, BookLineCategory flow){
         if (Objects.equals(flow.getName(), AssetType.INCOME.getKind())) {
             money -= updateMoney;
         }

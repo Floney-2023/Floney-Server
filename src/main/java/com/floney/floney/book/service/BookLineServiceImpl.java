@@ -126,7 +126,7 @@ public class BookLineServiceImpl implements BookLineService {
         return bookLineRepository.dayIncomeAndOutcome(bookKey, dates);
     }
 
-    private Map<String, Long> totalExpense(String bookKey, DatesDuration dates) {
+    private Map<String, Float> totalExpense(String bookKey, DatesDuration dates) {
         return bookLineRepository.totalExpenseByMonth(bookKey, dates);
     }
 }

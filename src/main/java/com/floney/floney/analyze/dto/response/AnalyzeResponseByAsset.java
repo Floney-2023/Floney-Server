@@ -4,17 +4,17 @@ import lombok.Getter;
 
 @Getter
 public class AnalyzeResponseByAsset {
-    private final long difference;
-    private final long initAsset;
-    private final long currentAsset;
+    private final double difference;
+    private final double initAsset;
+    private final double currentAsset;
 
-    private AnalyzeResponseByAsset(long difference, long initAsset, long currentAsset) {
+    private AnalyzeResponseByAsset(double difference, double initAsset, double currentAsset) {
         this.difference = difference;
         this.currentAsset = currentAsset;
         this.initAsset = initAsset;
     }
 
-    public static AnalyzeResponseByAsset of(long difference, long initAsset, long currentAsset) {
+    public static AnalyzeResponseByAsset of(double difference, double initAsset, double currentAsset) {
         return new AnalyzeResponseByAsset(difference, initAsset, currentAsset);
     }
 }

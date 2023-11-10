@@ -11,18 +11,18 @@ import static java.util.stream.Collectors.toList;
 @Getter
 public class AnalyzeResponse {
     private static final int DIVIDE = 100;
-    private final Long total;
-    private final Long differance;
+    private final float total;
+    private final float differance;
     private final List<AnalyzeResponseByCategory> analyzeResult;
 
     @Builder
-    private AnalyzeResponse(Long total, Long differance, List<AnalyzeResponseByCategory> analyzeResult) {
+    private AnalyzeResponse(float total, float differance, List<AnalyzeResponseByCategory> analyzeResult) {
         this.total = total;
         this.differance = differance;
         this.analyzeResult = analyzeResult;
     }
 
-    public static AnalyzeResponse of(List<AnalyzeResponseByCategory> result, long totalMoney, Long differance) {
+    public static AnalyzeResponse of(List<AnalyzeResponseByCategory> result, float totalMoney, float differance) {
         List<AnalyzeResponseByCategory> sortedResult = result.stream()
                 .sorted(comparing(AnalyzeResponseByCategory::getMoney).reversed())
                 .collect(toList());

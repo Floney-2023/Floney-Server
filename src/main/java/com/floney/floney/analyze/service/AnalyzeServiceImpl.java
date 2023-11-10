@@ -38,8 +38,8 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
         List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
 
-        long totalMoney = calculateTotalMoney(analyzeResultByCategory);
-        long difference = calculateDifference(request, totalMoney);
+        float totalMoney = (float) calculateTotalMoney(analyzeResultByCategory);
+        float difference = calculateDifference(request, totalMoney);
         return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
     }
 
@@ -54,7 +54,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
                 .orElse(Budget.init());
 
         // 총 수입 조회
-        Long totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
+        float totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
         return AnalyzeResponseByBudget.of(totalOutcome, budget.getMoney());
     }
 
@@ -64,7 +64,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         Book savedBook = findBook(request.getBookKey());
 
         // 총 지출, 수입 조회
-        Map<String, Long> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        Map<String, Float> totalExpense = bookLineRepository.totalExpensesForAsset(request);
 
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
         return bookAnalyzer.analyzeAsset(savedBook.getAsset());
@@ -75,14 +75,14 @@ public class AnalyzeServiceImpl implements AnalyzeService {
                 .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private long calculateDifference(AnalyzeByCategoryRequest request, Long totalMoney) {
-        long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
+    private float calculateDifference(AnalyzeByCategoryRequest request, float totalMoney) {
+        float beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
         return totalMoney - beforeMonthTotal;
     }
 
-    private Long calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
+    private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
         return result.stream()
-                .mapToLong(AnalyzeResponseByCategory::getMoney)
+                .mapToDouble(AnalyzeResponseByCategory::getMoney)
                 .sum();
     }
 }

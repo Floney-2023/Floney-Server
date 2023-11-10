@@ -45,13 +45,13 @@ public class Settlement extends BaseEntity {
     private Integer userCount;
 
     @Column(nullable = false, updatable = false)
-    private Long totalOutcome;
+    private float totalOutcome;
 
     @Column(nullable = false, updatable = false)
-    private Long avgOutcome;
+    private float avgOutcome;
 
     @QueryProjection
-    private Settlement(Book book, List<SettlementUser> details, LocalDate startDate, LocalDate endDate, Integer userCount, Long totalOutcome, Long avgOutcome) {
+    private Settlement(Book book, List<SettlementUser> details, LocalDate startDate, LocalDate endDate, Integer userCount, float totalOutcome, float avgOutcome) {
         this.book = book;
         this.details = details;
         this.startDate = startDate;
@@ -63,8 +63,8 @@ public class Settlement extends BaseEntity {
 
     public static Settlement of(Book book, SettlementRequest request) {
         final Integer userCount = calculateUserCount(request.getUserEmails());
-        final Long totalOutcome = calculateTotalOutcome(request.getOutcomes());
-        final Long avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
+        final float totalOutcome = (float) calculateTotalOutcome(request.getOutcomes());
+        final float avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
 
         return Settlement.builder()
                 .book(book)
@@ -86,7 +86,7 @@ public class Settlement extends BaseEntity {
                 .sum();
     }
 
-    private static Long calculateAvgOutcome(Long totalOutcome, Integer userCount) {
+    private static float calculateAvgOutcome(float totalOutcome, Integer userCount) {
         final BigDecimal dividend = BigDecimal.valueOf(totalOutcome);
         final BigDecimal divisor = BigDecimal.valueOf(userCount);
         return dividend.divide(divisor, RoundingMode.HALF_UP).longValue();

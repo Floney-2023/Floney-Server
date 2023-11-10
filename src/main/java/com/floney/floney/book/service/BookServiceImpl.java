@@ -39,7 +39,7 @@ import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 public class BookServiceImpl implements BookService {
 
     private static final int ONLY_OWNER_COUNT = 1;
-    private static final long DEFAULT_BUDGET = 0L;
+    private static final float DEFAULT_BUDGET = 0f;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
@@ -304,9 +304,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Map<Month, Long> getBudgetByYear(String bookKey, String firstDate) {
+    public Map<Month, Float> getBudgetByYear(String bookKey, String firstDate) {
         LocalDate date = LocalDate.parse(firstDate);
-        Map<Month, Long> monthlyMap = getInitBudgetFrame();
+        Map<Month, Float> monthlyMap = getInitBudgetFrame();
 
         List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateFactory.getYearDuration(date));
 
@@ -384,8 +384,8 @@ public class BookServiceImpl implements BookService {
         return !bookUser.isInactive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
     }
 
-    private Map<Month, Long> getInitBudgetFrame() {
-        Map<Month, Long> monthlyMap = new LinkedHashMap<>();
+    private Map<Month, Float> getInitBudgetFrame() {
+        Map<Month, Float> monthlyMap = new LinkedHashMap<>();
         for (Month month : Month.values()) {
             monthlyMap.put(month, DEFAULT_BUDGET);
         }

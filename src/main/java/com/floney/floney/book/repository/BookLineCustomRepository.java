@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public interface BookLineCustomRepository {
 
-    Map<String, Long> totalExpenseByMonth(String bookKey, DatesDuration dates);
+    Map<String, Float> totalExpenseByMonth(String bookKey, DatesDuration dates);
 
     List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey);
 
@@ -31,13 +31,13 @@ public interface BookLineCustomRepository {
 
     void inactiveAllByBookUser(BookUser bookUser);
 
-    Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
+    Float totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
     List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request);
 
-    Long totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
+    Float totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration);
 
-    Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request);
+    Map<String, Float> totalExpensesForAsset(AnalyzeRequestByAsset request);
 
     Optional<BookLine> findByIdWithCategories(Long id);
 

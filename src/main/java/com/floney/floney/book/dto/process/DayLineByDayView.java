@@ -14,7 +14,7 @@ public class DayLineByDayView extends DayLine {
 
     @QueryProjection
     @Builder
-    public DayLineByDayView(Long id, Long money, String content, String categories, String profileImg, boolean exceptStatus, String nickName) {
+    public DayLineByDayView(Long id, float money, String content, String categories, String profileImg, boolean exceptStatus, String nickName) {
         super(id, content, money, categories);
         this.exceptStatus = exceptStatus;
         this.profileImg = profileImg;

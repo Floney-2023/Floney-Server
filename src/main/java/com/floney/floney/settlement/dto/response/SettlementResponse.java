@@ -22,8 +22,8 @@ public class SettlementResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer userCount;
-    private Long totalOutcome;
-    private Long outcome;
+    private Float totalOutcome;
+    private Float outcome;
     private List<DetailResponse> details;
 
     public static SettlementResponse from(Settlement settlement) {
@@ -56,7 +56,7 @@ public class SettlementResponse {
 
         private String userNickname;
         private String userProfileImg;
-        private Long money;
+        private Float money;
 
         private static DetailResponse from(SettlementUser settlementUser) {
             return DetailResponse.builder()

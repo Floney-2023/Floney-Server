@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 public class OutcomesWithUser {
 
-    private final Map<String, Long> outcomesWithUser;
+    private final Map<String, Float> outcomesWithUser;
 
     private OutcomesWithUser(Set<String> userEmails) {
         this.outcomesWithUser = userEmails.stream()
-                .collect(Collectors.toMap(key -> key, value -> 0L));
+                .collect(Collectors.toMap(key -> key, value -> 0f));
     }
 
     public static OutcomesWithUser init(Set<String> userEmails) {
@@ -33,7 +33,7 @@ public class OutcomesWithUser {
         }
     }
 
-    public Map<String, Long> getOutcomesWithUser() {
+    public Map<String, Float> getOutcomesWithUser() {
         return Collections.unmodifiableMap(outcomesWithUser);
     }
 }

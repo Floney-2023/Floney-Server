@@ -25,14 +25,14 @@ public class Budget extends BaseEntity {
 
     private LocalDate date;
 
-    private Long money;
+    private Float money;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
     @Builder
     @QueryProjection
-    public Budget(LocalDate date, Long money, Book book) {
+    public Budget(LocalDate date, Float money, Book book) {
         this.date = date;
         this.money = money;
         this.book = book;
@@ -48,7 +48,7 @@ public class Budget extends BaseEntity {
 
     public static Budget init() {
         return Budget.builder()
-                .money(0L)
+                .money(0f)
                 .build();
     }
 
@@ -57,7 +57,7 @@ public class Budget extends BaseEntity {
     }
 
     public Budget initMoney() {
-        this.money = 0L;
+        this.money = 0f;
         return this;
     }
 }
