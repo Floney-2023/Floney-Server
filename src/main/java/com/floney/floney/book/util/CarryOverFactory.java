@@ -1,5 +1,6 @@
-package com.floney.floney.book.dto.process;
+package com.floney.floney.book.util;
 
+import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;

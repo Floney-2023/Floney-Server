@@ -1,4 +1,4 @@
-package com.floney.floney.book.dto.process;
+package com.floney.floney.book.util;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
