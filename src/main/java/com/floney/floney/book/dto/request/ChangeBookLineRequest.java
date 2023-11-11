@@ -35,7 +35,7 @@ public class ChangeBookLineRequest {
 
 
     @Builder
-    public ChangeBookLineRequest(long lineId, String bookKey, float money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
+    private ChangeBookLineRequest(long lineId, String bookKey, float money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
         this.lineId = lineId;
         this.bookKey = bookKey;
         this.money = money;

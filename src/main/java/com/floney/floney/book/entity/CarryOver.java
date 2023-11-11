@@ -26,7 +26,7 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CarryOver extends BaseEntity {
 
-    private Float money;
+    private float money;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
