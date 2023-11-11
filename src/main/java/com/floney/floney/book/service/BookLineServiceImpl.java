@@ -1,6 +1,9 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.process.DayLines;
+import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -13,6 +16,7 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
+import com.floney.floney.book.util.AssetFactory;
 import com.floney.floney.book.util.CarryOverFactory;
 import com.floney.floney.book.util.CategoryFactory;
 import com.floney.floney.book.util.DateFactory;
@@ -39,6 +43,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
     private final CarryOverFactory carryOverFactory;
+    private final AssetFactory assetFactory;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
@@ -46,10 +51,13 @@ public class BookLineServiceImpl implements BookLineService {
     public BookLineResponse createBookLine(String currentUser, ChangeBookLineRequest request) {
         Book book = findBook(request.getBookKey());
 
+        // 이월 ON 일시, 이월 내역 갱신
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOverByAddBookLine(request, book);
         }
 
+        // 자산 갱신
+        assetFactory.createAssetBy(request, book);
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         categoryFactory.saveCategories(savedLine, request);
@@ -97,7 +105,15 @@ public class BookLineServiceImpl implements BookLineService {
     public BookLineResponse changeLine(ChangeBookLineRequest request) {
         BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
-        carryOverFactory.updateCarryOver(request,bookLine);
+        Book book = findBook(request.getBookKey());
+
+        // 이월설정이 ON 일시, 이월 설정 재갱신
+        if (book.getCarryOverStatus()) {
+            carryOverFactory.updateCarryOver(request, bookLine);
+        }
+
+        // 자산 내역 갱신
+        assetFactory.updateAsset(request, bookLine);
         categoryFactory.changeCategories(bookLine, request);
         bookLine.update(request);
         BookLine savedBookLine = bookLineRepository.save(bookLine);
@@ -109,7 +125,12 @@ public class BookLineServiceImpl implements BookLineService {
     public void deleteLine(final Long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
-        carryOverFactory.deleteCarryOver(savedBookLine);
+
+        if (savedBookLine.getBook().getCarryOverStatus()) {
+            carryOverFactory.deleteCarryOver(savedBookLine);
+        }
+
+        assetFactory.deleteAsset(savedBookLine);
         savedBookLine.inactive();
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }

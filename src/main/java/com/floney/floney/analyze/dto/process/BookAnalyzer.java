@@ -2,7 +2,9 @@ package com.floney.floney.analyze.dto.process;
 
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.book.dto.constant.AssetType;
+import com.floney.floney.book.dto.process.AssetInfo;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 public class BookAnalyzer {
@@ -24,10 +26,10 @@ public class BookAnalyzer {
         return initAsset + difference;
     }
 
-    public AnalyzeResponseByAsset analyzeAsset(float savedAsset) {
+    public AnalyzeResponseByAsset analyzeAsset(float savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
         float difference = differenceInAndOutCome();
         float currentAsset = calculateCurrentAsset(savedAsset, difference);
 
-        return AnalyzeResponseByAsset.of(difference, savedAsset, currentAsset);
+        return AnalyzeResponseByAsset.of(difference, savedAsset, currentAsset, assetInfo);
     }
 }
