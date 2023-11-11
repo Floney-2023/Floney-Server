@@ -43,8 +43,8 @@ public class AssetFactory {
         LinkedHashMap<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
 
         for (int i = 0; i < 6; i++) {
-            localDate = localDate.minusMonths(1);
             initAssets.put(localDate, AssetInfo.init(book.getAsset(), localDate));
+            localDate = localDate.minusMonths(1);
         }
 
         return initAssets;
