@@ -57,13 +57,15 @@ public class CarryOverFactory {
         for (int i = 0; i < FIVE_YEARS; i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, book);
 
+
             if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.name())) {
                 CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
-                CarryOver saved = savedCarryOver.get();
-                saved.update(request.getMoney(), request.getFlow());
-                carryOvers.add(saved);
+                savedCarryOver.ifPresent(carryOver -> {
+                    carryOver.update(request.getMoney(), request.getFlow());
+                    carryOvers.add(carryOver);
+                });
             }
             targetDate = targetDate.plusMonths(1);
         }

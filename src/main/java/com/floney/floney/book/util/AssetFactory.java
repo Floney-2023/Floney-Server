@@ -30,7 +30,7 @@ public class AssetFactory {
         // 기본 응답값 -> 초기 자산으로 셋팅
         LinkedHashMap<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
-        // 날짜를 key로 하여, 저장된 데이터가 있다면 대체
+        // 날짜를 ky로 하여, 저장된 데이터가 있다면 대체
         List<Asset> assets = assetRepository.findByDateBetweenAndBook(datesDuration.getStartDate(), datesDuration.getEndDate(), book);
         assets.stream()
             .forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
@@ -70,9 +70,10 @@ public class AssetFactory {
                 Asset newAsset = Asset.of(request, book, targetDate);
                 assets.add(newAsset);
             } else {
-                Asset saved = savedAsset.get();
-                saved.update(request.getMoney(), request.getFlow());
-                assets.add(saved);
+                savedAsset.ifPresent(asset -> {
+                    asset.update(request.getMoney(), request.getFlow());
+                    assets.add(asset);
+                });
             }
             targetDate = targetDate.plusMonths(1);
         }
