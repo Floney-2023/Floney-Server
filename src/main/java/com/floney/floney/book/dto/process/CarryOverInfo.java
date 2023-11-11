@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CarryOverInfo {
     private final boolean carryOverStatus;
-    private final long carryOverMoney;
+    private final float carryOverMoney;
 
     public static CarryOverInfo of(boolean status, CarryOver carryOver) {
         return new CarryOverInfo(status, carryOver.getMoney());

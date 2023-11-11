@@ -1,8 +1,7 @@
-package com.floney.floney.book.dto.process;
+package com.floney.floney.book.service.category;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.dto.request.CreateLineRequest;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookLineCategory;
 import com.floney.floney.book.entity.Category;
@@ -26,7 +25,7 @@ public class CategoryFactory {
     private final CategoryRepository categoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
-    public void saveCategories(BookLine bookLine, CreateLineRequest request) {
+    public void saveCategories(BookLine bookLine, ChangeBookLineRequest request) {
         String bookKey = request.getBookKey();
         bookLine.add(FLOW, saveFlowBookLineCategory(bookLine, request.getFlow()));
         bookLine.add(ASSET, saveAssetBookLineCategory(bookLine, request.getAsset(), bookKey));

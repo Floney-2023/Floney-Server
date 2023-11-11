@@ -33,7 +33,7 @@ public class BookLine extends BaseEntity {
     private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
     @Column(nullable = false)
-    private Long money;
+    private Float money;
 
     @Column(nullable = false)
     private LocalDate lineDate;
@@ -45,7 +45,7 @@ public class BookLine extends BaseEntity {
     private Boolean exceptStatus;
 
     @Builder
-    public BookLine(BookUser writer, Book book, Long money, LocalDate lineDate, String description, Boolean exceptStatus) {
+    private BookLine(BookUser writer, Book book, Float money, LocalDate lineDate, String description, Boolean exceptStatus) {
         this.writer = writer;
         this.book = book;
         this.money = money;

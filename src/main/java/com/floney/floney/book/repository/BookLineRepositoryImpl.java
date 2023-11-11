@@ -43,7 +43,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Map<String, Long> totalExpenseByMonth(String bookKey, DatesDuration dates) {
+    public Map<String, Float> totalExpenseByMonth(String bookKey, DatesDuration dates) {
         return jpaQueryFactory
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
@@ -199,10 +199,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public Long totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
+    public Float totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
         DatesDuration duration = DateFactory.getBeforeDateDuration(request.getLocalDate());
         return jpaQueryFactory
-                .select(bookLine.money.sum().coalesce(0L))
+                .select(bookLine.money.sum().coalesce(0f))
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
                 .innerJoin(bookLine.bookLineCategories, bookLineCategory)
@@ -253,19 +253,19 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public Long totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration) {
+    public Float totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DatesDuration duration) {
         return totalOutcomeMoney(duration, request.getBookKey());
     }
 
     @Override
-    public Map<String, Long> totalExpensesForAsset(AnalyzeRequestByAsset request) {
+    public Map<String, Float> totalExpensesForAsset(AnalyzeRequestByAsset request) {
         DatesDuration duration = DateFactory.getDateDuration(request.getDate());
 
-        Map<String, Long> totalExpenses = new HashMap<>();
+        Map<String, Float> totalExpenses = new HashMap<>();
 
-        Long totalIncomeMoney = totalIncomeMoney(duration, request.getBookKey());
+        float totalIncomeMoney = totalIncomeMoney(duration, request.getBookKey());
 
-        Long totalOutcomeMoney = totalOutcomeMoney(duration, request.getBookKey());
+        float totalOutcomeMoney = totalOutcomeMoney(duration, request.getBookKey());
 
         totalExpenses.put(INCOME.getKind(), totalIncomeMoney);
         totalExpenses.put(OUTCOME.getKind(), totalOutcomeMoney);
@@ -316,9 +316,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 ).execute();
     }
 
-    private Long totalIncomeMoney(DatesDuration duration, String bookKey) {
+    private Float totalIncomeMoney(DatesDuration duration, String bookKey) {
         return jpaQueryFactory
-                .select(bookLine.money.sum().coalesce(0L))
+                .select(bookLine.money.sum().coalesce(0f))
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
                 .innerJoin(bookLine.bookLineCategories, bookLineCategory)
@@ -333,9 +333,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 .fetchOne();
     }
 
-    private Long totalOutcomeMoney(DatesDuration duration, String bookKey) {
+    private Float totalOutcomeMoney(DatesDuration duration, String bookKey) {
         return jpaQueryFactory
-                .select(bookLine.money.sum().coalesce(0L))
+                .select(bookLine.money.sum().coalesce(0f))
                 .from(bookLine)
                 .innerJoin(bookLine.book, book)
                 .innerJoin(bookLine.bookLineCategories, bookLineCategory)

@@ -72,8 +72,8 @@ public class BookLineRepositoryTest {
     @Test
     @DisplayName("각 가계부 내역 지정된 날짜기간의 수입/지출의 총합을 조회한다")
     void income() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000L));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000L));
+        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
+        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000f));
 
         BookLineCategory category = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
@@ -93,13 +93,13 @@ public class BookLineRepositoryTest {
                 .build();
 
         BookLineExpense income = BookLineExpense.builder()
-                .money(1000L)
+                .money(1000f)
                 .assetType("수입")
                 .date(LOCAL_DATE)
                 .build();
 
         BookLineExpense outcome = BookLineExpense.builder()
-                .money(1000L)
+                .money(1000f)
                 .assetType("지출")
                 .date(LOCAL_DATE)
                 .build();
@@ -112,8 +112,8 @@ public class BookLineRepositoryTest {
     @Test
     @DisplayName("각 가계부 내역 지정된 달의 총수입/총지출을 조회한다")
     void all_expenses() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000L));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000L));
+        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
+        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000f));
 
         BookLineCategory category = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
@@ -132,9 +132,9 @@ public class BookLineRepositoryTest {
                 .endDate(end)
                 .build();
 
-        Map<String, Long> totals = new HashMap<>();
-        totals.put("수입", 1000L);
-        totals.put("지출", 1000L);
+        Map<String, Float> totals = new HashMap<>();
+        totals.put("수입", 1000f);
+        totals.put("지출", 1000f);
 
         Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
                 .isEqualTo(totals);
@@ -144,8 +144,8 @@ public class BookLineRepositoryTest {
     @Test
     @DisplayName("날짜별로 총수입/총지출을 조회한다")
     void day_expenses() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000L));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000L));
+        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
+        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000f));
 
         BookLineCategory category = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
@@ -159,12 +159,12 @@ public class BookLineRepositoryTest {
         LocalDate target = LOCAL_DATE;
 
         TotalExpense income = TotalExpense.builder()
-                .money(1000L)
+                .money(1000f)
                 .assetType("수입")
                 .build();
 
         TotalExpense outcome = TotalExpense.builder()
-                .money(1000L)
+                .money(1000f)
                 .assetType("지출")
                 .build();
 
@@ -176,8 +176,8 @@ public class BookLineRepositoryTest {
     @DisplayName("날짜 별로 가계부 내역과 연관된 모든 카테고리와 금액을 조회한다")
     void days_line() {
         BookUser bookUser = bookUserRepository.save(createBookUser(user, book));
-        BookLine bookLine = bookLineRepository.save(createBookLineWith(bookUser, book, 1000L));
-        BookLine bookLine2 = bookLineRepository.save(createBookLineWith(bookUser, book, 1000L));
+        BookLine bookLine = bookLineRepository.save(createBookLineWith(bookUser, book, 1000f));
+        BookLine bookLine2 = bookLineRepository.save(createBookLineWith(bookUser, book, 1000f));
 
         BookLineCategory incomeBookLineCategory = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
         BookLineCategory childLineCategory = bookLineCategoryRepository.save(createChildLineCategory(childIncomeCategory, bookLine));

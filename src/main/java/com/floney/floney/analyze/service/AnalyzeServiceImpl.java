@@ -8,12 +8,13 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BudgetRepository;
+import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -32,14 +33,15 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final BookRepository bookRepository;
     private final BookLineCustomRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
+    private final AssetServiceImpl assetFactory;
 
     @Override
     @Transactional
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
         List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
 
-        long totalMoney = calculateTotalMoney(analyzeResultByCategory);
-        long difference = calculateDifference(request, totalMoney);
+        float totalMoney = calculateTotalMoney(analyzeResultByCategory);
+        float difference = calculateDifference(request, totalMoney);
         return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
     }
 
@@ -51,10 +53,10 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
         // 자산 조회
         Budget budget = budgetRepository.findBudgetByBookAndDate(savedBook, LocalDate.parse(request.getDate()))
-                .orElse(Budget.init());
+            .orElse(Budget.init());
 
         // 총 수입 조회
-        Long totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
+        float totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
         return AnalyzeResponseByBudget.of(totalOutcome, budget.getMoney());
     }
 
@@ -64,25 +66,27 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         Book savedBook = findBook(request.getBookKey());
 
         // 총 지출, 수입 조회
-        Map<String, Long> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        Map<String, Float> totalExpense = bookLineRepository.totalExpensesForAsset(request);
 
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        return bookAnalyzer.analyzeAsset(savedBook.getAsset());
+        Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
+        return bookAnalyzer.analyzeAsset(savedBook.getAsset(), assetInfo);
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(bookKey));
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private long calculateDifference(AnalyzeByCategoryRequest request, Long totalMoney) {
-        long beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
+    private float calculateDifference(AnalyzeByCategoryRequest request, float totalMoney) {
+        float beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
         return totalMoney - beforeMonthTotal;
     }
 
-    private Long calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
-        return result.stream()
-                .mapToLong(AnalyzeResponseByCategory::getMoney)
-                .sum();
+    private float calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
+        // TODO : mapToFloat없는 이유 알아보기
+        return (float) result.stream()
+            .mapToDouble(AnalyzeResponseByCategory::getMoney)
+            .sum();
     }
 }

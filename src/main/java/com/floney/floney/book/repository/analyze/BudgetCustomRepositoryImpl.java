@@ -1,4 +1,4 @@
-package com.floney.floney.book.repository;
+package com.floney.floney.book.repository.analyze;
 
 import com.floney.floney.book.entity.Book;
 import com.querydsl.jpa.impl.JPAQueryFactory;

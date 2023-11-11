@@ -1,7 +1,7 @@
 package com.floney.floney.fixture;
 
 import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.request.CreateLineRequest;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.BookUser;
@@ -12,13 +12,13 @@ import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
 
 public class BookLineFixture {
 
-    public static final Long OUTCOME = 1000L;
-    public static final Long INCOME = 1000L;
+    public static final float OUTCOME = 1000f;
+    public static final float INCOME = 1000f;
 
     public static LocalDate LOCAL_DATE = LocalDate.of(2023, 10, 22);
 
-    public static CreateLineRequest createOutcomeRequest() {
-        return CreateLineRequest.builder()
+    public static ChangeBookLineRequest createOutcomeRequest() {
+        return ChangeBookLineRequest.builder()
                 .bookKey(BOOK_KEY)
                 .flow("지출")
                 .asset("은행")
@@ -27,8 +27,8 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static CreateLineRequest createIncomeRequest() {
-        return CreateLineRequest.builder()
+    public static ChangeBookLineRequest createIncomeRequest() {
+        return ChangeBookLineRequest.builder()
                 .bookKey(BOOK_KEY)
                 .flow("수입")
                 .asset("은행")
@@ -37,7 +37,7 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static BookLine createBookLine(Book book, Long money) {
+    public static BookLine createBookLine(Book book, float money) {
         BookLine bookline = BookLine.builder()
                 .book(book)
                 .money(money)
@@ -48,7 +48,7 @@ public class BookLineFixture {
         return bookline;
     }
 
-    public static BookLine createBookLineWithWriter(Book book, Long money, BookUser writer) {
+    public static BookLine createBookLineWithWriter(Book book, float money, BookUser writer) {
         BookLine bookline = BookLine.builder()
                 .book(book)
                 .money(money)
@@ -61,7 +61,7 @@ public class BookLineFixture {
     }
 
 
-    public static BookLine createBookLineWith(BookUser user, Book book, Long money) {
+    public static BookLine createBookLineWith(BookUser user, Book book, float money) {
         BookLine bookline = BookLine.builder()
                 .book(book)
                 .writer(user)
@@ -77,7 +77,7 @@ public class BookLineFixture {
         return BookLineExpense.builder()
                 .assetType("수입")
                 .date(LOCAL_DATE)
-                .money(1000L)
+                .money(1000f)
                 .build();
     }
 }

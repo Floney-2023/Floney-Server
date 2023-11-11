@@ -46,6 +46,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 .where(
                         book.bookKey.eq(bookKey),
                         book.status.eq(ACTIVE)
+                    ,bookUser.status.eq(ACTIVE)
                 )
                 .innerJoin(bookUser.user, user)
                 .where(user.status.eq(ACTIVE))

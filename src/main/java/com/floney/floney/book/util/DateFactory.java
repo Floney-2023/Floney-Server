@@ -29,6 +29,16 @@ public class DateFactory {
                 .build();
     }
 
+    public static DatesDuration getAssetDuration(LocalDate date){
+        // 현재 날짜로부터 5개월 이전의 날짜 계산
+        LocalDate startDate = date.minusMonths(5);
+
+        return DatesDuration.builder()
+            .startDate(startDate)
+            .endDate(date)
+            .build();
+    }
+
     public static DatesDuration getYearDuration(LocalDate firstDate) {
         LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY);
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());

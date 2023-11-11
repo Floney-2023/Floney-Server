@@ -12,19 +12,19 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class BookLineExpense {
     private final LocalDate date;
-    private final Long money;
+    private final float money;
     private final AssetType assetType;
 
 
     private BookLineExpense(LocalDate date, AssetType assetType) {
         this.date = date;
-        this.money = 0L;
+        this.money = 0f;
         this.assetType = assetType;
     }
 
     @QueryProjection
     @Builder
-    public BookLineExpense(LocalDate date, Long money, String assetType) {
+    public BookLineExpense(LocalDate date, float money, String assetType) {
         this.date = date;
         this.money = money;
         this.assetType = AssetType.find(assetType);

@@ -11,7 +11,7 @@ import java.util.List;
 public class DayLineInfo {
     private final Long id;
 
-    private final Long money;
+    private final float money;
 
     private final String content;
 
@@ -28,7 +28,7 @@ public class DayLineInfo {
     private final String userNickName;
 
     @Builder
-    public DayLineInfo(Long id, Long money, String assetType, String content, List<String> categories, String img, String userEmail, boolean exceptStatus, String userNickName) {
+    public DayLineInfo(Long id, float money, String assetType, String content, List<String> categories, String img, String userEmail, boolean exceptStatus, String userNickName) {
         this.id = id;
         this.money = money;
         this.content = content;

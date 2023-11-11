@@ -114,7 +114,7 @@ public class SettlementService {
     }
 
     private List<SettlementUser> createSettlementUsers(Settlement settlement, OutcomesWithUser outcomesWithUser) {
-        final Long avgOutcome = settlement.getAvgOutcome();
+        final float avgOutcome = settlement.getAvgOutcome();
         final List<SettlementUser> settlementUsers = new ArrayList<>();
 
         outcomesWithUser.getOutcomesWithUser().forEach((userEmail, outcome) -> {

@@ -8,17 +8,17 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class DayLine {
 
-    private Long id;
+    private long id;
 
     private String content;
 
-    private Long money;
+    private float money;
 
     private String categories;
 
     private String userEmail;
 
-    public DayLine(Long id, String content, Long money, String categories) {
+    public DayLine(long id, String content, float money, String categories) {
         this.id = id;
         this.content = content;
         this.money = money;
@@ -26,7 +26,7 @@ public class DayLine {
     }
 
     @QueryProjection
-    public DayLine(Long id, String content, Long money, String categories, String userEmail) {
+    public DayLine(long id, String content, float money, String categories, String userEmail) {
         this.id = id;
         this.content = content;
         this.money = money;
