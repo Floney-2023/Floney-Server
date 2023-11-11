@@ -1,4 +1,4 @@
-package com.floney.floney.book.util;
+package com.floney.floney.analyze.service;
 
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
@@ -7,6 +7,7 @@ import com.floney.floney.book.entity.Asset;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.repository.analyze.AssetRepository;
+import com.floney.floney.book.util.DateFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +20,11 @@ import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 
 @RequiredArgsConstructor
 @Component
-public class AssetFactory {
+public class AssetServiceImpl implements AssetService {
     private static final int FIVE_YEARS = 60;
     private final AssetRepository assetRepository;
 
+    @Override
     @Transactional(readOnly = true)
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
@@ -32,8 +34,7 @@ public class AssetFactory {
 
         // 날짜를 ky로 하여, 저장된 데이터가 있다면 대체
         List<Asset> assets = assetRepository.findByDateBetweenAndBook(datesDuration.getStartDate(), datesDuration.getEndDate(), book);
-        assets.stream()
-            .forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
+        assets.forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
 
         return initAssets;
     }
@@ -51,12 +52,14 @@ public class AssetFactory {
     }
 
     // 가계부 내역 수정시 asset 업데이트
+    @Override
     @Transactional
     public void updateAsset(ChangeBookLineRequest request, BookLine savedBookLine) {
         deleteAsset(savedBookLine);
         createAssetBy(request, savedBookLine.getBook());
     }
 
+    @Override
     @Transactional
     public void createAssetBy(ChangeBookLineRequest request, Book book) {
         LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
@@ -81,6 +84,7 @@ public class AssetFactory {
         assetRepository.saveAll(assets);
     }
 
+    @Override
     @Transactional
     public void deleteAsset(BookLine savedBookLine) {
         LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());

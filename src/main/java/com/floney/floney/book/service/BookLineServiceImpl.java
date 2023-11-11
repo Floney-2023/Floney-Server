@@ -1,5 +1,7 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.analyze.service.AssetServiceImpl;
+import com.floney.floney.analyze.service.CarryOverServiceImpl;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.DayLines;
@@ -16,9 +18,7 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
-import com.floney.floney.book.util.AssetFactory;
-import com.floney.floney.book.util.CarryOverFactory;
-import com.floney.floney.book.util.CategoryFactory;
+import com.floney.floney.book.service.category.CategoryFactory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
@@ -42,8 +42,8 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
-    private final CarryOverFactory carryOverFactory;
-    private final AssetFactory assetFactory;
+    private final CarryOverServiceImpl carryOverFactory;
+    private final AssetServiceImpl assetFactory;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override

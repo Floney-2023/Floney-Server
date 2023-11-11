@@ -1,4 +1,4 @@
-package com.floney.floney.book.util;
+package com.floney.floney.analyze.service;
 
 import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
@@ -6,6 +6,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
 import com.floney.floney.book.entity.CarryOver;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
+import com.floney.floney.book.util.DateFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +22,11 @@ import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 
 @RequiredArgsConstructor
 @Component
-public class CarryOverFactory {
+public class CarryOverServiceImpl implements CarryOverService {
     private static final int FIVE_YEARS = 60;
     private final CarryOverRepository carryOverRepository;
 
+    @Override
     public CarryOverInfo getCarryOverInfo(Book book, String date) {
         boolean carryOverStatus = book.getCarryOverStatus();
         LocalDate localDate = LocalDate.parse(date);
@@ -40,12 +42,14 @@ public class CarryOverFactory {
 
     // 가계부 내역 수정시
     @Transactional
+    @Override
     public void updateCarryOver(ChangeBookLineRequest request, BookLine savedBookLine) {
         deleteCarryOver(savedBookLine);
         createCarryOverByAddBookLine(request, savedBookLine.getBook());
     }
 
     @Transactional
+    @Override
     public void createCarryOverByAddBookLine(ChangeBookLineRequest request, Book book) {
         LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
@@ -73,6 +77,8 @@ public class CarryOverFactory {
         carryOverRepository.saveAll(carryOvers);
     }
 
+    @Override
+    @Transactional
     public void deleteCarryOver(BookLine savedBookLine) {
         LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
         targetDate = targetDate.plusMonths(1);

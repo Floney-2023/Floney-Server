@@ -15,7 +15,6 @@ import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
-import com.floney.floney.book.util.AssetFactory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +33,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final BookRepository bookRepository;
     private final BookLineCustomRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
-    private final AssetFactory assetFactory;
+    private final AssetServiceImpl assetFactory;
 
     @Override
     @Transactional

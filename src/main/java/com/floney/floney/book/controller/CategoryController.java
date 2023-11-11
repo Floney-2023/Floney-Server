@@ -2,7 +2,7 @@ package com.floney.floney.book.controller;
 
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
-import com.floney.floney.book.service.CategoryService;
+import com.floney.floney.book.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
