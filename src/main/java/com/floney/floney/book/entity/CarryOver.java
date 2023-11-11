@@ -68,7 +68,7 @@ public class CarryOver extends BaseEntity {
     }
 
     public void update(float updateMoney, String flow) {
-        if (Objects.equals(flow, AssetType.INCOME.name())) {
+        if (Objects.equals(flow, AssetType.INCOME.getKind())) {
             money += updateMoney;
         } else {
             money -= updateMoney;
