@@ -83,8 +83,9 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return totalMoney - beforeMonthTotal;
     }
 
-    private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
-        return result.stream()
+    private float calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
+        // TODO : mapToFloat없는 이유 알아보기
+        return (float) result.stream()
             .mapToDouble(AnalyzeResponseByCategory::getMoney)
             .sum();
     }
