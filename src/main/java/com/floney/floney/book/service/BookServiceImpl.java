@@ -11,6 +11,8 @@ import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.book.repository.*;
+import com.floney.floney.book.repository.analyze.BudgetRepository;
+import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;

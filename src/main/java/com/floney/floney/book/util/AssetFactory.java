@@ -6,7 +6,7 @@ import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.entity.Asset;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.repository.AssetRepository;
+import com.floney.floney.book.repository.analyze.AssetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

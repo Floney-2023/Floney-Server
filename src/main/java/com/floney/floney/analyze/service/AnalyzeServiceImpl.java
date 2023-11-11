@@ -14,7 +14,7 @@ import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.Budget;
 import com.floney.floney.book.repository.BookLineCustomRepository;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BudgetRepository;
+import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.util.AssetFactory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
