@@ -40,7 +40,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
         List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
 
-        float totalMoney = (float) calculateTotalMoney(analyzeResultByCategory);
+        float totalMoney = calculateTotalMoney(analyzeResultByCategory);
         float difference = calculateDifference(request, totalMoney);
         return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
     }

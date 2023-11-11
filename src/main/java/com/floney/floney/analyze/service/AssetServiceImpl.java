@@ -93,9 +93,10 @@ public class AssetServiceImpl implements AssetService {
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
             Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBook(targetDate, savedBookLine.getBook());
-            Asset saved = savedAsset.get();
-            saved.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
-            assets.add(saved);
+            savedAsset.ifPresent(asset -> {
+                asset.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
+                assets.add(asset);
+            });
             targetDate = targetDate.plusMonths(1);
         }
 

@@ -87,9 +87,10 @@ public class CarryOverServiceImpl implements CarryOverService {
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, savedBookLine.getBook());
-            CarryOver saved = savedCarryOver.get();
-            saved.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
-            carryOvers.add(saved);
+            savedCarryOver.ifPresent(carryOver -> {
+                carryOver.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
+                carryOvers.add(carryOver);
+            });
             targetDate = targetDate.plusMonths(1);
         }
 
