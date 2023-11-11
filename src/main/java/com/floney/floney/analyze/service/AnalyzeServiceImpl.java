@@ -71,7 +71,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         Map<String, Float> totalExpense = bookLineRepository.totalExpensesForAsset(request);
 
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        LinkedHashMap<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
+        Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
         return bookAnalyzer.analyzeAsset(savedBook.getAsset(), assetInfo);
     }
 

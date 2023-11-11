@@ -24,11 +24,11 @@ public class AssetFactory {
     private final AssetRepository assetRepository;
 
     @Transactional(readOnly = true)
-    public LinkedHashMap<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
+    public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
         DatesDuration datesDuration = DateFactory.getAssetDuration(localDate);
         // 기본 응답값 -> 초기 자산으로 셋팅
-        LinkedHashMap<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
+        Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
         // 날짜를 ky로 하여, 저장된 데이터가 있다면 대체
         List<Asset> assets = assetRepository.findByDateBetweenAndBook(datesDuration.getStartDate(), datesDuration.getEndDate(), book);
@@ -38,9 +38,9 @@ public class AssetFactory {
         return initAssets;
     }
 
-    private LinkedHashMap<LocalDate, AssetInfo> getInitAssetInfo(Book book, String date) {
+    private Map<LocalDate, AssetInfo> getInitAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
-        LinkedHashMap<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
+        Map<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
 
         for (int i = 0; i < 6; i++) {
             initAssets.put(localDate, AssetInfo.init(book.getAsset(), localDate));
