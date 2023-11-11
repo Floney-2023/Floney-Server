@@ -38,7 +38,7 @@ public class Alarm extends BaseEntity {
     private Boolean isReceived;
 
     @Builder
-    public Alarm(Book book, BookUser bookUser, String title, String body, String imgUrl, LocalDateTime date, Boolean isReceived) {
+    private Alarm(Book book, BookUser bookUser, String title, String body, String imgUrl, LocalDateTime date, Boolean isReceived) {
         this.book = book;
         this.bookUser = bookUser;
         this.title = title;

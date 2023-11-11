@@ -45,7 +45,7 @@ public class BookLine extends BaseEntity {
     private Boolean exceptStatus;
 
     @Builder
-    public BookLine(BookUser writer, Book book, Float money, LocalDate lineDate, String description, Boolean exceptStatus) {
+    private BookLine(BookUser writer, Book book, Float money, LocalDate lineDate, String description, Boolean exceptStatus) {
         this.writer = writer;
         this.book = book;
         this.money = money;

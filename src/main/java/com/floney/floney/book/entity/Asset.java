@@ -32,7 +32,7 @@ public class Asset extends BaseEntity {
     private LocalDate date;
 
     @Builder
-    public Asset(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Status status, Float money, Book book, LocalDate date) {
+    private Asset(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Status status, Float money, Book book, LocalDate date) {
         super(id, createdAt, updatedAt, status);
         this.money = money;
         this.book = book;
