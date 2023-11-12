@@ -9,6 +9,18 @@
         </layout>
     </appender>
 
+    <!-- slack error 전송 appender -->
+    <springProperty name="SLACK_WEBHOOK_URI" source="logging.slack.webhook-url"/>
+    <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+        <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg %n</pattern>
+        </layout>
+        <username>FLONEY_SERVER_ERROR</username>
+        <iconEmoji>:anger:</iconEmoji>
+        <colorCoding>true</colorCoding>
+    </appender>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
@@ -21,6 +33,13 @@
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+    </appender>
+
+    <appender name="ASYNC_SLACK" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="SLACK"/>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
     </appender>
 
     <root level="INFO">
@@ -43,6 +62,7 @@
         <level value = "DEBUG" />
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE" />
+        <appender-ref ref="ASYNC_SLACK"/>
     </logger>
 
     <logger name="org.hibernate.SQL" additivity="false">
