@@ -19,7 +19,7 @@ public class ChangeBookLineRequest {
 
     private String bookKey;
 
-    private float money;
+    private double money;
 
     private String flow;
 
@@ -35,7 +35,7 @@ public class ChangeBookLineRequest {
 
 
     @Builder
-    private ChangeBookLineRequest(long lineId, String bookKey, float money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
+    private ChangeBookLineRequest(long lineId, String bookKey, double money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
         this.lineId = lineId;
         this.bookKey = bookKey;
         this.money = money;

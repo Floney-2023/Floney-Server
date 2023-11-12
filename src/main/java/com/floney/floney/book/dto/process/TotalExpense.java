@@ -10,12 +10,12 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class TotalExpense {
 
-    private final float money;
+    private final double money;
     private final AssetType assetType;
 
     @QueryProjection
     @Builder
-    public TotalExpense(float money, String assetType) {
+    public TotalExpense(double money, String assetType) {
         this.money = money;
         this.assetType = AssetType.find(assetType);
     }

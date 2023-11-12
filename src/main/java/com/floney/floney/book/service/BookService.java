@@ -54,7 +54,7 @@ public interface BookService {
 
     BookStatusResponse getBookStatus(String bookKey);
 
-    Map<Month, Float> getBudgetByYear(String bookKey, String year);
+    Map<Month, Double> getBudgetByYear(String bookKey, String year);
 
     void leaveBooksBy(long userId);
 }

@@ -11,7 +11,7 @@ import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 @Getter
 public class BookLineResponse {
 
-    private final float money;
+    private final double money;
 
     private final String flow;
 
@@ -28,7 +28,7 @@ public class BookLineResponse {
     private final String nickname;
 
     @Builder
-    private BookLineResponse(float money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
+    private BookLineResponse(double money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except, String nickname) {
         this.money = money;
         this.flow = flow;
         this.asset = asset;

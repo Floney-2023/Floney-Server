@@ -26,13 +26,15 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Asset extends BaseEntity {
-    private Float money;
+    private double money;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
+
     private LocalDate date;
 
     @Builder
-    private Asset(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Status status, Float money, Book book, LocalDate date) {
+    private Asset(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Status status, double money, Book book, LocalDate date) {
         super(id, createdAt, updatedAt, status);
         this.money = money;
         this.book = book;
@@ -57,7 +59,7 @@ public class Asset extends BaseEntity {
         }
     }
 
-    public void update(float updateMoney, String flow) {
+    public void update(double updateMoney, String flow) {
         if (Objects.equals(flow, AssetType.INCOME.getKind())) {
             money += updateMoney;
         } else {
@@ -65,14 +67,14 @@ public class Asset extends BaseEntity {
         }
     }
 
-    public void delete(float updateMoney, BookLineCategory flow){
+    public void delete(double updateMoney, BookLineCategory flow) {
         // 기존 내역이 수입이였다면, 현 자산에서 감소
         if (Objects.equals(flow.getName(), AssetType.INCOME.getKind())) {
             money -= updateMoney;
         }
 
         // 기존 내역이 지출이였다면, 현 자산에 합
-        else if (Objects.equals(flow.getName(), AssetType.OUTCOME.getKind())){
+        else if (Objects.equals(flow.getName(), AssetType.OUTCOME.getKind())) {
             money += updateMoney;
         }
     }
