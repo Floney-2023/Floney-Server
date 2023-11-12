@@ -5,7 +5,7 @@
     <!--콘솔에 출력-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n</Pattern>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative]%-5level - %msg%n</Pattern>
         </layout>
     </appender>
 
@@ -14,7 +14,7 @@
     <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
         <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg %n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %.-500msg %n</pattern>
         </layout>
         <username>FLONEY_SERVER_ERROR</username>
         <iconEmoji>:anger:</iconEmoji>
@@ -31,7 +31,7 @@
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n</pattern>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative]%-5level - %msg%n</Pattern>
         </encoder>
     </appender>
 
