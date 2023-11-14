@@ -26,9 +26,9 @@ public class SettlementUser extends BaseEntity {
     private User user;
 
     @Column(nullable = false, updatable = false)
-    private Float money;
+    private Double money;
 
-    public static SettlementUser of(Settlement settlement, User user, float money) {
+    public static SettlementUser of(Settlement settlement, User user, double money) {
         return SettlementUser.builder()
                 .settlement(settlement)
                 .user(user)

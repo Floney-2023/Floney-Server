@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class AnalyzeResponseByCategory {
     private String category;
-    private float money;
+    private double money;
 
     @QueryProjection
-    public AnalyzeResponseByCategory(String category, float money) {
+    public AnalyzeResponseByCategory(String category, double money) {
         this.category = category;
         this.money = money;
     }

@@ -45,13 +45,13 @@ public class Settlement extends BaseEntity {
     private Integer userCount;
 
     @Column(nullable = false, updatable = false)
-    private float totalOutcome;
+    private Double totalOutcome;
 
     @Column(nullable = false, updatable = false)
-    private float avgOutcome;
+    private Double avgOutcome;
 
     @QueryProjection
-    private Settlement(Book book, List<SettlementUser> details, LocalDate startDate, LocalDate endDate, Integer userCount, float totalOutcome, float avgOutcome) {
+    private Settlement(Book book, List<SettlementUser> details, LocalDate startDate, LocalDate endDate, Integer userCount, Double totalOutcome, Double avgOutcome) {
         this.book = book;
         this.details = details;
         this.startDate = startDate;
@@ -63,17 +63,17 @@ public class Settlement extends BaseEntity {
 
     public static Settlement of(Book book, SettlementRequest request) {
         final Integer userCount = calculateUserCount(request.getUserEmails());
-        final float totalOutcome = (float) calculateTotalOutcome(request.getOutcomes());
-        final float avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
+        final double totalOutcome = calculateTotalOutcome(request.getOutcomes());
+        final double avgOutcome = calculateAvgOutcome(totalOutcome, userCount);
 
         return Settlement.builder()
-                .book(book)
-                .startDate(request.getStartDate())
-                .endDate(request.getEndDate())
-                .userCount(userCount)
-                .totalOutcome(totalOutcome)
-                .avgOutcome(avgOutcome)
-                .build();
+            .book(book)
+            .startDate(request.getStartDate())
+            .endDate(request.getEndDate())
+            .userCount(userCount)
+            .totalOutcome(totalOutcome)
+            .avgOutcome(avgOutcome)
+            .build();
     }
 
     private static Integer calculateUserCount(Set<String> userEmails) {
@@ -82,11 +82,11 @@ public class Settlement extends BaseEntity {
 
     private static Long calculateTotalOutcome(List<OutcomeRequest> request) {
         return request.stream()
-                .mapToLong(OutcomeRequest::getOutcome)
-                .sum();
+            .mapToLong(OutcomeRequest::getOutcome)
+            .sum();
     }
 
-    private static float calculateAvgOutcome(float totalOutcome, Integer userCount) {
+    private static double calculateAvgOutcome(double totalOutcome, Integer userCount) {
         final BigDecimal dividend = BigDecimal.valueOf(totalOutcome);
         final BigDecimal divisor = BigDecimal.valueOf(userCount);
         return dividend.divide(divisor, RoundingMode.HALF_UP).longValue();
