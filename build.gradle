@@ -71,6 +71,8 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+    implementation 'com.github.maricn:logback-slack-appender:1.6.0'
 }
 
 //querydsl
