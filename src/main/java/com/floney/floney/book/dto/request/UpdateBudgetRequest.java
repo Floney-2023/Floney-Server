@@ -12,9 +12,9 @@ import java.time.LocalDate;
 public class UpdateBudgetRequest {
     private String bookKey;
     private LocalDate date;
-    private float budget;
+    private double budget;
 
-    public UpdateBudgetRequest(String bookKey, LocalDate date, float budget) {
+    public UpdateBudgetRequest(String bookKey, LocalDate date, double budget) {
         this.date = date;
         this.budget = budget;
         this.bookKey = bookKey;

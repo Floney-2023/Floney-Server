@@ -12,8 +12,8 @@ import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
 
 public class BookLineFixture {
 
-    public static final float OUTCOME = 1000f;
-    public static final float INCOME = 1000f;
+    public static final double OUTCOME = 1000.0;
+    public static final double INCOME = 1000.0;
 
     public static LocalDate LOCAL_DATE = LocalDate.of(2023, 10, 22);
 
@@ -37,7 +37,7 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static BookLine createBookLine(Book book, float money) {
+    public static BookLine createBookLine(Book book, double money) {
         BookLine bookline = BookLine.builder()
                 .book(book)
                 .money(money)
@@ -48,7 +48,7 @@ public class BookLineFixture {
         return bookline;
     }
 
-    public static BookLine createBookLineWithWriter(Book book, float money, BookUser writer) {
+    public static BookLine createBookLineWithWriter(Book book, double money, BookUser writer) {
         BookLine bookline = BookLine.builder()
                 .book(book)
                 .money(money)
@@ -61,7 +61,7 @@ public class BookLineFixture {
     }
 
 
-    public static BookLine createBookLineWith(BookUser user, Book book, float money) {
+    public static BookLine createBookLineWith(BookUser user, Book book, double money) {
         BookLine bookline = BookLine.builder()
                 .book(book)
                 .writer(user)

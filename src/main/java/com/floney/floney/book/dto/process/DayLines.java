@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class DayLines {
     private final long id;
-    private final float money;
+    private final double money;
     private final String img;
     private final List<String> category;
     private final AssetType assetType;
@@ -24,7 +24,7 @@ public class DayLines {
     private final String userNickName;
 
     @Builder
-    public DayLines(Long id, float money, String img, String content, List<String> category, AssetType assetType, String userEmail, boolean exceptStatus, String userNickName) {
+    public DayLines(Long id, double money, String img, String content, List<String> category, AssetType assetType, String userEmail, boolean exceptStatus, String userNickName) {
         this.id = id;
         this.money = money;
         this.img = img;

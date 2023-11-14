@@ -9,26 +9,26 @@ import java.util.Map;
 
 public class BookAnalyzer {
     private static final int STANDARD = 0;
-    private final Map<String, Float> totalExpenses;
+    private final Map<String, Double> totalExpenses;
 
-    public BookAnalyzer(Map<String, Float> totalExpenses) {
+    public BookAnalyzer(Map<String, Double> totalExpenses) {
         this.totalExpenses = totalExpenses;
     }
 
-    public float differenceInAndOutCome() {
+    public double differenceInAndOutCome() {
         return totalExpenses.get(AssetType.INCOME.getKind()) - totalExpenses.get(AssetType.OUTCOME.getKind());
     }
 
-    public float calculateCurrentAsset(float initAsset, float difference) {
+    public double calculateCurrentAsset(double initAsset, double difference) {
         if (difference < STANDARD) {
             return initAsset - Math.abs(difference);
         }
         return initAsset + difference;
     }
 
-    public AnalyzeResponseByAsset analyzeAsset(float savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
-        float difference = differenceInAndOutCome();
-        float currentAsset = calculateCurrentAsset(savedAsset, difference);
+    public AnalyzeResponseByAsset analyzeAsset(double savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
+        double difference = differenceInAndOutCome();
+        double currentAsset = calculateCurrentAsset(savedAsset, difference);
 
         return AnalyzeResponseByAsset.of(difference, savedAsset, currentAsset, assetInfo);
     }

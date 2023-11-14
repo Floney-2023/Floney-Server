@@ -8,10 +8,10 @@ import java.time.LocalDate;
 @Getter
 public class BudgetYearResponse {
     private LocalDate date;
-    private float money;
+    private double money;
 
     @QueryProjection
-    public BudgetYearResponse(LocalDate date, float money) {
+    public BudgetYearResponse(LocalDate date, double money) {
         this.date = date;
         this.money = money;
     }
