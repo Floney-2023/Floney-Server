@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @Getter
 @EqualsAndHashCode
 public class DayLines {
-    private final long id;
-    private final double money;
+    private final Long id;
+    private final float money;
     private final String img;
     private final List<String> category;
     private final AssetType assetType;
@@ -54,9 +54,9 @@ public class DayLines {
 
         // 최종 응답 변경
         return dayLineWithCategories.values()
-                .stream()
-                .map(DayLines::toDayLineResponse)
-                .collect(Collectors.toList());
+            .stream()
+            .map(DayLines::toDayLineResponse)
+            .collect(Collectors.toList());
     }
 
     public static List<DayLines> forOutcomes(List<DayLine> dayLines) {
@@ -68,26 +68,39 @@ public class DayLines {
         }
 
         return infosByDay.values()
-                .stream()
-                .filter(dayLineInfo -> dayLineInfo.getAssetType() == AssetType.OUTCOME)
-                .map(DayLines::toDayLineResponse)
-                .collect(Collectors.toList());
+            .stream()
+            .filter(dayLineInfo -> dayLineInfo.getAssetType() == AssetType.OUTCOME)
+            .map(DayLines::toOutComeResponse)
+            .collect(Collectors.toList());
 
+    }
+
+    private static DayLines toOutComeResponse(DayLineInfo dayInfo) {
+        return DayLines.builder()
+            .assetType(dayInfo.getAssetType())
+            .money(dayInfo.getMoney())
+            .content(dayInfo.getContent())
+            .category(dayInfo.getCategories())
+            .img(dayInfo.getImg())
+            .userEmail(dayInfo.getUserEmail())
+            .userNickName(dayInfo.getUserNickName())
+            .exceptStatus(dayInfo.isExceptStatus())
+            .build();
     }
 
 
     private static DayLines toDayLineResponse(DayLineInfo dayInfo) {
         return DayLines.builder()
-                .id(dayInfo.getId())
-                .assetType(dayInfo.getAssetType())
-                .money(dayInfo.getMoney())
-                .content(dayInfo.getContent())
-                .category(dayInfo.getCategories())
-                .img(dayInfo.getImg())
-                .userEmail(dayInfo.getUserEmail())
-                .userNickName(dayInfo.getUserNickName())
-                .exceptStatus(dayInfo.isExceptStatus())
-                .build();
+            .id(dayInfo.getId())
+            .assetType(dayInfo.getAssetType())
+            .money(dayInfo.getMoney())
+            .content(dayInfo.getContent())
+            .category(dayInfo.getCategories())
+            .img(dayInfo.getImg())
+            .userEmail(dayInfo.getUserEmail())
+            .userNickName(dayInfo.getUserNickName())
+            .exceptStatus(dayInfo.isExceptStatus())
+            .build();
     }
 
 }
