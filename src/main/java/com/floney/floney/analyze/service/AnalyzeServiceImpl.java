@@ -40,8 +40,8 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
         List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
 
-        float totalMoney = calculateTotalMoney(analyzeResultByCategory);
-        float difference = calculateDifference(request, totalMoney);
+        double totalMoney = calculateTotalMoney(analyzeResultByCategory);
+        double difference = calculateDifference(request, totalMoney);
         return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
     }
 
@@ -56,7 +56,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
             .orElse(Budget.init());
 
         // 총 수입 조회
-        float totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
+        double totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
         return AnalyzeResponseByBudget.of(totalOutcome, budget.getMoney());
     }
 
@@ -66,7 +66,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         Book savedBook = findBook(request.getBookKey());
 
         // 총 지출, 수입 조회
-        Map<String, Float> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(request);
 
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
         Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
@@ -78,14 +78,13 @@ public class AnalyzeServiceImpl implements AnalyzeService {
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private float calculateDifference(AnalyzeByCategoryRequest request, float totalMoney) {
-        float beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
+    private double calculateDifference(AnalyzeByCategoryRequest request, double totalMoney) {
+        double beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
         return totalMoney - beforeMonthTotal;
     }
 
-    private float calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
-        // TODO : mapToFloat없는 이유 알아보기
-        return (float) result.stream()
+    private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {
+        return result.stream()
             .mapToDouble(AnalyzeResponseByCategory::getMoney)
             .sum();
     }

@@ -19,25 +19,25 @@ public class MonthLinesResponse {
 
     private static final String OUTCOME = "지출";
 
-    private static final float DEFAULT_MONEY = 0f;
+    private static final double DEFAULT_MONEY = 0.0;
 
     private final List<BookLineExpense> expenses;
 
-    private final float totalIncome;
+    private final double totalIncome;
 
-    private final float totalOutcome;
+    private final double totalOutcome;
 
     private final CarryOverInfo carryOverInfo;
 
     @Builder
-    public MonthLinesResponse(List<BookLineExpense> expenses, float totalIncome, float totalOutcome, CarryOverInfo carryOverInfo) {
+    public MonthLinesResponse(List<BookLineExpense> expenses, double totalIncome, double totalOutcome, CarryOverInfo carryOverInfo) {
         this.expenses = expenses;
         this.totalIncome = totalIncome;
         this.totalOutcome = totalOutcome;
         this.carryOverInfo = carryOverInfo;
     }
 
-    public static MonthLinesResponse of(String monthDate, List<BookLineExpense> dayExpenses, Map<String, Float> totalExpenses, CarryOverInfo carryOverInfo) {
+    public static MonthLinesResponse of(String monthDate, List<BookLineExpense> dayExpenses, Map<String, Double> totalExpenses, CarryOverInfo carryOverInfo) {
         return MonthLinesResponse.builder()
                 .expenses(reflectDB(monthDate, dayExpenses))
                 .totalIncome(totalExpenses.getOrDefault(INCOME, DEFAULT_MONEY))

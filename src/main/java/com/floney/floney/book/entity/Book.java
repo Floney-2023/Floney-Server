@@ -33,7 +33,7 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
-    private static final float DEFAULT = 0f;
+    private static final double DEFAULT = 0.0;
 
     @Column(nullable = false)
     private String name;
@@ -58,13 +58,13 @@ public class Book extends BaseEntity {
 
     private LocalDate lastSettlementDate;
 
-    private Float carryOverMoney;
+    private Double carryOverMoney;
 
     private String currency;
 
     private Integer userCapacity;
 
-    private Float asset;
+    private Double asset;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -78,10 +78,10 @@ public class Book extends BaseEntity {
                  boolean seeProfile,
                  boolean carryOverStatus,
                  String code,
-                 float carryOverMoney,
+                 double carryOverMoney,
                  String currency,
                  Integer userCapacity,
-                 float asset,
+                 double asset,
                  Status bookStatus) {
         this.name = name;
         this.bookImg = profileImg;
@@ -111,7 +111,7 @@ public class Book extends BaseEntity {
         this.bookImg = request.getNewUrl();
     }
 
-    public void updateAsset(float asset) {
+    public void updateAsset(double asset) {
         this.asset = asset;
     }
 

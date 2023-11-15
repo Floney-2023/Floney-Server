@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 public class OutcomesWithUser {
 
-    private final Map<String, Float> outcomesWithUser;
+    private final Map<String, Double> outcomesWithUser;
 
     private OutcomesWithUser(Set<String> userEmails) {
         this.outcomesWithUser = userEmails.stream()
-                .collect(Collectors.toMap(key -> key, value -> 0f));
+            .collect(Collectors.toMap(key -> key, value -> 0.0));
     }
 
     public static OutcomesWithUser init(Set<String> userEmails) {
@@ -25,15 +25,15 @@ public class OutcomesWithUser {
     public void fillOutcomes(List<OutcomeRequest> outcomeRequests) {
         try {
             outcomeRequests.forEach(outcome -> outcomesWithUser.put(
-                    outcome.getUserEmail(),
-                    outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
+                outcome.getUserEmail(),
+                outcomesWithUser.get(outcome.getUserEmail()) + outcome.getOutcome()
             ));
         } catch (NullPointerException exception) {
             throw new OutcomeUserNotFoundException();
         }
     }
 
-    public Map<String, Float> getOutcomesWithUser() {
+    public Map<String, Double> getOutcomesWithUser() {
         return Collections.unmodifiableMap(outcomesWithUser);
     }
 }

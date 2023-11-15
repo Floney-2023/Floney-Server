@@ -132,9 +132,9 @@ public class BookLineRepositoryTest {
                 .endDate(end)
                 .build();
 
-        Map<String, Float> totals = new HashMap<>();
-        totals.put("수입", 1000f);
-        totals.put("지출", 1000f);
+        Map<String, Double> totals = new HashMap<>();
+        totals.put("수입", 1000.0);
+        totals.put("지출", 1000.0);
 
         Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
                 .isEqualTo(totals);
@@ -144,8 +144,8 @@ public class BookLineRepositoryTest {
     @Test
     @DisplayName("날짜별로 총수입/총지출을 조회한다")
     void day_expenses() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000f));
+        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000.0));
+        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000.0));
 
         BookLineCategory category = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
