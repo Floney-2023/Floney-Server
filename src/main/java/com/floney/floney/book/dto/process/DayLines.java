@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public class DayLines {
     private final Long id;
-    private final float money;
+    private final double money;
     private final String img;
     private final List<String> category;
     private final AssetType assetType;
