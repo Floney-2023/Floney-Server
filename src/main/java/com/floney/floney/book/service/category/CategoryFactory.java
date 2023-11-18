@@ -42,6 +42,10 @@ public class CategoryFactory {
         Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(ASSET);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
+            //기존 카테고리 삭제
+            currentCategory.inactive();
+            bookLineCategoryRepository.save(currentCategory);
+
             return saveAssetBookLineCategory(bookLine, requestCategory, bookKey);
         }
         return currentCategory;
@@ -51,6 +55,11 @@ public class CategoryFactory {
         Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(FLOW_LINE);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
+
+            //기존 카테고리 삭제
+            currentCategory.inactive();
+            bookLineCategoryRepository.save(currentCategory);
+
             String flowCategory = categories.get(FLOW).getName();
             return saveLineBookLineCategory(bookLine, requestCategory, bookKey, flowCategory);
         }
