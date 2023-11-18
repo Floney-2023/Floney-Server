@@ -34,24 +34,18 @@ public class CategoryFactory {
 
     public void changeCategories(BookLine bookLine, ChangeBookLineRequest request) {
         String bookKey = request.getBookKey();
-        bookLine.add(FLOW, changeFlowCategory(bookLine, request.getFlow()));
         bookLine.add(ASSET, changeAssetCategory(bookLine, request.getAsset(), bookKey));
         bookLine.add(FLOW_LINE, changeLineCategory(bookLine, bookKey, request.getLine()));
-    }
-
-    private BookLineCategory changeFlowCategory(BookLine bookLine, String requestCategory) {
-        Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
-        BookLineCategory currentCategory = categories.get(CategoryEnum.FLOW);
-        if (!Objects.equals(currentCategory.getName(), requestCategory)) {
-            return saveFlowBookLineCategory(bookLine, requestCategory);
-        }
-        return currentCategory;
     }
 
     private BookLineCategory changeAssetCategory(BookLine bookLine, String requestCategory, String bookKey) {
         Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(ASSET);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
+            //기존 카테고리 삭제
+            currentCategory.inactive();
+            bookLineCategoryRepository.save(currentCategory);
+
             return saveAssetBookLineCategory(bookLine, requestCategory, bookKey);
         }
         return currentCategory;
@@ -61,9 +55,12 @@ public class CategoryFactory {
         Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(FLOW_LINE);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
-            String flowCategory = bookLine.getBookLineCategories()
-                    .get(FLOW)
-                    .getName();
+
+            //기존 카테고리 삭제
+            currentCategory.inactive();
+            bookLineCategoryRepository.save(currentCategory);
+
+            String flowCategory = categories.get(FLOW).getName();
             return saveLineBookLineCategory(bookLine, requestCategory, bookKey, flowCategory);
         }
         return currentCategory;

@@ -97,7 +97,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public List<DayLines> allOutcomes(AllOutcomesRequest allOutcomesRequest) {
-        return DayLines.forOutcomes(bookLineRepository.allOutcomes(allOutcomesRequest));
+        return DayLines.forOutcomes(bookLineRepository.getAllLines(allOutcomesRequest));
     }
 
     @Override
