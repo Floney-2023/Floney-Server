@@ -172,6 +172,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public List<Book> findBookByOwner(User user) {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
+            .innerJoin(bookUser.book,book)
             .where(bookUser.user.eq(user),
                 bookUser.status.eq(ACTIVE),
                 book.bookStatus.eq(ACTIVE))

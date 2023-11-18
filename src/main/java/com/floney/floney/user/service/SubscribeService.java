@@ -93,6 +93,7 @@ public class SubscribeService {
 
         // 위임 로직을 지나쳤음에도, 활성 가계부가 2개라면 랜덤 1개 비활성화
         List<Book> remainBooks = bookUserRepository.findBookByOwner(user);
+
         if(remainBooks.size()>= SUBSCRIBE_MAX_BOOK.getValue()) {
             remainBooks.get(0).inactiveBookStatus();
         }
