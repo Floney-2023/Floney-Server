@@ -258,37 +258,6 @@ public class BookLineRepositoryTest {
         BookLine savedBookLine = bookLineRepository.save(bookLine);
         assertThat(savedBookLine.getBookLineCategories().size()).isEqualTo(3);
     }
-
-    @Test
-    @DisplayName("가계부 내역을 수정 시, 카테고리 3개(자산,분류,내용)")
-    void changeBookLine() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
-
-        DefaultCategory flowCategory = DefaultCategory.builder()
-            .name("수입")
-            .build();
-
-        Category savedFlowCategory = categoryRepository.save(flowCategory);
-        BookLineCategory savedBookLineCategory = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) savedFlowCategory, bookLine));
-        bookLine.add(CategoryEnum.FLOW, savedBookLineCategory);
-
-        DefaultCategory assetCategory = DefaultCategory.builder()
-            .name("은행")
-            .build();
-        Category savedAssetCategory = categoryRepository.save(assetCategory);
-        BookLineCategory bookLineAssetCategory = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) savedAssetCategory, bookLine));
-        bookLine.add(CategoryEnum.ASSET,bookLineAssetCategory);
-
-        DefaultCategory flowLineCategory = DefaultCategory.builder()
-            .name("급여")
-            .build();
-        Category savedFlowLineCategory = categoryRepository.save(flowLineCategory);
-        BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) savedFlowLineCategory, bookLine));
-        bookLine.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory);
-
-        BookLine savedBookLine = bookLineRepository.save(bookLine);
-        assertThat(savedBookLine.getBookLineCategories().size()).isEqualTo(3);
-    }
 }
 
 

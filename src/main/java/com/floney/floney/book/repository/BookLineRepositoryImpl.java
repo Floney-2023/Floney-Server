@@ -282,10 +282,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.id.eq(id),
                 bookLine.status.eq(ACTIVE)
             )
-            .leftJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(bookLineCategory.status.eq(ACTIVE))
             .fetchJoin()
-            .leftJoin(bookLine.writer, bookUser).fetchJoin()
+            .innerJoin(bookLine.writer, bookUser).fetchJoin()
             .leftJoin(bookUser.user, user).fetchJoin()
             .fetchOne()
         );
