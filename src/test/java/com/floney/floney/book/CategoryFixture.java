@@ -47,6 +47,7 @@ public class CategoryFixture {
                 .build();
     }
 
+
     public static DefaultCategory outComeBookCategory() {
         return DefaultCategory.builder()
                 .name("지출")
@@ -54,9 +55,14 @@ public class CategoryFixture {
     }
 
 
+    public static BookLineCategory createFlowCategory(DefaultCategory category, BookLine bookLine) {
+        return BookLineCategory.of(bookLine, category);
+    }
+
     public static BookLineCategory createLineCategory(DefaultCategory category, BookLine bookLine) {
         return BookLineCategory.of(bookLine, category);
     }
+
 
     public static BookLineCategory createChildLineCategory(BookCategory category, BookLine bookLine) {
         return BookLineCategory.of(bookLine, category);

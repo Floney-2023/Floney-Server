@@ -84,7 +84,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 book.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
                 bookLine.lineDate.eq(date),
-                book.bookKey.eq(bookKey)
+                book.bookKey.eq(bookKey),
+                bookLineCategory.status.eq(ACTIVE)
             )
             .groupBy(bookLine.id, bookLineCategory.name)
             .fetch();
@@ -159,7 +160,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> allOutcomes(AllOutcomesRequest request) {
+    public List<DayLine> getAllLines(AllOutcomesRequest request) {
         DatesDuration duration = request.getDuration();
         return jpaQueryFactory
             .select(new QDayLine(
@@ -178,7 +179,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 book.bookKey.eq(request.getBookKey()),
                 bookLine.lineDate.between(duration.start(), duration.end()),
                 user.email.in(request.getUsersEmails()),
-                bookLine.status.eq(ACTIVE)
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE)
             )
             .groupBy(bookLine.id, bookLineCategory.name)
             .fetch();
@@ -202,18 +204,19 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
         DatesDuration duration = DateFactory.getBeforeDateDuration(request.getLocalDate());
         return jpaQueryFactory
-                .select(bookLine.money.sum().coalesce(0.0))
-                .from(bookLine)
-                .innerJoin(bookLine.book, book)
-                .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-                .where(
-                        bookLine.lineDate.between(duration.start(), duration.end()),
-                        bookLineCategory.name.eq(request.getRoot()),
-                        book.bookKey.eq(request.getBookKey()),
-                        book.status.eq(ACTIVE),
-                        bookLine.status.eq(ACTIVE)
-                )
-                .fetchOne();
+            .select(bookLine.money.sum().coalesce(0.0))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.eq(request.getRoot()),
+                book.bookKey.eq(request.getBookKey()),
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne();
     }
 
     @Override
@@ -245,7 +248,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .where(book.bookKey.eq(request.getBookKey()))
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(bookLineCategory.name.in(children), bookLine.status.eq(ACTIVE))
+            .where(bookLineCategory.name.in(children), bookLine.status.eq(ACTIVE), bookLineCategory.status.eq(ACTIVE))
             .where(bookLine.lineDate.between(datesRequest.getStartDate(), datesRequest.getEndDate()))
             .groupBy(bookLineCategory.name)
             .fetch();
@@ -279,8 +282,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.id.eq(id),
                 bookLine.status.eq(ACTIVE)
             )
-            .leftJoin(bookLine.bookLineCategories, bookLineCategory).fetchJoin()
-            .leftJoin(bookLine.writer, bookUser).fetchJoin()
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(bookLineCategory.status.eq(ACTIVE))
+            .fetchJoin()
+            .innerJoin(bookLine.writer, bookUser).fetchJoin()
             .leftJoin(bookUser.user, user).fetchJoin()
             .fetchOne()
         );
@@ -298,7 +303,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind(), BANK.getKind()),
                 book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE)
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE)
             )
             .fetch();
     }
@@ -334,18 +340,18 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private Double totalOutcomeMoney(DatesDuration duration, String bookKey) {
         return jpaQueryFactory
-                .select(bookLine.money.sum().coalesce(0.0))
-                .from(bookLine)
-                .innerJoin(bookLine.book, book)
-                .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-                .where(
-                        bookLine.lineDate.between(duration.start(), duration.end()),
-                        bookLineCategory.name.eq(OUTCOME.getKind()),
-                        book.bookKey.eq(bookKey),
-                        book.status.eq(ACTIVE),
-                        bookLine.status.eq(ACTIVE),
-                        bookLine.exceptStatus.eq(false)
-                )
-                .fetchOne();
+            .select(bookLine.money.sum().coalesce(0.0))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                bookLineCategory.name.eq(OUTCOME.getKind()),
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLine.exceptStatus.eq(false)
+            )
+            .fetchOne();
     }
 }
