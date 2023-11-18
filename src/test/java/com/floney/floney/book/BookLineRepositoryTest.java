@@ -3,6 +3,7 @@ package com.floney.floney.book;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.process.DayLine;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
@@ -29,9 +30,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.floney.floney.book.CategoryFixture.*;
 import static com.floney.floney.fixture.BookFixture.*;
@@ -208,6 +207,12 @@ public class BookLineRepositoryTest {
         BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000L, bookUser));
         BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000L, bookUser));
 
+        BookLineCategory incomeBookLineCategory = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
+        bookLine.add(CategoryEnum.FLOW, incomeBookLineCategory);
+
+        BookLineCategory bookLineCategory2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
+        bookLine2.add(CategoryEnum.FLOW, bookLineCategory2);
+
         bookLineRepository.save(bookLine);
         bookLineRepository.save(bookLine2);
 
@@ -218,8 +223,7 @@ public class BookLineRepositoryTest {
             .startDate(start)
             .endDate(end)
             .build();
-        AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY, Arrays.asList(EMAIL), datesRequest);
-
+        AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY, Collections.singletonList(EMAIL), datesRequest);
         Assertions.assertThat(bookLineRepository.getAllLines(request).size())
             .isEqualTo(2);
     }
