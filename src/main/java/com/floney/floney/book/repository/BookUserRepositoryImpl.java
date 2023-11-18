@@ -45,8 +45,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .innerJoin(bookUser.book, book)
             .where(
                 book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE)
-                , bookUser.status.eq(ACTIVE)
+                book.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE)
             )
             .innerJoin(bookUser.user, user)
             .where(user.status.eq(ACTIVE))
@@ -64,7 +64,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .innerJoin(bookUser.user, user)
             .where(
                 user.email.eq(userEmail),
-                user.status.eq(ACTIVE)
+                user.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE)
             )
             .fetchOne());
     }
@@ -80,6 +81,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             )
             .innerJoin(bookUser.user, user)
             .where(
+                bookUser.status.eq(ACTIVE),
                 user.email.eq(userEmail),
                 user.status.eq(ACTIVE)
             )
@@ -97,6 +99,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             )
             .innerJoin(bookUser.book, book)
             .where(
+                bookUser.status.eq(ACTIVE),
                 book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE)
             )
@@ -164,12 +167,14 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     }
 
+    // 유저가 owner인 가계부 조회
     @Override
     public List<Book> findBookByOwner(User user) {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .where(bookUser.user.eq(user),
-                bookUser.status.eq(ACTIVE))
+                bookUser.status.eq(ACTIVE),
+                book.bookStatus.eq(ACTIVE))
             .fetch();
 
         List<Book> myBooks = new ArrayList<>();
@@ -219,7 +224,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 book.status.eq(ACTIVE))
             .innerJoin(bookUser.user, user)
             .where(user.email.eq(email),
-                user.status.eq(ACTIVE))
+                user.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE))
             .fetchOne();
 
     }
@@ -229,7 +235,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return jpaQueryFactory.selectFrom(bookUser)
             .innerJoin(bookUser.book, book)
             .innerJoin(bookUser.user, user)
-            .where(book.bookKey.eq(bookKey), user.email.eq(email))
+            .where(book.bookKey.eq(bookKey),
+                bookUser.status.eq(ACTIVE),
+                user.email.eq(email),
+                user.status.eq(ACTIVE))
             .fetchOne() != null;
     }
 
@@ -244,7 +253,9 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                     JPAExpressions.select(bookUser.user)
                         .from(bookUser)
                         .where(
-                            bookUser.book.eq(targetBook)
+                            user.status.eq(ACTIVE),
+                            bookUser.book.eq(targetBook),
+                            bookUser.status.eq(ACTIVE)
                         )
                 )
             )

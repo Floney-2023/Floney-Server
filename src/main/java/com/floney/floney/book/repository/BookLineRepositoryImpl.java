@@ -84,7 +84,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 book.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
                 bookLine.lineDate.eq(date),
-                book.bookKey.eq(bookKey)
+                book.bookKey.eq(bookKey),
+                bookUser.status.eq(ACTIVE)
             )
             .groupBy(bookLine.id, bookLineCategory.name)
             .fetch();
@@ -175,6 +176,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookUser.user, user)
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE),
                 book.bookKey.eq(request.getBookKey()),
                 bookLine.lineDate.between(duration.start(), duration.end()),
                 user.email.in(request.getUsersEmails()),
@@ -275,13 +278,16 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public Optional<BookLine> findByIdWithCategories(Long id) {
         return Optional.ofNullable(jpaQueryFactory
             .selectFrom(bookLine)
-            .where(
-                bookLine.id.eq(id),
-                bookLine.status.eq(ACTIVE)
-            )
             .leftJoin(bookLine.bookLineCategories, bookLineCategory).fetchJoin()
             .leftJoin(bookLine.writer, bookUser).fetchJoin()
             .leftJoin(bookUser.user, user).fetchJoin()
+            .where(
+                bookLineCategory.status.eq(ACTIVE),
+                bookLine.id.eq(id),
+                bookLine.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE)
+            )
             .fetchOne()
         );
     }
@@ -298,7 +304,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind(), BANK.getKind()),
                 book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE)
+                bookLine.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE)
             )
             .fetch();
     }
