@@ -27,7 +27,7 @@ public interface BookLineCustomRepository {
 
     void inactiveAllBy(String bookKey);
 
-    List<DayLine> allOutcomes(AllOutcomesRequest request);
+    List<DayLine> getAllLines(AllOutcomesRequest request);
 
     void inactiveAllByBookUser(BookUser bookUser);
 
