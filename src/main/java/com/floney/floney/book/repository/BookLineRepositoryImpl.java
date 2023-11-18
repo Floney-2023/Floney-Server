@@ -85,6 +85,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLine.lineDate.eq(date),
                 book.bookKey.eq(bookKey),
+                bookUser.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE)
             )
             .groupBy(bookLine.id, bookLineCategory.name)
@@ -176,6 +177,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookUser.user, user)
             .leftJoin(bookLine.bookLineCategories, bookLineCategory)
             .where(
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE),
                 book.bookKey.eq(request.getBookKey()),
                 bookLine.lineDate.between(duration.start(), duration.end()),
                 user.email.in(request.getUsersEmails()),
@@ -280,10 +283,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .selectFrom(bookLine)
             .where(
                 bookLine.id.eq(id),
-                bookLine.status.eq(ACTIVE)
+                bookLine.status.eq(ACTIVE),
+                user.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE)
             )
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(bookLineCategory.status.eq(ACTIVE))
             .fetchJoin()
             .innerJoin(bookLine.writer, bookUser).fetchJoin()
             .leftJoin(bookUser.user, user).fetchJoin()
@@ -293,7 +298,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     public List<BookLine> findAllByBook(final String bookKey) {
-        return jpaQueryFactory
+       return jpaQueryFactory
             .selectFrom(bookLine)
             .innerJoin(bookLine.book, book).fetchJoin()
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
@@ -303,6 +308,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind(), BANK.getKind()),
                 book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE)
             )

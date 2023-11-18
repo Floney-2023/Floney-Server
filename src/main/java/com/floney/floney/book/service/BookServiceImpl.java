@@ -236,7 +236,10 @@ public class BookServiceImpl implements BookService {
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
         myBookInfos.stream()
             .findFirst()
-            .ifPresent(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()));
+            .ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),() -> {
+                user.saveRecentBookKey(null);
+            });
+
         userRepository.save(user);
     }
 

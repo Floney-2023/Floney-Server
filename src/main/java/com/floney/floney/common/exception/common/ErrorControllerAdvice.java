@@ -212,14 +212,14 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(AlreadyJoinException.class)
     protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
-        logger.error("{}는 {} \n [ERROR_MSG] : {} \n  [ERROR_STACK] : {}", exception.getUserEmail(), ErrorType.ALREADY_JOIN.getMessage(), exception.getMessage(), exception.getStackTrace());
+        logger.warn("{}는 {} \n [ERROR_MSG] : {} \n  [ERROR_STACK] : {}", exception.getUserEmail(), ErrorType.ALREADY_JOIN.getMessage(), exception.getMessage(), exception.getStackTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(NotFoundSubscribeException.class)
     protected ResponseEntity<ErrorResponse> subscribeException(NotFoundSubscribeException exception) {
-        logger.error("{} User = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(), exception.getUserEmail(), exception.getMessage(), exception.getStackTrace());
+        logger.warn("{} User = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(), exception.getUserEmail(), exception.getMessage(), exception.getStackTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }

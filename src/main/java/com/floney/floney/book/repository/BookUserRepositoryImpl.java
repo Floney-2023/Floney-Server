@@ -36,108 +36,112 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Override
     public List<OurBookUser> findAllUser(String bookKey) {
         return jpaQueryFactory.select(
-                        new QOurBookUser(
-                                user.nickname,
-                                user.profileImg,
-                                user.email
-                        ))
-                .from(bookUser)
-                .innerJoin(bookUser.book, book)
-                .where(
-                        book.bookKey.eq(bookKey),
-                        book.status.eq(ACTIVE)
-                    ,bookUser.status.eq(ACTIVE)
-                )
-                .innerJoin(bookUser.user, user)
-                .where(user.status.eq(ACTIVE))
-                .fetch();
+                new QOurBookUser(
+                    user.nickname,
+                    user.profileImg,
+                    user.email
+                ))
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE)
+            )
+            .innerJoin(bookUser.user, user)
+            .where(user.status.eq(ACTIVE))
+            .fetch();
     }
 
     @Override
     public Optional<BookUser> findBookUserByEmailAndBookKey(String userEmail, String bookKey) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-                .innerJoin(bookUser.book, book)
-                .where(
-                        book.bookKey.eq(bookKey),
-                        book.status.eq(ACTIVE)
-                )
-                .innerJoin(bookUser.user, user)
-                .where(
-                        user.email.eq(userEmail),
-                        user.status.eq(ACTIVE)
-                )
-                .fetchOne());
+            .innerJoin(bookUser.book, book)
+            .where(
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE)
+            )
+            .innerJoin(bookUser.user, user)
+            .where(
+                user.email.eq(userEmail),
+                user.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE)
+            )
+            .fetchOne());
     }
 
     @Override
     public boolean existsByBookKeyAndUserEmail(final String bookKey, final String userEmail) {
         return jpaQueryFactory.select(bookUser.id)
-                .from(bookUser)
-                .innerJoin(bookUser.book, book)
-                .where(
-                        book.bookKey.eq(bookKey),
-                        book.status.eq(ACTIVE)
-                )
-                .innerJoin(bookUser.user, user)
-                .where(
-                        user.email.eq(userEmail),
-                        user.status.eq(ACTIVE)
-                )
-                .fetchOne() != null;
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE)
+            )
+            .innerJoin(bookUser.user, user)
+            .where(
+                bookUser.status.eq(ACTIVE),
+                user.email.eq(userEmail),
+                user.status.eq(ACTIVE)
+            )
+            .fetchOne() != null;
     }
 
     @Override
     public Optional<BookUser> findBookUserByKey(String currentUserEmail, String bookKey) {
         return Optional.ofNullable(jpaQueryFactory
-                .selectFrom(bookUser)
-                .innerJoin(bookUser.user, user)
-                .where(
-                        user.email.eq(currentUserEmail),
-                        user.status.eq(ACTIVE)
-                )
-                .innerJoin(bookUser.book, book)
-                .where(
-                        book.bookKey.eq(bookKey),
-                        book.status.eq(ACTIVE)
-                )
-                .fetchOne());
+            .selectFrom(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(
+                user.email.eq(currentUserEmail),
+                user.status.eq(ACTIVE)
+            )
+            .innerJoin(bookUser.book, book)
+            .where(
+                bookUser.status.eq(ACTIVE),
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE)
+            )
+            .fetchOne());
     }
 
     @Override
     public Optional<BookUser> findBookUserByCode(String currentUserEmail, String bookCode) {
         return Optional.ofNullable(jpaQueryFactory
-                .select(bookUser)
-                .from(bookUser)
-                .innerJoin(bookUser.user, user)
-                .where(user.email.eq(currentUserEmail),
-                        user.status.eq(ACTIVE))
-                .innerJoin(bookUser.book, book)
-                .where(book.code.eq(bookCode),
-                        book.status.eq(ACTIVE))
-                .fetchOne());
+            .select(bookUser)
+            .from(bookUser)
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(currentUserEmail),
+                user.status.eq(ACTIVE))
+            .innerJoin(bookUser.book, book)
+            .where(book.code.eq(bookCode),
+                book.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE))
+            .fetchOne());
     }
 
 
     @Override
     public List<MyBookInfo> findMyBookInfos(User user) {
         List<Book> books = jpaQueryFactory.select(book)
-                .from(bookUser)
-                .where(bookUser.user.eq(user),
-                        bookUser.status.eq(ACTIVE))
-                .fetch();
+            .from(bookUser)
+            .where(bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE))
+            .fetch();
 
         List<MyBookInfo> infos = new ArrayList<>();
         for (Book target : books) {
             MyBookInfo my = jpaQueryFactory.select(
-                            new QMyBookInfo(book.bookImg,
-                                    book.name,
-                                    bookUser.count(),
-                                    book.bookKey,
-                                    book.bookStatus))
-                    .from(bookUser)
-                    .where(bookUser.book.eq(target),
-                            bookUser.status.eq(ACTIVE))
-                    .fetchOne();
+                    new QMyBookInfo(book.bookImg,
+                        book.name,
+                        bookUser.count(),
+                        book.bookKey,
+                        book.bookStatus))
+                .from(bookUser)
+                .where(bookUser.book.eq(target),
+                    bookUser.status.eq(ACTIVE))
+                .fetchOne();
             infos.add(my);
         }
         return infos;
@@ -147,10 +151,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Override
     public List<Book> findMyInactiveBooks(User user) {
         List<Book> books = jpaQueryFactory.select(book)
-                .from(bookUser)
-                .where(bookUser.user.eq(user),
-                        bookUser.status.eq(ACTIVE))
-                .fetch();
+            .from(bookUser)
+            .where(bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE))
+            .fetch();
 
         List<Book> myBooks = new ArrayList<>();
 
@@ -163,13 +167,16 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     }
 
+    // 유저가 owner인 가계부 조회
     @Override
     public List<Book> findBookByOwner(User user) {
         List<Book> books = jpaQueryFactory.select(book)
-                .from(bookUser)
-                .where(bookUser.user.eq(user),
-                        bookUser.status.eq(ACTIVE))
-                .fetch();
+            .from(bookUser)
+            .innerJoin(bookUser.book,book)
+            .where(bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE),
+                book.bookStatus.eq(ACTIVE))
+            .fetch();
 
         List<Book> myBooks = new ArrayList<>();
         for (Book target : books) {
@@ -184,52 +191,56 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Override
     public int countByBook(final Book target) {
         return jpaQueryFactory
-                .select(bookUser.id)
-                .from(bookUser)
-                .innerJoin(bookUser.book, book)
-                .where(
-                        book.eq(target),
-                        bookUser.status.eq(ACTIVE)
-                )
-                .fetch()
-                .size();
+            .select(bookUser.id)
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(
+                book.eq(target),
+                bookUser.status.eq(ACTIVE)
+            )
+            .fetch()
+            .size();
     }
 
     @Override
     public int countByBookExclusively(final Book target) {
         return jpaQueryFactory
-                .select(bookUser.id)
-                .from(bookUser)
-                .innerJoin(bookUser.book, book)
-                .where(
-                        book.eq(target),
-                        bookUser.status.eq(ACTIVE)
-                )
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .fetch()
-                .size();
+            .select(bookUser.id)
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(
+                book.eq(target),
+                bookUser.status.eq(ACTIVE)
+            )
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+            .fetch()
+            .size();
     }
 
     @Override
     public BookUser findBookUserBy(String email, Book target) {
         return jpaQueryFactory.selectFrom(bookUser)
-                .innerJoin(bookUser.book, book)
-                .where(book.eq(target),
-                        book.status.eq(ACTIVE))
-                .innerJoin(bookUser.user, user)
-                .where(user.email.eq(email),
-                        user.status.eq(ACTIVE))
-                .fetchOne();
+            .innerJoin(bookUser.book, book)
+            .where(book.eq(target),
+                book.status.eq(ACTIVE))
+            .innerJoin(bookUser.user, user)
+            .where(user.email.eq(email),
+                user.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE))
+            .fetchOne();
 
     }
 
     @Override
     public boolean existsByUserEmailAndBookKey(final String email, final String bookKey) {
         return jpaQueryFactory.selectFrom(bookUser)
-                .innerJoin(bookUser.book, book)
-                .innerJoin(bookUser.user, user)
-                .where(book.bookKey.eq(bookKey), user.email.eq(email))
-                .fetchOne() != null;
+            .innerJoin(bookUser.book, book)
+            .innerJoin(bookUser.user, user)
+            .where(book.bookKey.eq(bookKey),
+                bookUser.status.eq(ACTIVE),
+                user.email.eq(email),
+                user.status.eq(ACTIVE))
+            .fetchOne() != null;
     }
 
     @Override
@@ -237,41 +248,43 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public Optional<User> findRandomBookUserWhoSubscribeExclusively(Book targetBook) {
         // TODO: 반환 타입 User에서 BookUser로 변경
         return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
-                .where(
-                        user.subscribe.eq(true),
-                        user.in(
-                                JPAExpressions.select(bookUser.user)
-                                        .from(bookUser)
-                                        .where(
-                                                bookUser.book.eq(targetBook)
-                                        )
+            .where(
+                user.subscribe.eq(true),
+                user.in(
+                    JPAExpressions.select(bookUser.user)
+                        .from(bookUser)
+                        .where(
+                            user.status.eq(ACTIVE),
+                            bookUser.book.eq(targetBook),
+                            bookUser.status.eq(ACTIVE)
                         )
                 )
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .fetchFirst());
+            )
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+            .fetchFirst());
     }
 
     @Override
     public List<BookUser> findAllByUserId(final Long userId) {
         return jpaQueryFactory.selectFrom(bookUser)
-                .innerJoin(book)
-                .on(book.eq(bookUser.book)).fetchJoin()
-                .innerJoin(user)
-                .on(user.id.eq(userId))
-                .where(bookUser.status.eq(ACTIVE))
-                .fetch();
+            .innerJoin(book)
+            .on(book.eq(bookUser.book)).fetchJoin()
+            .innerJoin(user)
+            .on(user.id.eq(userId))
+            .where(bookUser.status.eq(ACTIVE))
+            .fetch();
     }
 
     @Override
     @Transactional
     public void inactiveAllByBook(final Book book) {
         jpaQueryFactory.update(bookUser)
-                .set(bookUser.status, INACTIVE)
-                .set(bookUser.updatedAt, LocalDateTime.now())
-                .where(
-                        bookUser.book.eq(book),
-                        bookUser.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(bookUser.status, INACTIVE)
+            .set(bookUser.updatedAt, LocalDateTime.now())
+            .where(
+                bookUser.book.eq(book),
+                bookUser.status.eq(ACTIVE)
+            )
+            .execute();
     }
 }
