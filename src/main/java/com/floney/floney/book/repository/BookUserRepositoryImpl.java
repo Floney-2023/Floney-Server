@@ -135,8 +135,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                     new QMyBookInfo(book.bookImg,
                         book.name,
                         bookUser.count(),
-                        book.bookKey,
-                        book.bookStatus))
+                        book.bookKey)
+                    )
                 .from(bookUser)
                 .where(bookUser.book.eq(target),
                     bookUser.status.eq(ACTIVE))
@@ -152,9 +152,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         List<Book> books = jpaQueryFactory.select(book)
             .from(bookUser)
             .innerJoin(bookUser.book,book)
-            .where(bookUser.user.eq(user),
-                bookUser.status.eq(ACTIVE),
-                book.bookStatus.eq(ACTIVE))
+            .where(
+                    bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE)
+            )
             .fetch();
 
         List<Book> myBooks = new ArrayList<>();

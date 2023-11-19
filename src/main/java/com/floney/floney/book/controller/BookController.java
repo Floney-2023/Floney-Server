@@ -310,17 +310,6 @@ public class BookController {
     }
 
     /**
-     * 가계부 비활성화 / 활성화 여부 조회
-     *
-     * @param bookKey 가계부 키
-     * @return BookStatusResponse 비활성화 / 활성화 여부
-     */
-    @GetMapping("/bookStatus")
-    public ResponseEntity<?> getBookStatus(@RequestParam String bookKey) {
-        return new ResponseEntity<>(bookService.getBookStatus(bookKey), HttpStatus.OK);
-    }
-
-    /**
      * 가계부 예산 조회
      *
      * @param bookKey   가계부 키

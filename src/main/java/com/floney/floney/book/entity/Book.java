@@ -3,13 +3,10 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.event.BookDeletedEvent;
-import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.common.util.Events;
-import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,12 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.time.LocalDate;
-
-import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Entity
 @Getter
@@ -66,10 +58,6 @@ public class Book extends BaseEntity {
 
     private Double asset;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Status bookStatus;
-
     @Builder
     private Book(String name,
                  String profileImg,
@@ -81,8 +69,7 @@ public class Book extends BaseEntity {
                  double carryOverMoney,
                  String currency,
                  Integer userCapacity,
-                 double asset,
-                 Status bookStatus) {
+                 double asset) {
         this.name = name;
         this.bookImg = profileImg;
         this.owner = owner;
@@ -94,7 +81,6 @@ public class Book extends BaseEntity {
         this.currency = currency;
         this.userCapacity = userCapacity;
         this.asset = asset;
-        this.bookStatus = bookStatus;
     }
 
     public void updateName(String requestName) {
@@ -123,10 +109,6 @@ public class Book extends BaseEntity {
         this.lastSettlementDate = lastSettlementDate;
     }
 
-    public boolean getCarryOverStatus() {
-        return this.carryOverStatus;
-    }
-
     public void changeCarryOverStatus(boolean status) {
         this.carryOverStatus = status;
     }
@@ -139,21 +121,6 @@ public class Book extends BaseEntity {
         this.asset = DEFAULT;
         this.carryOverStatus = Boolean.FALSE;
         this.lastSettlementDate = null;
-    }
-
-    public Book subscribe(User user) {
-        this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
-        this.bookStatus = ACTIVE;
-        this.owner = user.getEmail();
-        return this;
-    }
-
-    public void delegateOwner(User user) {
-        this.owner = user.getEmail();
-    }
-
-    public void inactiveBookStatus() {
-        this.bookStatus = INACTIVE;
     }
 
     public void validateCanJoinMember(final int memberCount) {
@@ -170,9 +137,5 @@ public class Book extends BaseEntity {
 
     public boolean isOwner(final String email) {
         return owner.equals(email);
-    }
-
-    public void updateToSubscribeCapacity() {
-        this.userCapacity = Subscribe.SUBSCRIBE_MAX_MEMBER.getValue();
     }
 }

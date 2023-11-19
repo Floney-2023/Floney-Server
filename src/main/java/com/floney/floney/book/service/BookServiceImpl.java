@@ -65,17 +65,6 @@ public class BookServiceImpl implements BookService {
         return createBook(user, request);
     }
 
-    @Transactional
-    public CreateBookResponse subscribeCreateBook(User user, CreateBookRequest request) {
-        Book newBook = request.of(user.getEmail());
-        Book savedBook = bookRepository.save(newBook);
-        savedBook.subscribe(user);
-
-        saveDefaultBookKey(user, savedBook);
-        bookUserRepository.save(BookUser.of(user, savedBook));
-        return CreateBookResponse.of(savedBook);
-    }
-
     @Override
     @Transactional
     public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
@@ -301,12 +290,6 @@ public class BookServiceImpl implements BookService {
         }
         final long passedDays = ChronoUnit.DAYS.between(lastSettlementDate, LocalDate.now());
         return new LastSettlementDateResponse(passedDays);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public BookStatusResponse getBookStatus(String bookKey) {
-        return BookStatusResponse.of(findBook(bookKey));
     }
 
     @Override
