@@ -23,8 +23,6 @@ public interface BookUserCustomRepository {
 
     List<MyBookInfo> findMyBookInfos(User user);
 
-    List<Book> findMyInactiveBooks(User user);
-
     List<Book> findBookByOwner(User user);
 
     int countByBook(Book book);
@@ -34,8 +32,6 @@ public interface BookUserCustomRepository {
     BookUser findBookUserBy(String email, Book targetBook);
 
     boolean existsByUserEmailAndBookKey(String email, String bookKey);
-
-    Optional<User> findRandomBookUserWhoSubscribeExclusively(Book targetBook);
 
     List<BookUser> findAllByUserId(Long userId);
 

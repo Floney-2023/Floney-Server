@@ -7,7 +7,6 @@ import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.entity.BookUser;
 import com.floney.floney.user.entity.User;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -147,26 +146,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return infos;
     }
 
-
-    @Override
-    public List<Book> findMyInactiveBooks(User user) {
-        List<Book> books = jpaQueryFactory.select(book)
-            .from(bookUser)
-            .where(bookUser.user.eq(user),
-                bookUser.status.eq(ACTIVE))
-            .fetch();
-
-        List<Book> myBooks = new ArrayList<>();
-
-        for (Book target : books) {
-            if (target.getBookStatus() == INACTIVE && target.getStatus() == ACTIVE) {
-                myBooks.add(target);
-            }
-        }
-        return myBooks;
-
-    }
-
     // 유저가 owner인 가계부 조회
     @Override
     public List<Book> findBookByOwner(User user) {
@@ -241,27 +220,6 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 user.email.eq(email),
                 user.status.eq(ACTIVE))
             .fetchOne() != null;
-    }
-
-    @Override
-    @Transactional
-    public Optional<User> findRandomBookUserWhoSubscribeExclusively(Book targetBook) {
-        // TODO: 반환 타입 User에서 BookUser로 변경
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(user)
-            .where(
-                user.subscribe.eq(true),
-                user.in(
-                    JPAExpressions.select(bookUser.user)
-                        .from(bookUser)
-                        .where(
-                            user.status.eq(ACTIVE),
-                            bookUser.book.eq(targetBook),
-                            bookUser.status.eq(ACTIVE)
-                        )
-                )
-            )
-            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-            .fetchFirst());
     }
 
     @Override
