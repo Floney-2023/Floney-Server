@@ -1,13 +1,14 @@
 package com.floney.floney.fixture;
 
+import com.floney.floney.book.domain.BookUserCapacity;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.CodeJoinRequest;
 import com.floney.floney.book.dto.request.CreateBookRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.user.entity.User;
 
 public class BookFixture {
@@ -18,7 +19,6 @@ public class BookFixture {
     public static String UPDATE_URL = "https://fileisUpdate.com";
     public static String CODE = "code";
     public static String BOOK_KEY = "book-key";
-    public static Long DEFAULT_VALUE = 0L;
 
 
     public static CreateBookRequest createBookRequest() {
@@ -35,7 +35,7 @@ public class BookFixture {
                 .bookKey(bookKey)
                 .owner(EMAIL)
                 .code(CODE)
-                .userCapacity(2)
+                .userCapacity(BookUserCapacity.DEFAULT.getValue())
                 .build();
     }
 
@@ -50,7 +50,7 @@ public class BookFixture {
                 .bookKey(BOOK_KEY)
                 .owner(EMAIL)
                 .code(CODE)
-                .userCapacity(2)
+                .userCapacity(BookUserCapacity.DEFAULT.getValue())
                 .build();
     }
 

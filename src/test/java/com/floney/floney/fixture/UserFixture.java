@@ -23,20 +23,6 @@ public class UserFixture {
                 .email(EMAIL)
                 .password("1234")
                 .profileImg("img")
-                .subscribe(false)
-                .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-                .provider(Provider.EMAIL)
-                .receiveMarketing(true)
-                .build();
-    }
-
-    public static User createSubscribeUser() {
-        return User.builder()
-                .nickname("floney")
-                .email(EMAIL)
-                .password("1234")
-                .profileImg("img")
-                .subscribe(true)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
                 .provider(Provider.EMAIL)
                 .receiveMarketing(true)
@@ -49,7 +35,6 @@ public class UserFixture {
                 .email("floney2@naver.com")
                 .password("1234")
                 .profileImg("img")
-                .subscribe(false)
                 .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
                 .provider(Provider.KAKAO)
                 .receiveMarketing(false)

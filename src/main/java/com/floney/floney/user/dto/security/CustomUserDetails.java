@@ -21,10 +21,6 @@ public class CustomUserDetails implements UserDetails {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
 
-        if (user.isSubscribe()) {
-            roles.add(Role.SUBSCRIBER);
-        }
-
         return new CustomUserDetails(
                 user,
                 roles.stream()

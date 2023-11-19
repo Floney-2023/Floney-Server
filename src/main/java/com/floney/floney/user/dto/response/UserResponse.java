@@ -21,7 +21,6 @@ public class UserResponse {
     private final String nickname;
     private final String email;
     private final String profileImg;
-    private final boolean subscribe;
     private final LocalDateTime lastAdTime;
     private final Provider provider;
     private final Status status;
@@ -31,7 +30,6 @@ public class UserResponse {
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .profileImg(user.getProfileImg())
-                .subscribe(user.isSubscribe())
                 .lastAdTime(user.getLastAdTime())
                 .provider(user.getProvider())
                 .status(user.getStatus())
@@ -43,7 +41,6 @@ public class UserResponse {
                 .nickname(nickname)
                 .email(email)
                 .profileImg(profileImg)
-                .subscribe(subscribe)
                 .lastAdTime(lastAdTime)
                 .provider(provider)
                 .build();

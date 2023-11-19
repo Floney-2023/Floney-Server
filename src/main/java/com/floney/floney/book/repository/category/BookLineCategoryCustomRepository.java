@@ -1,7 +1,7 @@
 package com.floney.floney.book.repository.category;
 
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 
 public interface BookLineCategoryCustomRepository {
 

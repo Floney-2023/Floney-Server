@@ -17,7 +17,6 @@ public class WithMockCustomUserSecurityContextFactory implements WithSecurityCon
                 .email(customUser.username())
                 .password(customUser.password())
                 .provider(Provider.EMAIL)
-                .subscribe(false)
                 .profileImg("imageUrl")
                 .build());
 

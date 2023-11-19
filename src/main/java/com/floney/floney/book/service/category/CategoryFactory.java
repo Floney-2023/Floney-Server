@@ -2,9 +2,9 @@ package com.floney.floney.book.service.category;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookLineCategory;
-import com.floney.floney.book.entity.Category;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookLineCategory;
+import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.floney.floney.book.dto.constant.CategoryEnum.*;
-import static com.floney.floney.book.entity.BookLineCategory.of;
+import static com.floney.floney.book.domain.entity.BookLineCategory.of;
 
 @Component
 @Getter

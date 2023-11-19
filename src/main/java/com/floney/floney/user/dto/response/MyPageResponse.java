@@ -18,7 +18,6 @@ public class MyPageResponse {
     private final String email;
     private final String profileImg;
     private final Provider provider;
-    private final boolean subscribe;
     private final LocalDateTime lastAdTime;
     private final List<MyBookInfo> myBooks;
 
@@ -28,7 +27,6 @@ public class MyPageResponse {
                 .email(userResponse.getEmail())
                 .profileImg(userResponse.getProfileImg())
                 .provider(userResponse.getProvider())
-                .subscribe(userResponse.isSubscribe())
                 .lastAdTime(userResponse.getLastAdTime())
                 .myBooks(myBooks)
                 .build();

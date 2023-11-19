@@ -3,8 +3,7 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.user.dto.response.AlarmResponse;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 
@@ -51,8 +50,6 @@ public interface BookService {
     BookInfoResponse getBookInfoByCode(String code);
 
     LastSettlementDateResponse getPassedDaysAfterLastSettlementDate(String userEmail, String bookKey);
-
-    BookStatusResponse getBookStatus(String bookKey);
 
     Map<Month, Double> getBudgetByYear(String bookKey, String year);
 

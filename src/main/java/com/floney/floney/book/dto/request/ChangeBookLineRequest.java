@@ -1,8 +1,8 @@
 package com.floney.floney.book.dto.request;
 
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

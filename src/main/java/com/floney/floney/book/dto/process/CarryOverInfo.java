@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.entity.CarryOver;
+import com.floney.floney.book.domain.entity.CarryOver;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

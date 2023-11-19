@@ -4,9 +4,9 @@ import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.dto.response.CreateCategoryResponse;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.floney.floney.book.entity.DefaultCategory.rootParent;
+import static com.floney.floney.book.domain.entity.DefaultCategory.rootParent;
 
 @Service
 @RequiredArgsConstructor

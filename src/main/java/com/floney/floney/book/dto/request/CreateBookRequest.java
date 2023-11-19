@@ -1,6 +1,7 @@
 package com.floney.floney.book.dto.request;
 
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.BookUserCapacity;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.util.CodeFactory;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,16 +21,14 @@ public class CreateBookRequest {
         this.profileImg = profileImg;
     }
 
-    public Book of(String email) {
+    public Book to(String email) {
         return Book.builder()
                 .bookKey(CodeFactory.generateCode())
                 .name(name)
                 .profileImg(profileImg)
                 .owner(email)
                 .code(CodeFactory.generateCode())
+                .userCapacity(BookUserCapacity.DEFAULT.getValue())
                 .build();
-
     }
-
-
 }

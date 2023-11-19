@@ -1,7 +1,7 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.entity.Asset;
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.entity.Asset;
+import com.floney.floney.book.domain.entity.Book;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

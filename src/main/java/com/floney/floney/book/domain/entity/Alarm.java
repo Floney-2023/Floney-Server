@@ -1,4 +1,4 @@
-package com.floney.floney.book.entity;
+package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.dto.request.SaveAlarmRequest;
 import com.floney.floney.common.entity.BaseEntity;

@@ -1,17 +1,16 @@
 package com.floney.floney.book.repository.category;
 
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.DefaultCategory;
+import com.floney.floney.book.domain.entity.RootCategory;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.process.QCategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.DefaultCategory;
-import com.floney.floney.book.entity.RootCategory;
-import com.floney.floney.book.entity.category.BookCategory;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,9 +20,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QCategory.category;
-import static com.floney.floney.book.entity.category.QBookCategory.bookCategory;
+import static com.floney.floney.book.domain.entity.QBook.book;
+import static com.floney.floney.book.domain.entity.QCategory.category;
+import static com.floney.floney.book.domain.entity.category.QBookCategory.bookCategory;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 

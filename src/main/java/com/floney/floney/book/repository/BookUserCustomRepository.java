@@ -2,8 +2,8 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.user.entity.User;
 
 import java.util.List;
@@ -23,8 +23,6 @@ public interface BookUserCustomRepository {
 
     List<MyBookInfo> findMyBookInfos(User user);
 
-    List<Book> findMyInactiveBooks(User user);
-
     List<Book> findBookByOwner(User user);
 
     int countByBook(Book book);
@@ -34,8 +32,6 @@ public interface BookUserCustomRepository {
     BookUser findBookUserBy(String email, Book targetBook);
 
     boolean existsByUserEmailAndBookKey(String email, String bookKey);
-
-    Optional<User> findRandomBookUserWhoSubscribeExclusively(Book targetBook);
 
     List<BookUser> findAllByUserId(Long userId);
 

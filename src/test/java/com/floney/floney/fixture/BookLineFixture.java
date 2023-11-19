@@ -2,9 +2,9 @@ package com.floney.floney.fixture;
 
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
 
 import java.time.LocalDate;
 

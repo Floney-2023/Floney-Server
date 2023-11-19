@@ -1,9 +1,9 @@
 package com.floney.floney.book.repository;
 
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.response.BudgetYearResponse;
 import com.floney.floney.book.dto.response.QBudgetYearResponse;
-import com.floney.floney.book.entity.Book;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QBookUser.bookUser;
-import static com.floney.floney.book.entity.QBudget.budget;
+import static com.floney.floney.book.domain.entity.QBook.book;
+import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
+import static com.floney.floney.book.domain.entity.QBudget.budget;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 

@@ -1,6 +1,6 @@
 package com.floney.floney.user.dto.response;
 
-import com.floney.floney.book.entity.Alarm;
+import com.floney.floney.book.domain.entity.Alarm;
 import lombok.Builder;
 import lombok.Getter;
 

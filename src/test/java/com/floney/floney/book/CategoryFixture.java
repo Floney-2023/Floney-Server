@@ -1,9 +1,9 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.response.CreateCategoryResponse;
-import com.floney.floney.book.entity.*;
-import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.fixture.BookFixture.BOOK_KEY;

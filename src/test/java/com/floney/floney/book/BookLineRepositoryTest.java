@@ -1,20 +1,17 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.dto.process.DayLine;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.entity.*;
-import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.service.category.CategoryFactory;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
