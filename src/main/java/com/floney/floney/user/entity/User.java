@@ -2,7 +2,6 @@ package com.floney.floney.user.entity;
 
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.user.NotEmailUserException;
-import com.floney.floney.common.exception.user.SubscribeException;
 import com.floney.floney.common.util.Events;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.event.UserSignedOutEvent;
@@ -11,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -52,10 +50,6 @@ public class User extends BaseEntity {
     @Builder.Default
     private LocalDateTime lastAdTime = LocalDateTime.now();
 
-    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-    @ColumnDefault("0")
-    private boolean subscribe;
-
     @Column(nullable = false, updatable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private Provider provider;
@@ -79,7 +73,6 @@ public class User extends BaseEntity {
                  String password,
                  String profileImg,
                  LocalDateTime lastAdTime,
-                 boolean subscribe,
                  Provider provider,
                  String providerId,
                  String recentBookKey,
@@ -90,7 +83,6 @@ public class User extends BaseEntity {
         this.password = password;
         this.profileImg = profileImg;
         this.lastAdTime = lastAdTime;
-        this.subscribe = subscribe;
         this.provider = provider;
         this.providerId = providerId;
         this.recentBookKey = recentBookKey;
@@ -110,10 +102,6 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
-    public boolean isSubscribe() {
-        return subscribe;
-    }
-
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
     }
@@ -130,17 +118,7 @@ public class User extends BaseEntity {
         this.lastLoginTime = LocalDateTime.now();
     }
 
-    public void subscribe() {
-        this.subscribe = true;
-    }
-
-    public void unSubscribe() {
-        this.subscribe = false;
-    }
-
     public void signout() {
-        validateNotSubscribe();
-
         deleteInformation();
         inactive();
 
@@ -154,12 +132,6 @@ public class User extends BaseEntity {
         profileImg = null;
         providerId = null;
         recentBookKey = null;
-    }
-
-    private void validateNotSubscribe() {
-        if (isSubscribe()) {
-            throw new SubscribeException();
-        }
     }
 
     public void validateEmailUser() {
