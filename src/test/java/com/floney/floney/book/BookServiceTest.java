@@ -6,6 +6,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.fixture.BookFixture;
@@ -61,6 +62,61 @@ public class BookServiceTest {
 
         assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
                 .isEqualTo(bookResponse().getCode());
+    }
+
+    @Test
+    @DisplayName("참여한 가계부가 2 초과일 시 가계부를 만들 수 없다")
+    void default_book_create_exception() {
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                .willReturn(3);
+
+        assertThatThrownBy(() -> bookService.addBook(UserFixture.createUser(), createBookRequest()))
+                .isInstanceOf(LimitRequestException.class);
+    }
+
+    @Test
+    @DisplayName("참여한 가계부가 2미만 일 시 가계부를 만든다")
+    void default_book_create() {
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                .willReturn(1);
+        given(bookRepository.save(any(Book.class)))
+                .willReturn(BookFixture.createBook());
+
+        Assertions.assertThat(bookService.addBook(UserFixture.createUser(), createBookRequest()).getClass())
+                .isEqualTo(CreateBookResponse.class);
+    }
+
+    @Test
+    @DisplayName("유저가 현재 참여한 가계부가 2 초과일시, 구독 제한 예외가 터진다")
+    void default_book_join_exception() {
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                .willReturn(3);
+
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
+                .willReturn(Optional.ofNullable(createBook()));
+
+        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
+
+        assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
+                .isInstanceOf(LimitRequestException.class);
+    }
+
+    @Test
+    @DisplayName("가계부 참여 시 참여 하려는 가계부의 정원 초과 시 가계부 정원 초과 예외 발생")
+    void default_book_join() {
+        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                .willReturn(0);
+
+        // 가계부 정원이 4인 가계부 생성
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
+                .willReturn(Optional.ofNullable(createBook()));
+
+        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(5);
+
+        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
+
+        assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
+                .isInstanceOf(MaxMemberException.class);
     }
 
     @Test
