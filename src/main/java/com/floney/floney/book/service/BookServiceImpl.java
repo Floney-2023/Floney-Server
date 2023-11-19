@@ -57,7 +57,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public CreateBookResponse addBook(User user, CreateBookRequest request) {
-        checkCreateBookMaximum(user);
+        validateJoinByBookCapacity(user);
         return createBook(user, request);
     }
 
@@ -72,25 +72,16 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
-        checkCreateBookMaximum(user);
-
+        validateJoinByBookCapacity(user);
         // 참여 희망 가계부 정원 체크
-        validateMaxBookCapacity(book);
-
+        validateJoinByBookUserCapacity(book);
         // 이미 존재하는 가계부 유저인지 체크
-        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
-            throw new AlreadyJoinException(userEmail);
-        }
+        validateAlreadyJoined(request, userEmail);
 
         saveDefaultBookKey(userDetails.getUser(), book);
         bookUserRepository.save(BookUser.of(userDetails.getUser(), book));
 
         return CreateBookResponse.of(book);
-    }
-
-    private void validateMaxBookCapacity(Book book) {
-        final int memberCount = bookUserRepository.countByBookExclusively(book);
-        book.validateCanJoinMember(memberCount);
     }
 
     @Override
@@ -320,6 +311,17 @@ public class BookServiceImpl implements BookService {
         });
     }
 
+    private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
+        if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
+            throw new AlreadyJoinException(userEmail);
+        }
+    }
+
+    private void validateJoinByBookUserCapacity(Book book) {
+        final int memberCount = bookUserRepository.countByBookExclusively(book);
+        book.validateCanJoinMember(memberCount);
+    }
+
     private void deleteBook(final Book book) {
         inactiveAllBy(book);
         book.delete();
@@ -398,11 +400,12 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-    private void checkCreateBookMaximum(User user) {
+    private void validateJoinByBookCapacity(User user) {
         // 유저가 참여중인 가게부 개수
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
-        // 2개 이상일 경우
+        // 이미 최대로 가계부들에 참여한 경우
+        // TODO: currentJoinBook > DEFAULT_MAX_BOOK.getValue() 이면 서버 에러 발생
         if (currentJoinBook >= DEFAULT_MAX_BOOK.getValue()) {
             throw new LimitRequestException();
         }

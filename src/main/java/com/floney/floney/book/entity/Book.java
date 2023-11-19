@@ -125,7 +125,7 @@ public class Book extends BaseEntity {
 
     public void validateCanJoinMember(final int memberCount) {
         // TODO: memberCount > userCapacity인 경우는 서버 에러로 변경
-        if (memberCount > userCapacity) {
+        if (memberCount >= userCapacity) {
             throw new MaxMemberException(bookKey, memberCount);
         }
     }

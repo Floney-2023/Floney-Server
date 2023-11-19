@@ -6,6 +6,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.fixture.BookFixture;
@@ -86,34 +87,38 @@ public class BookServiceTest {
     }
 
     @Test
-    @DisplayName("유저가 현재 참여한 가계부가 2 초과일시, 구독 제한 예외가 터진다")
-    void default_book_join_exception() {
+    @DisplayName("참여한 가계부가 2개 이상이면, 가계부에 더 이상 참여할 수 없다")
+    void default_book_join_limitRequestException() {
+        // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(3);
+                .willReturn(Subscribe.DEFAULT_MAX_BOOK.getValue());
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
                 .willReturn(Optional.ofNullable(createBook()));
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
+        // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
                 .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
-    @DisplayName("가계부 참여 시 참여 하려는 가계부의 정원 초과 시 가계부 정원 초과 예외 발생")
-    void default_book_join() {
+    @DisplayName("참여할 가계부의 정원이 이미 찼다면, 가계부에 더 이상 참여할 수 없다")
+    void default_book_join_maxMemberException() {
+        // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
                 .willReturn(0);
 
-        // 가계부 정원이 4인 가계부 생성
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
                 .willReturn(Optional.ofNullable(createBook()));
 
-        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(5);
+        given(bookUserRepository.countByBookExclusively(any(Book.class)))
+                .willReturn(Subscribe.DEFAULT_MAX_MEMBER.getValue());
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
+        // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
                 .isInstanceOf(MaxMemberException.class);
     }
