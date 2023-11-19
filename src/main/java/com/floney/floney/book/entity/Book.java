@@ -3,6 +3,7 @@ package com.floney.floney.book.entity;
 import com.floney.floney.book.dto.constant.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.event.BookDeletedEvent;
+import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.common.exception.common.NoAuthorityException;
@@ -126,7 +127,7 @@ public class Book extends BaseEntity {
     public void validateCanJoinMember(final int memberCount) {
         // TODO: memberCount > userCapacity인 경우는 서버 에러로 변경
         // user capcity default = 4 2023.11.19 기준
-        if (memberCount >= userCapacity) {
+        if (memberCount > Subscribe.DEFAULT_MAX_MEMBER.getValue()) {
             throw new MaxMemberException(bookKey, memberCount);
         }
     }

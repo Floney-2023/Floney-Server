@@ -18,6 +18,7 @@ import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
@@ -35,7 +36,6 @@ import java.util.*;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
-import static com.floney.floney.common.constant.Subscribe.SUBSCRIBE_MAX_BOOK;
 
 @Service
 @Transactional(readOnly = true)
@@ -404,7 +404,7 @@ public class BookServiceImpl implements BookService {
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
         // 2개 초과일 경우
-        if (currentJoinBook > SUBSCRIBE_MAX_BOOK.getValue()) {
+        if (currentJoinBook > DEFAULT_MAX_BOOK.getValue()) {
             throw new LimitRequestException();
         }
     }
