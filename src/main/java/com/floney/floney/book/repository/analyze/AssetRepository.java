@@ -1,7 +1,7 @@
 package com.floney.floney.book.repository.analyze;
 
-import com.floney.floney.book.entity.Asset;
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.entity.Asset;
+import com.floney.floney.book.domain.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

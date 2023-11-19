@@ -1,6 +1,6 @@
 package com.floney.floney.settlement.domain.entity;
 
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.settlement.dto.request.OutcomeRequest;
 import com.floney.floney.settlement.dto.request.SettlementRequest;

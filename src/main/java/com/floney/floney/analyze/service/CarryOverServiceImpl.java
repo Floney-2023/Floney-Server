@@ -2,9 +2,9 @@ package com.floney.floney.analyze.service;
 
 import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookLine;
-import com.floney.floney.book.entity.CarryOver;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.CarryOver;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
 import lombok.RequiredArgsConstructor;

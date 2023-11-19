@@ -1,7 +1,7 @@
 package com.floney.floney.alarm.repository;
 
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

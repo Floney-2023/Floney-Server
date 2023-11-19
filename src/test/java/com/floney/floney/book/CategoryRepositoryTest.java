@@ -1,9 +1,9 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.RootCategory;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.RootCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.config.TestConfig;

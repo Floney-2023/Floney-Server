@@ -2,7 +2,7 @@ package com.floney.floney.user.service;
 
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;

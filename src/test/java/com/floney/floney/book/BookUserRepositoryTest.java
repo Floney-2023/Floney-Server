@@ -1,8 +1,8 @@
 package com.floney.floney.book;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.config.TestConfig;

@@ -1,6 +1,6 @@
 package com.floney.floney.settlement.repository;
 
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.settlement.domain.entity.Settlement;
 import org.springframework.data.jpa.repository.JpaRepository;

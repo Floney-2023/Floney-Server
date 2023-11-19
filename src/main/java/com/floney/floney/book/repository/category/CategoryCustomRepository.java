@@ -2,9 +2,9 @@ package com.floney.floney.book.repository.category;
 
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.Category;
-import com.floney.floney.book.entity.category.BookCategory;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 
 import java.util.List;
 import java.util.Optional;

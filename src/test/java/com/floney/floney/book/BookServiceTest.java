@@ -3,7 +3,7 @@ package com.floney.floney.book;
 import com.floney.floney.book.domain.BookCapacity;
 import com.floney.floney.book.domain.BookUserCapacity;
 import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;

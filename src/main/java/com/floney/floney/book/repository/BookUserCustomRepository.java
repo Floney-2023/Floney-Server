@@ -2,8 +2,8 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
-import com.floney.floney.book.entity.Book;
-import com.floney.floney.book.entity.BookUser;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.user.entity.User;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.floney.floney.common.dto;
 
-import com.floney.floney.book.entity.Book;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
