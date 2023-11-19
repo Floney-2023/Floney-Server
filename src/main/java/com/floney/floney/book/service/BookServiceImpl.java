@@ -18,9 +18,7 @@ import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.common.NotSubscribeException;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -403,8 +401,8 @@ public class BookServiceImpl implements BookService {
         // 유저가 참여중인 가게부 개수
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
-        // 2개 초과일 경우
-        if (currentJoinBook > DEFAULT_MAX_BOOK.getValue()) {
+        // 2개 이상일 경우
+        if (currentJoinBook >= DEFAULT_MAX_BOOK.getValue()) {
             throw new LimitRequestException();
         }
     }
