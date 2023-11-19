@@ -222,9 +222,10 @@ public class BookServiceImpl implements BookService {
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
         myBookInfos.stream()
                 .findFirst()
-                .ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()), () -> {
-                    user.saveRecentBookKey(null);
-                });
+                .ifPresentOrElse(
+                        bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
+                        () -> user.saveRecentBookKey(null)
+                );
 
         userRepository.save(user);
     }
@@ -341,7 +342,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private CreateBookResponse createBook(User user, CreateBookRequest request) {
-        Book newBook = request.of(user.getEmail());
+        Book newBook = request.to(user.getEmail());
         Book savedBook = bookRepository.save(newBook);
         saveDefaultBookKey(user, savedBook);
 
