@@ -1,12 +1,13 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.domain.BookCapacity;
+import com.floney.floney.book.domain.BookUserCapacity;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.common.constant.Status;
-import com.floney.floney.common.constant.Subscribe;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.MaxMemberException;
 import com.floney.floney.fixture.BookFixture;
@@ -91,7 +92,7 @@ public class BookServiceTest {
     void default_book_join_limitRequestException() {
         // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(Subscribe.DEFAULT_MAX_BOOK.getValue());
+                .willReturn(BookCapacity.DEFAULT.getValue());
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
                 .willReturn(Optional.ofNullable(createBook()));
@@ -114,7 +115,7 @@ public class BookServiceTest {
                 .willReturn(Optional.ofNullable(createBook()));
 
         given(bookUserRepository.countByBookExclusively(any(Book.class)))
-                .willReturn(Subscribe.DEFAULT_MAX_MEMBER.getValue());
+                .willReturn(BookUserCapacity.DEFAULT.getValue());
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 

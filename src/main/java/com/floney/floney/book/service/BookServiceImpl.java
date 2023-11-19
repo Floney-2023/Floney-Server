@@ -32,8 +32,8 @@ import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Subscribe.DEFAULT_MAX_BOOK;
 
 @Service
 @Transactional(readOnly = true)
@@ -406,7 +406,7 @@ public class BookServiceImpl implements BookService {
 
         // 이미 최대로 가계부들에 참여한 경우
         // TODO: currentJoinBook > DEFAULT_MAX_BOOK.getValue() 이면 서버 에러 발생
-        if (currentJoinBook >= DEFAULT_MAX_BOOK.getValue()) {
+        if (currentJoinBook >= DEFAULT.getValue()) {
             throw new LimitRequestException();
         }
     }

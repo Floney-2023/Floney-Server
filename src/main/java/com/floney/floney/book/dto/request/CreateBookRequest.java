@@ -1,8 +1,8 @@
 package com.floney.floney.book.dto.request;
 
+import com.floney.floney.book.domain.BookUserCapacity;
 import com.floney.floney.book.entity.Book;
 import com.floney.floney.book.util.CodeFactory;
-import com.floney.floney.common.constant.Subscribe;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class CreateBookRequest {
                 .profileImg(profileImg)
                 .owner(email)
                 .code(CodeFactory.generateCode())
-                .userCapacity(Subscribe.DEFAULT_MAX_MEMBER.getValue())
+                .userCapacity(BookUserCapacity.DEFAULT.getValue())
                 .build();
     }
 }
