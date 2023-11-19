@@ -231,6 +231,7 @@ public class BookServiceImpl implements BookService {
         final BookUser bookUser = findBookUserByKey(user.getEmail(), request.getBookKey());
         inactiveAllBy(bookUser);
         bookUser.inactive();
+        bookUserRepository.save(bookUser);
 
         // 유효 가계부 초기화 하기(다른 참여 가계부가 없다면 null로 초기화)
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
