@@ -2,10 +2,12 @@ package com.floney.floney.user.controller;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
-import com.floney.floney.user.dto.request.*;
+import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
+import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignoutRequest;
+import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.AuthenticationService;
-import com.floney.floney.user.service.SubscribeService;
 import com.floney.floney.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,6 @@ public class UserController {
 
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private final SubscribeService subscribeService;
 
     /**
      * 회원가입
@@ -172,28 +173,5 @@ public class UserController {
                                            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         userService.saveRecentBookKey(request, customUserDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
-     * 구독 데이터 저장
-     *
-     * @body SubscribeRequest 구독 정보
-     */
-    @PostMapping("/subscribe")
-    public ResponseEntity<?> saveSubscribe(@RequestBody @Valid SubscribeRequest request,
-                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        return new ResponseEntity<>(subscribeService.saveSubscribe(request, userDetails.getUser()), HttpStatus.CREATED);
-    }
-
-
-    /**
-     * 구독 정보 조회
-     *
-     * @body SubscribeResponse 구독 정보
-     */
-    @GetMapping("/subscribe")
-    public ResponseEntity<?> updateSubscribe(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(subscribeService.getSubscribe(userDetails.getUser()), HttpStatus.OK);
     }
 }
