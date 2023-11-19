@@ -1,11 +1,11 @@
 package com.floney.floney.book.repository;
 
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.process.QMyBookInfo;
 import com.floney.floney.book.dto.process.QOurBookUser;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.user.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QBookUser.bookUser;
+import static com.floney.floney.book.domain.entity.QBook.book;
+import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;

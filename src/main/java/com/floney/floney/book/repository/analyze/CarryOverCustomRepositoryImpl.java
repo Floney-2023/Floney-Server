@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.floney.floney.book.entity.QBook.book;
-import static com.floney.floney.book.entity.QCarryOver.carryOver;
+import static com.floney.floney.book.domain.entity.QBook.book;
+import static com.floney.floney.book.domain.entity.QCarryOver.carryOver;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 
