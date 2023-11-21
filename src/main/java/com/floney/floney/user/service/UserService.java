@@ -134,9 +134,9 @@ public class UserService {
         }
     }
 
-    private User findUserByEmail(final String request) {
-        return userRepository.findByEmail(request)
-                .orElseThrow(() -> new UserNotFoundException(request));
+    private User findUserByEmail(final String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {
