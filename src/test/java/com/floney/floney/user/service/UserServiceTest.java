@@ -31,8 +31,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.INACTIVE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -162,5 +161,30 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.updatePassword(password, user))
                 .isInstanceOf(PasswordSameException.class);
+    }
+
+    @Test
+    @DisplayName("마케팅 수신 동의 여부를 변경하는데 성공한다")
+    void updateReceiveMarketing_success() {
+        // given
+        User user = UserFixture.createUser();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // when & then
+        assertThatNoException()
+                .isThrownBy(() -> userService.updateReceiveMarketing(false, user.getEmail()));
+        assertThat(user.isReceiveMarketing()).isFalse();
+    }
+
+    @Test
+    @DisplayName("마케팅 수신 동의 여부를 변경하는데 실패한다 - 존재하지 않는 유저")
+    void updateReceiveMarketing_fail_userNotFoundException() {
+        // given
+        final String email = "notExist@email.com";
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> userService.updateReceiveMarketing(false, email))
+                .isInstanceOf(UserNotFoundException.class);
     }
 }

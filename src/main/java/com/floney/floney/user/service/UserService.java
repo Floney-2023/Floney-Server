@@ -1,8 +1,8 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
-import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
@@ -122,15 +122,21 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void updateReceiveMarketing(final boolean receiveMarketing, final String username) {
+        final User user = findUserByEmail(username);
+        user.updateReceiveMarketing(receiveMarketing);
+    }
+
     private void validatePasswordNotSame(String newPassword, String oldPassword) {
         if (passwordEncoder.matches(newPassword, oldPassword)) {
             throw new PasswordSameException();
         }
     }
 
-    private User findUserByEmail(final String request) {
-        return userRepository.findByEmail(request)
-                .orElseThrow(() -> new UserNotFoundException(request));
+    private User findUserByEmail(final String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {
