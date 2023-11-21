@@ -31,9 +31,10 @@ public class UserController {
      * @param request 회원 가입 요청
      * @return 회원가입한 유저의 access token
      */
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
-        return new ResponseEntity<>(authenticationService.login(userService.signup(request)), HttpStatus.CREATED);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Token signup(@RequestBody @Valid SignupRequest request) {
+        return authenticationService.login(userService.signup(request));
     }
 
     /**
@@ -96,11 +97,11 @@ public class UserController {
      *
      * @param accessToken 탈퇴할 유저의 access token
      */
-    @GetMapping("/signout")
-    public ResponseEntity<?> signout(@RequestParam String accessToken,
-                                     @RequestBody @Valid final SignoutRequest request) {
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void signout(@RequestParam String accessToken,
+                        @RequestBody @Valid final SignoutRequest request) {
         userService.signout(authenticationService.logout(accessToken), request);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
