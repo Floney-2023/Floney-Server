@@ -174,4 +174,16 @@ public class UserController {
         userService.saveRecentBookKey(request, customUserDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * 회원 마케팅 수신 동의 여부 변경
+     * @param receiveMarketing 마케팅 수신 동의 여부
+     * @param customUserDetails 회원 정보
+     */
+    @PutMapping("/receive-marketing")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateReceiveMarketing(@RequestParam(name = "agree") final boolean receiveMarketing,
+                                       @AuthenticationPrincipal final CustomUserDetails customUserDetails) {
+        userService.updateReceiveMarketing(receiveMarketing, customUserDetails.getUsername());
+    }
 }

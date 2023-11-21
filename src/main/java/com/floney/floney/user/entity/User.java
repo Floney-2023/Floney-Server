@@ -106,6 +106,10 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
     }
 
+    public void updateReceiveMarketing(final boolean receiveMarketing) {
+        this.receiveMarketing = receiveMarketing;
+    }
+
     public void saveRecentBookKey(String bookKey) {
         this.recentBookKey = bookKey;
     }
