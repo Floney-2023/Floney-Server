@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.MailAddressException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.SignoutRequest;
+import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.AuthenticationService;
 import com.floney.floney.user.service.CustomUserDetailsService;
@@ -25,8 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,6 +55,45 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("회원가입에 성공한다")
+    void signup_success() throws Exception {
+        // given
+        SignupRequest signupRequest = SignupRequest.builder()
+                .email("test@email.com")
+                .password("password")
+                .nickname("nickname")
+                .receiveMarketing(true)
+                .build();
+        LoginRequest loginRequest = LoginRequest.builder()
+                .email("success@email.com")
+                .password("success")
+                .build();
+        given(userService.signup(signupRequest)).willReturn(loginRequest);
+        given(authenticationService.login(any(LoginRequest.class)))
+                .willReturn(new Token("token", "token"));
+
+        // when & then
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(signupRequest)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("회원탈퇴에 성공한다")
+    void signout_success() throws Exception {
+        // given
+        final SignoutRequest signoutRequest = new SignoutRequest(SignoutType.EXPENSIVE, null);
+
+        // when & then
+        mockMvc.perform(delete("/users")
+                        .queryParam("accessToken", "token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(signoutRequest)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("로그인에 성공한다")
     void login_success() throws Exception {
         // given
@@ -60,7 +101,8 @@ class UserControllerTest {
                 .email("success@email.com")
                 .password("success")
                 .build();
-        given(authenticationService.login(any(LoginRequest.class))).willReturn(new Token("", ""));
+        given(authenticationService.login(any(LoginRequest.class)))
+                .willReturn(new Token("token", "token"));
 
         // when & then
         mockMvc.perform(post("/users/login")

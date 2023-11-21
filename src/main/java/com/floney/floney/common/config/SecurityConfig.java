@@ -47,8 +47,7 @@ public class SecurityConfig {
 
                 .antMatchers(
                         "/",
-                        "/users/signup",
-                        "/users/signout",
+                        "/users",
                         "/users/password/find",
                         "/users/login",
                         "/users/logout",
