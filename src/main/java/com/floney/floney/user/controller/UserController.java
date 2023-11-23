@@ -2,10 +2,7 @@ package com.floney.floney.user.controller;
 
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
-import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
-import com.floney.floney.user.dto.request.LoginRequest;
-import com.floney.floney.user.dto.request.SignoutRequest;
-import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.request.*;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.AuthenticationService;
 import com.floney.floney.user.service.UserService;
@@ -119,14 +116,14 @@ public class UserController {
     /**
      * 회원 비밀번호 수정
      *
-     * @param password    수정할 비밀번호
+     * @param request     수정할 비밀번호
      * @param userDetails 접속한 유저 정보
      */
     @PutMapping("/password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@RequestParam final String password,
+    public void updatePassword(@RequestBody final UpdatePasswordRequest request,
                                @AuthenticationPrincipal final CustomUserDetails userDetails) {
-        userService.updatePassword(password, userDetails.getUsername());
+        userService.updatePassword(request.getNewPassword(), userDetails.getUsername());
     }
 
     /**
@@ -178,7 +175,8 @@ public class UserController {
 
     /**
      * 회원 마케팅 수신 동의 여부 변경
-     * @param receiveMarketing 마케팅 수신 동의 여부
+     *
+     * @param receiveMarketing  마케팅 수신 동의 여부
      * @param customUserDetails 회원 정보
      */
     @PutMapping("/receive-marketing")

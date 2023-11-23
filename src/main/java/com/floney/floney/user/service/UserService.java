@@ -93,13 +93,13 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(String password, String email) {
+    public void updatePassword(final String password, final String email) {
         final User user = findUserByEmail(email);
         updatePassword(password, user);
     }
 
     @Transactional
-    public void updateRegeneratedPassword(String email) {
+    public void updateRegeneratedPassword(final String email) {
         final User user = findUserByEmail(email);
         user.validateEmailUser();
 
