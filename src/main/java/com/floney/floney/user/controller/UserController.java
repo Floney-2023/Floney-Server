@@ -122,7 +122,7 @@ public class UserController {
      * @param password    수정할 비밀번호
      * @param userDetails 접속한 유저 정보
      */
-    @GetMapping("/password/update")
+    @PutMapping("/password")
     @ResponseStatus(HttpStatus.OK)
     public void updatePassword(@RequestParam final String password,
                                @AuthenticationPrincipal final CustomUserDetails userDetails) {
