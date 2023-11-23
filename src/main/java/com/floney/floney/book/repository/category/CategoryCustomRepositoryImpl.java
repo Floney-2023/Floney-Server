@@ -162,7 +162,8 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
                 category.instanceOf(RootCategory.class))
             .fetchOne();
 
-        jpaQueryFactory.delete(bookCategory)
+        jpaQueryFactory.update(bookCategory)
+            .set(bookCategory.status,INACTIVE)
             .where(bookCategory.name.eq(request.getName()),
                 bookCategory.book.id.eq(
                     JPAExpressions.select(book.id)
