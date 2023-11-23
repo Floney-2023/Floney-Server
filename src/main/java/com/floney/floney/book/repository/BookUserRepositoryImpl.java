@@ -16,7 +16,6 @@ import javax.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.floney.floney.book.domain.entity.QBook.book;
@@ -50,6 +49,22 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 .innerJoin(bookUser.user, user)
                 .where(user.status.eq(ACTIVE))
                 .fetch();
+    }
+
+    @Override
+    public Optional<String> findOldestBookUserEmailExceptOwner(User owner, Book targetBook) {
+        return Optional.ofNullable(jpaQueryFactory
+            .select(user.email)
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .innerJoin(bookUser.user, user)
+            .where(
+                book.eq(targetBook),
+                user.ne(owner),
+                bookUser.status.eq(ACTIVE)
+            )
+            .orderBy(bookUser.createdAt.asc())
+            .fetchFirst());
     }
 
     @Override
@@ -155,23 +170,32 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     // 유저가 owner인 가계부 조회
     @Override
     public List<Book> findBookByOwner(User user) {
-        List<Book> books = jpaQueryFactory.select(book)
+        return jpaQueryFactory.select(book)
                 .from(bookUser)
                 .innerJoin(bookUser.book, book)
                 .where(
                         bookUser.user.eq(user),
-                        bookUser.status.eq(ACTIVE)
+                        bookUser.status.eq(ACTIVE),
+                        book.owner.eq(user.getEmail())
                 )
                 .fetch();
 
-        List<Book> myBooks = new ArrayList<>();
-        for (Book target : books) {
-            if (Objects.equals(target.getOwner(), user.getEmail())) {
-                myBooks.add(target);
-            }
-        }
-        return myBooks;
+    }
 
+    @Override
+    public List<Book> findBookHavingBookUserByOwner(User user) {
+        return jpaQueryFactory
+            .select(book)
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(
+                bookUser.user.eq(user),
+                bookUser.status.eq(ACTIVE),
+                book.owner.eq(user.getEmail())
+            )
+            .groupBy(book.id)
+            .having(bookUser.count().goe(2L))
+            .fetch();
     }
 
     @Override
