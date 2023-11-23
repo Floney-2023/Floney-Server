@@ -8,14 +8,12 @@ import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
-import com.floney.floney.user.domain.vo.RegeneratePasswordMail;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -95,17 +93,6 @@ public class AuthenticationService {
         mailProvider.sendMail(email, mailSubject, mailText);
         redisProvider.set(email, code, 1000 * 60 * 5);
         return code;
-    }
-
-    public String regeneratePassword(String email) {
-        final User user = findUserByEmail(email);
-        user.validateEmailUser();
-
-        final String newPassword = RandomStringUtils.random(50, true, true);
-        final RegeneratePasswordMail mail = RegeneratePasswordMail.create(email, newPassword);
-        mailProvider.sendMail(mail);
-
-        return newPassword;
     }
 
     public void authenticateEmail(EmailAuthenticationRequest emailAuthenticationRequest) {

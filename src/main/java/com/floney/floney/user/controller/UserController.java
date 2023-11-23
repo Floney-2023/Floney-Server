@@ -123,21 +123,21 @@ public class UserController {
      * @param userDetails 접속한 유저 정보
      */
     @GetMapping("/password/update")
-    public ResponseEntity<?> updatePassword(@RequestParam String password, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.updatePassword(password, userDetails.getUser());
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public void updatePassword(@RequestParam final String password,
+                               @AuthenticationPrincipal final CustomUserDetails userDetails) {
+        userService.updatePassword(password, userDetails.getUsername());
     }
 
     /**
-     * 비밀번호 재발급 메일 전송
+     * 이메일 회원 비밀번호 재발급
      *
      * @param email 회원 이메일 주소
      */
     @GetMapping("/password/find")
-    public ResponseEntity<?> findPassword(@RequestParam String email) {
-        String password = authenticationService.regeneratePassword(email);
-        userService.updatePassword(password, email);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public void regeneratePassword(@RequestParam final String email) {
+        userService.updateRegeneratedPassword(email);
     }
 
     /**
