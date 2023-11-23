@@ -12,7 +12,7 @@ import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.repository.BookLineCustomRepository;
+import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.util.DateFactory;
@@ -31,7 +31,7 @@ import java.util.Map;
 public class AnalyzeServiceImpl implements AnalyzeService {
 
     private final BookRepository bookRepository;
-    private final BookLineCustomRepository bookLineRepository;
+    private final BookLineRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
     private final AssetServiceImpl assetFactory;
 
