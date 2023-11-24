@@ -300,11 +300,6 @@ public class BookServiceImpl implements BookService {
     public void leaveBooksBy(final long userId) {
         final List<BookUser> bookUsers = bookUserRepository.findAllByUserId(userId);
         bookUsers.forEach(bookUser -> {
-            final Book book = bookUser.getBook();
-            if (canDeleteBookBy(bookUser)) {
-                deleteBook(book);
-                return;
-            }
             // 가계부 탈퇴
             inactiveAllBy(bookUser);
             bookUser.inactive();

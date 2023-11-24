@@ -1,5 +1,6 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
@@ -59,8 +60,21 @@ public class UserService {
     @Transactional
     public void signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
+
+        // 사용자가 방장인 가계부 조회
+        List<Book> books = bookUserRepository.findBookByOwner(user);
+
+        //내가 방장인 가계부 조회 -> 다른 가계부 원이 있다면 위임
+        books
+            .forEach((book) -> isNeedToDelegate(book, user));
+
         user.signout();
         addSignoutReason(request);
+    }
+
+    private void isNeedToDelegate(final Book book, final User owner) {
+        bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
+            .ifPresentOrElse((book::delegateOwner), book::inactive);
     }
 
     private void addSignoutReason(final SignoutRequest request) {
@@ -155,7 +169,7 @@ public class UserService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {

@@ -138,4 +138,8 @@ public class Book extends BaseEntity {
     public boolean isOwner(final String email) {
         return owner.equals(email);
     }
+
+    public void delegateOwner(String email) {
+        this.owner = email;
+    }
 }
