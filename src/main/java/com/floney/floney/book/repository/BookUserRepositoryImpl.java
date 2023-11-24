@@ -171,11 +171,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Override
     public List<Book> findBookByOwner(User user) {
         return jpaQueryFactory.select(book)
-            .from(bookUser)
-            .innerJoin(bookUser.book, book)
+            .from(book)
             .where(
-                bookUser.user.eq(user),
-                bookUser.status.eq(ACTIVE),
                 book.owner.eq(user.getEmail()),
                 book.status.eq(ACTIVE)
             )
@@ -192,7 +189,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .where(
                 bookUser.user.eq(user),
                 bookUser.status.eq(ACTIVE),
-                book.owner.eq(user.getEmail())
+                book.owner.eq(user.getEmail()),
+                book.status.eq(ACTIVE)
             )
             .groupBy(book.id)
             .having(bookUser.count().goe(2L))
