@@ -15,8 +15,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,6 +125,12 @@ public class ErrorControllerAdvice {
         logger.warn("이메일 유저가 아니라 간편 유저({})임", exception.getProvider());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(PasswordSameException.class)
+    protected ResponseEntity<ErrorResponse> samePassword(PasswordSameException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     // BOOK

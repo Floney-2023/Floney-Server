@@ -7,6 +7,8 @@ import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.util.MailProvider;
+import com.floney.floney.user.domain.vo.RegeneratePasswordMail;
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
@@ -20,6 +22,7 @@ import com.floney.floney.user.repository.SignoutOtherReasonRepository;
 import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,6 +45,7 @@ public class UserService {
     private final BookUserRepository bookUserRepository;
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
+    private final MailProvider mailProvider;
 
     @Transactional
     public LoginRequest signup(SignupRequest request) {
@@ -89,17 +93,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(String password, User user) {
-        validatePasswordNotSame(password, user.getPassword());
-        user.updatePassword(password);
-        user.encodePassword(passwordEncoder);
-        userRepository.save(user);
+    public void updatePassword(final String password, final String email) {
+        final User user = findUserByEmail(email);
+        updatePassword(password, user);
     }
 
     @Transactional
-    public void updatePassword(String password, String email) {
-        User user = findUserByEmail(email);
-        updatePassword(password, user);
+    public void updateRegeneratedPassword(final String email) {
+        final User user = findUserByEmail(email);
+        user.validateEmailUser();
+
+        final String newPassword = generatePassword(email);
+        updatePassword(newPassword, user);
     }
 
     @Transactional
@@ -128,8 +133,22 @@ public class UserService {
         user.updateReceiveMarketing(receiveMarketing);
     }
 
-    private void validatePasswordNotSame(String newPassword, String oldPassword) {
-        if (passwordEncoder.matches(newPassword, oldPassword)) {
+    private void updatePassword(String newPassword, User user) {
+        validatePasswordNotSame(newPassword, user);
+        user.updatePassword(newPassword);
+        user.encodePassword(passwordEncoder);
+    }
+
+    private String generatePassword(final String email) {
+        final String newPassword = RandomStringUtils.random(50, true, true);
+        final RegeneratePasswordMail mail = RegeneratePasswordMail.create(email, newPassword);
+        mailProvider.sendMail(mail);
+        return newPassword;
+    }
+
+    private void validatePasswordNotSame(final String newPassword, final User user) {
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            logger.warn("기존 비밀번호로 비밀번호 변경 요청 - 요청자: {}", user.getEmail());
             throw new PasswordSameException();
         }
     }

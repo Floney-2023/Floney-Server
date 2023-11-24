@@ -1,10 +1,8 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.common.exception.user.PasswordSameException;
-import com.floney.floney.common.exception.user.SignoutOtherReasonEmptyException;
-import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.*;
+import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.constant.SignoutType;
@@ -48,6 +46,8 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private SignoutReasonRepository signoutReasonRepository;
+    @Mock
+    private MailProvider mailProvider;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -154,12 +154,13 @@ class UserServiceTest {
     void updatePassword_fail_samePasswordException() {
         // given
         final String password = "1234567890";
-        final User user = User.builder().password(password).build();
+        final User user = User.builder().email("email@email.com").password(password).build();
 
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(any(String.class), any(String.class))).willReturn(true);
 
         // when & then
-        assertThatThrownBy(() -> userService.updatePassword(password, user))
+        assertThatThrownBy(() -> userService.updatePassword(password, user.getEmail()))
                 .isInstanceOf(PasswordSameException.class);
     }
 
@@ -186,5 +187,40 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.updateReceiveMarketing(false, email))
                 .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("비밀번호 재발급 및 변경에 성공한다")
+    void updateRegeneratedPassword_success() {
+        // given
+        final User user = UserFixture.createUser();
+
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // when & then
+        assertThatNoException().isThrownBy(() -> userService.updateRegeneratedPassword(user.getEmail()));
+    }
+
+    @Test
+    @DisplayName("비밀번호 재발급 및 변경에 실패한다 - 존재하지 않는 회원")
+    void updateRegeneratedPassword_fail_throws_userNotFoundException() {
+        // when & then
+        assertThatThrownBy(() -> userService.updateRegeneratedPassword("notUser"))
+                .isInstanceOf(UserNotFoundException.class);
+    }
+
+
+    @Test
+    @DisplayName("비밀번호 재발급 및 변경에 실패한다 - 간편 회원")
+    void updateRegeneratedPassword_fail_throws_notEmailUserException() {
+        // given
+        final String email = "notEmailUser";
+        final User notEmailUser = UserFixture.createKakaoUser();
+
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(notEmailUser));
+
+        // when & then
+        assertThatThrownBy(() -> userService.updateRegeneratedPassword(email))
+                .isInstanceOf(NotEmailUserException.class);
     }
 }
