@@ -134,7 +134,7 @@ public class UserService {
     }
 
     private void updatePassword(String newPassword, User user) {
-        validatePasswordNotSame(newPassword, user.getPassword());
+        validatePasswordNotSame(newPassword, user);
         user.updatePassword(newPassword);
         user.encodePassword(passwordEncoder);
     }
@@ -146,8 +146,9 @@ public class UserService {
         return newPassword;
     }
 
-    private void validatePasswordNotSame(String newPassword, String oldPassword) {
-        if (passwordEncoder.matches(newPassword, oldPassword)) {
+    private void validatePasswordNotSame(final String newPassword, final User user) {
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            logger.warn("기존 비밀번호로 비밀번호 변경 요청 - 요청자: {}", user.getEmail());
             throw new PasswordSameException();
         }
     }
