@@ -60,15 +60,6 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("가계부만의 카테고리 추가 시 중복을 체크한다")
-    void is_duplicate() {
-        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-        categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));
-
-        assertThat(categoryRepository.findCustomTarget(savedRoot, savedBook.getBookKey(), CHILD)).isFalse();
-    }
-
-    @Test
     @DisplayName("커스텀 카테고리를 삭제한다")
     void delete_custom() {
         Category custom = categoryRepository.save(CategoryFixture.createChildCategory(savedRoot, savedBook));

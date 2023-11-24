@@ -19,7 +19,9 @@ public interface CategoryCustomRepository {
 
     Optional<Category> findLineCategory(String name, String bookKey, String parent);
 
-    boolean findCustomTarget(Category targetRoot, String bookKey, String target);
+    void inActiveAllBookLineByCategory(Category category);
+
+    Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target);
 
     void inactiveCustomCategory(DeleteCategoryRequest request);
 

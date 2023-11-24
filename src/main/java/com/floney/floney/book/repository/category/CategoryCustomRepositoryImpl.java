@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.floney.floney.book.domain.entity.QBook.book;
+import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
+import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QCategory.category;
 import static com.floney.floney.book.domain.entity.category.QBookCategory.bookCategory;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -137,21 +139,40 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
         }
         return target;
     }
+    @Override
+    @Transactional
+    public void inActiveAllBookLineByCategory(Category category) {
+        jpaQueryFactory
+            .update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .where(
+                bookLine.in(
+                    JPAExpressions
+                        .select(bookLineCategory.bookLine)
+                        .from(bookLineCategory)
+                        .where(
+                            bookLineCategory.category.eq(category),
+                            bookLineCategory.status.eq(ACTIVE),
+                            bookLine.status.eq(ACTIVE)
+                        )
+                )
+            )
+            .execute();
+    }
 
     @Override
-    public boolean findCustomTarget(Category targetRoot, String bookKey, String target) {
-        List<BookCategory> categories = jpaQueryFactory.selectFrom(bookCategory)
-                .where(
-                        bookCategory.name.eq(target),
-                        bookCategory.status.eq(ACTIVE)
-                )
-                .innerJoin(bookCategory.parent, category)
-                .where(category.eq(targetRoot))
-                .innerJoin(bookCategory.book, book)
-                .where(book.bookKey.eq(bookKey))
-                .fetch();
-
-        return categories.size() == 1;
+    public Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookCategory)
+            .from(bookCategory)
+            .where(
+                bookCategory.name.eq(target),
+                bookCategory.status.eq(ACTIVE)
+            )
+            .innerJoin(bookCategory.parent, category)
+            .where(category.eq(targetRoot))
+            .innerJoin(bookCategory.book, book)
+            .where(book.bookKey.eq(bookKey))
+            .fetchOne());
     }
 
     @Override
@@ -162,7 +183,8 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
                 category.instanceOf(RootCategory.class))
             .fetchOne();
 
-        jpaQueryFactory.delete(bookCategory)
+        jpaQueryFactory.update(bookCategory)
+            .set(bookCategory.status,INACTIVE)
             .where(bookCategory.name.eq(request.getName()),
                 bookCategory.book.id.eq(
                     JPAExpressions.select(book.id)

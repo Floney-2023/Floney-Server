@@ -1,12 +1,12 @@
 package com.floney.floney.book.service.category;
 
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.dto.response.CreateCategoryResponse;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category parent = rootParent();
         if (request.hasParent()) {
             parent = categoryRepository.findParentCategory(request.getParent())
-                    .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
+                .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
         }
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
         return CreateCategoryResponse.of(newCategory);
@@ -47,12 +47,20 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCustomCategory(DeleteCategoryRequest request) {
-        categoryRepository.inactiveCustomCategory(request);
+        Category root = categoryRepository.findParentCategory(request.getRoot())
+            .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
+
+        Category category = categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())
+            .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
+
+        categoryRepository.inActiveAllBookLineByCategory(category);
+        category.inactive();
+        categoryRepository.save(category);
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(bookKey));
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
 }
