@@ -1,5 +1,6 @@
 package com.floney.floney.book.repository.category;
 
+import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.domain.entity.Book;
@@ -19,7 +20,7 @@ public interface CategoryCustomRepository {
 
     Optional<Category> findLineCategory(String name, String bookKey, String parent);
 
-    void inActiveAllBookLineByCategory(Category category);
+    List<BookLine> findAllBookLineByCategory(Category category);
 
     Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target);
 

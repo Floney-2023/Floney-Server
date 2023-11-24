@@ -9,6 +9,7 @@ import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
@@ -25,6 +26,7 @@ import static com.floney.floney.book.domain.entity.DefaultCategory.rootParent;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final BookRepository bookRepository;
+    private final BookLineService bookLineService;
 
     @Override
     @Transactional
@@ -53,7 +55,14 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
-        categoryRepository.inActiveAllBookLineByCategory(category);
+        categoryRepository.findAllBookLineByCategory(category).stream()
+            .forEach((bookLine) -> {
+                // 예산, 자산, 이월설정 관련 내역 모두 삭제
+                bookLineService.deleteLine(bookLine.getId());
+                bookLine.inactive();
+            });
+
+        //카테고리 삭제
         category.inactive();
         categoryRepository.save(category);
     }
