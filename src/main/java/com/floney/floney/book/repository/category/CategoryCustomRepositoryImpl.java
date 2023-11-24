@@ -140,6 +140,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
         return target;
     }
     @Override
+    @Transactional
     public void inActiveAllBookLineByCategory(Category category) {
         jpaQueryFactory
             .update(bookLine)
@@ -160,18 +161,18 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public Category findCustomTarget(Category targetRoot, String bookKey, String target) {
-        return jpaQueryFactory.select(bookCategory)
+    public Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookCategory)
             .from(bookCategory)
-                .where(
-                        bookCategory.name.eq(target),
-                        bookCategory.status.eq(ACTIVE)
-                )
-                .innerJoin(bookCategory.parent, category)
-                .where(category.eq(targetRoot))
-                .innerJoin(bookCategory.book, book)
-                .where(book.bookKey.eq(bookKey))
-                .fetchOne();
+            .where(
+                bookCategory.name.eq(target),
+                bookCategory.status.eq(ACTIVE)
+            )
+            .innerJoin(bookCategory.parent, category)
+            .where(category.eq(targetRoot))
+            .innerJoin(bookCategory.book, book)
+            .where(book.bookKey.eq(bookKey))
+            .fetchOne());
     }
 
     @Override

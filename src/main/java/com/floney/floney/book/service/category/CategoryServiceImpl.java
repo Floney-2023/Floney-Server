@@ -48,9 +48,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deleteCustomCategory(DeleteCategoryRequest request) {
         Category root = categoryRepository.findParentCategory(request.getRoot())
-            .orElseThrow(() -> new NotFoundCategoryException(request.getName()));
+            .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
 
-        Category category = categoryRepository.findCustomTarget(root,request.getBookKey(),request.getName());
+        Category category = categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())
+            .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
+
         categoryRepository.inActiveAllBookLineByCategory(category);
         category.inactive();
         categoryRepository.save(category);

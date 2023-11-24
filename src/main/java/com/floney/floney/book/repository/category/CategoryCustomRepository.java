@@ -21,7 +21,7 @@ public interface CategoryCustomRepository {
 
     void inActiveAllBookLineByCategory(Category category);
 
-    Category findCustomTarget(Category targetRoot, String bookKey, String target);
+    Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target);
 
     void inactiveCustomCategory(DeleteCategoryRequest request);
 
