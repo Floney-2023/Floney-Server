@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
-        categoryRepository.findAllBookLineByCategory(category).stream()
+        categoryRepository.findAllBookLineByCategory(category)
             .forEach((bookLine) -> {
                 // 예산, 자산, 이월설정 관련 내역 모두 삭제
                 bookLineService.deleteLine(bookLine.getId());
