@@ -59,7 +59,6 @@ public class CategoryServiceImpl implements CategoryService {
             .forEach((bookLine) -> {
                 // 예산, 자산, 이월설정 관련 내역 모두 삭제
                 bookLineService.deleteLine(bookLine.getId());
-                bookLine.inactive();
             });
 
         //카테고리 삭제
