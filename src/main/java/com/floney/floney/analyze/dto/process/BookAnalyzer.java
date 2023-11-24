@@ -19,16 +19,10 @@ public class BookAnalyzer {
         return totalExpenses.get(AssetType.INCOME.getKind()) - totalExpenses.get(AssetType.OUTCOME.getKind());
     }
 
-    public double calculateCurrentAsset(double initAsset, double difference) {
-        if (difference < STANDARD) {
-            return initAsset - Math.abs(difference);
-        }
-        return initAsset + difference;
-    }
-
-    public AnalyzeResponseByAsset analyzeAsset(double savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
+    public AnalyzeResponseByAsset analyzeAsset(String requestMonth,double savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
         double difference = differenceInAndOutCome();
-        double currentAsset = calculateCurrentAsset(savedAsset, difference);
+        LocalDate requestDate = LocalDate.parse(requestMonth);
+        double currentAsset = assetInfo.get(requestDate).getAssetMoney();
 
         return AnalyzeResponseByAsset.of(difference, savedAsset, currentAsset, assetInfo);
     }

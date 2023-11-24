@@ -70,7 +70,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
         Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
-        return bookAnalyzer.analyzeAsset(savedBook.getAsset(), assetInfo);
+        return bookAnalyzer.analyzeAsset(request.getDate(),savedBook.getAsset(), assetInfo);
     }
 
     private Book findBook(String bookKey) {
