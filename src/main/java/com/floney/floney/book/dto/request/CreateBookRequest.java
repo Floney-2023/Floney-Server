@@ -23,12 +23,13 @@ public class CreateBookRequest {
 
     public Book to(String email) {
         return Book.builder()
-                .bookKey(CodeFactory.generateCode())
-                .name(name)
-                .profileImg(profileImg)
-                .owner(email)
-                .code(CodeFactory.generateCode())
-                .userCapacity(BookUserCapacity.DEFAULT.getValue())
-                .build();
+            .bookKey(CodeFactory.generateCode())
+            .name(name)
+            .profileImg(profileImg)
+            .owner(email)
+            .seeProfile(true)
+            .code(CodeFactory.generateCode())
+            .userCapacity(BookUserCapacity.DEFAULT.getValue())
+            .build();
     }
 }
