@@ -37,8 +37,8 @@ public class ErrorControllerAdvice {
             .body(body);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    protected ResponseEntity<ErrorResponse> notFoundUser(UserNotFoundException exception) {
+    @ExceptionHandler(NotFoundUserException.class)
+    protected ResponseEntity<ErrorResponse> notFoundUser(NotFoundUserException exception) {
         logger.warn("저장되지 않은 유저 정보: [{}]", exception.getUsername());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse.of(exception.getErrorType()));

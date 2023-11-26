@@ -1,6 +1,5 @@
 package com.floney.floney.user.service;
 
-import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
@@ -8,7 +7,7 @@ import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.NotFoundUserException;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.user.domain.vo.RegeneratePasswordMail;
 import com.floney.floney.user.dto.constant.SignoutType;
@@ -162,7 +161,7 @@ public class UserService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(email));
+            .orElseThrow(() -> new NotFoundUserException(email));
     }
 
     private void validateUserExistByEmail(String email) {

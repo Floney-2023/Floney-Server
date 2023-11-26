@@ -3,7 +3,7 @@ package com.floney.floney.user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.MailAddressException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.NotFoundUserException;
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
@@ -173,7 +173,7 @@ class UserControllerTest {
     @WithAnonymousUser
     void getUserInfo_fail_throws_userNotFoundException() throws Exception {
         // given
-        given(userService.getUserInfo(any(CustomUserDetails.class))).willThrow(new UserNotFoundException(""));
+        given(userService.getUserInfo(any(CustomUserDetails.class))).willThrow(new NotFoundUserException(""));
 
         // when & then
         mockMvc.perform(get("/users/mypage"))

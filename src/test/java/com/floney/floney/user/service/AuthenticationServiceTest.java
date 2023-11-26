@@ -1,7 +1,7 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.common.dto.Token;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.NotFoundUserException;
 import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
@@ -74,7 +74,7 @@ public class AuthenticationServiceTest {
         given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> authenticationService.login(request)).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> authenticationService.login(request)).isInstanceOf(NotFoundUserException.class);
     }
 
     @Test

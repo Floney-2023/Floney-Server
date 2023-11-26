@@ -7,7 +7,7 @@ import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.settlement.SettlementNotFoundException;
-import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.common.exception.user.NotFoundUserException;
 import com.floney.floney.settlement.domain.OutcomesWithUser;
 import com.floney.floney.settlement.domain.entity.Settlement;
 import com.floney.floney.settlement.domain.entity.SettlementUser;
@@ -127,6 +127,6 @@ public class SettlementService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> new NotFoundUserException(email));
     }
 }

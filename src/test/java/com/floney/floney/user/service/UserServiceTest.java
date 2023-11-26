@@ -118,7 +118,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.signout(email, request))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(NotFoundUserException.class);
     }
 
     @ParameterizedTest
@@ -186,7 +186,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.updateReceiveMarketing(false, email))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(NotFoundUserException.class);
     }
 
     @Test
@@ -206,7 +206,7 @@ class UserServiceTest {
     void updateRegeneratedPassword_fail_throws_userNotFoundException() {
         // when & then
         assertThatThrownBy(() -> userService.updateRegeneratedPassword("notUser"))
-                .isInstanceOf(UserNotFoundException.class);
+                .isInstanceOf(NotFoundUserException.class);
     }
 
 
