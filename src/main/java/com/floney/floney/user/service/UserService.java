@@ -5,6 +5,7 @@ import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
@@ -47,6 +48,7 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
+    private final BookService bookService;
 
     @Transactional
     public LoginRequest signup(SignupRequest request) {
@@ -61,21 +63,12 @@ public class UserService {
     public void signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
 
-        // 사용자가 방장인 가계부 조회
-        List<Book> books = bookUserRepository.findBookByOwner(user);
-
-        //내가 방장인 가계부 조회 -> 다른 가계부 원이 있다면 위임
-        books
-            .forEach((book) -> delegateToOther(book, user));
+        bookService.inActiveOrDelegateOwnedBooks(user);
 
         user.signout();
         addSignoutReason(request);
     }
 
-    private void delegateToOther(final Book book, final User owner) {
-        bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
-            .ifPresentOrElse((book::delegateOwner), book::inactive);
-    }
 
     private void addSignoutReason(final SignoutRequest request) {
         final SignoutType requestType = request.getType();

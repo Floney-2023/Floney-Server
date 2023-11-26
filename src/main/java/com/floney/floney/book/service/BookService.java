@@ -54,4 +54,6 @@ public interface BookService {
     Map<Month, Double> getBudgetByYear(String bookKey, String year);
 
     void leaveBooksBy(long userId);
+
+    void inActiveOrDelegateOwnedBooks(User user);
 }
