@@ -61,7 +61,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .where(
                 book.eq(targetBook),
                 user.ne(owner),
-                bookUser.status.eq(ACTIVE)
+                bookUser.status.eq(ACTIVE),
+                book.status.eq(ACTIVE)
             )
             .orderBy(bookUser.createdAt.asc())
             .fetchFirst());

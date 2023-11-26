@@ -129,13 +129,17 @@ public class BookServiceTest {
     void delegate() {
         User owner = UserFixture.createUser();
         Book ownerBook = createBook();
+        given(userRepository.findById(owner.getId()))
+            .willReturn(Optional.of(owner));
+
         given(bookUserRepository.findBookByOwner(owner))
             .willReturn(of(ownerBook));
+
         String delegateTo = "otherUser@email.com";
         given(bookUserRepository.findOldestBookUserEmailExceptOwner(owner,ownerBook))
             .willReturn(Optional.of(delegateTo));
 
-        bookService.inActiveOrDelegateOwnedBooks(owner);
+        bookService.inActiveOrDelegateOwnedBooks(owner.getId());
         assertThat(ownerBook.getOwner()).isEqualTo(delegateTo);
     }
 
@@ -144,13 +148,17 @@ public class BookServiceTest {
     void inactiveOwnedBook() {
         User owner = UserFixture.createUser();
         Book ownerBook = createBook();
+
+        given(userRepository.findById(owner.getId()))
+            .willReturn(Optional.of(owner));
+
         given(bookUserRepository.findBookByOwner(owner))
             .willReturn(of(ownerBook));
 
         given(bookUserRepository.findOldestBookUserEmailExceptOwner(owner,ownerBook))
             .willReturn(Optional.empty());
 
-        bookService.inActiveOrDelegateOwnedBooks(owner);
+        bookService.inActiveOrDelegateOwnedBooks(owner.getId());
         assertThat(ownerBook.isInactive()).isEqualTo(true);
     }
 

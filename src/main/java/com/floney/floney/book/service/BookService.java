@@ -55,5 +55,5 @@ public interface BookService {
 
     void leaveBooksBy(long userId);
 
-    void inActiveOrDelegateOwnedBooks(User user);
+    void inActiveOrDelegateOwnedBooks(Long userId);
 }

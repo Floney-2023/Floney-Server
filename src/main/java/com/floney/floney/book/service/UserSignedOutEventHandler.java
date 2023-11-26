@@ -14,6 +14,7 @@ public class UserSignedOutEventHandler {
     @EventListener(UserSignedOutEvent.class)
     public void handle(final UserSignedOutEvent event) {
         final long userId = event.getUserId();
+        bookService.inActiveOrDelegateOwnedBooks(userId);
         bookService.leaveBooksBy(userId);
     }
 }

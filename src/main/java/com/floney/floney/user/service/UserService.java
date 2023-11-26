@@ -47,7 +47,6 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
-    private final BookService bookService;
 
     @Transactional
     public LoginRequest signup(SignupRequest request) {
@@ -61,7 +60,6 @@ public class UserService {
     @Transactional
     public void signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
-        bookService.inActiveOrDelegateOwnedBooks(user);
         user.signout();
         addSignoutReason(request);
     }

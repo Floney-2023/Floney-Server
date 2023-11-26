@@ -19,6 +19,7 @@ import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.user.NotFoundUserException;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -298,6 +299,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void leaveBooksBy(final long userId) {
+        // 참여 bookUser 모두 비활성화
         final List<BookUser> bookUsers = bookUserRepository.findAllByUserId(userId);
         bookUsers.forEach(bookUser -> {
             // 가계부 탈퇴
@@ -308,7 +310,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void inActiveOrDelegateOwnedBooks(User user) {
+    public void inActiveOrDelegateOwnedBooks(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(NotFoundUserException::new);
+
         // 사용자가 방장인 가계부 조회
         List<Book> books = bookUserRepository.findBookByOwner(user);
 
@@ -319,6 +324,7 @@ public class BookServiceImpl implements BookService {
     private void delegateToOther(final Book book, final User owner) {
         bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
             .ifPresentOrElse((book::delegateOwner), book::inactive);
+        bookRepository.save(book);
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {

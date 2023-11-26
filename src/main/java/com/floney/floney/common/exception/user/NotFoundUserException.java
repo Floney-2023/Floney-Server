@@ -13,4 +13,9 @@ public class NotFoundUserException extends RuntimeException {
         this.errorType = ErrorType.USER_NOT_FOUND;
         this.username = username;
     }
+
+    public NotFoundUserException() {
+        this.errorType = ErrorType.USER_NOT_FOUND;
+        this.username = null;
+    }
 }
