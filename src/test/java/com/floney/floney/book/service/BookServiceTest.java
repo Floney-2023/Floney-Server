@@ -2,11 +2,10 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.book.domain.BookCapacity;
 import com.floney.floney.book.domain.BookUserCapacity;
-import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import com.floney.floney.common.exception.book.MaxMemberException;
@@ -27,6 +26,7 @@ import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.fixture.BookFixture.*;
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,37 +54,37 @@ public class BookServiceTest {
         User testUser = UserFixture.getUser();
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(CODE, ACTIVE))
-                .willReturn(Optional.ofNullable(testBook));
+            .willReturn(Optional.ofNullable(testBook));
 
         given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
-                .willReturn(Optional.empty());
+            .willReturn(Optional.empty());
 
         given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
         assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
-                .isEqualTo(bookResponse().getCode());
+            .isEqualTo(bookResponse().getCode());
     }
 
     @Test
     @DisplayName("참여한 가계부가 2개 이상이면 가계부를 만들 수 없다")
     void default_book_create_exception() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(2);
+            .willReturn(2);
 
         assertThatThrownBy(() -> bookService.addBook(UserFixture.createUser(), createBookRequest()))
-                .isInstanceOf(LimitRequestException.class);
+            .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
     @DisplayName("참여한 가계부가 2개 미만이면 가계부를 만든다")
     void default_book_create() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(1);
+            .willReturn(1);
         given(bookRepository.save(any(Book.class)))
-                .willReturn(BookFixture.createBook());
+            .willReturn(BookFixture.createBook());
 
         Assertions.assertThat(bookService.addBook(UserFixture.createUser(), createBookRequest()).getClass())
-                .isEqualTo(CreateBookResponse.class);
+            .isEqualTo(CreateBookResponse.class);
     }
 
     @Test
@@ -92,16 +92,16 @@ public class BookServiceTest {
     void default_book_join_limitRequestException() {
         // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(BookCapacity.DEFAULT.getValue());
+            .willReturn(BookCapacity.DEFAULT.getValue());
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(Optional.ofNullable(createBook()));
+            .willReturn(Optional.ofNullable(createBook()));
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
         // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(LimitRequestException.class);
+            .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
@@ -109,20 +109,51 @@ public class BookServiceTest {
     void default_book_join_maxMemberException() {
         // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(0);
+            .willReturn(0);
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(Optional.ofNullable(createBook()));
+            .willReturn(Optional.ofNullable(createBook()));
 
         given(bookUserRepository.countByBookExclusively(any(Book.class)))
-                .willReturn(BookUserCapacity.DEFAULT.getValue());
+            .willReturn(BookUserCapacity.DEFAULT.getValue());
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
 
         // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(MaxMemberException.class);
+            .isInstanceOf(MaxMemberException.class);
     }
+
+    @Test
+    @DisplayName("회원 탈퇴시 방장인 가계부가 있고 다른 팀원이 있다면 가계부를 위임한다")
+    void delegate() {
+        User owner = UserFixture.createUser();
+        Book ownerBook = createBook();
+        given(bookUserRepository.findBookByOwner(owner))
+            .willReturn(of(ownerBook));
+        String delegateTo = "otherUser@email.com";
+        given(bookUserRepository.findOldestBookUserEmailExceptOwner(owner,ownerBook))
+            .willReturn(Optional.of(delegateTo));
+
+        bookService.inActiveOrDelegateOwnedBooks(owner);
+        assertThat(ownerBook.getOwner()).isEqualTo(delegateTo);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴시 방장인 가계부가 있고 다른 팀원이 없다면 가계부를 비활성화한다")
+    void inactiveOwnedBook() {
+        User owner = UserFixture.createUser();
+        Book ownerBook = createBook();
+        given(bookUserRepository.findBookByOwner(owner))
+            .willReturn(of(ownerBook));
+
+        given(bookUserRepository.findOldestBookUserEmailExceptOwner(owner,ownerBook))
+            .willReturn(Optional.empty());
+
+        bookService.inActiveOrDelegateOwnedBooks(owner);
+        assertThat(ownerBook.isInactive()).isEqualTo(true);
+    }
+
 
     @Test
     @DisplayName("가계부 이름 변경을 요청한다")
