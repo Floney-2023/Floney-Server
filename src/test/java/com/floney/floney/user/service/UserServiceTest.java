@@ -3,6 +3,7 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.user.*;
+import com.floney.floney.common.util.Events;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
@@ -13,6 +14,7 @@ import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.event.UserSignedOutEvent;
 import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -52,6 +54,9 @@ class UserServiceTest {
     private SignoutReasonRepository signoutReasonRepository;
     @Mock
     private MailProvider mailProvider;
+
+    @Mock
+    private UserSignedOutEvent userSignedOutEvent;
 
     @Test
     @DisplayName("회원가입에 성공한다")
@@ -97,6 +102,7 @@ class UserServiceTest {
         // given
         User user = UserFixture.createUser();
         ReflectionTestUtils.setField(user, "id", 1L);
+
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
