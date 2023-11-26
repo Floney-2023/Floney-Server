@@ -66,13 +66,13 @@ public class UserService {
 
         //내가 방장인 가계부 조회 -> 다른 가계부 원이 있다면 위임
         books
-            .forEach((book) -> isNeedToDelegate(book, user));
+            .forEach((book) -> delegateToOther(book, user));
 
         user.signout();
         addSignoutReason(request);
     }
 
-    private void isNeedToDelegate(final Book book, final User owner) {
+    private void delegateToOther(final Book book, final User owner) {
         bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
             .ifPresentOrElse((book::delegateOwner), book::inactive);
     }
