@@ -1,6 +1,7 @@
 package com.floney.floney.user.service;
 
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.service.BookService;
 import com.floney.floney.common.exception.user.*;
 import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.fixture.BookFixture;
@@ -37,6 +38,9 @@ class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
+    @Mock
+    private BookService bookService;
 
     @Mock
     private UserRepository userRepository;
