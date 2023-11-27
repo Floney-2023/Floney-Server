@@ -105,8 +105,9 @@ public class BookServiceImpl implements BookService {
         List<Book> userBooks = bookUserRepository.findBookByOwner(user);
 
         // 삭제한 가계부의 키가 최근 접근한 가계부 키였다면
-        // 최근 접근 가계부 키 => 다른 가계부 키로 교체
+        // 최근 접근 가계부 키가 아닌 다른 가계부 키로 교체
         if (!userBooks.isEmpty()) {
+            userBooks.stream().filter((book) -> !Objects.equals(book.getBookKey(), bookKey));
             user.saveRecentBookKey(userBooks.get(0).getBookKey());
         }
         // 다른 가계부가 없다면 null
