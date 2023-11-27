@@ -17,7 +17,6 @@ public class BookDeletedEventHandler {
     private final AssetService assetService;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
-
     @EventListener(BookDeletedEvent.class)
     public void deleteBook(final BookDeletedEvent event) {
         final long bookId = event.getBookId();
@@ -29,7 +28,6 @@ public class BookDeletedEventHandler {
         final long bookLineId = event.getBookLineId();
         carryOverService.deleteCarryOver(bookLineId);
         assetService.deleteAsset(bookLineId);
-
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 

@@ -1,6 +1,7 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.alarm.repository.AlarmRepository;
+import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
@@ -334,7 +335,8 @@ public class BookServiceImpl implements BookService {
 
     private void inactiveAllBy(final BookUser bookUser) {
         alarmRepository.inactiveAllByBookUser(bookUser);
-        bookLineRepository.inactiveAllByBookUser(bookUser);
+        bookLineRepository.findAllByBookUser(bookUser)
+            .forEach(BookLine::inactive);
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
     }
 

@@ -189,20 +189,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetch();
     }
 
-
-    @Override
-    @Transactional
-    public void inactiveAllByBookUser(BookUser bookUser) {
-        jpaQueryFactory.update(bookLine)
-            .set(bookLine.status, INACTIVE)
-            .set(bookLine.updatedAt, LocalDateTime.now())
-            .where(
-                bookLine.writer.eq(bookUser),
-                bookLine.status.eq(ACTIVE)
-            )
-            .execute();
-    }
-
     @Override
     public Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
         DatesDuration duration = DateFactory.getBeforeDateDuration(request.getLocalDate());
@@ -298,7 +284,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     public List<BookLine> findAllByBook(final String bookKey) {
-       return jpaQueryFactory
+        return jpaQueryFactory
             .selectFrom(bookLine)
             .innerJoin(bookLine.book, book).fetchJoin()
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
@@ -326,6 +312,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.book.eq(book),
                 bookLine.status.eq(ACTIVE)
             ).execute();
+    }
+
+    @Override
+    public List<BookLine> findAllByBookUser(BookUser bookUser) {
+        return jpaQueryFactory.selectFrom(bookLine)
+            .where(bookLine.writer.eq(bookUser), bookLine.status.eq(ACTIVE))
+            .fetch();
     }
 
     private Double totalIncomeMoney(DatesDuration duration, String bookKey) {
