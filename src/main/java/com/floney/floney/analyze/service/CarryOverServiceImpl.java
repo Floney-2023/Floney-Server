@@ -1,12 +1,14 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.book.dto.process.CarryOverInfo;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.CarryOver;
+import com.floney.floney.book.dto.process.CarryOverInfo;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 public class CarryOverServiceImpl implements CarryOverService {
     private static final int FIVE_YEARS = 60;
     private final CarryOverRepository carryOverRepository;
+    private final BookLineRepository bookLineRepository;
 
     @Override
     public CarryOverInfo getCarryOverInfo(Book book, String date) {
@@ -44,7 +47,7 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Transactional
     @Override
     public void updateCarryOver(ChangeBookLineRequest request, BookLine savedBookLine) {
-        deleteCarryOver(savedBookLine);
+        deleteCarryOver(savedBookLine.getId());
         createCarryOverByAddBookLine(request, savedBookLine.getBook());
     }
 
@@ -79,7 +82,14 @@ public class CarryOverServiceImpl implements CarryOverService {
 
     @Override
     @Transactional
-    public void deleteCarryOver(BookLine savedBookLine) {
+    public void deleteCarryOver(Long bookLineId) {
+        BookLine savedBookLine = bookLineRepository.findById(bookLineId)
+            .orElseThrow(NotFoundBookLineException::new);
+
+        if (!savedBookLine.getBook().getCarryOverStatus()) {
+            return;
+        }
+
         LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
         targetDate = targetDate.plusMonths(1);
         List<CarryOver> carryOvers = new ArrayList<>();

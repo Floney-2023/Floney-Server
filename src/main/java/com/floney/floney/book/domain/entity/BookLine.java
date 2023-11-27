@@ -2,7 +2,10 @@ package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.event.BookLineDeletedEvent;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
+import com.floney.floney.common.util.Events;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,5 +74,10 @@ public class BookLine extends BaseEntity {
 
     public String getWriter() {
         return this.writer.getNickName();
+    }
+
+    public void inactive(){
+        Events.raise(new BookLineDeletedEvent(this.getId()));
+        this.status = Status.INACTIVE;
     }
 }

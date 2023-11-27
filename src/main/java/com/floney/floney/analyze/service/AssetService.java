@@ -15,5 +15,5 @@ public interface AssetService {
 
     void createAssetBy(ChangeBookLineRequest request, Book book);
 
-    void deleteAsset(BookLine savedBookLine);
+    void deleteAsset(Long bookLineId);
 }
