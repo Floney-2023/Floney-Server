@@ -62,35 +62,12 @@ public class UserService {
     public void signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
 
-        // 사용자가 방장인 가계부 조회
-        List<Book> books = bookUserRepository.findBookByOwner(user);
-
-        //내가 방장인 가계부 조회 -> 다른 가계부 원이 있다면 위임
-        books.forEach((book) -> delegateBookOwner(book, user));
+        // 유저가 방장인 가계부 조회
+        final List<Book> books = bookUserRepository.findBookByOwner(user);
+        books.forEach(book -> delegateBookOwner(book, user));
 
         user.signout();
         addSignoutReason(request);
-    }
-
-    private void delegateBookOwner(final Book book, final User owner) {
-        bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
-            .ifPresentOrElse((book::delegateOwner), book::inactive);
-    }
-
-    private void addSignoutReason(final SignoutRequest request) {
-        final SignoutType requestType = request.getType();
-
-        if (SignoutType.OTHER.equals(requestType)) {
-            addSignoutOtherReason(request);
-        }
-
-        signoutReasonRepository.increaseCount(requestType);
-    }
-
-    private void addSignoutOtherReason(final SignoutRequest request) {
-        request.validateReasonNotEmpty();
-        final SignoutOtherReason signoutOtherReason = SignoutOtherReason.from(request.getReason());
-        signoutOtherReasonRepository.save(signoutOtherReason);
     }
 
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
@@ -151,6 +128,30 @@ public class UserService {
         return new ReceiveMarketingResponse(findUserByEmail(email).isReceiveMarketing());
     }
 
+    private void delegateBookOwner(final Book book, final User owner) {
+        bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
+                .ifPresentOrElse(
+                        book::delegateOwner,
+                        book::inactive
+                );
+    }
+
+    private void addSignoutReason(final SignoutRequest request) {
+        final SignoutType requestType = request.getType();
+
+        if (SignoutType.OTHER.equals(requestType)) {
+            addSignoutOtherReason(request);
+        }
+
+        signoutReasonRepository.increaseCount(requestType);
+    }
+
+    private void addSignoutOtherReason(final SignoutRequest request) {
+        request.validateReasonNotEmpty();
+        final SignoutOtherReason signoutOtherReason = SignoutOtherReason.from(request.getReason());
+        signoutOtherReasonRepository.save(signoutOtherReason);
+    }
+
     private void updatePassword(String newPassword, User user) {
         validatePasswordNotSame(newPassword, user);
         user.updatePassword(newPassword);
@@ -173,7 +174,7 @@ public class UserService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new UserNotFoundException(email));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {
