@@ -1,8 +1,8 @@
-package com.floney.floney.book.event;
+package com.floney.floney.analyze.service;
 
-import com.floney.floney.analyze.service.AssetService;
-import com.floney.floney.analyze.service.CarryOverService;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
+import com.floney.floney.book.event.BookDeletedEvent;
+import com.floney.floney.book.event.BookLineDeletedEvent;
+import com.floney.floney.book.service.category.CategoryService;
 import com.floney.floney.settlement.service.SettlementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -15,7 +15,7 @@ public class BookDeletedEventHandler {
     private final SettlementService settlementService;
     private final CarryOverService carryOverService;
     private final AssetService assetService;
-    private final BookLineCategoryRepository bookLineCategoryRepository;
+    private final CategoryService categoryService;
 
     @EventListener(BookDeletedEvent.class)
     public void deleteBook(final BookDeletedEvent event) {
@@ -28,7 +28,7 @@ public class BookDeletedEventHandler {
         final long bookLineId = event.getBookLineId();
         carryOverService.deleteCarryOver(bookLineId);
         assetService.deleteAsset(bookLineId);
-        bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
+        categoryService.deleteAllBookLineCategory(bookLineId);
     }
 
 }
