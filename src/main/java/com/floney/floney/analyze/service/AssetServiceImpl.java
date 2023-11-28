@@ -1,13 +1,15 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.book.dto.process.AssetInfo;
-import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.dto.process.AssetInfo;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 public class AssetServiceImpl implements AssetService {
     private static final int FIVE_YEARS = 60;
     private final AssetRepository assetRepository;
+    private final BookLineRepository bookLineRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -55,7 +58,7 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public void updateAsset(ChangeBookLineRequest request, BookLine savedBookLine) {
-        deleteAsset(savedBookLine);
+        deleteAsset(savedBookLine.getId());
         createAssetBy(request, savedBookLine.getBook());
     }
 
@@ -86,7 +89,9 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional
-    public void deleteAsset(BookLine savedBookLine) {
+    public void deleteAsset(Long bookLineId) {
+        BookLine savedBookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
+
         LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
         List<Asset> assets = new ArrayList<>();
 

@@ -1,6 +1,5 @@
 package com.floney.floney.settlement.repository;
 
-import com.floney.floney.settlement.domain.entity.Settlement;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -25,17 +24,18 @@ public class SettlementUserCustomRepositoryImpl implements SettlementUserCustomR
     @Override
     @Transactional
     public void inactiveAllByBookId(final long bookId) {
-        final JPQLQuery<Settlement> settlementByBookId = JPAExpressions
-                .selectFrom(settlement)
-                .where(settlement.book.id.eq(bookId));
+        final JPQLQuery<Long> settlementByBookId = JPAExpressions
+            .select(settlement.id)
+            .from(settlement)
+            .where(settlement.book.id.eq(bookId));
 
         jpaQueryFactory.update(settlementUser)
-                .set(settlementUser.status, INACTIVE)
-                .set(settlementUser.updatedAt, LocalDateTime.now())
-                .where(
-                        settlementUser.settlement.in(settlementByBookId),
-                        settlementUser.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(settlementUser.status, INACTIVE)
+            .set(settlementUser.updatedAt, LocalDateTime.now())
+            .where(
+                settlementUser.settlement.id.in(settlementByBookId),
+                settlementUser.status.eq(ACTIVE)
+            )
+            .execute();
     }
 }

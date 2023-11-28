@@ -29,8 +29,6 @@ public interface BookLineCustomRepository {
 
     List<DayLine> getAllLines(AllOutcomesRequest request);
 
-    void inactiveAllByBookUser(BookUser bookUser);
-
     Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
     List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request);
@@ -44,4 +42,6 @@ public interface BookLineCustomRepository {
     List<BookLine> findAllByBook(String bookKey);
 
     void inactiveAllByBook(Book book);
+
+    List<BookLine> findAllByBookUser(BookUser bookUser);
 }

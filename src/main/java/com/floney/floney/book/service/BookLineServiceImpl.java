@@ -44,7 +44,6 @@ public class BookLineServiceImpl implements BookLineService {
     private final CategoryFactory categoryFactory;
     private final CarryOverServiceImpl carryOverFactory;
     private final AssetServiceImpl assetFactory;
-    private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
@@ -125,14 +124,7 @@ public class BookLineServiceImpl implements BookLineService {
     public void deleteLine(final Long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
-
-        if (savedBookLine.getBook().getCarryOverStatus()) {
-            carryOverFactory.deleteCarryOver(savedBookLine);
-        }
-
-        assetFactory.deleteAsset(savedBookLine);
         savedBookLine.inactive();
-        bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
     private BookUser findBookUser(String currentUser, ChangeBookLineRequest request) {

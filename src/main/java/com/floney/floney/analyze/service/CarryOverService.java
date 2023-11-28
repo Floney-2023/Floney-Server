@@ -12,5 +12,5 @@ public interface CarryOverService {
 
     void createCarryOverByAddBookLine(ChangeBookLineRequest request, Book book);
 
-    void deleteCarryOver(BookLine savedBookLine);
+    void deleteCarryOver(Long savedBookLineId);
 }

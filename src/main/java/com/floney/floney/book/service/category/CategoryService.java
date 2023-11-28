@@ -14,4 +14,6 @@ public interface CategoryService {
     List<CategoryInfo> findAllBy(String root, String bookKey);
 
     void deleteCustomCategory(DeleteCategoryRequest request);
+
+    void deleteAllBookLineCategory(long bookLineId);
 }

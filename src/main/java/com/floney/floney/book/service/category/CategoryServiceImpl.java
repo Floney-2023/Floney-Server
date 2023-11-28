@@ -8,6 +8,7 @@ import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.repository.BookRepository;
+import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.common.constant.Status;
@@ -27,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final BookRepository bookRepository;
     private final BookLineService bookLineService;
+    private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
     @Transactional
@@ -64,6 +66,12 @@ public class CategoryServiceImpl implements CategoryService {
         //카테고리 삭제
         category.inactive();
         categoryRepository.save(category);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllBookLineCategory(long bookLineId){
+        bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
     private Book findBook(String bookKey) {
