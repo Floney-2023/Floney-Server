@@ -1,6 +1,8 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.QBookUser;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.response.BudgetYearResponse;
 import com.floney.floney.book.dto.response.QBudgetYearResponse;
@@ -27,17 +29,22 @@ public class BookCustomRepositoryImpl implements BookCustomRepository {
 
     @Override
     public Optional<Book> findByBookUserEmailAndBookKey(final String userEmail, final String bookKey) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-                .innerJoin(bookUser.book, book).fetchJoin()
-                .innerJoin(bookUser.user, user).fetchJoin()
+        final BookUser bookUser = jpaQueryFactory.selectFrom(QBookUser.bookUser)
+                .innerJoin(QBookUser.bookUser.book, book).fetchJoin()
+                .innerJoin(QBookUser.bookUser.user, user).fetchJoin()
                 .where(
-                        bookUser.status.eq(ACTIVE),
+                        QBookUser.bookUser.status.eq(ACTIVE),
                         user.email.eq(userEmail),
                         book.bookKey.eq(bookKey),
                         user.status.eq(ACTIVE),
                         book.status.eq(ACTIVE)
                 )
-                .fetchOne().getBook());
+                .fetchOne();
+
+        if (bookUser == null) {
+            return Optional.empty();
+        }
+        return Optional.of(bookUser.getBook());
     }
 
     @Override
