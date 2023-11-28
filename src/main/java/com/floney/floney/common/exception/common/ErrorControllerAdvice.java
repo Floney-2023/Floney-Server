@@ -188,14 +188,6 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    //SUBSCRIBE
-    @ExceptionHandler(NotSubscribeException.class)
-    protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {
-        logger.warn(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
     @ExceptionHandler(LimitRequestException.class)
     protected ResponseEntity<ErrorResponse> limitOfService(LimitRequestException exception) {
         logger.warn(exception.getMessage());
@@ -217,13 +209,6 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(AlreadyJoinException.class)
     protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
         logger.warn("{}는 {} \n [ERROR_MSG] : {} \n  [ERROR_STACK] : {}", exception.getUserEmail(), ErrorType.ALREADY_JOIN.getMessage(), exception.getMessage(), exception.getStackTrace());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(NotFoundSubscribeException.class)
-    protected ResponseEntity<ErrorResponse> subscribeException(NotFoundSubscribeException exception) {
-        logger.warn("{} User = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(), exception.getUserEmail(), exception.getMessage(), exception.getStackTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
