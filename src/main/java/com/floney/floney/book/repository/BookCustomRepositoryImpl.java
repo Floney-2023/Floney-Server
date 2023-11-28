@@ -51,8 +51,9 @@ public class BookCustomRepositoryImpl implements BookCustomRepository {
 
     @Override
     public List<Book> findAllByUserEmail(final String userEmail) {
-        return jpaQueryFactory.selectFrom(book)
-                .innerJoin(book, bookUser.book)
+        return jpaQueryFactory.select(book)
+                .from(bookUser)
+                .innerJoin(bookUser.book, book)
                 .innerJoin(bookUser.user, user)
                 .where(
                         user.email.eq(userEmail),
