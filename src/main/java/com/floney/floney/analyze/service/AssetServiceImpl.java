@@ -65,6 +65,12 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public void createAssetBy(ChangeBookLineRequest request, Book book) {
+
+        //이체 내역일 경우 자산 포함 X
+        if(Objects.equals(request.getFlow(), BANK.getKind())){
+            return;
+        }
+
         LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
         List<Asset> assets = new ArrayList<>();
 
@@ -72,7 +78,7 @@ public class AssetServiceImpl implements AssetService {
         for (int i = 0; i < FIVE_YEARS; i++) {
             Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBook(targetDate, book);
 
-            if (savedAsset.isEmpty() && !Objects.equals(request.getFlow(), BANK.name())) {
+            if (savedAsset.isEmpty()) {
                 Asset newAsset = Asset.of(request, book, targetDate);
                 assets.add(newAsset);
             } else {
@@ -107,4 +113,5 @@ public class AssetServiceImpl implements AssetService {
 
         assetRepository.saveAll(assets);
     }
+
 }
