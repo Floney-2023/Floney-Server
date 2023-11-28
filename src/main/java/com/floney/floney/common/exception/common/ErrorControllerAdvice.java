@@ -2,6 +2,8 @@ package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
 import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
+import com.floney.floney.common.exception.settlement.SettlementNotFoundException;
 import com.floney.floney.common.exception.user.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -218,6 +220,19 @@ public class ErrorControllerAdvice {
         logger.error("{} id = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_ALARM.getMessage(), exception.getRequestKey(), exception.getMessage(), exception.getStackTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    // SETTLEMENT
+    @ExceptionHandler(SettlementNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(OutcomeUserNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> outcomeUserNotFoundException(OutcomeUserNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     // ALARM
