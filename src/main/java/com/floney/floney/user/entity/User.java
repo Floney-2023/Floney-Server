@@ -54,7 +54,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @Column(updatable = false, unique = true)
+    @Column(unique = true)
     private String providerId;
 
     private String recentBookKey;
