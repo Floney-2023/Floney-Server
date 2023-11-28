@@ -51,7 +51,7 @@ public class BookController {
      * @body CreateLineRequest 가계부 내역
      */
     @PostMapping("/lines")
-    public ResponseEntity<?> createBookLine(@RequestBody ChangeBookLineRequest request,
+    public ResponseEntity<?> createBookLine(@RequestBody BookLineRequest request,
                                             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(), request), HttpStatus.CREATED);
     }
@@ -260,7 +260,7 @@ public class BookController {
      * @body ChangeBookLineRequest 수정한 가계부 내역
      */
     @PostMapping("/lines/change")
-    public ResponseEntity<?> changeBookLine(@RequestBody ChangeBookLineRequest request) {
+    public ResponseEntity<?> changeBookLine(@RequestBody BookLineRequest request) {
         return new ResponseEntity<>(bookLineService.changeLine(request), HttpStatus.OK);
     }
 
