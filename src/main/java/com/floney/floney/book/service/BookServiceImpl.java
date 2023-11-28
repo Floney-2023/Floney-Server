@@ -101,19 +101,7 @@ public class BookServiceImpl implements BookService {
         validateCanDeleteBookBy(bookUser);
         bookUser.inactive();
         deleteBook(bookUser.getBook());
-
-        List<Book> userBooks = bookUserRepository.findBookByOwner(user);
-
-        // 삭제한 가계부의 키가 최근 접근한 가계부 키였다면
-        // 최근 접근 가계부 키가 아닌 다른 가계부 키로 교체
-        if (!userBooks.isEmpty()) {
-            userBooks.stream().filter((book) -> !Objects.equals(book.getBookKey(), bookKey));
-            user.saveRecentBookKey(userBooks.get(0).getBookKey());
-        }
-        // 다른 가계부가 없다면 null
-        else {
-            user.saveRecentBookKey(null);
-        }
+        saveAnotherRecentBookKey(user);
         userRepository.save(user);
     }
 
@@ -212,14 +200,7 @@ public class BookServiceImpl implements BookService {
         bookUserRepository.save(bookUser);
 
         // 유효 가계부 초기화 하기(다른 참여 가계부가 없다면 null로 초기화)
-        List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
-        myBookInfos.stream()
-                .findFirst()
-                .ifPresentOrElse(
-                        bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
-                        () -> user.saveRecentBookKey(null)
-                );
-
+        saveAnotherRecentBookKey(user);
         userRepository.save(user);
     }
 
@@ -312,6 +293,16 @@ public class BookServiceImpl implements BookService {
         if (bookUserRepository.findBookUserByCode(userEmail, request.getCode()).isPresent()) {
             throw new AlreadyJoinException(userEmail);
         }
+    }
+
+    private void saveAnotherRecentBookKey(User user){
+        List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
+        myBookInfos.stream()
+            .findFirst()
+            .ifPresentOrElse(
+                bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
+                () -> user.saveRecentBookKey(null)
+            );
     }
 
     private void validateJoinByBookUserCapacity(Book book) {
