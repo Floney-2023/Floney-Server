@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @RequiredArgsConstructor
-public class ChangeBookLineRequest {
+public class BookLineRequest {
 
     private long lineId;
 
@@ -35,7 +35,7 @@ public class ChangeBookLineRequest {
 
 
     @Builder
-    private ChangeBookLineRequest(long lineId, String bookKey, double money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
+    private BookLineRequest(long lineId, String bookKey, double money, String flow, String asset, String line, LocalDate lineDate, String description, Boolean except) {
         this.lineId = lineId;
         this.bookKey = bookKey;
         this.money = money;

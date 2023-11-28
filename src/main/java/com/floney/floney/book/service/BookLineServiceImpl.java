@@ -7,7 +7,7 @@ import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
@@ -17,7 +17,6 @@ import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.service.category.CategoryFactory;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -47,7 +46,7 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse createBookLine(String currentUser, ChangeBookLineRequest request) {
+    public BookLineResponse createBookLine(String currentUser, BookLineRequest request) {
         Book book = findBook(request.getBookKey());
 
         // 이월 ON 일시, 이월 내역 갱신
@@ -101,7 +100,7 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse changeLine(ChangeBookLineRequest request) {
+    public BookLineResponse changeLine(BookLineRequest request) {
         BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
         Book book = findBook(request.getBookKey());
@@ -127,7 +126,7 @@ public class BookLineServiceImpl implements BookLineService {
         savedBookLine.inactive();
     }
 
-    private BookUser findBookUser(String currentUser, ChangeBookLineRequest request) {
+    private BookUser findBookUser(String currentUser, BookLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
             .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }

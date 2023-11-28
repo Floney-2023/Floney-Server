@@ -5,7 +5,7 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.util.DateFactory;
@@ -58,14 +58,14 @@ public class AssetServiceImpl implements AssetService {
     // 가계부 내역 수정시 asset 업데이트
     @Override
     @Transactional
-    public void updateAsset(ChangeBookLineRequest request, BookLine savedBookLine) {
+    public void updateAsset(BookLineRequest request, BookLine savedBookLine) {
         deleteAsset(savedBookLine.getId());
         createAssetBy(request, savedBookLine.getBook());
     }
 
     @Override
     @Transactional
-    public void createAssetBy(ChangeBookLineRequest request, Book book) {
+    public void createAssetBy(BookLineRequest request, Book book) {
 
         //이체 내역일 경우 자산 포함 X
         if(Objects.equals(request.getFlow(), BANK.getKind())){

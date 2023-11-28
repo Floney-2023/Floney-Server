@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.dto.constant.CategoryEnum;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
@@ -65,7 +65,7 @@ public class BookLine extends BaseEntity {
         return this.bookLineCategories.get(key).getName();
     }
 
-    public void update(ChangeBookLineRequest request) {
+    public void update(BookLineRequest request) {
         this.money = request.getMoney();
         this.lineDate = request.getLineDate();
         this.description = request.getDescription();

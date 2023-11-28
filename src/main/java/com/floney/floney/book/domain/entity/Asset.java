@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.AccessLevel;
@@ -41,7 +41,7 @@ public class Asset extends BaseEntity {
         this.date = date;
     }
 
-    public static Asset of(ChangeBookLineRequest request, Book book, LocalDate date) {
+    public static Asset of(BookLineRequest request, Book book, LocalDate date) {
         if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
             return Asset
                 .builder()

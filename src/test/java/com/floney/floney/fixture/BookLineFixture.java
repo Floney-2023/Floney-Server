@@ -1,7 +1,7 @@
 package com.floney.floney.fixture;
 
 import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
@@ -17,8 +17,8 @@ public class BookLineFixture {
 
     public static LocalDate LOCAL_DATE = LocalDate.of(2023, 10, 22);
 
-    public static ChangeBookLineRequest createOutcomeRequest() {
-        return ChangeBookLineRequest.builder()
+    public static BookLineRequest createOutcomeRequest() {
+        return BookLineRequest.builder()
                 .bookKey(BOOK_KEY)
                 .flow("지출")
                 .asset("은행")
@@ -27,8 +27,8 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static ChangeBookLineRequest createIncomeRequest() {
-        return ChangeBookLineRequest.builder()
+    public static BookLineRequest createIncomeRequest() {
+        return BookLineRequest.builder()
                 .bookKey(BOOK_KEY)
                 .flow("수입")
                 .asset("은행")

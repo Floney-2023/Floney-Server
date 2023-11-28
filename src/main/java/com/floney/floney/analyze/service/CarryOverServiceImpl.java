@@ -4,11 +4,10 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.CarryOver;
 import com.floney.floney.book.dto.process.CarryOverInfo;
-import com.floney.floney.book.dto.request.ChangeBookLineRequest;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -48,14 +47,14 @@ public class CarryOverServiceImpl implements CarryOverService {
     // 가계부 내역 수정시
     @Transactional
     @Override
-    public void updateCarryOver(ChangeBookLineRequest request, BookLine savedBookLine) {
+    public void updateCarryOver(BookLineRequest request, BookLine savedBookLine) {
         deleteCarryOver(savedBookLine.getId());
         createCarryOverByAddBookLine(request, savedBookLine.getBook());
     }
 
     @Transactional
     @Override
-    public void createCarryOverByAddBookLine(ChangeBookLineRequest request, Book book) {
+    public void createCarryOverByAddBookLine(BookLineRequest request, Book book) {
         LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
 
