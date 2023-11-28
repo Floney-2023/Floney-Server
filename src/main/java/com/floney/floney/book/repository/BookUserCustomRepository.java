@@ -27,8 +27,6 @@ public interface BookUserCustomRepository {
 
     List<Book> findBookByOwner(User user);
 
-    List<Book> findBookHavingBookUserByOwner(User user);
-
     int countByBook(Book book);
 
     int countByBookExclusively(Book book);
