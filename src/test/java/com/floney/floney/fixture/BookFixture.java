@@ -1,14 +1,14 @@
 package com.floney.floney.fixture;
 
 import com.floney.floney.book.domain.BookUserCapacity;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.CodeJoinRequest;
 import com.floney.floney.book.dto.request.CreateBookRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.user.entity.User;
 
 public class BookFixture {
@@ -49,6 +49,17 @@ public class BookFixture {
                 .profileImg(URL)
                 .bookKey(BOOK_KEY)
                 .owner(EMAIL)
+                .code(CODE)
+                .userCapacity(BookUserCapacity.DEFAULT.getValue())
+                .build();
+    }
+
+    public static Book createBookWithOwner(final String owner) {
+        return Book.builder()
+                .name(NAME)
+                .profileImg(URL)
+                .bookKey(BOOK_KEY)
+                .owner(owner)
                 .code(CODE)
                 .userCapacity(BookUserCapacity.DEFAULT.getValue())
                 .build();

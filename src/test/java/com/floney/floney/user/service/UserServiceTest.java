@@ -1,5 +1,7 @@
 package com.floney.floney.user.service;
 
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.*;
 import com.floney.floney.common.util.MailProvider;
@@ -10,6 +12,7 @@ import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
+import com.floney.floney.user.dto.response.SignoutResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -27,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.INACTIVE;
@@ -41,6 +45,8 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private BookRepository bookRepository;
     @Mock
     private BookUserRepository bookUserRepository;
     @Mock
@@ -95,10 +101,24 @@ class UserServiceTest {
         User user = UserFixture.createUser();
         ReflectionTestUtils.setField(user, "id", 1L);
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // 삭제되는 가계부: 유저가 방장이며, 다른 팀원이 없음
+        final Book deletedBook = BookFixture.createBookWithOwner(user.getEmail());
+        // 삭제되지 않는 가계부: 유저가 방장이며, 다른 팀원이 있음
+        final Book notDeletedBook1 = BookFixture.createBookWithOwner(user.getEmail());
+        // 삭제되지 않는 가계부: 유저가 팀원임
+        final Book notDeletedBook2 = BookFixture.createBookWithOwner("other@email.com");
+        given(bookRepository.findAllByUserEmail(user.getEmail()))
+                .willReturn(List.of(deletedBook, notDeletedBook1, notDeletedBook2));
+        given(bookUserRepository.findOldestBookUserEmailExceptOwner(user, notDeletedBook1))
+                .willReturn(Optional.of("other@email.com"));
+        given(bookUserRepository.findOldestBookUserEmailExceptOwner(user, deletedBook))
+                .willReturn(Optional.empty());
+
         SignoutRequest request = new SignoutRequest(SignoutType.EXPENSIVE, null);
 
         // when
-        userService.signout(user.getEmail(), request);
+        final SignoutResponse response = userService.signout(user.getEmail(), request);
 
         // then
         assertThat(user.getStatus()).isEqualTo(INACTIVE);
@@ -107,6 +127,9 @@ class UserServiceTest {
         assertThat(user.getNickname()).isEqualTo(UserFixture.DELETE_VALUE);
         assertThat(user.getProfileImg()).isNull();
         assertThat(user.getProviderId()).isNull();
+
+        assertThat(response.getDeletedBookKeys()).hasSize(1);
+        assertThat(response.getOtherBookKeys()).hasSize(2);
     }
 
     @Test
@@ -130,6 +153,7 @@ class UserServiceTest {
         User user = UserFixture.createUser();
         ReflectionTestUtils.setField(user, "id", 1L);
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(bookRepository.findAllByUserEmail(user.getEmail())).willReturn(List.of());
 
         SignoutRequest request = new SignoutRequest(SignoutType.OTHER, value);
 
