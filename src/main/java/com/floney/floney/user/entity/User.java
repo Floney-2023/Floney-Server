@@ -21,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Entity
@@ -139,7 +138,7 @@ public class User extends BaseEntity {
     }
 
     public void validateEmailUser() {
-        if (!Objects.equals(Provider.EMAIL, provider)) {
+        if (!Provider.EMAIL.equals(provider)) {
             throw new NotEmailUserException(provider);
         }
     }

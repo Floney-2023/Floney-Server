@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.user.MailAddressException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
+import com.floney.floney.config.WithMockCustomUser;
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.PasswordAuthenticateRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -179,5 +181,19 @@ class UserControllerTest {
         mockMvc.perform(get("/users/mypage"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("요청한 비밀번호가 일치하는 데 성공한다")
+    @WithMockCustomUser
+    void authenticatePassword_success() throws Exception {
+        // given
+        final PasswordAuthenticateRequest request = new PasswordAuthenticateRequest("password");
+
+        // when & then
+        mockMvc.perform(get("/users/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
     }
 }
