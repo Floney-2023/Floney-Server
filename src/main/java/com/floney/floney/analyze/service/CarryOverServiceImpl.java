@@ -8,6 +8,7 @@ import com.floney.floney.book.dto.request.ChangeBookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @RequiredArgsConstructor
 @Component
@@ -35,7 +37,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         LocalDate localDate = LocalDate.parse(date);
         // 1일일 경우, 이월 내역 포함하여 전송
         if (carryOverStatus && DateFactory.isFirstDay(date)) {
-            Optional<CarryOver> carryOverOptional = carryOverRepository.findCarryOverByDateAndBook(localDate, book);
+            Optional<CarryOver> carryOverOptional = carryOverRepository.findCarryOverByDateAndBookAndStatus(localDate, book, ACTIVE);
             if (carryOverOptional.isPresent()) {
                 return CarryOverInfo.of(true, carryOverOptional.get());
             }
@@ -62,7 +64,7 @@ public class CarryOverServiceImpl implements CarryOverService {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, book);
+            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, book, ACTIVE);
 
             if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.getKind())) {
                 CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
@@ -95,7 +97,7 @@ public class CarryOverServiceImpl implements CarryOverService {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, savedBookLine.getBook());
+            Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, savedBookLine.getBook(), ACTIVE);
             savedCarryOver.ifPresent(carryOver -> {
                 carryOver.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
                 carryOvers.add(carryOver);
