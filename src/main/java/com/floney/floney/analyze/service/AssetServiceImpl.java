@@ -19,6 +19,7 @@ import java.util.*;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @RequiredArgsConstructor
 @Component
@@ -35,8 +36,8 @@ public class AssetServiceImpl implements AssetService {
         // 기본 응답값 -> 초기 자산으로 셋팅
         Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
-        // 날짜를 ky로 하여, 저장된 데이터가 있다면 대체
-        List<Asset> assets = assetRepository.findByDateBetweenAndBook(datesDuration.getStartDate(), datesDuration.getEndDate(), book);
+        // 날짜를 key로 하여, 저장된 데이터가 있다면 대체
+        List<Asset> assets = assetRepository.findByDateBetweenAndBookAndStatus(datesDuration.getStartDate(), datesDuration.getEndDate(), book,ACTIVE);
         assets.forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
 
         return initAssets;
@@ -76,7 +77,7 @@ public class AssetServiceImpl implements AssetService {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBook(targetDate, book);
+            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBookAndStatus(targetDate, book,ACTIVE);
 
             if (savedAsset.isEmpty()) {
                 Asset newAsset = Asset.of(request, book, targetDate);
@@ -103,7 +104,7 @@ public class AssetServiceImpl implements AssetService {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBook(targetDate, savedBookLine.getBook());
+            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBookAndStatus(targetDate, savedBookLine.getBook(),ACTIVE);
             savedAsset.ifPresent(asset -> {
                 asset.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
                 assets.add(asset);
