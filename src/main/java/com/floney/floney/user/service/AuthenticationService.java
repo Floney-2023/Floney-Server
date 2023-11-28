@@ -113,6 +113,7 @@ public class AuthenticationService {
     public void authenticatePassword(final String email, final PasswordAuthenticateRequest request) {
         final String password = request.getPassword();
         final User user = findUserByEmail(email);
+        user.validateEmailUser();
 
         validatePasswordMatches(password, user);
     }

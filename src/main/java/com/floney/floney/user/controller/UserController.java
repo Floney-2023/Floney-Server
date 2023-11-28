@@ -102,7 +102,7 @@ public class UserController {
     }
 
     /**
-     * 회원 비밀번호와 요청 비밀번호가 일치하는 지 검사
+     * 이메일 회원 비밀번호와 요청 비밀번호가 일치하는 지 검사
      * @param userDetails
      * @param request
      */
