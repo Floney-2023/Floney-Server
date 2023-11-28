@@ -64,8 +64,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         for (int i = 0; i < FIVE_YEARS; i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBook(targetDate, book);
 
-
-            if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.name())) {
+            if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.getKind())) {
                 CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
