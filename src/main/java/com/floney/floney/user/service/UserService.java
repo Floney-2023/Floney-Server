@@ -15,6 +15,7 @@ import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.SignoutOtherReason;
@@ -145,6 +146,10 @@ public class UserService {
     public void updateReceiveMarketing(final boolean receiveMarketing, final String username) {
         final User user = findUserByEmail(username);
         user.updateReceiveMarketing(receiveMarketing);
+    }
+
+    public ReceiveMarketingResponse getReceiveMarketing(final String email) {
+        return new ReceiveMarketingResponse(findUserByEmail(email).isReceiveMarketing());
     }
 
     private void updatePassword(String newPassword, User user) {

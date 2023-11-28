@@ -9,6 +9,7 @@ import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
+import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
@@ -222,5 +223,30 @@ class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.updateRegeneratedPassword(email))
                 .isInstanceOf(NotEmailUserException.class);
+    }
+
+    @Test
+    @DisplayName("마케팅 수신 동의 여부를 조회하는데 성공한다")
+    void getReceiveMarketing_success() {
+        // given
+        User user = UserFixture.createUser();
+        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+
+        // when
+        final ReceiveMarketingResponse response = userService.getReceiveMarketing(user.getEmail());
+
+        // then
+        assertThat(response.isReceiveMarketing()).isEqualTo(user.isReceiveMarketing());
+    }
+
+    @Test
+    @DisplayName("마케팅 수신 동의 여부를 조회하는데 실패한다 - 존재하지 않는 유저")
+    void getReceiveMarketing_fail_userNotFoundException() {
+        // given
+        given(userRepository.findByEmail(anyString())).willReturn(Optional.empty());
+
+        // when
+        assertThatThrownBy(() -> userService.getReceiveMarketing("fail@email.com"))
+                .isInstanceOf(UserNotFoundException.class);
     }
 }
