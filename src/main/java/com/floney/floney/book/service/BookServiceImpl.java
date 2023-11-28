@@ -14,6 +14,7 @@ import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
@@ -54,6 +55,7 @@ public class BookServiceImpl implements BookService {
     private final SettlementRepository settlementRepository;
     private final CarryOverRepository carryOverRepository;
     private final AlarmRepository alarmRepository;
+    private final AssetRepository assetRepository;
 
     @Override
     @Transactional
@@ -222,7 +224,7 @@ public class BookServiceImpl implements BookService {
                 .stream()
                 .map(BookCategory::delete)
                 .forEach(categoryRepository::delete);
-
+        assetRepository.inActiveAllByBook(book);
         settlementRepository.inactiveAllByBookKey(bookKey);
         bookLineRepository.inactiveAllBy(bookKey);
         carryOverRepository.inactiveAllByBookKey(bookKey);
