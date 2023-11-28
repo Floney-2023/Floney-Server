@@ -376,10 +376,66 @@ class SettlementServiceTest {
         settlementService.create(request);
 
         // when
-        final List<SettlementResponse> responses = settlementService.findAll(request.getBookKey());
+        final List<SettlementResponse> responses = settlementService.findAll(user1.getEmail(), request.getBookKey());
 
         // then
         assertThat(responses).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("해당 가계부의 모든 정산 내역을 불러오는데 실패한다 - 가계부에 속하지 않은 유저의 요청")
+    void findSettlements_fail_notFoundBookUserException() throws JsonProcessingException {
+        // given
+        final String json = "{\"bookKey\":\"abcdefgh\"," +
+                "\"startDate\":\"2000-01-01\"," +
+                "\"endDate\":\"2000-01-02\"," +
+                "\"userEmails\":[\"test01@email.com\",\"test02@email.com\"]," +
+                "\"outcomes\":[{" +
+                "\"outcome\":10000," +
+                "\"userEmail\":\"test01@email.com\"}]}";
+
+        final SettlementRequest request = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(json, SettlementRequest.class);
+
+        final Book book = Book.builder()
+                .bookKey(request.getBookKey())
+                .code("code")
+                .name("name")
+                .build();
+
+        bookRepository.save(book);
+
+        final User user1 = User.builder()
+                .email("test01@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+        final User user2 = User.builder()
+                .email("test02@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
+        settlementService.create(request);
+
+        // when & then
+        assertThatThrownBy(() -> settlementService.findAll("fail@email.com", request.getBookKey()))
+                .isInstanceOf(NotFoundBookUserException.class);
     }
 
     @Test
@@ -434,10 +490,66 @@ class SettlementServiceTest {
         final SettlementResponse settlementResponse = settlementService.create(request);
 
         // when
-        final SettlementResponse response = settlementService.find(settlementResponse.getId());
+        final SettlementResponse response = settlementService.find(user1.getEmail(), settlementResponse.getId());
 
         // then
         assertThat(response.getId()).isEqualTo(settlementResponse.getId());
+    }
+
+    @Test
+    @DisplayName("해당 정산 내역을 불러오는데 실패한다 - 가계부에 참여하지 않은 유저의 요청")
+    void findSettlement_fail_notFoundBookUserException() throws JsonProcessingException {
+        // given
+        final String json = "{\"bookKey\":\"abcdefgh\"," +
+                "\"startDate\":\"2000-01-01\"," +
+                "\"endDate\":\"2000-01-02\"," +
+                "\"userEmails\":[\"test01@email.com\",\"test02@email.com\"]," +
+                "\"outcomes\":[{" +
+                "\"outcome\":10000," +
+                "\"userEmail\":\"test01@email.com\"}]}";
+
+        final SettlementRequest request = new ObjectMapper().registerModule(new JavaTimeModule())
+                .readValue(json, SettlementRequest.class);
+
+        final Book book = Book.builder()
+                .bookKey(request.getBookKey())
+                .code("code")
+                .name("name")
+                .build();
+
+        bookRepository.save(book);
+
+        final User user1 = User.builder()
+                .email("test01@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+        final User user2 = User.builder()
+                .email("test02@email.com")
+                .nickname("nickname")
+                .provider(Provider.EMAIL)
+                .build();
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+
+        final BookUser bookUser1 = BookUser.builder()
+                .book(book)
+                .user(user1)
+                .build();
+        final BookUser bookUser2 = BookUser.builder()
+                .book(book)
+                .user(user2)
+                .build();
+
+        bookUserRepository.save(bookUser1);
+        bookUserRepository.save(bookUser2);
+
+        final SettlementResponse settlementResponse = settlementService.create(request);
+
+        // when & then
+        assertThatThrownBy(() -> settlementService.find("fail@email.com", settlementResponse.getId()))
+                .isInstanceOf(NotFoundBookUserException.class);
     }
 
     private Book findBookByBookKey(final SettlementRequest request) {
