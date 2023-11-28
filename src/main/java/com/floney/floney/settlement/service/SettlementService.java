@@ -36,7 +36,8 @@ public class SettlementService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
 
-    public List<SettlementResponse> findAll(String bookKey) {
+    public List<SettlementResponse> findAll(final String email, final String bookKey) {
+        validateBookUser(bookKey, email);
         final Book book = findBookByBookKey(bookKey);
 
         return findSettlementsOrderByRecentTime(book)
@@ -45,8 +46,9 @@ public class SettlementService {
                 .toList();
     }
 
-    public SettlementResponse find(Long id) {
+    public SettlementResponse find(final String email, final Long id) {
         final Settlement settlement = findSettlementById(id);
+        validateBookUser(settlement.getBook().getBookKey(), email);
         final List<SettlementUser> settlementUsers = findSettlementUsersBySettlement(settlement);
         return SettlementResponse.of(settlement, settlementUsers);
     }
