@@ -104,10 +104,10 @@ public class UserController {
 
     /**
      * 이메일 회원 비밀번호와 요청 비밀번호가 일치하는 지 검사
-     * @param userDetails
-     * @param request
+     * @param userDetails 회원 정보
+     * @param request 검사할 비밀번호
      */
-    @GetMapping("/password")
+    @PostMapping("/password")
     @ResponseStatus(HttpStatus.OK)
     public void authenticatePassword(@AuthenticationPrincipal final CustomUserDetails userDetails,
                                      @RequestBody @Valid final PasswordAuthenticateRequest request) {

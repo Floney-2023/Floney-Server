@@ -191,7 +191,7 @@ class UserControllerTest {
         final PasswordAuthenticateRequest request = new PasswordAuthenticateRequest("password");
 
         // when & then
-        mockMvc.perform(get("/users/password")
+        mockMvc.perform(post("/users/password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
