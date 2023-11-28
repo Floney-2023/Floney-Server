@@ -4,6 +4,7 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
+import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
@@ -16,6 +17,7 @@ import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
+import com.floney.floney.user.dto.response.SignoutResponse;
 import com.floney.floney.user.dto.response.UserResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.SignoutOtherReason;
@@ -31,7 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
@@ -44,6 +48,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
@@ -59,15 +64,18 @@ public class UserService {
     }
 
     @Transactional
-    public void signout(final String email, final SignoutRequest request) {
+    public SignoutResponse signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
 
-        // 유저가 방장인 가계부 조회
-        final List<Book> books = bookUserRepository.findBookByOwner(user);
-        books.forEach(book -> delegateBookOwner(book, user));
+        final List<String> deletedBookKeys = new ArrayList<>();
+        final List<String> notDeletedBookKeys = new ArrayList<>();
+
+        leaveBooks(user, deletedBookKeys, notDeletedBookKeys);
 
         user.signout();
         addSignoutReason(request);
+
+        return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }
 
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
@@ -128,12 +136,25 @@ public class UserService {
         return new ReceiveMarketingResponse(findUserByEmail(email).isReceiveMarketing());
     }
 
-    private void delegateBookOwner(final Book book, final User owner) {
-        bookUserRepository.findOldestBookUserEmailExceptOwner(owner, book)
-                .ifPresentOrElse(
-                        book::delegateOwner,
-                        book::inactive
-                );
+    private void leaveBooks(final User user,
+                            final List<String> deletedBookKeys,
+                            final List<String> notDeletedBookKeys) {
+        final List<Book> involvedBooks = bookRepository.findAllByUserEmail(user.getEmail());
+        for (final Book book : involvedBooks) {
+            if (!book.isOwner(user.getEmail())) {
+                notDeletedBookKeys.add(book.getBookKey());
+                continue;
+            }
+
+            final Optional<String> newOwner = bookUserRepository.findOldestBookUserEmailExceptOwner(user, book);
+            if (newOwner.isPresent()) {
+                book.delegateOwner(newOwner.get());
+                notDeletedBookKeys.add(book.getBookKey());
+                continue;
+            }
+            deletedBookKeys.add(book.getBookKey());
+            book.inactive();
+        }
     }
 
     private void addSignoutReason(final SignoutRequest request) {

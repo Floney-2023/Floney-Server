@@ -4,6 +4,7 @@ import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.*;
 import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
+import com.floney.floney.user.dto.response.SignoutResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.AuthenticationService;
 import com.floney.floney.user.service.UserService;
@@ -97,9 +98,9 @@ public class UserController {
      */
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void signout(@RequestParam String accessToken,
-                        @RequestBody @Valid final SignoutRequest request) {
-        userService.signout(authenticationService.logout(accessToken), request);
+    public SignoutResponse signout(@RequestParam String accessToken,
+                                   @RequestBody @Valid final SignoutRequest request) {
+        return userService.signout(authenticationService.logout(accessToken), request);
     }
 
     /**

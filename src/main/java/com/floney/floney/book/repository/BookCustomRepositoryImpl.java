@@ -48,4 +48,17 @@ public class BookCustomRepositoryImpl implements BookCustomRepository {
             .where(budget.date.between(duration.getStartDate(), duration.getEndDate()))
             .fetch();
     }
+
+    @Override
+    public List<Book> findAllByUserEmail(final String userEmail) {
+        return jpaQueryFactory.selectFrom(book)
+                .innerJoin(book, bookUser.book)
+                .innerJoin(bookUser.user, user)
+                .where(
+                        user.email.eq(userEmail),
+                        book.status.eq(ACTIVE),
+                        bookUser.status.eq(ACTIVE)
+                )
+                .fetch();
+    }
 }
