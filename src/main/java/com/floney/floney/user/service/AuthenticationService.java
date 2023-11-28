@@ -10,6 +10,7 @@ import com.floney.floney.common.util.MailProvider;
 import com.floney.floney.common.util.RedisProvider;
 import com.floney.floney.user.dto.request.EmailAuthenticationRequest;
 import com.floney.floney.user.dto.request.LoginRequest;
+import com.floney.floney.user.dto.request.PasswordAuthenticateRequest;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import io.jsonwebtoken.MalformedJwtException;
@@ -109,6 +110,13 @@ public class AuthenticationService {
         }
     }
 
+    public void authenticatePassword(final String email, final PasswordAuthenticateRequest request) {
+        final String password = request.getPassword();
+        final User user = findUserByEmail(email);
+
+        validatePasswordMatches(password, user);
+    }
+
     private void validateUserNotExistByEmail(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             throw new UserFoundException(user.getEmail(), user.getProvider());
@@ -123,6 +131,12 @@ public class AuthenticationService {
     private void validatePasswordMatches(final LoginRequest request, final String user) {
         if (!passwordEncoder.matches(request.getPassword(), user)) {
             throw new BadCredentialsException(request.getEmail());
+        }
+    }
+
+    private void validatePasswordMatches(final String password, final User user) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException(user.getEmail());
         }
     }
 }

@@ -102,6 +102,18 @@ public class UserController {
     }
 
     /**
+     * 회원 비밀번호와 요청 비밀번호가 일치하는 지 검사
+     * @param userDetails
+     * @param request
+     */
+    @GetMapping("/password")
+    @ResponseStatus(HttpStatus.OK)
+    public void authenticatePassword(@AuthenticationPrincipal final CustomUserDetails userDetails,
+                                     @RequestBody @Valid final PasswordAuthenticateRequest request) {
+        authenticationService.authenticatePassword(userDetails.getUsername(), request);
+    }
+
+    /**
      * 회원 닉네임 수정
      *
      * @param nickname    수정할 닉네임
