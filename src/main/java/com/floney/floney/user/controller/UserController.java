@@ -3,6 +3,7 @@ package com.floney.floney.user.controller;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.user.dto.request.*;
+import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.service.AuthenticationService;
 import com.floney.floney.user.service.UserService;
@@ -184,5 +185,16 @@ public class UserController {
     public void updateReceiveMarketing(@RequestParam(name = "agree") final boolean receiveMarketing,
                                        @AuthenticationPrincipal final CustomUserDetails customUserDetails) {
         userService.updateReceiveMarketing(receiveMarketing, customUserDetails.getUsername());
+    }
+
+    /**
+     * 회원 마케팅 수신 동의 여부 조회
+     * @param customUserDetails 회원 정보
+     * @return 회원 마케팅 수신 동의 여부
+     */
+    @GetMapping("/receive-marketing")
+    @ResponseStatus(HttpStatus.OK)
+    public ReceiveMarketingResponse getReceiveMarketing(@AuthenticationPrincipal final CustomUserDetails customUserDetails) {
+        return userService.getReceiveMarketing(customUserDetails.getUsername());
     }
 }
