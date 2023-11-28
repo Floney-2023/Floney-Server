@@ -128,8 +128,8 @@ public class AuthenticationService {
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    private void validatePasswordMatches(final LoginRequest request, final String user) {
-        if (!passwordEncoder.matches(request.getPassword(), user)) {
+    private void validatePasswordMatches(final LoginRequest request, final String password) {
+        if (!passwordEncoder.matches(request.getPassword(), password)) {
             throw new BadCredentialsException(request.getEmail());
         }
     }
