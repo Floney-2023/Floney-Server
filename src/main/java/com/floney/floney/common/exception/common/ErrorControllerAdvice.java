@@ -225,12 +225,14 @@ public class ErrorControllerAdvice {
     // SETTLEMENT
     @ExceptionHandler(SettlementNotFoundException.class)
     protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {
+        logger.warn("settlement id [{}]의 정산 내역이 존재하지 않음", exception.getSettlementId());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
     @ExceptionHandler(OutcomeUserNotFoundException.class)
     protected ResponseEntity<ErrorResponse> outcomeUserNotFoundException(OutcomeUserNotFoundException exception) {
+        logger.warn("Request Body에서 지출 내역의 유저가 유저 목록에 존재하지 않음");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }

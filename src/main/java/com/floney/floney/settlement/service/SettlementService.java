@@ -79,7 +79,7 @@ public class SettlementService {
 
     private Settlement findSettlementById(final Long id) {
         return settlementRepository.findById(id)
-                .orElseThrow(SettlementNotFoundException::new);
+                .orElseThrow(() -> new SettlementNotFoundException(id));
     }
 
     private List<Settlement> findSettlementsOrderByRecentTime(final Book book) {
