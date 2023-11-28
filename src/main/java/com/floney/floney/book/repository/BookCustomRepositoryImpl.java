@@ -28,25 +28,27 @@ public class BookCustomRepositoryImpl implements BookCustomRepository {
     @Override
     public Optional<Book> findByBookUserEmailAndBookKey(final String userEmail, final String bookKey) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.book, book).fetchJoin()
-            .innerJoin(bookUser.user, user).fetchJoin()
-            .where(
-                bookUser.status.eq(ACTIVE),
-                user.email.eq(userEmail), book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE), user.status.eq(ACTIVE)
-            )
-            .fetchOne().getBook());
+                .innerJoin(bookUser.book, book).fetchJoin()
+                .innerJoin(bookUser.user, user).fetchJoin()
+                .where(
+                        bookUser.status.eq(ACTIVE),
+                        user.email.eq(userEmail),
+                        book.bookKey.eq(bookKey),
+                        user.status.eq(ACTIVE),
+                        book.status.eq(ACTIVE)
+                )
+                .fetchOne().getBook());
     }
 
     @Override
     public List<BudgetYearResponse> findBudgetByYear(String bookKey, DatesDuration duration) {
         return jpaQueryFactory
-            .select(new QBudgetYearResponse(budget.date, budget.money))
-            .from(budget)
-            .innerJoin(budget.book, book)
-            .where(book.bookKey.eq(bookKey))
-            .where(budget.date.between(duration.getStartDate(), duration.getEndDate()))
-            .fetch();
+                .select(new QBudgetYearResponse(budget.date, budget.money))
+                .from(budget)
+                .innerJoin(budget.book, book)
+                .where(book.bookKey.eq(bookKey))
+                .where(budget.date.between(duration.getStartDate(), duration.getEndDate()))
+                .fetch();
     }
 
     @Override
