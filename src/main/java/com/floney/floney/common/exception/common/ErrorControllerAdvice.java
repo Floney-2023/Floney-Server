@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -246,10 +247,18 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> validationException(MethodArgumentNotValidException exception) {
         final String message = exception.getBindingResult().getFieldError().getDefaultMessage();
-        logger.warn("@Valid 에러 - [{}] : {} ", exception.getTarget(), message);
+        logger.warn("요청 body의 @Valid 에러 - [{}] : {} ", exception.getTarget(), message);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(ErrorType.REQUEST_BODY_ERROR, message));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    protected ResponseEntity<ErrorResponse> requestParameterException(MissingServletRequestParameterException exception) {
+        logger.warn("요청 파라미터 없음 : {} ", exception.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(ErrorType.REQUEST_PARAMETER_ERROR, exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
