@@ -2,12 +2,15 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.7'
     id 'io.spring.dependency-management' version '1.1.0'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.floney'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-
+sourceCompatibility = '17'
+ext {
+    queryDslVersion = "5.0.0"
+}
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -19,17 +22,95 @@ repositories {
 }
 
 dependencies {
+
+    // spring boot
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // lombok
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // login
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // excel
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    // db
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
+
+    // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // QueryDsl
+    implementation 'com.h2database:h2'
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+    implementation 'com.github.maricn:logback-slack-appender:1.6.0'
 }
 
-tasks.named('test') {
+//querydsl
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+}
+
+jar {
+    enabled = false
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+    if (file(querydslDir).exists()) {
+        delete(file(querydslDir))
+    }
+}
+clean.doLast {
+    delete file(querydslDir)
+}
+test {
     useJUnitPlatform()
 }
