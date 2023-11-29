@@ -1,8 +1,8 @@
-name: CD 자동화
+name: CD 자동화 (개발 서버)
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: 'develop'
 
 permissions:
   contents: read
@@ -30,11 +30,6 @@ jobs:
            echo "${{ secrets.SECRET_YAML }}" | base64 --decode > ./src/main/resources/application.yaml
            touch ./src/main/resources/google-credential.json
            echo "${{ secrets.GOOGLE_CREDENTIAL }}" | base64 --decode > ./src/main/resources/google-credential.json
-           mkdir logs
-
-      - name: Github action IP 가져오기
-        id: ip
-        uses: haythem/public-ip@v1.2
 
       - name: AWS 인증
         uses: aws-actions/configure-aws-credentials@v1
@@ -43,33 +38,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
           aws-region: ap-northeast-2
 
-      - name: 환경변수 설정
-        run: |
-          echo "AWS_DEFAULT_REGION=ap-northeast-2" >> $GITHUB_ENV
-          echo "AWS_SG_NAME=group-for-all" >> $GITHUB_ENV
-
-      - name: Github Actions IP를 보안 그룹에 추가
-        run: |
-          aws ec2 authorize-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32    
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
-
       - name: gradlew에 실행 권한 부여
         run: chmod +x gradlew
 
       - name: 프로젝트 빌드
         run: ./gradlew clean build -x test
-
-      - name: Github Actions IP를 보안 그룹에서 삭제
-        if: always()
-        run: |
-          aws ec2 revoke-security-group-ingress --group-name ${{ env.AWS_SG_NAME }} --protocol tcp --port 3306 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_DEPLOY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_KEY_DEPLOY }}
-          AWS_DEFAULT_REGION: ap-northeast-2
 
       - name: S3에 업로드
         run: aws deploy push --application-name floney-dev

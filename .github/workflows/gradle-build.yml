@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
+  checks: write
 
 jobs:
   build:
@@ -25,6 +27,12 @@ jobs:
         
       - name: 프로젝트 빌드
         run: ./gradlew clean build
+
+      - name: 테스트 결과를 PR에 코멘트로 등록
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
 
       - name: 테스트 실패 시, 실패한 코드 라인에 Check 코멘트를 등록
         uses: mikepenz/action-junit-report@v3
