@@ -30,7 +30,7 @@ jobs:
            echo "${{ secrets.SECRET_YAML }}" | base64 --decode > ./src/main/resources/application.yaml
            touch ./src/main/resources/google-credential.json
            echo "${{ secrets.GOOGLE_CREDENTIAL }}" | base64 --decode > ./src/main/resources/google-credential.json
-           echo "${{ secrets.PROD_START_SH }}" > ./script/start.sh
+           echo "${{ secrets.PROD_START_SH }}" | base64 --decode > ./script/start.sh
 
       - name: AWS 인증
         uses: aws-actions/configure-aws-credentials@v1
