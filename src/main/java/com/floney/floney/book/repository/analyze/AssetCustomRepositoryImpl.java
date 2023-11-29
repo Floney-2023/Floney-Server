@@ -12,7 +12,6 @@ import static com.floney.floney.book.domain.entity.QAsset.asset;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Repository
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
