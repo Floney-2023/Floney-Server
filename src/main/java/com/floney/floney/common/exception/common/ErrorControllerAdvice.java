@@ -254,9 +254,30 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> otherException(Exception exception) {
-        logger.error("알 수 없는 예외 발생 \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", exception.getMessage(), exception.getStackTrace());
+        loggingError(exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorResponse.of(ErrorType.SERVER_ERROR));
+    }
+
+    private void loggingError(final Exception exception) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(exception).append('\n');
+
+        for (final StackTraceElement info : exception.getStackTrace()) {
+            if(!info.getClassName().startsWith("com.floney")) { // 프로젝트 내에서 발생한 에러만 포함
+                continue;
+            }
+            if("invoke".equals(info.getMethodName())) { // 프록시 메서드 제외
+                continue;
+            }
+            if("<generated>".equals(info.getFileName())) { // 스프링이 만든 프록시 객체 제외
+                continue;
+            }
+
+            stringBuilder.append("\t- ").append(info).append('\n');
+        }
+
+        logger.error(stringBuilder.toString());
     }
 }
 
