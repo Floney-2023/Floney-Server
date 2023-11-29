@@ -2,6 +2,8 @@ package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
 import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
+import com.floney.floney.common.exception.settlement.SettlementNotFoundException;
 import com.floney.floney.common.exception.user.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -189,14 +191,6 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    //SUBSCRIBE
-    @ExceptionHandler(NotSubscribeException.class)
-    protected ResponseEntity<ErrorResponse> notSubscribe(NotSubscribeException exception) {
-        logger.warn(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
     @ExceptionHandler(LimitRequestException.class)
     protected ResponseEntity<ErrorResponse> limitOfService(LimitRequestException exception) {
         logger.warn(exception.getMessage());
@@ -222,16 +216,24 @@ public class ErrorControllerAdvice {
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(NotFoundSubscribeException.class)
-    protected ResponseEntity<ErrorResponse> subscribeException(NotFoundSubscribeException exception) {
-        logger.warn("{} User = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_SUBSCRIBE.getMessage(), exception.getUserEmail(), exception.getMessage(), exception.getStackTrace());
+    @ExceptionHandler(NotFoundAlarmException.class)
+    protected ResponseEntity<ErrorResponse> alarmException(NotFoundAlarmException exception) {
+        logger.error("{} id = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_ALARM.getMessage(), exception.getRequestKey(), exception.getMessage(), exception.getStackTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
 
-    @ExceptionHandler(NotFoundAlarmException.class)
-    protected ResponseEntity<ErrorResponse> alarmException(NotFoundAlarmException exception) {
-        logger.error("{} id = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_ALARM.getMessage(), exception.getRequestKey(), exception.getMessage(), exception.getStackTrace());
+    // SETTLEMENT
+    @ExceptionHandler(SettlementNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {
+        logger.warn("settlement id [{}]의 정산 내역이 존재하지 않음", exception.getSettlementId());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(OutcomeUserNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> outcomeUserNotFoundException(OutcomeUserNotFoundException exception) {
+        logger.warn("Request Body에서 지출 내역의 유저가 유저 목록에 존재하지 않음");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getErrorType()));
     }
