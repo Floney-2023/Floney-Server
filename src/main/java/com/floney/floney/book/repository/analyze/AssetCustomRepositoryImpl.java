@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 import static com.floney.floney.book.domain.entity.QAsset.asset;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Repository
@@ -19,11 +20,11 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
     @Override
     @Transactional
-    public void inActiveAllByBook(Book book){
+    public void inactiveAllBy(Book book) {
         jpaQueryFactory.update(asset)
-            .set(asset.status,INACTIVE)
+            .set(asset.status, INACTIVE)
             .set(asset.updatedAt, LocalDateTime.now())
-            .where(asset.book.eq(book))
+            .where(asset.book.eq(book), asset.status.eq(ACTIVE))
             .execute();
     }
 }

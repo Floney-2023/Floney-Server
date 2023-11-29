@@ -224,7 +224,7 @@ public class BookServiceImpl implements BookService {
                 .stream()
                 .map(BookCategory::delete)
                 .forEach(categoryRepository::delete);
-        assetRepository.inActiveAllByBook(book);
+        assetRepository.inactiveAllBy(book);
         settlementRepository.inactiveAllByBookKey(bookKey);
         bookLineRepository.inactiveAllBy(bookKey);
         carryOverRepository.inactiveAllByBookKey(bookKey);
