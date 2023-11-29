@@ -4,7 +4,7 @@ PROJECT_ROOT="/home/ubuntu/Floney-Server"
 JAR_FILE="$PROJECT_ROOT/build/libs/Floney-0.0.1-SNAPSHOT.jar"
 
 APP_LOG="$PROJECT_ROOT/application.log"
-ERROR_LOG="$PROJECT_ROOT/error.log"
+ERROR_LOG="$PROJECT_ROOT/deploy-error.log"
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
 TIME_NOW=$(date +%c)
