@@ -3,7 +3,7 @@
 ROOT_PATH="/home/ubuntu/Floney-Server"
 DEPLOY_LOG="$ROOT_PATH/deploy.log"
 
-SERVICE_PID=$(pgrep -fl Floney-Server)
+SERVICE_PID=$(pgrep -f Floney-Server)
 
 TIME_NOW=$(date +%c)
 
