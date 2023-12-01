@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <property name="DIR" value="./logs"/>
-    <springProperty name="SLACK_WEBHOOK_URI" source="logging.slack.webhook-url"/>
 
     <!--콘솔에 출력-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -9,19 +8,6 @@
             <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative]%-5level - %msg%n</Pattern>
         </layout>
     </appender>
-
-    <!-- slack error 전송 appender -->
-    <springProfile name="production">
-    <appender name="ASYNC_SLACK" class="com.github.maricn.logback.SlackAppender">
-        <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %.-500msg %n</pattern>
-        </layout>
-        <username>FLONEY_SERVER_ERROR</username>
-        <iconEmoji>:anger:</iconEmoji>
-        <colorCoding>true</colorCoding>
-    </appender>
-    </springProfile>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -37,16 +23,30 @@
         </encoder>
     </appender>
 
+    <!-- slack error 전송 appender -->
+    <springProfile name = "develop,production">
+    <springProperty name="SLACK_WEBHOOK_URI" source="spring.logging.slack.webhook-url"/>
+    <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+        <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg</pattern>
+        </layout>
+        <username>FLONEY_SERVER_ERROR</username>
+        <colorCoding>true</colorCoding>
+    </appender>
+
     <appender name="ASYNC_SLACK" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="ASYNC_SLACK"/>
+        <appender-ref ref="SLACK"/>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
     </appender>
+    </springProfile>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
+
 
     <logger name="LogByAop" additivity="false">
         <level value = "DEBUG" />
@@ -64,7 +64,9 @@
         <level value = "DEBUG" />
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE" />
-        <appender-ref ref="ASYNC_SLACK"/>
+        <springProfile name = "develop,production">
+            <appender-ref ref="ASYNC_SLACK"/>
+        </springProfile>
     </logger>
 
     <logger name="org.hibernate.SQL" additivity="false">
