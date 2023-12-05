@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface AssetRepository extends JpaRepository<Asset, Long> , AssetCustomRepository{
+public interface AssetRepository extends JpaRepository<Asset, Long>, AssetCustomRepository {
     Optional<Asset> findAssetByDateAndBookAndStatus(LocalDate targetDate, Book book, Status status);
 
-    List<Asset> findByDateBetweenAndBookAndStatus(LocalDate startDate, LocalDate endDate,Book book,Status status);
+    List<Asset> findByDateBetweenAndBookAndStatus(LocalDate startDate, LocalDate endDate, Book book, Status status);
 }
