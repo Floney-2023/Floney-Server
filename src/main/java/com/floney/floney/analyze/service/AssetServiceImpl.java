@@ -11,26 +11,31 @@ import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
+@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Component
 public class AssetServiceImpl implements AssetService {
-    private static final int FIVE_YEARS = 60;
+
+    private static final int SAVED_MONTHS = 5 * 12; // 자산 데이터 생성 기간
+
     private final AssetRepository assetRepository;
     private final BookLineRepository bookLineRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
         DatesDuration datesDuration = DateFactory.getAssetDuration(localDate);
@@ -66,57 +71,47 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createAssetBy(BookLineRequest request, Book book) {
+    public void createAssetBy(final BookLineRequest request, final Book book) {
         // 이체 내역일 경우 자산 포함 X
         if (BANK.getKind().equals(request.getFlow())) {
             return;
         }
 
-        LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
-        List<Asset> assets = new ArrayList<>();
+        final LocalDate startMonth = DateFactory.getFirstDayOf(request.getLineDate());
 
-        // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
-            final Optional<Asset> savedAsset = findAssetByDateAndBook(book, targetDate);
+        for (int month = 0; month < SAVED_MONTHS; month++) {
+            final LocalDate currentMonth = startMonth.plusMonths(month);
 
+            final Optional<Asset> savedAsset = findAssetByDateAndBook(book, currentMonth);
             if (savedAsset.isEmpty()) {
-                Asset newAsset = Asset.of(request, book, targetDate);
-                assets.add(newAsset);
+                final Asset newAsset = Asset.of(request, book, currentMonth);
+                assetRepository.save(newAsset);
             } else {
-                savedAsset.ifPresent(asset -> {
-                    asset.update(request.getMoney(), request.getFlow());
-                    assets.add(asset);
-                });
+                final Asset asset = savedAsset.get();
+                asset.update(request.getMoney(), request.getFlow());
             }
-            targetDate = targetDate.plusMonths(1);
         }
-
-        assetRepository.saveAll(assets);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void deleteAsset(Long bookLineId) {
-        BookLine savedBookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
+    public void deleteAsset(final Long bookLineId) {
+        final BookLine bookLine = bookLineRepository.findById(bookLineId)
+                .orElseThrow(NotFoundBookLineException::new);
 
-        LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
-        List<Asset> assets = new ArrayList<>();
+        final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
 
-        // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = findAssetByDateAndBook(savedBookLine.getBook(), targetDate);
-            savedAsset.ifPresent(asset -> {
-                asset.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
-                assets.add(asset);
+        for (int month = 0; month < SAVED_MONTHS; month++) {
+            final LocalDate currentMonth = startMonth.plusMonths(month);
+
+            findAssetByDateAndBook(bookLine.getBook(), currentMonth).ifPresent(asset -> {
+                asset.delete(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW));
             });
-            targetDate = targetDate.plusMonths(1);
         }
-
-        assetRepository.saveAll(assets);
     }
 
     private Optional<Asset> findAssetByDateAndBook(final Book book, final LocalDate targetDate) {
         return assetRepository.findAssetExclusivelyByDateAndBookAndStatus(targetDate, book, ACTIVE);
     }
-
 }
+
