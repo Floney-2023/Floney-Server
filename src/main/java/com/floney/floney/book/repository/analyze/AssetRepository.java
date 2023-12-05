@@ -4,13 +4,19 @@ import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.common.constant.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 
+import javax.persistence.LockModeType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface AssetRepository extends JpaRepository<Asset, Long>, AssetCustomRepository {
+
     Optional<Asset> findAssetByDateAndBookAndStatus(LocalDate targetDate, Book book, Status status);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Asset> findAssetExclusivelyByDateAndBookAndStatus(LocalDate targetDate, Book book, Status status);
 
     List<Asset> findByDateBetweenAndBookAndStatus(LocalDate startDate, LocalDate endDate, Book book, Status status);
 }

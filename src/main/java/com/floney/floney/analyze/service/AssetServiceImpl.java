@@ -12,6 +12,7 @@ import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -64,10 +65,10 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAssetBy(BookLineRequest request, Book book) {
-        //이체 내역일 경우 자산 포함 X
-        if (Objects.equals(request.getFlow(), BANK.getKind())) {
+        // 이체 내역일 경우 자산 포함 X
+        if (BANK.getKind().equals(request.getFlow())) {
             return;
         }
 
@@ -76,7 +77,7 @@ public class AssetServiceImpl implements AssetService {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBookAndStatus(targetDate, book, ACTIVE);
+            final Optional<Asset> savedAsset = findAssetByDateAndBook(book, targetDate);
 
             if (savedAsset.isEmpty()) {
                 Asset newAsset = Asset.of(request, book, targetDate);
@@ -94,7 +95,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteAsset(Long bookLineId) {
         BookLine savedBookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
 
@@ -103,7 +104,7 @@ public class AssetServiceImpl implements AssetService {
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBookAndStatus(targetDate, savedBookLine.getBook(), ACTIVE);
+            Optional<Asset> savedAsset = findAssetByDateAndBook(savedBookLine.getBook(), targetDate);
             savedAsset.ifPresent(asset -> {
                 asset.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
                 assets.add(asset);
@@ -112,6 +113,10 @@ public class AssetServiceImpl implements AssetService {
         }
 
         assetRepository.saveAll(assets);
+    }
+
+    private Optional<Asset> findAssetByDateAndBook(final Book book, final LocalDate targetDate) {
+        return assetRepository.findAssetExclusivelyByDateAndBookAndStatus(targetDate, book, ACTIVE);
     }
 
 }
