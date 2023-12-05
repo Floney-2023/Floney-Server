@@ -1,10 +1,10 @@
 package com.floney.floney.fixture;
 
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.request.BookLineRequest;
 
 import java.time.LocalDate;
 
@@ -12,65 +12,59 @@ import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
 
 public class BookLineFixture {
 
-    public static final double OUTCOME = 1000.0;
-    public static final double INCOME = 1000.0;
+    public static final String OUTCOME = "지출";
+    public static final String INCOME = "수입";
 
     public static LocalDate LOCAL_DATE = LocalDate.of(2023, 10, 22);
 
-    public static BookLineRequest createOutcomeRequest() {
+    public static BookLineRequest outcomeRequest(final double money) {
         return BookLineRequest.builder()
                 .bookKey(BOOK_KEY)
-                .flow("지출")
+                .flow(OUTCOME)
                 .asset("은행")
                 .line("식비")
-                .money(OUTCOME)
+                .money(money)
                 .build();
     }
 
-    public static BookLineRequest createIncomeRequest() {
+    public static BookLineRequest incomeRequest(final double money) {
         return BookLineRequest.builder()
                 .bookKey(BOOK_KEY)
-                .flow("수입")
+                .flow(INCOME)
                 .asset("은행")
                 .line("월급")
-                .money(OUTCOME)
+                .money(money)
                 .build();
     }
 
     public static BookLine createBookLine(Book book, double money) {
-        BookLine bookline = BookLine.builder()
+        return BookLine.builder()
                 .book(book)
                 .money(money)
                 .lineDate(LOCAL_DATE)
                 .exceptStatus(Boolean.FALSE)
                 .build();
-
-        return bookline;
     }
 
     public static BookLine createBookLineWithWriter(Book book, double money, BookUser writer) {
-        BookLine bookline = BookLine.builder()
+        return BookLine.builder()
                 .book(book)
                 .money(money)
                 .lineDate(LOCAL_DATE)
                 .writer(writer)
                 .exceptStatus(Boolean.FALSE)
                 .build();
-
-        return bookline;
     }
 
 
     public static BookLine createBookLineWith(BookUser user, Book book, double money) {
-        BookLine bookline = BookLine.builder()
+        return BookLine.builder()
                 .book(book)
                 .writer(user)
                 .money(money)
                 .lineDate(LOCAL_DATE)
                 .exceptStatus(Boolean.FALSE)
                 .build();
-
-        return bookline;
     }
 
     public static BookLineExpense createBookLineExpense() {
