@@ -100,10 +100,10 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse changeLine(BookLineRequest request) {
-        BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
+    public BookLineResponse changeLine(final BookLineRequest request) {
+        final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
-        Book book = findBook(request.getBookKey());
+        final Book book = findBook(request.getBookKey());
 
         // 이월 여부에 따른 이월 데이터 갱신
         if (book.getCarryOverStatus()) {
@@ -114,10 +114,13 @@ public class BookLineServiceImpl implements BookLineService {
         assetService.deleteAsset(bookLine.getId());
         assetService.createAssetBy(request, book);
 
+        // 카테고리 데이터 갱신
         categoryFactory.changeCategories(bookLine, request);
+
+        // 가계부 내역 갱신
         bookLine.update(request);
-        BookLine savedBookLine = bookLineRepository.save(bookLine);
-        return BookLineResponse.changeResponse(savedBookLine, bookLine.getWriter());
+
+        return BookLineResponse.of(bookLine);
     }
 
     @Override

@@ -51,17 +51,4 @@ public class BookLineResponse {
                 .nickname(bookLine.getWriter())
                 .build();
     }
-
-    public static BookLineResponse changeResponse(BookLine bookLine, String writer) {
-        return BookLineResponse.builder()
-                .money(bookLine.getMoney())
-                .flow(bookLine.getTargetCategory(FLOW))
-                .asset(bookLine.getTargetCategory(ASSET))
-                .line(bookLine.getTargetCategory(FLOW_LINE))
-                .lineDate(bookLine.getLineDate())
-                .description(bookLine.getDescription())
-                .except(bookLine.getExceptStatus())
-                .nickname(writer)
-                .build();
-    }
 }
