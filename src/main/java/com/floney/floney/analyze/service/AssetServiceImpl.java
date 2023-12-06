@@ -88,7 +88,7 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteAsset(final Long bookLineId) {
-        final BookLine bookLine = bookLineRepository.findById(bookLineId)
+        final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
                 .orElseThrow(NotFoundBookLineException::new);
 
         final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
