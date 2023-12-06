@@ -61,7 +61,7 @@ public class BookLineServiceImpl implements BookLineService {
         categoryFactory.saveCategories(savedLine, request);
 
         BookLine newBookLine = bookLineRepository.save(savedLine);
-        return BookLineResponse.of(newBookLine);
+        return BookLineResponse.from(newBookLine);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class BookLineServiceImpl implements BookLineService {
         // 가계부 내역 갱신
         bookLine.update(request);
 
-        return BookLineResponse.of(bookLine);
+        return BookLineResponse.from(bookLine);
     }
 
     @Override

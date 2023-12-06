@@ -39,7 +39,7 @@ public class BookLineResponse {
         this.nickname = nickname;
     }
 
-    public static BookLineResponse of(BookLine bookLine) {
+    public static BookLineResponse from(final BookLine bookLine) {
         return BookLineResponse.builder()
                 .money(bookLine.getMoney())
                 .flow(bookLine.getTargetCategory(FLOW))
