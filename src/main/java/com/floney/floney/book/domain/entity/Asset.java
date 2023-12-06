@@ -2,12 +2,8 @@ package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.request.BookLineRequest;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -15,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
@@ -24,22 +19,17 @@ import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 @Getter
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Asset extends BaseEntity {
+
     private double money;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
     private LocalDate date;
-
-    @Builder
-    private Asset(Long id, LocalDateTime createdAt, LocalDateTime updatedAt, Status status, double money, Book book, LocalDate date) {
-        super(id, createdAt, updatedAt, status);
-        this.money = money;
-        this.book = book;
-        this.date = date;
-    }
 
     public static Asset of(BookLineRequest request, Book book, LocalDate date) {
         if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
