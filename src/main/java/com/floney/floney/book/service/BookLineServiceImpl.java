@@ -55,7 +55,7 @@ public class BookLineServiceImpl implements BookLineService {
         }
 
         // 자산 갱신
-        assetService.createAssetBy(request, book);
+        assetService.createAsset(request, book);
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         categoryFactory.saveCategories(savedLine, request);
@@ -112,7 +112,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         // 자산 데이터 갱신
         assetService.deleteAsset(bookLine.getId());
-        assetService.createAssetBy(request, book);
+        assetService.createAsset(request, book);
 
         // 카테고리 데이터 갱신
         categoryFactory.changeCategories(bookLine, request);

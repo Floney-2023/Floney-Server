@@ -63,7 +63,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createAssetBy(final BookLineRequest request, final Book book) {
+    public void createAsset(final BookLineRequest request, final Book book) {
         // 이체 내역일 경우 자산 포함 X
         if (BANK.getKind().equals(request.getFlow())) {
             return;
