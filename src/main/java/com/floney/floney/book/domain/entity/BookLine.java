@@ -33,7 +33,7 @@ public class BookLine extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
+    private final Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
     @Column(nullable = false)
     private Double money;
