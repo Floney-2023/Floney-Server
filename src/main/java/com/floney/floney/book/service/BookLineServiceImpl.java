@@ -1,7 +1,10 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.AssetServiceImpl;
+import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverServiceImpl;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.DayLines;
@@ -11,9 +14,6 @@ import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -42,7 +42,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
     private final CarryOverServiceImpl carryOverFactory;
-    private final AssetServiceImpl assetFactory;
+    private final AssetService assetService;
 
     @Override
     @Transactional
@@ -55,7 +55,7 @@ public class BookLineServiceImpl implements BookLineService {
         }
 
         // 자산 갱신
-        assetFactory.createAssetBy(request, book);
+        assetService.createAssetBy(request, book);
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         categoryFactory.saveCategories(savedLine, request);
@@ -105,13 +105,15 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(NotFoundBookLineException::new);
         Book book = findBook(request.getBookKey());
 
-        // 이월설정이 ON 일시, 이월 설정 재갱신
+        // 이월 여부에 따른 이월 데이터 갱신
         if (book.getCarryOverStatus()) {
             carryOverFactory.updateCarryOver(request, bookLine);
         }
 
-        // 자산 내역 갱신
-        assetFactory.updateAsset(request, bookLine);
+        // 자산 데이터 갱신
+        assetService.deleteAsset(bookLine.getId());
+        assetService.createAssetBy(request, book);
+
         categoryFactory.changeCategories(bookLine, request);
         bookLine.update(request);
         BookLine savedBookLine = bookLineRepository.save(bookLine);

@@ -61,14 +61,6 @@ public class AssetServiceImpl implements AssetService {
         return initAssets;
     }
 
-    // 가계부 내역 수정시 asset 업데이트
-    @Override
-    @Transactional
-    public void updateAsset(BookLineRequest request, BookLine savedBookLine) {
-        deleteAsset(savedBookLine.getId());
-        createAssetBy(request, savedBookLine.getBook());
-    }
-
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAssetBy(final BookLineRequest request, final Book book) {
@@ -104,9 +96,9 @@ public class AssetServiceImpl implements AssetService {
         for (int month = 0; month < SAVED_MONTHS; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
 
-            findAssetByDateAndBook(bookLine.getBook(), currentMonth).ifPresent(asset -> {
-                asset.delete(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW));
-            });
+            findAssetByDateAndBook(bookLine.getBook(), currentMonth).ifPresent(asset ->
+                    asset.delete(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW))
+            );
         }
     }
 
