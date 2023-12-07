@@ -69,7 +69,7 @@ public class BookLineFixture {
 
     public static BookLineExpense createBookLineExpense() {
         return BookLineExpense.builder()
-                .assetType("수입")
+                .assetType(INCOME)
                 .date(LOCAL_DATE)
                 .money(1000f)
                 .build();
