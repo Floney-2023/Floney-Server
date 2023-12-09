@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/check")
-public class CheckController {
+@RequestMapping("/health-check")
+public class HealthCheckController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public void checkServer() {
+    public void check() {
     }
 }

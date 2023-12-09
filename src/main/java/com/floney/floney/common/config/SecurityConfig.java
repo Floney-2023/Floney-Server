@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 
                 .antMatchers(
-                        "/check",
+                        "/health-check",
                         "/users",
                         "/users/password/find",
                         "/users/login",
