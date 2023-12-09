@@ -38,6 +38,6 @@ out/
 
 /src/main/resources/application.yaml
 /src/main/resources/google-credential.json
-/logs
+/log
 /was-logs
 
