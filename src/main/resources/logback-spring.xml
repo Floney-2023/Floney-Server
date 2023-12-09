@@ -14,7 +14,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="develop,local">
+    <springProfile name="develop,local,production">
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
