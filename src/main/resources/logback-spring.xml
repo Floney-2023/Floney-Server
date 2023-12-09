@@ -53,6 +53,10 @@
 
         <logger name="org.hibernate.SQL" additivity="false">
             <level value = "INFO" />
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-INFO"/>
+            <appender-ref ref="FILE-WARN"/>
+            <appender-ref ref="FILE-ERROR"/>
         </logger>
     </springProfile>
 </configuration>
