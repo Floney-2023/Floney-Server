@@ -212,18 +212,19 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request) {
         DatesDuration datesRequest = DateFactory.getDateDuration(request.getDate());
 
+        // 지출, 수입
         Category targetRoot = jpaQueryFactory.selectFrom(category)
             .where(category.name.eq(request.getRoot()),
                 category.instanceOf(RootCategory.class))
             .fetchOne();
 
-        List<String> children = jpaQueryFactory.select(category.name)
+        List<Category> children = jpaQueryFactory.select(category)
             .from(category)
             .where(category.parent.eq(targetRoot),
                 category.instanceOf(DefaultCategory.class))
             .fetch();
 
-        children.addAll(jpaQueryFactory.select(bookCategory.name)
+        children.addAll(jpaQueryFactory.select(bookCategory)
             .from(bookCategory)
             .innerJoin(bookCategory.parent, category)
             .where(category.eq(targetRoot))
@@ -237,7 +238,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .where(book.bookKey.eq(request.getBookKey()))
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(bookLineCategory.name.in(children), bookLine.status.eq(ACTIVE), bookLineCategory.status.eq(ACTIVE))
+            .where(bookLineCategory.category.in(children), bookLine.status.eq(ACTIVE), bookLineCategory.status.eq(ACTIVE))
             .where(bookLine.lineDate.between(datesRequest.getStartDate(), datesRequest.getEndDate()))
             .groupBy(bookLineCategory.name)
             .fetch();
