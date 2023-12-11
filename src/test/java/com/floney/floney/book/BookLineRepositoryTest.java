@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
@@ -254,6 +255,53 @@ public class BookLineRepositoryTest {
 
         BookLine savedBookLine = bookLineRepository.save(bookLine);
         assertThat(savedBookLine.getBookLineCategories().size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("카테고리 별 분석을 조회하면, 카테고리의 이름과 해당 월의 내역 합계가 나온다 - 성공")
+    void analyzeByCategory() {
+        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000));
+
+        // 1. 카테고리 생성
+        DefaultCategory category = DefaultCategory.builder()
+            .name("급여")
+            .build();
+        DefaultCategory savedCategory = categoryRepository.save(category);
+
+        DefaultCategory category2 = DefaultCategory.builder()
+            .name("용돈")
+            .build();
+        DefaultCategory savedCategory2 = categoryRepository.save(category2);
+
+        // 2. 가계부 내역과 급여 카테고리 매핑
+        BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory(savedCategory, bookLine));
+        bookLine.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory);
+       bookLineRepository.save(bookLine);
+
+       // 3. 가계부 내역2와 급여 카테고리 매핑
+        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000));
+        BookLineCategory bookLineFlowLineCategory2 = bookLineCategoryRepository.save(createLineCategory(savedCategory2, bookLine));
+        bookLine2.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory2);
+        bookLineRepository.save(bookLine2);
+
+        // 4. 가계부 내역3과 용돈 카테고리 매핑
+        BookLine bookLine3 = bookLineRepository.save(createBookLine(book, 1000));
+        BookLineCategory bookLineFlowLineCategory3 = bookLineCategoryRepository.save(createLineCategory(savedCategory, bookLine));
+        bookLine2.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory3);
+        bookLineRepository.save(bookLine3);
+
+        DatesDuration datesDuration = DatesDuration.builder()
+                 .startDate(LOCAL_DATE)
+                     .endDate(LOCAL_DATE.plusDays(1))
+                         .build();
+
+        List<AnalyzeResponseByCategory> responses = bookLineRepository.analyzeByCategory(Arrays.asList(category2,category),datesDuration,book.getBookKey());
+
+        for (AnalyzeResponseByCategory response : responses) {
+            assertThat(response.getCategory())
+                .isIn("급여", "용돈");
+            assertThat((response.getMoney())).isIn(2000.0, 1000.0);
+        }
     }
 }
 
