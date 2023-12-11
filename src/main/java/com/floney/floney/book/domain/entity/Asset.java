@@ -1,6 +1,5 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
@@ -13,6 +12,7 @@ import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 
 @Entity
@@ -49,23 +49,29 @@ public class Asset extends BaseEntity {
         }
     }
 
-    public void add(double updateMoney, String flow) {
-        if (Objects.equals(flow, AssetType.INCOME.getKind())) {
-            money += updateMoney;
-        } else {
-            money -= updateMoney;
+    public void add(final double money, final String flow) {
+        if (INCOME.getKind().equals(flow)) {
+            this.money += money;
+            return;
         }
+        if (OUTCOME.getKind().equals(flow)) {
+            this.money -= money;
+            return;
+        }
+        // TODO: Exception 리팩토링 시 수정
+        throw new RuntimeException("이체는 자산에 추가될 수 없습니다");
     }
 
-    public void subtract(double updateMoney, BookLineCategory flow) {
-        // 기존 내역이 수입이였다면, 현 자산에서 감소
-        if (Objects.equals(flow.getName(), AssetType.INCOME.getKind())) {
-            money -= updateMoney;
+    public void subtract(final double money, final String flow) {
+        if (INCOME.getKind().equals(flow)) {
+            this.money -= money;
+            return;
         }
-
-        // 기존 내역이 지출이였다면, 현 자산에 합
-        else if (Objects.equals(flow.getName(), AssetType.OUTCOME.getKind())) {
-            money += updateMoney;
+        if (OUTCOME.getKind().equals(flow)) {
+            this.money += money;
+            return;
         }
+        // TODO: Exception 리팩토링 시 수정
+        throw new RuntimeException("이체는 자산에서 감소될 수 없습니다");
     }
 }

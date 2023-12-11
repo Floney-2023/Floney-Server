@@ -97,7 +97,7 @@ public class AssetServiceImpl implements AssetService {
             final LocalDate currentMonth = startMonth.plusMonths(month);
 
             findAssetByDateAndBook(bookLine.getBook(), currentMonth).ifPresent(asset ->
-                    asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW))
+                    asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW).getName())
             );
         }
     }
