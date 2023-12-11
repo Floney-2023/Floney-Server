@@ -1,77 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <configuration>
-    <property name="DIR" value="./logs"/>
+    <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
+    <property name="LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %green([%thread]) %highlight(%-5level) %logger{40} - %msg%n"/>
+    <property name="LOG_FILE_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{40} - %msg%n"/>
 
-    <!--콘솔에 출력-->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative]%-5level - %msg%n</Pattern>
-        </layout>
-    </appender>
+    <springProfile name="local">
+        <include resource="console-appender.xml"/>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>./logs/%d{yyyy-MM-dd}.%i.txt.zip</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <!-- or whenever the file size reaches 100MB -->
-                <maxFileSize>100MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-        <encoder>
-            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative]%-5level - %msg%n</Pattern>
-        </encoder>
-    </appender>
-
-    <!-- slack error 전송 appender -->
-    <springProfile name = "develop,production">
-    <springProperty name="SLACK_WEBHOOK_URI" source="spring.logging.slack.webhook-url"/>
-    <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
-        <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg</pattern>
-        </layout>
-        <username>FLONEY_SERVER_ERROR</username>
-        <colorCoding>true</colorCoding>
-    </appender>
-
-    <appender name="ASYNC_SLACK" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="SLACK"/>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-    </appender>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
     </springProfile>
 
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-    </root>
+    <springProfile name="develop,local,production">
+        <include resource="file-info-appender.xml"/>
+        <include resource="file-warn-appender.xml"/>
+        <include resource="file-error-appender.xml"/>
+        <include resource="slack-error-appender.xml"/>
 
+        <root level="INFO">
+            <appender-ref ref="FILE-INFO"/>
+            <appender-ref ref="FILE-WARN"/>
+            <appender-ref ref="FILE-ERROR"/>
+        </root>
 
-    <logger name="LogByAop" additivity="false">
-        <level value = "DEBUG" />
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
+        <logger name="LogByAop" additivity="false">
+            <level value = "DEBUG" />
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-INFO"/>
+            <appender-ref ref="FILE-WARN"/>
+            <appender-ref ref="FILE-ERROR"/>
+        </logger>
 
-    <logger name="BookController" additivity="false">
-        <level value = "DEBUG" />
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE" />
-    </logger>
+        <logger name="ErrorControllerAdvice" additivity="false">
+            <level value = "DEBUG" />
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE-ERROR"/>
+            <springProfile name = "develop,production">
+                <appender-ref ref="ASYNC_SLACK"/>
+            </springProfile>
+        </logger>
 
-    <logger name="ErrorControllerAdvice" additivity="false">
-        <level value = "DEBUG" />
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE" />
-        <springProfile name = "develop,production">
-            <appender-ref ref="ASYNC_SLACK"/>
-        </springProfile>
-    </logger>
-
-    <logger name="org.hibernate.SQL" additivity="false">
-        <level value = "INFO" />
-        <appender-ref ref="FILE" />
-    </logger>
-
+        <logger name="org.hibernate.SQL" additivity="false">
+            <level value = "DEBUG"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
 </configuration>
