@@ -6,7 +6,7 @@
               value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %green([%thread]) %highlight(%-5level) %logger{40} - %msg%n"/>
     <property name="LOG_FILE_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{40} - %msg%n"/>
 
-    <springProfile name="develop,local">
+    <springProfile name="local">
         <include resource="console-appender.xml"/>
 
         <root level="INFO">
@@ -34,14 +34,6 @@
             <appender-ref ref="FILE-ERROR"/>
         </logger>
 
-        <logger name="BookController" additivity="false">
-            <level value = "DEBUG" />
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="FILE-INFO"/>
-            <appender-ref ref="FILE-WARN"/>
-            <appender-ref ref="FILE-ERROR"/>
-        </logger>
-
         <logger name="ErrorControllerAdvice" additivity="false">
             <level value = "DEBUG" />
             <appender-ref ref="CONSOLE"/>
@@ -52,11 +44,8 @@
         </logger>
 
         <logger name="org.hibernate.SQL" additivity="false">
-            <level value = "INFO" />
+            <level value = "DEBUG"/>
             <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="FILE-INFO"/>
-            <appender-ref ref="FILE-WARN"/>
-            <appender-ref ref="FILE-ERROR"/>
         </logger>
     </springProfile>
 </configuration>
