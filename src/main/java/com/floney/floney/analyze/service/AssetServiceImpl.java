@@ -96,9 +96,9 @@ public class AssetServiceImpl implements AssetService {
         for (int month = 0; month < SAVED_MONTHS; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
 
-            findAssetByDateAndBook(bookLine.getBook(), currentMonth).ifPresent(asset ->
-                    asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW).getName())
-            );
+            final Asset asset = findAssetByDateAndBook(bookLine.getBook(), currentMonth)
+                    .orElseThrow(() -> new RuntimeException("자산 데이터가 존재하지 않습니다"));
+            asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW).getName());
         }
     }
 
