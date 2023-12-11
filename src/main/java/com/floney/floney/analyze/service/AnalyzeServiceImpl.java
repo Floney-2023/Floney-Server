@@ -8,6 +8,8 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.domain.entity.Book;
@@ -15,9 +17,11 @@ import com.floney.floney.book.domain.entity.Budget;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
+import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +38,23 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final BookLineRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
     private final AssetServiceImpl assetFactory;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
     public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
-        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(request);
+
+        // 분석 종류 - 지출 or 수입
+        Category rootCategory = categoryRepository.findParentCategory(request.getRoot())
+            .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
+        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        String bookKey = request.getBookKey();
+
+        // 부모가 지출 or 수입인 자식 카테고리 조회
+        List<Category> childCategoriesByRoot = getAllChildCategoryByRoot(rootCategory,bookKey);
+
+        // 카테고리 별, 가계부 내역 합계 조회
+        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(childCategoriesByRoot,duration,bookKey);
 
         double totalMoney = calculateTotalMoney(analyzeResultByCategory);
         double difference = calculateDifference(request, totalMoney);
@@ -81,6 +97,13 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private double calculateDifference(AnalyzeByCategoryRequest request, double totalMoney) {
         double beforeMonthTotal = bookLineRepository.totalExpenseForBeforeMonth(request);
         return totalMoney - beforeMonthTotal;
+    }
+
+    private List<Category> getAllChildCategoryByRoot(Category rootCategory,String bookKey){
+        List<Category> childCategoriesByRoot = categoryRepository.findAllDefaultChildCategoryByRoot(rootCategory);
+        List<BookCategory> customCategories = categoryRepository.findAllCustomChildCategoryByRootAndRoot(rootCategory,bookKey);
+        childCategoriesByRoot.addAll(customCategories);
+        return childCategoriesByRoot;
     }
 
     private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {

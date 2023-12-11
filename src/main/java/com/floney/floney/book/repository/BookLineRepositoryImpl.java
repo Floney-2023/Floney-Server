@@ -28,7 +28,6 @@ import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
 import static com.floney.floney.book.domain.entity.QCategory.category;
-import static com.floney.floney.book.domain.entity.category.QBookCategory.bookCategory;
 import static com.floney.floney.book.dto.constant.AssetType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
@@ -209,37 +208,17 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<AnalyzeResponseByCategory> analyzeByCategory(AnalyzeByCategoryRequest request) {
-        DatesDuration datesRequest = DateFactory.getDateDuration(request.getDate());
-
-        // 지출, 수입
-        Category targetRoot = jpaQueryFactory.selectFrom(category)
-            .where(category.name.eq(request.getRoot()),
-                category.instanceOf(RootCategory.class))
-            .fetchOne();
-
-        List<Category> children = jpaQueryFactory.select(category)
-            .from(category)
-            .where(category.parent.eq(targetRoot),
-                category.instanceOf(DefaultCategory.class))
-            .fetch();
-
-        children.addAll(jpaQueryFactory.select(bookCategory)
-            .from(bookCategory)
-            .innerJoin(bookCategory.parent, category)
-            .where(category.eq(targetRoot))
-            .innerJoin(bookCategory.book, book)
-            .where(book.bookKey.eq(request.getBookKey()))
-            .fetch());
-
+    public List<AnalyzeResponseByCategory> analyzeByCategory(List<Category> childCategories, DatesDuration duration, String bookKey) {
         return jpaQueryFactory.select(
                 new QAnalyzeResponseByCategory(bookLineCategory.name, bookLine.money.sum()))
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .where(book.bookKey.eq(request.getBookKey()))
+            .where(book.bookKey.eq(bookKey))
             .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(bookLineCategory.category.in(children), bookLine.status.eq(ACTIVE), bookLineCategory.status.eq(ACTIVE))
-            .where(bookLine.lineDate.between(datesRequest.getStartDate(), datesRequest.getEndDate()))
+            .where(bookLineCategory.category.in(childCategories),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE))
+            .where(bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()))
             .groupBy(bookLineCategory.name)
             .fetch();
     }
