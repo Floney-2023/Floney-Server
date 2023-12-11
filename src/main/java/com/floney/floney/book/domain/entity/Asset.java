@@ -34,22 +34,22 @@ public class Asset extends BaseEntity {
     public static Asset of(BookLineRequest request, Book book, LocalDate date) {
         if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
             return Asset
-                .builder()
-                .money(-1 * request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
+                    .builder()
+                    .money(-1 * request.getMoney())
+                    .book(book)
+                    .date(date)
+                    .build();
         } else {
             return Asset
-                .builder()
-                .money(request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
+                    .builder()
+                    .money(request.getMoney())
+                    .book(book)
+                    .date(date)
+                    .build();
         }
     }
 
-    public void update(double updateMoney, String flow) {
+    public void add(double updateMoney, String flow) {
         if (Objects.equals(flow, AssetType.INCOME.getKind())) {
             money += updateMoney;
         } else {
@@ -57,7 +57,7 @@ public class Asset extends BaseEntity {
         }
     }
 
-    public void delete(double updateMoney, BookLineCategory flow) {
+    public void subtract(double updateMoney, BookLineCategory flow) {
         // 기존 내역이 수입이였다면, 현 자산에서 감소
         if (Objects.equals(flow.getName(), AssetType.INCOME.getKind())) {
             money -= updateMoney;

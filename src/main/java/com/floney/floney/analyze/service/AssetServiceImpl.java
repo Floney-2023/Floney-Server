@@ -80,7 +80,7 @@ public class AssetServiceImpl implements AssetService {
                 assetRepository.save(newAsset);
             } else {
                 final Asset asset = savedAsset.get();
-                asset.update(request.getMoney(), request.getFlow());
+                asset.add(request.getMoney(), request.getFlow());
             }
         }
     }
@@ -97,7 +97,7 @@ public class AssetServiceImpl implements AssetService {
             final LocalDate currentMonth = startMonth.plusMonths(month);
 
             findAssetByDateAndBook(bookLine.getBook(), currentMonth).ifPresent(asset ->
-                    asset.delete(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW))
+                    asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW))
             );
         }
     }

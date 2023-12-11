@@ -54,7 +54,6 @@ public class BookLineServiceImpl implements BookLineService {
             carryOverFactory.createCarryOverByAddBookLine(request, book);
         }
 
-        // 자산 갱신
         assetService.addAssetOf(request, book);
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
