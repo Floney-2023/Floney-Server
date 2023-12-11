@@ -55,7 +55,7 @@ public class BookLineServiceImpl implements BookLineService {
         }
 
         // 자산 갱신
-        assetService.createAsset(request, book);
+        assetService.addAssetOf(request, book);
         BookLine requestLine = request.to(findBookUser(currentUser, request), book);
         BookLine savedLine = bookLineRepository.save(requestLine);
         categoryFactory.saveCategories(savedLine, request);
@@ -70,10 +70,10 @@ public class BookLineServiceImpl implements BookLineService {
         DatesDuration dates = DateFactory.getDateDuration(date);
 
         return MonthLinesResponse.of(
-            date,
-            daysExpense(bookKey, dates),
-            totalExpense(bookKey, dates),
-            carryOverFactory.getCarryOverInfo(book, date)
+                date,
+                daysExpense(bookKey, dates),
+                totalExpense(bookKey, dates),
+                carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
@@ -85,10 +85,10 @@ public class BookLineServiceImpl implements BookLineService {
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
         return TotalDayLinesResponse.of(
-            dayLines,
-            totalExpenses,
-            book.getSeeProfile(),
-            carryOverFactory.getCarryOverInfo(book, date)
+                dayLines,
+                totalExpenses,
+                book.getSeeProfile(),
+                carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
@@ -102,7 +102,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public BookLineResponse changeLine(final BookLineRequest request) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
-            .orElseThrow(NotFoundBookLineException::new);
+                .orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
 
         // 이월 여부에 따른 이월 데이터 갱신
@@ -111,8 +111,8 @@ public class BookLineServiceImpl implements BookLineService {
         }
 
         // 자산 데이터 갱신
-        assetService.deleteAsset(bookLine.getId());
-        assetService.createAsset(request, book);
+        assetService.subtractAssetOf(bookLine.getId());
+        assetService.addAssetOf(request, book);
 
         // 카테고리 데이터 갱신
         categoryFactory.changeCategories(bookLine, request);
@@ -127,18 +127,18 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public void deleteLine(final Long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
-            .orElseThrow(NotFoundBookLineException::new);
+                .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
     }
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
-            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
+                .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {

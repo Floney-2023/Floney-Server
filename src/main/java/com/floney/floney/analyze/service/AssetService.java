@@ -11,7 +11,7 @@ public interface AssetService {
 
     Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date);
 
-    void createAsset(BookLineRequest request, Book book);
+    void addAssetOf(BookLineRequest request, Book book);
 
-    void deleteAsset(Long bookLineId);
+    void subtractAssetOf(Long bookLineId);
 }
