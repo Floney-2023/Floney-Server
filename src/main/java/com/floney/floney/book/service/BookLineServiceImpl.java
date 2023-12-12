@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
@@ -102,7 +103,8 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
                 .orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
-
+        // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
+        validateBookLineIncludedInBook(bookLine.getBook(), book);
 
         if (bookLine.includedInAsset()) {
             assetService.subtractAssetOf(bookLine.getId());
@@ -129,6 +131,12 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
                 .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
+    }
+
+    private void validateBookLineIncludedInBook(final Book bookOfBookLine, final Book book) {
+        if (!Objects.equals(bookOfBookLine.getId(), book.getId())) {
+            throw new RuntimeException("가계부 내역이 해당 가계부에 속하지 않습니다");
+        }
     }
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
