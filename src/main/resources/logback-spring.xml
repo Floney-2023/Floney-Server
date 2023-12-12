@@ -19,6 +19,7 @@
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
         <include resource="slack-error-appender.xml"/>
+        <include resource="console-appender.xml"/>
 
         <root level="INFO">
             <appender-ref ref="FILE-INFO"/>
