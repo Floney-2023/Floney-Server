@@ -65,6 +65,7 @@ public class AssetServiceImpl implements AssetService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addAssetOf(final BookLineRequest request, final Book book) {
         // 이체 내역일 경우 자산 포함 X
+        // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
         if (BANK.getKind().equals(request.getFlow())) {
             return;
         }
@@ -90,6 +91,7 @@ public class AssetServiceImpl implements AssetService {
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
                 .orElseThrow(NotFoundBookLineException::new);
+        validateAlreadyIncludedInAsset(bookLine);
 
         final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
 
@@ -99,6 +101,12 @@ public class AssetServiceImpl implements AssetService {
             final Asset asset = findAssetByDateAndBook(bookLine.getBook(), currentMonth)
                     .orElseThrow(() -> new RuntimeException("자산 데이터가 존재하지 않습니다"));
             asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW).getName());
+        }
+    }
+
+    private void validateAlreadyIncludedInAsset(final BookLine bookLine) {
+        if (!bookLine.includedInAsset()) {
+            throw new RuntimeException("자산에 포함되지 않은 가계부 내역입니다");
         }
     }
 
