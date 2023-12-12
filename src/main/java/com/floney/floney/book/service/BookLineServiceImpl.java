@@ -46,21 +46,20 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse createBookLine(String currentUser, BookLineRequest request) {
-        Book book = findBook(request.getBookKey());
+    public BookLineResponse createBookLine(final String email, final BookLineRequest request) {
+        final Book book = findBook(request.getBookKey());
+        final BookLine bookLine = request.to(findBookUser(email, request), book);
+        bookLineRepository.save(bookLine);
 
-        // 이월 ON 일시, 이월 내역 갱신
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOverByAddBookLine(request, book);
         }
+        categoryFactory.saveCategories(bookLine, request);
+        if (bookLine.includedInAsset()) {
+            assetService.addAssetOf(request, book);
+        }
 
-        assetService.addAssetOf(request, book);
-        BookLine requestLine = request.to(findBookUser(currentUser, request), book);
-        BookLine savedLine = bookLineRepository.save(requestLine);
-        categoryFactory.saveCategories(savedLine, request);
-
-        BookLine newBookLine = bookLineRepository.save(savedLine);
-        return BookLineResponse.from(newBookLine);
+        return BookLineResponse.from(bookLine);
     }
 
     @Override
@@ -104,20 +103,22 @@ public class BookLineServiceImpl implements BookLineService {
                 .orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
 
-        // 이월 여부에 따른 이월 데이터 갱신
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.updateCarryOver(request, bookLine);
+
+        if (bookLine.includedInAsset()) {
+            assetService.subtractAssetOf(bookLine.getId());
         }
-
-        // 자산 데이터 갱신
-        assetService.subtractAssetOf(bookLine.getId());
-        assetService.addAssetOf(request, book);
-
-        // 카테고리 데이터 갱신
-        categoryFactory.changeCategories(bookLine, request);
 
         // 가계부 내역 갱신
         bookLine.update(request);
+
+        // 가계부 내역 갱신에 따른 관련 데이터들 갱신
+        if (book.getCarryOverStatus()) {
+            carryOverFactory.updateCarryOver(request, bookLine);
+        }
+        if (bookLine.includedInAsset()) {
+            assetService.addAssetOf(request, book);
+        }
+        categoryFactory.changeCategories(bookLine, request);
 
         return BookLineResponse.from(bookLine);
     }
