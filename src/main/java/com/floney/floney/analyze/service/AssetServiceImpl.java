@@ -3,6 +3,7 @@ package com.floney.floney.analyze.service;
 import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
@@ -12,14 +13,12 @@ import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
@@ -62,7 +61,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void addAssetOf(final BookLineRequest request, final Book book) {
         // 이체 내역일 경우 자산 포함 X
         // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
@@ -74,20 +73,12 @@ public class AssetServiceImpl implements AssetService {
 
         for (int month = 0; month < SAVED_MONTHS; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
-
-            final Optional<Asset> savedAsset = findAssetByDateAndBook(book, currentMonth);
-            if (savedAsset.isEmpty()) {
-                final Asset newAsset = Asset.of(request, book, currentMonth);
-                assetRepository.save(newAsset);
-            } else {
-                final Asset asset = savedAsset.get();
-                asset.add(request.getMoney(), request.getFlow());
-            }
+            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, request.getMoney());
         }
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
                 .orElseThrow(NotFoundBookLineException::new);
@@ -97,21 +88,21 @@ public class AssetServiceImpl implements AssetService {
 
         for (int month = 0; month < SAVED_MONTHS; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
-
-            final Asset asset = findAssetByDateAndBook(bookLine.getBook(), currentMonth)
-                    .orElseThrow(() -> new RuntimeException("자산 데이터가 존재하지 않습니다"));
-            asset.subtract(bookLine.getMoney(), bookLine.getBookLineCategories().get(FLOW).getName());
+            assetRepository.updateMoneyByDateAndBook(getMoneyToSubtract(bookLine), currentMonth, bookLine.getBook());
         }
+    }
+
+    private double getMoneyToSubtract(final BookLine bookLine) {
+        if (bookLine.getTargetCategory(FLOW).equals(AssetType.OUTCOME.getKind())) {
+            return bookLine.getMoney();
+        }
+        return (-1) * bookLine.getMoney();
     }
 
     private void validateAlreadyIncludedInAsset(final BookLine bookLine) {
         if (!bookLine.includedInAsset()) {
             throw new RuntimeException("자산에 포함되지 않은 가계부 내역입니다");
         }
-    }
-
-    private Optional<Asset> findAssetByDateAndBook(final Book book, final LocalDate targetDate) {
-        return assetRepository.findAssetExclusivelyByDateAndBookAndStatus(targetDate, book, ACTIVE);
     }
 }
 

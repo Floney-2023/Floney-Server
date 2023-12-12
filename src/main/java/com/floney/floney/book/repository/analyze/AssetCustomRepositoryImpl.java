@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static com.floney.floney.book.domain.entity.QAsset.asset;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Repository
@@ -20,11 +22,25 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
     @Override
     @Transactional
-    public void inActiveAllByBook(Book book){
+    public void inActiveAllByBook(Book book) {
         jpaQueryFactory.update(asset)
-            .set(asset.status,INACTIVE)
-            .set(asset.updatedAt, LocalDateTime.now())
-            .where(asset.book.eq(book))
-            .execute();
+                .set(asset.status, INACTIVE)
+                .set(asset.updatedAt, LocalDateTime.now())
+                .where(asset.book.eq(book))
+                .execute();
+    }
+
+    @Override
+    @Transactional
+    public void updateMoneyByDateAndBook(final double money, final LocalDate date, final Book book) {
+        jpaQueryFactory.update(asset)
+                .set(asset.money, asset.money.subtract(money))
+                .set(asset.updatedAt, LocalDateTime.now())
+                .where(
+                        asset.book.eq(book),
+                        asset.date.eq(date),
+                        asset.status.eq(ACTIVE)
+                )
+                .execute();
     }
 }
