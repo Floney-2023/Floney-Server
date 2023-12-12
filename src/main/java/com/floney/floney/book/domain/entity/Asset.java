@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.util.Objects;
 
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
@@ -32,21 +31,18 @@ public class Asset extends BaseEntity {
     private LocalDate date;
 
     public static Asset of(BookLineRequest request, Book book, LocalDate date) {
-        if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
-            return Asset
-                    .builder()
+        if (OUTCOME.getKind().equals(request.getFlow())) {
+            return Asset.builder()
                     .money(-1 * request.getMoney())
                     .book(book)
                     .date(date)
                     .build();
-        } else {
-            return Asset
-                    .builder()
-                    .money(request.getMoney())
-                    .book(book)
-                    .date(date)
-                    .build();
         }
+        return Asset.builder()
+                .money(request.getMoney())
+                .book(book)
+                .date(date)
+                .build();
     }
 
     public void add(final double money, final String flow) {
@@ -60,18 +56,5 @@ public class Asset extends BaseEntity {
         }
         // TODO: Exception 리팩토링 시 수정
         throw new RuntimeException("이체는 자산에 추가될 수 없습니다");
-    }
-
-    public void subtract(final double money, final String flow) {
-        if (INCOME.getKind().equals(flow)) {
-            this.money -= money;
-            return;
-        }
-        if (OUTCOME.getKind().equals(flow)) {
-            this.money += money;
-            return;
-        }
-        // TODO: Exception 리팩토링 시 수정
-        throw new RuntimeException("이체는 자산에서 감소될 수 없습니다");
     }
 }
