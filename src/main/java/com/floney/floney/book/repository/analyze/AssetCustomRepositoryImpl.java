@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 import static com.floney.floney.book.domain.entity.QAsset.asset;
 import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Repository
 @Transactional(readOnly = true)
@@ -22,10 +21,8 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
     @Override
     @Transactional
-    public void inActiveAllByBook(Book book) {
-        jpaQueryFactory.update(asset)
-                .set(asset.status, INACTIVE)
-                .set(asset.updatedAt, LocalDateTime.now())
+    public void inactiveAllByBook(Book book) {
+        jpaQueryFactory.delete(asset)
                 .where(asset.book.eq(book))
                 .execute();
     }

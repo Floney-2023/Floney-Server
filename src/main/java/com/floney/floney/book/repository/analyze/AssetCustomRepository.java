@@ -6,7 +6,8 @@ import java.time.LocalDate;
 
 public interface AssetCustomRepository {
 
-    void inActiveAllByBook(Book book);
+    void inactiveAllByBook(Book book);
 
-    void updateMoneyByDateAndBook(double money, LocalDate date, Book book);
+    void
+    updateMoneyByDateAndBook(double money, LocalDate date, Book book);
 }
