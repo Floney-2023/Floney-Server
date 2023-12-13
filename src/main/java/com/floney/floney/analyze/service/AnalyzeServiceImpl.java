@@ -8,12 +8,12 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.Budget;
 import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Budget;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
@@ -51,10 +51,10 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         String bookKey = request.getBookKey();
 
         // 부모가 지출 or 수입인 자식 카테고리 조회
-        List<Category> childCategoriesByRoot = getAllChildCategoryByRoot(rootCategory,bookKey);
+        List<Category> childCategoriesByRoot = getAllChildCategoryByRoot(rootCategory, bookKey);
 
         // 카테고리 별, 가계부 내역 합계 조회
-        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(childCategoriesByRoot,duration,bookKey);
+        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(childCategoriesByRoot, duration, bookKey);
 
         double totalMoney = calculateTotalMoney(analyzeResultByCategory);
         double difference = calculateDifference(request, totalMoney);
@@ -86,7 +86,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
         BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
         Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
-        return bookAnalyzer.analyzeAsset(request.getDate(),savedBook.getAsset(), assetInfo);
+        return bookAnalyzer.analyzeAsset(request.getDate(), savedBook.getAsset(), assetInfo);
     }
 
     private Book findBook(String bookKey) {
@@ -99,9 +99,9 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return totalMoney - beforeMonthTotal;
     }
 
-    private List<Category> getAllChildCategoryByRoot(Category rootCategory,String bookKey){
+    private List<Category> getAllChildCategoryByRoot(Category rootCategory, String bookKey) {
         List<Category> childCategoriesByRoot = categoryRepository.findAllDefaultChildCategoryByRoot(rootCategory);
-        List<BookCategory> customCategories = categoryRepository.findAllCustomChildCategoryByRootAndRoot(rootCategory,bookKey);
+        List<BookCategory> customCategories = categoryRepository.findAllCustomChildCategoryByRootAndRoot(rootCategory, bookKey);
         childCategoriesByRoot.addAll(customCategories);
         return childCategoriesByRoot;
     }
