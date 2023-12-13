@@ -262,7 +262,7 @@ public class BookLineRepositoryTest {
     void analyzeByCategory() {
         BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000));
 
-        // 1. 카테고리 생성
+        // given - 1. 카테고리 생성
         DefaultCategory category = DefaultCategory.builder()
             .name("급여")
             .build();
@@ -273,18 +273,18 @@ public class BookLineRepositoryTest {
             .build();
         DefaultCategory savedCategory2 = categoryRepository.save(category2);
 
-        // 2. 가계부 내역과 급여 카테고리 매핑
+        // given - 2. 가계부 내역과 급여 카테고리 매핑
         BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory(savedCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory);
        bookLineRepository.save(bookLine);
 
-       // 3. 가계부 내역2와 급여 카테고리 매핑
+        // given - 3. 가계부 내역2와 급여 카테고리 매핑
         BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000));
         BookLineCategory bookLineFlowLineCategory2 = bookLineCategoryRepository.save(createLineCategory(savedCategory2, bookLine));
         bookLine2.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory2);
         bookLineRepository.save(bookLine2);
 
-        // 4. 가계부 내역3과 용돈 카테고리 매핑
+        // given - 4. 가계부 내역3과 용돈 카테고리 매핑
         BookLine bookLine3 = bookLineRepository.save(createBookLine(book, 1000));
         BookLineCategory bookLineFlowLineCategory3 = bookLineCategoryRepository.save(createLineCategory(savedCategory, bookLine));
         bookLine2.add(CategoryEnum.FLOW_LINE,bookLineFlowLineCategory3);
@@ -295,8 +295,10 @@ public class BookLineRepositoryTest {
                      .endDate(LOCAL_DATE.plusDays(1))
                          .build();
 
+        // when
         List<AnalyzeResponseByCategory> responses = bookLineRepository.analyzeByCategory(Arrays.asList(category2,category),datesDuration,book.getBookKey());
 
+        // then
         for (AnalyzeResponseByCategory response : responses) {
             assertThat(response.getCategory())
                 .isIn("급여", "용돈");
