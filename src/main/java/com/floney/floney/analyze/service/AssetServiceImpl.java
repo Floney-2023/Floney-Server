@@ -82,7 +82,9 @@ public class AssetServiceImpl implements AssetService {
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
                 .orElseThrow(NotFoundBookLineException::new);
-        validateAlreadyIncludedInAsset(bookLine);
+        if (!bookLine.includedInAsset()) {
+            return;
+        }
 
         final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
 
@@ -97,12 +99,6 @@ public class AssetServiceImpl implements AssetService {
             return bookLine.getMoney();
         }
         return (-1) * bookLine.getMoney();
-    }
-
-    private void validateAlreadyIncludedInAsset(final BookLine bookLine) {
-        if (!bookLine.includedInAsset()) {
-            throw new RuntimeException("자산에 포함되지 않은 가계부 내역입니다");
-        }
     }
 }
 
