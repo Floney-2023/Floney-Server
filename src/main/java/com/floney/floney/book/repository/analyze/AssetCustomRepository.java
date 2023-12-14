@@ -8,6 +8,5 @@ public interface AssetCustomRepository {
 
     void inactiveAllByBook(Book book);
 
-    void
-    updateMoneyByDateAndBook(double money, LocalDate date, Book book);
+    void updateMoneyByDateAndBook(double money, LocalDate date, Book book);
 }
