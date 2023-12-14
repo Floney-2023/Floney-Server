@@ -1,20 +1,19 @@
 ---
 name: Feature request
-about: feature request
+about: 새 기능 개발
 title: "[feature]"
 labels: feature
-assignees: 
+assignees:
 
 ---
 
-## 📍 구현할 기능
+## 📍 이슈 설명
 
-> 기능 설명
+설명
 
-## 🛠 작업 내용
+## 🛠 작업할 내용
+
+✅ 구체적으로 작성해주세요
 
 - [ ] TODO
 
-## 💬 기타 사항
-
--
