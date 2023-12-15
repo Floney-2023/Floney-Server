@@ -204,6 +204,26 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
+    public List<Category> findAllDefaultChildCategoryByRoot(Category root){
+       return jpaQueryFactory.select(category)
+            .from(category)
+            .where(category.parent.eq(root),
+                category.instanceOf(DefaultCategory.class))
+            .fetch();
+    }
+
+    @Override
+    public List<BookCategory> findAllCustomChildCategoryByRootAndRoot(Category root, String bookKey){
+        return jpaQueryFactory.select(bookCategory)
+            .from(bookCategory)
+            .innerJoin(bookCategory.parent, category)
+            .where(category.eq(root))
+            .innerJoin(bookCategory.book, book)
+            .where(book.bookKey.eq(bookKey))
+            .fetch();
+    }
+
+    @Override
     public Optional<Category> findParentCategory(String parentName) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(

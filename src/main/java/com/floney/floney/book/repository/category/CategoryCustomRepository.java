@@ -28,6 +28,10 @@ public interface CategoryCustomRepository {
 
     List<BookCategory> findAllCustomCategory(Book book);
 
+    List<Category> findAllDefaultChildCategoryByRoot(Category root);
+
+    List<BookCategory> findAllCustomChildCategoryByRootAndRoot(Category root, String bookKey);
+
     Optional<Category> findParentCategory(String parentName);
 
     void inactiveAllByBook(Book book);
