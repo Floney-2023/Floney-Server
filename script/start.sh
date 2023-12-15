@@ -13,7 +13,7 @@ echo "[ $TIME_NOW ] Copy file $JAR_FILE to project root" >> $DEPLOY_LOG
 cp $PROJECT_ROOT/build/libs/*.jar $JAR_FILE
 
 echo "[ $TIME_NOW ] Run java application : $JAR_FILE" >> $DEPLOY_LOG
-nohup java -jar $JAR_FILE --spring.profiles.active=develop > $APP_LOG 2> $ERROR_LOG &
+sudo nohup java -jar $JAR_FILE --spring.profiles.active=develop > $APP_LOG 2> $ERROR_LOG &
 
 CURRENT_PID=$(pgrep -f $JAR_FILE)
 echo "[ $TIME_NOW ] Application running PID : $CURRENT_PID" >> $DEPLOY_LOG
