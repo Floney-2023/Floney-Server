@@ -16,7 +16,7 @@ public interface AssetRepository extends JpaRepository<Asset, Long>, AssetCustom
 
     @Modifying
     @Query(
-            value = "insert into ASSET (date, money, book_id) values (:date, :money, :book) " +
+            value = "insert into asset (date, money, book_id) values (:date, :money, :book) " +
                     "on duplicate key update money = money + :money, updated_at = now()",
             nativeQuery = true
     )
