@@ -24,6 +24,9 @@ spring:
     port: 0
     host: host
     password: password
+  sql:
+    init:
+      mode: never
 
 jwt:
   token:

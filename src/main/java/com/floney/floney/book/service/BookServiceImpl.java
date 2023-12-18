@@ -1,16 +1,16 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.alarm.repository.AlarmRepository;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.Budget;
+import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -224,7 +224,7 @@ public class BookServiceImpl implements BookService {
                 .stream()
                 .map(BookCategory::delete)
                 .forEach(categoryRepository::delete);
-        assetRepository.inActiveAllByBook(book);
+        assetRepository.inactiveAllByBook(book);
         settlementRepository.inactiveAllByBookKey(bookKey);
         bookLineRepository.inactiveAllBy(bookKey);
         carryOverRepository.inactiveAllByBookKey(bookKey);
@@ -297,14 +297,14 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    private void saveAnotherRecentBookKey(User user){
+    private void saveAnotherRecentBookKey(User user) {
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
         myBookInfos.stream()
-            .findFirst()
-            .ifPresentOrElse(
-                bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
-                () -> user.saveRecentBookKey(null)
-            );
+                .findFirst()
+                .ifPresentOrElse(
+                        bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
+                        () -> user.saveRecentBookKey(null)
+                );
     }
 
     private void validateJoinByBookUserCapacity(Book book) {
@@ -330,7 +330,7 @@ public class BookServiceImpl implements BookService {
     private void inactiveAllBy(final BookUser bookUser) {
         alarmRepository.inactiveAllByBookUser(bookUser);
         bookLineRepository.findAllByBookUser(bookUser)
-            .forEach(BookLine::inactive);
+                .forEach(BookLine::inactive);
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
     }
 
