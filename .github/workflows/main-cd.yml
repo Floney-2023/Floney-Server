@@ -25,12 +25,11 @@ jobs:
 
       - name: 설정파일 생성
         uses: actions/checkout@v3
+      - with:
+          token: ${{ secrets.ACTIONS_TOKEN }}
+          submodules: true
       - run: |
-           touch ./src/main/resources/application.yaml
-           echo "${{ secrets.SECRET_YAML }}" | base64 --decode > ./src/main/resources/application.yaml
-           touch ./src/main/resources/google-credential.json
-           echo "${{ secrets.GOOGLE_CREDENTIAL }}" | base64 --decode > ./src/main/resources/google-credential.json
-           echo "${{ secrets.PROD_START_SH }}" | base64 --decode > ./script/start.sh
+          echo "${{ secrets.PROD_START_SH }}" | base64 --decode > ./script/start.sh
 
       - name: AWS 인증
         uses: aws-actions/configure-aws-credentials@v1
@@ -47,12 +46,12 @@ jobs:
 
       - name: S3에 업로드
         run: aws deploy push --application-name floney-server
-             --ignore-hidden-files 
-             --s3-location s3://$AWS_S3_BUCKET/floney-build/$GITHUB_SHA.zip --source .
+          --ignore-hidden-files
+          --s3-location s3://$AWS_S3_BUCKET/floney-build/$GITHUB_SHA.zip --source .
 
       - name: EC2에 배포
-        run: aws deploy create-deployment 
-             --application-name floney-server
-             --deployment-config-name CodeDeployDefault.AllAtOnce 
-             --deployment-group-name floney-server-deploy-group          
-             --s3-location bucket=$AWS_S3_BUCKET,key=floney-build/$GITHUB_SHA.zip,bundleType=zip
+        run: aws deploy create-deployment
+          --application-name floney-server
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name floney-server-deploy-group
+          --s3-location bucket=$AWS_S3_BUCKET,key=floney-build/$GITHUB_SHA.zip,bundleType=zip
