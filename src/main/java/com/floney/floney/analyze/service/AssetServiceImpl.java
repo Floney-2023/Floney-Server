@@ -3,6 +3,7 @@ package com.floney.floney.analyze.service;
 import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
@@ -11,25 +12,29 @@ import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
+@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Component
 public class AssetServiceImpl implements AssetService {
-    private static final int FIVE_YEARS = 60;
+
+    private static final int SAVED_MONTHS = 5 * 12; // 자산 데이터 생성 기간
+
     private final AssetRepository assetRepository;
     private final BookLineRepository bookLineRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
         DatesDuration datesDuration = DateFactory.getAssetDuration(localDate);
@@ -37,7 +42,7 @@ public class AssetServiceImpl implements AssetService {
         Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
         // 날짜를 key로 하여, 저장된 데이터가 있다면 대체
-        List<Asset> assets = assetRepository.findByDateBetweenAndBookAndStatus(datesDuration.getStartDate(), datesDuration.getEndDate(), book,ACTIVE);
+        List<Asset> assets = assetRepository.findByDateBetweenAndBookAndStatus(datesDuration.getStartDate(), datesDuration.getEndDate(), book, ACTIVE);
         assets.forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
 
         return initAssets;
@@ -55,64 +60,45 @@ public class AssetServiceImpl implements AssetService {
         return initAssets;
     }
 
-    // 가계부 내역 수정시 asset 업데이트
     @Override
     @Transactional
-    public void updateAsset(BookLineRequest request, BookLine savedBookLine) {
-        deleteAsset(savedBookLine.getId());
-        createAssetBy(request, savedBookLine.getBook());
-    }
-
-    @Override
-    @Transactional
-    public void createAssetBy(BookLineRequest request, Book book) {
-
-        //이체 내역일 경우 자산 포함 X
-        if(Objects.equals(request.getFlow(), BANK.getKind())){
+    public void addAssetOf(final BookLineRequest request, final Book book) {
+        // 이체 내역일 경우 자산 포함 X
+        // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
+        if (BANK.getKind().equals(request.getFlow())) {
             return;
         }
 
-        LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
-        List<Asset> assets = new ArrayList<>();
+        final LocalDate startMonth = DateFactory.getFirstDayOf(request.getLineDate());
 
-        // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBookAndStatus(targetDate, book,ACTIVE);
-
-            if (savedAsset.isEmpty()) {
-                Asset newAsset = Asset.of(request, book, targetDate);
-                assets.add(newAsset);
-            } else {
-                savedAsset.ifPresent(asset -> {
-                    asset.update(request.getMoney(), request.getFlow());
-                    assets.add(asset);
-                });
-            }
-            targetDate = targetDate.plusMonths(1);
+        for (int month = 0; month < SAVED_MONTHS; month++) {
+            final LocalDate currentMonth = startMonth.plusMonths(month);
+            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, request.getMoney());
         }
-
-        assetRepository.saveAll(assets);
     }
 
     @Override
     @Transactional
-    public void deleteAsset(Long bookLineId) {
-        BookLine savedBookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
-
-        LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
-        List<Asset> assets = new ArrayList<>();
-
-        // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
-            Optional<Asset> savedAsset = assetRepository.findAssetByDateAndBookAndStatus(targetDate, savedBookLine.getBook(),ACTIVE);
-            savedAsset.ifPresent(asset -> {
-                asset.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
-                assets.add(asset);
-            });
-            targetDate = targetDate.plusMonths(1);
+    public void subtractAssetOf(final Long bookLineId) {
+        final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
+                .orElseThrow(NotFoundBookLineException::new);
+        if (!bookLine.includedInAsset()) {
+            return;
         }
 
-        assetRepository.saveAll(assets);
+        final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
+
+        for (int month = 0; month < SAVED_MONTHS; month++) {
+            final LocalDate currentMonth = startMonth.plusMonths(month);
+            assetRepository.updateMoneyByDateAndBook(getMoneyToSubtract(bookLine), currentMonth, bookLine.getBook());
+        }
     }
 
+    private double getMoneyToSubtract(final BookLine bookLine) {
+        if (bookLine.getTargetCategory(FLOW).equals(AssetType.OUTCOME.getKind())) {
+            return bookLine.getMoney();
+        }
+        return (-1) * bookLine.getMoney();
+    }
 }
+

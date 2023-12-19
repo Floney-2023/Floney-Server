@@ -1,7 +1,10 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.AssetServiceImpl;
+import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverServiceImpl;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.DayLines;
@@ -11,9 +14,6 @@ import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.MonthLinesResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
@@ -42,26 +43,24 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookLineRepository bookLineRepository;
     private final CategoryFactory categoryFactory;
     private final CarryOverServiceImpl carryOverFactory;
-    private final AssetServiceImpl assetFactory;
+    private final AssetService assetService;
 
     @Override
     @Transactional
-    public BookLineResponse createBookLine(String currentUser, BookLineRequest request) {
-        Book book = findBook(request.getBookKey());
+    public BookLineResponse createBookLine(final String email, final BookLineRequest request) {
+        final Book book = findBook(request.getBookKey());
+        final BookLine bookLine = request.to(findBookUser(email, request), book);
+        bookLineRepository.save(bookLine);
 
-        // 이월 ON 일시, 이월 내역 갱신
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOverByAddBookLine(request, book);
         }
+        categoryFactory.saveCategories(bookLine, request);
+        if (bookLine.includedInAsset()) {
+            assetService.addAssetOf(request, book);
+        }
 
-        // 자산 갱신
-        assetFactory.createAssetBy(request, book);
-        BookLine requestLine = request.to(findBookUser(currentUser, request), book);
-        BookLine savedLine = bookLineRepository.save(requestLine);
-        categoryFactory.saveCategories(savedLine, request);
-
-        BookLine newBookLine = bookLineRepository.save(savedLine);
-        return BookLineResponse.of(newBookLine);
+        return BookLineResponse.from(bookLine);
     }
 
     @Override
@@ -70,10 +69,10 @@ public class BookLineServiceImpl implements BookLineService {
         DatesDuration dates = DateFactory.getDateDuration(date);
 
         return MonthLinesResponse.of(
-            date,
-            daysExpense(bookKey, dates),
-            totalExpense(bookKey, dates),
-            carryOverFactory.getCarryOverInfo(book, date)
+                date,
+                daysExpense(bookKey, dates),
+                totalExpense(bookKey, dates),
+                carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
@@ -85,10 +84,10 @@ public class BookLineServiceImpl implements BookLineService {
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
         return TotalDayLinesResponse.of(
-            dayLines,
-            totalExpenses,
-            book.getSeeProfile(),
-            carryOverFactory.getCarryOverInfo(book, date)
+                dayLines,
+                totalExpenses,
+                book.getSeeProfile(),
+                carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
@@ -100,40 +99,54 @@ public class BookLineServiceImpl implements BookLineService {
 
     @Override
     @Transactional
-    public BookLineResponse changeLine(BookLineRequest request) {
-        BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
-            .orElseThrow(NotFoundBookLineException::new);
-        Book book = findBook(request.getBookKey());
+    public BookLineResponse changeLine(final BookLineRequest request) {
+        final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
+                .orElseThrow(NotFoundBookLineException::new);
+        final Book book = findBook(request.getBookKey());
+        // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
+        validateBookLineIncludedInBook(bookLine.getBook(), book);
 
-        // 이월설정이 ON 일시, 이월 설정 재갱신
+        if (bookLine.includedInAsset()) {
+            assetService.subtractAssetOf(bookLine.getId());
+        }
+
+        // 가계부 내역 갱신
+        bookLine.update(request);
+
+        // 가계부 내역 갱신에 따른 관련 데이터들 갱신
         if (book.getCarryOverStatus()) {
             carryOverFactory.updateCarryOver(request, bookLine);
         }
-
-        // 자산 내역 갱신
-        assetFactory.updateAsset(request, bookLine);
+        if (bookLine.includedInAsset()) {
+            assetService.addAssetOf(request, book);
+        }
         categoryFactory.changeCategories(bookLine, request);
-        bookLine.update(request);
-        BookLine savedBookLine = bookLineRepository.save(bookLine);
-        return BookLineResponse.changeResponse(savedBookLine, bookLine.getWriter());
+
+        return BookLineResponse.from(bookLine);
     }
 
     @Override
     @Transactional
     public void deleteLine(final Long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
-            .orElseThrow(NotFoundBookLineException::new);
+                .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
+    }
+
+    private void validateBookLineIncludedInBook(final Book bookOfBookLine, final Book book) {
+        if (!Objects.equals(bookOfBookLine.getId(), book.getId())) {
+            throw new RuntimeException("가계부 내역이 해당 가계부에 속하지 않습니다");
+        }
     }
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
-            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
+                .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+                .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {

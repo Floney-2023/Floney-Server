@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
@@ -33,7 +34,7 @@ public class BookLine extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
     @MapKeyEnumerated(EnumType.STRING)
-    private Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
+    private final Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
 
     @Column(nullable = false)
     private Double money;
@@ -76,8 +77,12 @@ public class BookLine extends BaseEntity {
         return this.writer.getNickName();
     }
 
-    public void inactive(){
+    public void inactive() {
         Events.raise(new BookLineDeletedEvent(this.getId()));
         this.status = Status.INACTIVE;
+    }
+
+    public boolean includedInAsset() {
+        return !AssetType.BANK.getKind().equals(bookLineCategories.get(CategoryEnum.FLOW).getName());
     }
 }

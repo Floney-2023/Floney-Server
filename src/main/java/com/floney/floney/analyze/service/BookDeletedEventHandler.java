@@ -27,7 +27,7 @@ public class BookDeletedEventHandler {
     public void deleteBookLine(final BookLineDeletedEvent event) {
         final long bookLineId = event.getBookLineId();
         carryOverService.deleteCarryOver(bookLineId);
-        assetService.deleteAsset(bookLineId);
+        assetService.subtractAssetOf(bookLineId);
         categoryService.deleteAllBookLineCategory(bookLineId);
     }
 
