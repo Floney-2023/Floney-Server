@@ -15,7 +15,7 @@ import java.io.IOException;
 public class GoogleGoogleTokenProvider implements GoogleTokenProxy {
 
     private static final String MESSAGING_SCOPE = "https://www.googleapis.com/auth/firebase.messaging";
-    private static final String GOOGLE_CREDENTIAL_FILE_NAME = "google-credential.json";
+    private static final String GOOGLE_CREDENTIAL_FILE_NAME = "secrets/google-credential.json";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
