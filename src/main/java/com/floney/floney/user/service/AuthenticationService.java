@@ -37,14 +37,17 @@ public class AuthenticationService {
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Token login(final LoginRequest request) {
+        // mysql read + write : 평균 120ms
+        // mysql read + redis write : 평균 120ms ...
         try {
             final User user = findUserByEmail(request.getEmail());
             validatePasswordMatches(request, user.getPassword());
 
-            user.login();
-            userRepository.save(user);
+            redisProvider.set("*", "*", 1);
+//            user.login();
+//            userRepository.save(user);
 
             return jwtProvider.generateToken(user.getEmail());
         } catch (BadCredentialsException exception) {

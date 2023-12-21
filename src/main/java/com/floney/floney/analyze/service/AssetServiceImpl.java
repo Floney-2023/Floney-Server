@@ -74,7 +74,7 @@ public class AssetServiceImpl implements AssetService {
 
         for (int month = 0; month < SAVED_MONTHS; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
-            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoneyToAdd(request));
+            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
         }
     }
 
@@ -91,22 +91,22 @@ public class AssetServiceImpl implements AssetService {
 
         for (int month = 0; month < SAVED_MONTHS; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
-            assetRepository.updateMoneyByDateAndBook(getMoneyToSubtract(bookLine), currentMonth, bookLine.getBook());
+            assetRepository.subtractMoneyByDateAndBook(getMoney(bookLine), currentMonth, bookLine.getBook());
         }
     }
 
-    private double getMoneyToAdd(final BookLineRequest request) {
+    private double getMoney(final BookLineRequest request) {
         if (OUTCOME.getKind().equals(request.getFlow())) {
             return (-1) * request.getMoney();
         }
         return request.getMoney();
     }
 
-    private double getMoneyToSubtract(final BookLine bookLine) {
+    private double getMoney(final BookLine bookLine) {
         if (bookLine.getTargetCategory(FLOW).equals(AssetType.OUTCOME.getKind())) {
-            return bookLine.getMoney();
+            return (-1) * bookLine.getMoney();
         }
-        return (-1) * bookLine.getMoney();
+        return bookLine.getMoney();
     }
 }
 
