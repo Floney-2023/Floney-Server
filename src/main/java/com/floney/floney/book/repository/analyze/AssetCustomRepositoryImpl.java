@@ -29,7 +29,7 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
     @Override
     @Transactional
-    public void updateMoneyByDateAndBook(final double money, final LocalDate date, final Book book) {
+    public void subtractMoneyByDateAndBook(final double money, final LocalDate date, final Book book) {
         jpaQueryFactory.update(asset)
                 .set(asset.money, asset.money.subtract(money))
                 .set(asset.updatedAt, LocalDateTime.now())
