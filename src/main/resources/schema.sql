@@ -1,4 +1,4 @@
-CREATE TABLE `asset`
+CREATE TABLE asset
 (
     `id`         bigint       NOT NULL AUTO_INCREMENT,
     `created_at` datetime(6)  NOT NULL DEFAULT now(),

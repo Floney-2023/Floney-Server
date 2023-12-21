@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 
 files:
-  - source:  /
+  - source: /
     destination: /home/ubuntu/Floney-Server
     overwrite: yes
 
@@ -13,7 +13,7 @@ permissions:
     pattern: "**"
     owner: ubuntu
     group: ubuntu
-    mode: 755
+    mode: 777
 
 hooks:
   AfterInstall:
