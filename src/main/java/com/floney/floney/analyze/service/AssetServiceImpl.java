@@ -3,7 +3,6 @@ package com.floney.floney.analyze.service;
 import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
@@ -103,7 +102,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     private double getMoney(final BookLine bookLine) {
-        if (bookLine.getTargetCategory(FLOW).equals(AssetType.OUTCOME.getKind())) {
+        if (bookLine.getTargetCategory(FLOW).equals(OUTCOME.getKind())) {
             return (-1) * bookLine.getMoney();
         }
         return bookLine.getMoney();
