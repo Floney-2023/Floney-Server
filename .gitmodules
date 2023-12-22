@@ -1,3 +1,4 @@
 [submodule "src/main/resources/secrets"]
 	path = src/main/resources/secrets
 	url = https://github.com/Floney-2023/floney-server-secrets.git
+	branch = main
