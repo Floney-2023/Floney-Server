@@ -45,7 +45,7 @@ public class BookLine extends BaseEntity {
     @Lob
     private String description;
 
-    @Column(nullable = false, length = 1)
+    @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
 
     @Builder

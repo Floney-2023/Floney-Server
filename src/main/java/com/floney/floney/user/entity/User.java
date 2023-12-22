@@ -63,7 +63,7 @@ public class User extends BaseEntity {
     @Builder.Default
     private LocalDateTime lastLoginTime = LocalDateTime.now();
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT")
     private boolean receiveMarketing;
 
     @QueryProjection
