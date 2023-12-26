@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `book_line`
     `created_at`    datetime(6)  NOT NULL DEFAULT current_timestamp(6),
     `status`        varchar(255) NOT NULL DEFAULT 'ACTIVE',
     `updated_at`    datetime(6)  NOT NULL DEFAULT current_timestamp(6),
-    `description`   longtext,
+    `description`   varchar(255),
     `except_status` tinyint      NOT NULL DEFAULT '0',
     `line_date`     date         NOT NULL,
     `money`         double       NOT NULL DEFAULT '0.0',
