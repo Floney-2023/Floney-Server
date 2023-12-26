@@ -18,7 +18,7 @@ import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import org.assertj.core.api.Assertions;
+import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,12 +28,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.floney.floney.book.CategoryFixture.*;
 import static com.floney.floney.fixture.BookFixture.*;
 import static com.floney.floney.fixture.BookLineFixture.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -55,6 +58,7 @@ public class BookLineRepositoryTest {
 
     private Book book;
     private User user;
+    private BookUser bookUser;
 
     private Category incomeCategory;
     private Category outcomeCategory;
@@ -65,112 +69,108 @@ public class BookLineRepositoryTest {
     void init() {
         user = userRepository.save(UserFixture.createUser());
         book = bookRepository.save(BookFixture.createBook());
+        bookUser = bookUserRepository.save(BookUser.of(user, book));
         incomeCategory = categoryRepository.save(incomeBookCategory());
         outcomeCategory = categoryRepository.save(outComeBookCategory());
         childIncomeCategory = categoryRepository.save(createChildCategory(incomeCategory, book));
     }
 
     @Test
-    @DisplayName("각 가계부 내역 지정된 날짜기간의 수입/지출의 총합을 조회한다")
+    @DisplayName("각 가계부 내역 지정된 기간의 수입/지출의 총합을 조회한다")
     void income() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000f));
+        /* given */
+        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000f, bookUser));
+        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000f, bookUser));
 
-        BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
+        final BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
 
-        BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
+        final BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
         bookLine2.add(CategoryEnum.FLOW, category2);
 
-        bookLineRepository.save(bookLine);
-        bookLineRepository.save(bookLine2);
+        final DatesDuration dates = DatesDuration.builder()
+                .startDate(LOCAL_DATE.minusDays(1))
+                .endDate(LOCAL_DATE)
+                .build();
 
-        LocalDate start = LocalDate.of(2023, 10, 21);
-        LocalDate end = LOCAL_DATE;
+        /* when */
+        final List<BookLineExpense> result = bookLineRepository.dayIncomeAndOutcome(BOOK_KEY, dates);
 
-        DatesDuration dates = DatesDuration.builder()
-            .startDate(start)
-            .endDate(end)
-            .build();
+        /* then */
+        final BookLineExpense income = BookLineExpense.builder()
+                .money(1000f)
+                .assetType("수입")
+                .date(LOCAL_DATE)
+                .build();
+        final BookLineExpense outcome = BookLineExpense.builder()
+                .money(1000f)
+                .assetType("지출")
+                .date(LOCAL_DATE)
+                .build();
 
-        BookLineExpense income = BookLineExpense.builder()
-            .money(1000f)
-            .assetType("수입")
-            .date(LOCAL_DATE)
-            .build();
-
-        BookLineExpense outcome = BookLineExpense.builder()
-            .money(1000f)
-            .assetType("지출")
-            .date(LOCAL_DATE)
-            .build();
-
-        Assertions.assertThat(bookLineRepository.dayIncomeAndOutcome(BOOK_KEY, dates))
-            .isEqualTo(Arrays.asList(income, outcome));
-
+        assertThat(result).containsExactlyInAnyOrder(income, outcome);
     }
 
     @Test
     @DisplayName("각 가계부 내역 지정된 달의 총수입/총지출을 조회한다")
     void all_expenses() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000f));
+        /* given */
+        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000f, bookUser));
+        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000f, bookUser));
 
-        BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
+        final BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
 
-        BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
+        final BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
         bookLine2.add(CategoryEnum.FLOW, category2);
 
-        bookLineRepository.save(bookLine);
-        bookLineRepository.save(bookLine2);
+        final DatesDuration dates = DatesDuration.builder()
+                .startDate(LocalDate.of(2023, 10, 1))
+                .endDate(LOCAL_DATE)
+                .build();
 
-        LocalDate start = LocalDate.of(2023, 10, 1);
-        LocalDate end = LOCAL_DATE;
+        /* when */
+        final Map<String, Double> result = bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates);
 
-        DatesDuration dates = DatesDuration.builder()
-            .startDate(start)
-            .endDate(end)
-            .build();
-
-        Map<String, Double> totals = new HashMap<>();
-        totals.put("수입", 1000.0);
-        totals.put("지출", 1000.0);
-
-        Assertions.assertThat(bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates))
-            .isEqualTo(totals);
-
+        /* then */
+        assertThat(result).hasSize(2)
+                .hasEntrySatisfying(
+                        "수입",
+                        income -> assertThat(income).isCloseTo(1000.0, Percentage.withPercentage(99.9))
+                )
+                .hasEntrySatisfying(
+                        "지출",
+                        outcome -> assertThat(outcome).isCloseTo(1000.0, Percentage.withPercentage(99.9))
+                );
     }
 
     @Test
     @DisplayName("날짜별로 총수입/총지출을 조회한다")
     void day_expenses() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000.0));
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000.0));
+        /* given */
+        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
 
-        BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
+        final BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
 
-        BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
+        final BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
         bookLine2.add(CategoryEnum.FLOW, category2);
 
-        bookLineRepository.save(bookLine);
-        bookLineRepository.save(bookLine2);
+        /* when */
+        final List<TotalExpense> result = bookLineRepository.totalExpenseByDay(LOCAL_DATE, BOOK_KEY);
 
-        LocalDate target = LOCAL_DATE;
+        /* then */
+        final TotalExpense income = TotalExpense.builder()
+                .money(1000f)
+                .assetType("수입")
+                .build();
+        final TotalExpense outcome = TotalExpense.builder()
+                .money(1000f)
+                .assetType("지출")
+                .build();
 
-        TotalExpense income = TotalExpense.builder()
-            .money(1000f)
-            .assetType("수입")
-            .build();
-
-        TotalExpense outcome = TotalExpense.builder()
-            .money(1000f)
-            .assetType("지출")
-            .build();
-
-        Assertions.assertThat(bookLineRepository.totalExpenseByDay(target, BOOK_KEY))
-            .isEqualTo(Arrays.asList(income, outcome));
+        assertThat(result).containsExactlyInAnyOrder(income, outcome);
     }
 
     @Test
@@ -192,9 +192,7 @@ public class BookLineRepositoryTest {
         bookLineRepository.save(bookLine2);
 
         LocalDate targetDate = LOCAL_DATE;
-        Assertions.assertThat(bookLineRepository.allLinesByDay(targetDate, BOOK_KEY).size())
-            .isEqualTo(3);
-
+        assertThat(bookLineRepository.allLinesByDay(targetDate, BOOK_KEY).size()).isEqualTo(3);
     }
 
     @Test
@@ -218,103 +216,121 @@ public class BookLineRepositoryTest {
         LocalDate end = LOCAL_DATE;
 
         DatesDuration datesRequest = DatesDuration.builder()
-            .startDate(start)
-            .endDate(end)
-            .build();
+                .startDate(start)
+                .endDate(end)
+                .build();
         AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY, Collections.singletonList(EMAIL), datesRequest);
-        Assertions.assertThat(bookLineRepository.getAllLines(request).size())
-            .isEqualTo(2);
+        assertThat(bookLineRepository.getAllLines(request).size()).isEqualTo(2);
     }
 
     @Test
-    @DisplayName("가계부 내역을 추가시, 카테고리 3개(자산,분류,내용)을 선택하여 생성한다")
+    @DisplayName("가계부 내역을 추가 시, 카테고리 3개(내역, 자산, 내역 분류)을 선택하여 생성한다")
     void saveBookLine() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000f));
+        /* given */
+        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000f, bookUser));
 
-        DefaultCategory flowCategory = DefaultCategory.builder()
-            .name("수입")
-            .build();
+        // 내역 카테고리
+        final DefaultCategory flowCategory = DefaultCategory.builder()
+                .name("수입")
+                .build();
+        categoryRepository.save(flowCategory);
 
-        Category savedFlowCategory = categoryRepository.save(flowCategory);
-        BookLineCategory savedBookLineCategory = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) savedFlowCategory, bookLine));
-        bookLine.add(CategoryEnum.FLOW, savedBookLineCategory);
+        final BookLineCategory bookLineFlowCategory = bookLineCategoryRepository.save(createFlowCategory(flowCategory, bookLine));
+        bookLine.add(CategoryEnum.FLOW, bookLineFlowCategory);
 
-        DefaultCategory assetCategory = DefaultCategory.builder()
-            .name("은행")
-            .build();
-        Category savedAssetCategory = categoryRepository.save(assetCategory);
-        BookLineCategory bookLineAssetCategory = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) savedAssetCategory, bookLine));
+        // 자산 카테고리
+        final DefaultCategory assetCategory = DefaultCategory.builder()
+                .name("은행")
+                .build();
+        categoryRepository.save(assetCategory);
+
+        final BookLineCategory bookLineAssetCategory = bookLineCategoryRepository.save(createLineCategory(assetCategory, bookLine));
         bookLine.add(CategoryEnum.ASSET, bookLineAssetCategory);
 
-        DefaultCategory flowLineCategory = DefaultCategory.builder()
-            .name("급여")
-            .build();
-        Category savedFlowLineCategory = categoryRepository.save(flowLineCategory);
-        BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory((DefaultCategory) savedFlowLineCategory, bookLine));
+        // 내역 분류 카테고리
+        final DefaultCategory flowLineCategory = DefaultCategory.builder()
+                .name("급여")
+                .build();
+        categoryRepository.save(flowLineCategory);
+
+        final BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory(flowLineCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory);
 
-        BookLine savedBookLine = bookLineRepository.save(bookLine);
-        assertThat(savedBookLine.getBookLineCategories().size()).isEqualTo(3);
+        /* when */
+        final Map<CategoryEnum, BookLineCategory> result = bookLine.getBookLineCategories();
+
+        /* then */
+        assertThat(result).hasSize(3)
+                .hasEntrySatisfying(
+                        CategoryEnum.FLOW,
+                        bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineFlowCategory)
+                )
+                .hasEntrySatisfying(
+                        CategoryEnum.ASSET,
+                        bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineAssetCategory)
+                )
+                .hasEntrySatisfying(
+                        CategoryEnum.FLOW_LINE,
+                        bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineFlowLineCategory)
+                );
     }
 
     @Test
     @DisplayName("카테고리 별 분석을 조회하면, 카테고리의 이름과 해당 월의 내역 합계가 나온다 - 성공")
     void analyzeByCategory() {
-        BookLine bookLine = bookLineRepository.save(createBookLine(book, 1000));
+        /* given */
+        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000, bookUser));
 
-        // given - 1. 카테고리 생성
-        DefaultCategory category = DefaultCategory.builder()
-            .name("급여")
-            .build();
-        DefaultCategory savedCategory = categoryRepository.save(category);
+        // 카테고리 생성
+        final DefaultCategory category = DefaultCategory.builder()
+                .name("급여")
+                .build();
+        categoryRepository.save(category);
 
-        DefaultCategory category2 = DefaultCategory.builder()
-            .name("용돈")
-            .build();
-        DefaultCategory savedCategory2 = categoryRepository.save(category2);
+        final DefaultCategory category2 = DefaultCategory.builder()
+                .name("용돈")
+                .build();
+        categoryRepository.save(category2);
 
-        // given - 2. 가계부 내역과 급여 카테고리 매핑
-        BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory(savedCategory, bookLine));
+        // 가계부 내역과 급여 카테고리 매핑
+        final BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory(category, bookLine));
         bookLine.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory);
-        bookLineRepository.save(bookLine);
 
-        // given - 3. 가계부 내역2와 급여 카테고리 매핑
-        BookLine bookLine2 = bookLineRepository.save(createBookLine(book, 1000));
-        BookLineCategory bookLineFlowLineCategory2 = bookLineCategoryRepository.save(createLineCategory(savedCategory2, bookLine));
+        // 가계부 내역2와 급여 카테고리 매핑
+        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000, bookUser));
+        final BookLineCategory bookLineFlowLineCategory2 = bookLineCategoryRepository.save(createLineCategory(category2, bookLine2));
         bookLine2.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory2);
-        bookLineRepository.save(bookLine2);
 
-        // given - 4. 가계부 내역3과 용돈 카테고리 매핑
-        BookLine bookLine3 = bookLineRepository.save(createBookLine(book, 1000));
-        BookLineCategory bookLineFlowLineCategory3 = bookLineCategoryRepository.save(createLineCategory(savedCategory, bookLine));
-        bookLine2.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory3);
-        bookLineRepository.save(bookLine3);
+        // 가계부 내역3과 용돈 카테고리 매핑
+        final BookLine bookLine3 = bookLineRepository.save(createBookLineWithWriter(book, 1000, bookUser));
+        final BookLineCategory bookLineFlowLineCategory3 = bookLineCategoryRepository.save(createLineCategory(category, bookLine3));
+        bookLine3.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory3);
 
-        DatesDuration datesDuration = DatesDuration.builder()
-            .startDate(LOCAL_DATE)
-            .endDate(LOCAL_DATE.plusDays(1))
-            .build();
+        final DatesDuration datesDuration = DatesDuration.builder()
+                .startDate(LOCAL_DATE)
+                .endDate(LOCAL_DATE.plusDays(1))
+                .build();
 
-        // when
-        List<AnalyzeResponseByCategory> responses = bookLineRepository.analyzeByCategory(Arrays.asList(category2, category), datesDuration, book.getBookKey());
+        /* when */
+        final List<AnalyzeResponseByCategory> results = bookLineRepository.analyzeByCategory(
+                Arrays.asList(category2, category), datesDuration, book.getBookKey()
+        );
 
-        List<String> categoryName = Arrays.asList("급여", "용돈");
-        List<Double> analyzeResult = Arrays.asList(2000.0, 1000.0);
+        /* then */
+        final List<String> categoryName = Arrays.asList("급여", "용돈");
+        final List<Double> analyzeResult = Arrays.asList(2000.0, 1000.0);
 
-        // then
-        for (AnalyzeResponseByCategory response : responses) {
-            assertThat(response)
-                .extracting(AnalyzeResponseByCategory::getCategory)
-                .usingRecursiveComparison()
-                .isIn(categoryName);
+        for (final AnalyzeResponseByCategory result : results) {
+            assertThat(result)
+                    .extracting(AnalyzeResponseByCategory::getCategory)
+                    .usingRecursiveComparison()
+                    .isIn(categoryName);
 
-            assertThat(response)
-                .extracting(AnalyzeResponseByCategory::getMoney)
-                .usingRecursiveComparison()
-                .isIn(analyzeResult);
-
+            assertThat(result)
+                    .extracting(AnalyzeResponseByCategory::getMoney)
+                    .usingRecursiveComparison()
+                    .isIn(analyzeResult);
         }
-
     }
 }
 
