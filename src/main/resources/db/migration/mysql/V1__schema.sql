@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `book_line_category`
     `name`                     varchar(10)  NOT NULL,
     `book_line_id`             bigint       NOT NULL,
     `category_id`              bigint       NOT NULL,
-    `book_line_categories_key` varchar(10)  NOT NULL,
+    `book_line_categories_key` varchar(10),
     PRIMARY KEY (`id`),
     KEY `fk_idx_book_line_in_book_line_category` (`book_line_id`),
     KEY `fk_idx_category_in_book_line_category` (`category_id`)
