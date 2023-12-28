@@ -1,9 +1,9 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.domain.entity.RootCategory;
+import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.config.TestConfig;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
@@ -19,6 +20,7 @@ import static com.floney.floney.book.CategoryFixture.CHILD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(TestConfig.class)
 public class CategoryRepositoryTest {
 
@@ -68,6 +70,4 @@ public class CategoryRepositoryTest {
 
         assertThat(categoryRepository.findAllCategory(savedRoot.getName(), savedBook.getBookKey()).contains(custom)).isFalse();
     }
-
-
 }
