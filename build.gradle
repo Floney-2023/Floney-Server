@@ -73,6 +73,10 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 
     implementation 'com.github.maricn:logback-slack-appender:1.6.0'
+
+    //monitor
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 //querydsl
