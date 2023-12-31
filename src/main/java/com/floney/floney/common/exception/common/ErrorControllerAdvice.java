@@ -225,7 +225,7 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(AlreadyExistException.class)
     protected ResponseEntity<ErrorResponse> alreadyExistException(AlreadyExistException exception) {
-        logger.warn("{} data = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.ALREADY_EXIST.getMessage(), exception.getTarget(), exception.getMessage(), exception.getStackTrace());
+        logger.warn("{} data = {}", ErrorType.ALREADY_EXIST.getMessage(), exception.getTarget());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
