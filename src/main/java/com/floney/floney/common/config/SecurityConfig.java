@@ -32,39 +32,40 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+            .csrf().disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .authorizeRequests()
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 
-                .antMatchers(
-                        "/health-check",
-                        "/users",
-                        "/users/password/find",
-                        "/users/login",
-                        "/users/logout",
-                        "/users/reissue",
-                        "/users/email/**",
-                        "/auth/**"
-                ).permitAll()
-                .anyRequest().authenticated()
+            .antMatchers(
+                "/health-check",
+                "/users",
+                "/users/password/find",
+                "/users/login",
+                "/users/logout",
+                "/users/reissue",
+                "/users/email/**",
+                "/auth/**",
+                "/actuator/prometheus"
+            ).permitAll()
+            .anyRequest().authenticated()
 
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
+            .and()
+            .exceptionHandling()
+            .authenticationEntryPoint(customAuthenticationEntryPoint)
 
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, redisTemplate),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
+            .and()
+            .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, redisTemplate),
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtExceptionFilter(), JwtAuthenticationFilter.class);
 
         return http.build();
     }

@@ -12,6 +12,7 @@ import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.exception.book.AlreadyExistException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,12 @@ public class CategoryServiceImpl implements CategoryService {
             parent = categoryRepository.findParentCategory(request.getParent())
                 .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
         }
+
+        // 같은 이름으로 카테고리 생성 방지
+        categoryRepository.findCustomTarget(parent, request.getBookKey(), request.getName()).ifPresent(saved -> {
+            throw new AlreadyExistException(request.getName());
+        });
+
         BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
         return CreateCategoryResponse.of(newCategory);
     }
@@ -70,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void deleteAllBookLineCategory(long bookLineId){
+    public void deleteAllBookLineCategory(long bookLineId) {
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
