@@ -90,5 +90,27 @@ class UserTest {
             assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
                     .isInstanceOf(RuntimeException.class);
         }
+
+        @Test
+        @DisplayName("nickname이 비어있어 실패한다.")
+        void fail_blankNickname() {
+            /* given */
+            final String nickname = " ";
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
+                    .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        @DisplayName("nickname의 길이가 8자를 넘어 실패한다.")
+        void fail_tooLongNickname() {
+            /* given */
+            final String nickname = "a".repeat(9);
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
+                    .isInstanceOf(RuntimeException.class);
+        }
     }
 }
