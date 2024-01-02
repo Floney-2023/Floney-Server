@@ -3,11 +3,11 @@ package com.floney.floney.user.repository;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.entity.SignoutReason;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(TestConfig.class)
 public class SignoutReasonRepositoryTest {
 
@@ -24,17 +25,6 @@ public class SignoutReasonRepositoryTest {
 
     @Autowired
     private EntityManager entityManager;
-
-    @BeforeEach
-    void init() {
-        for (final SignoutType signoutType : SignoutType.values()) {
-            final SignoutReason signoutReason = SignoutReason.builder()
-                    .reasonType(signoutType)
-                    .count(0L)
-                    .build();
-            signoutReasonRepository.save(signoutReason);
-        }
-    }
 
     @ParameterizedTest
     @EnumSource(SignoutType.class)

@@ -42,10 +42,10 @@ public class BookLine extends BaseEntity {
     @Column(nullable = false)
     private LocalDate lineDate;
 
-    @Lob
+    @Column
     private String description;
 
-    @Column(nullable = false, length = 1)
+    @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
 
     @Builder
