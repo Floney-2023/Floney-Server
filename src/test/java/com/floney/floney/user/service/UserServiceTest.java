@@ -122,9 +122,9 @@ class UserServiceTest {
 
         // then
         assertThat(user.getStatus()).isEqualTo(INACTIVE);
-        assertThat(user.getEmail()).isEqualTo(UserFixture.DELETE_VALUE);
-        assertThat(user.getPassword()).isEqualTo(UserFixture.DELETE_VALUE);
-        assertThat(user.getNickname()).isEqualTo(UserFixture.DELETE_VALUE);
+        assertThat(user.getEmail()).isEqualTo(User.DELETE_VALUE);
+        assertThat(user.getPassword()).isEqualTo(User.DELETE_VALUE);
+        assertThat(user.getNickname()).isEqualTo(User.DELETE_VALUE);
         assertThat(user.getProfileImg()).isNull();
         assertThat(user.getProviderId()).isNull();
 

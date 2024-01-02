@@ -9,8 +9,6 @@ import static com.floney.floney.fixture.BookFixture.EMAIL;
 
 public class UserFixture {
 
-    public static final String DELETE_VALUE = "알수없음";
-
     public static User emailUser() {
         return User.builder()
                 .nickname("floney")

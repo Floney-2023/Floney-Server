@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    private static final String DELETE_VALUE = "알수없음";
+    public static final String DELETE_VALUE = "알수없음";
     private static final int EMAIL_MAX_LENGTH = 350;
     private static final int PASSWORD_MIN_LENGTH = 8;
     public static final int PASSWORD_MAX_LENGTH = 32;
