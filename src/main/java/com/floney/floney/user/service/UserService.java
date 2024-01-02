@@ -56,7 +56,7 @@ public class UserService {
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
-        User user = request.to();
+        final User user = request.to();
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
         return request.toLoginRequest();

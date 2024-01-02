@@ -34,13 +34,7 @@ public class SignupRequest {
     }
 
     public User to() {
-        return User.builder()
-                .email(email)
-                .password(password)
-                .nickname(nickname)
-                .provider(Provider.EMAIL)
-                .receiveMarketing(receiveMarketing)
-                .build();
+        return User.signupByEmail(email, password, nickname, receiveMarketing);
     }
 
     public User to(Provider provider, String providerId) {
