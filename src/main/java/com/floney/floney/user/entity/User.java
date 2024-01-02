@@ -97,9 +97,7 @@ public class User extends BaseEntity {
                                      final String password,
                                      final String nickname,
                                      final Boolean receiveMarketing) {
-        validateEmail(email);
-        validatePassword(password);
-        validateNickname(nickname);
+        validateSignup(email, password, nickname);
 
         return User.builder()
                 .email(email)
@@ -162,6 +160,12 @@ public class User extends BaseEntity {
         if (!Provider.EMAIL.equals(provider)) {
             throw new NotEmailUserException(provider);
         }
+    }
+
+    private static void validateSignup(final String email, final String password, final String nickname) {
+        validateEmail(email);
+        validatePassword(password);
+        validateNickname(nickname);
     }
 
     private static void validateEmail(final String email) {
