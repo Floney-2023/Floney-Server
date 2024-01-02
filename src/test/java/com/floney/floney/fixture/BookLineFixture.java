@@ -15,7 +15,7 @@ public class BookLineFixture {
     public static final String OUTCOME = "지출";
     public static final String INCOME = "수입";
 
-    public static LocalDate LOCAL_DATE = LocalDate.of(2023, 10, 22);
+    public static LocalDate DEFAULT_DATE = LocalDate.of(2023, 10, 22);
 
     public static BookLineRequest outcomeRequest(final double money) {
         return BookLineRequest.builder()
@@ -41,7 +41,7 @@ public class BookLineFixture {
         return BookLine.builder()
                 .book(book)
                 .money(money)
-                .lineDate(LOCAL_DATE)
+                .lineDate(DEFAULT_DATE)
                 .exceptStatus(Boolean.FALSE)
                 .build();
     }
@@ -50,7 +50,7 @@ public class BookLineFixture {
         return BookLine.builder()
                 .book(book)
                 .money(money)
-                .lineDate(LOCAL_DATE)
+                .lineDate(DEFAULT_DATE)
                 .writer(writer)
                 .exceptStatus(Boolean.FALSE)
                 .build();
@@ -61,7 +61,7 @@ public class BookLineFixture {
                 .book(book)
                 .writer(user)
                 .money(money)
-                .lineDate(LOCAL_DATE)
+                .lineDate(DEFAULT_DATE)
                 .exceptStatus(Boolean.FALSE)
                 .build();
     }
@@ -69,7 +69,7 @@ public class BookLineFixture {
     public static BookLineExpense createBookLineExpense() {
         return BookLineExpense.builder()
                 .assetType(INCOME)
-                .date(LOCAL_DATE)
+                .date(DEFAULT_DATE)
                 .money(1000.0)
                 .build();
     }

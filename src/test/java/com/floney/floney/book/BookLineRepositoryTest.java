@@ -89,8 +89,8 @@ public class BookLineRepositoryTest {
         bookLine2.add(CategoryEnum.FLOW, category2);
 
         final DatesDuration dates = DatesDuration.builder()
-                .startDate(LOCAL_DATE.minusDays(1))
-                .endDate(LOCAL_DATE)
+                .startDate(DEFAULT_DATE.minusDays(1))
+                .endDate(DEFAULT_DATE)
                 .build();
 
         /* when */
@@ -100,12 +100,12 @@ public class BookLineRepositoryTest {
         final BookLineExpense income = BookLineExpense.builder()
                 .money(1000.0)
                 .assetType("수입")
-                .date(LOCAL_DATE)
+                .date(DEFAULT_DATE)
                 .build();
         final BookLineExpense outcome = BookLineExpense.builder()
                 .money(1000.0)
                 .assetType("지출")
-                .date(LOCAL_DATE)
+                .date(DEFAULT_DATE)
                 .build();
 
         assertThat(result).containsExactlyInAnyOrder(income, outcome);
@@ -126,7 +126,7 @@ public class BookLineRepositoryTest {
 
         final DatesDuration dates = DatesDuration.builder()
                 .startDate(LocalDate.of(2023, 10, 1))
-                .endDate(LOCAL_DATE)
+                .endDate(DEFAULT_DATE)
                 .build();
 
         /* when */
@@ -158,7 +158,7 @@ public class BookLineRepositoryTest {
         bookLine2.add(CategoryEnum.FLOW, category2);
 
         /* when */
-        final List<TotalExpense> result = bookLineRepository.totalExpenseByDay(LOCAL_DATE, BOOK_KEY);
+        final List<TotalExpense> result = bookLineRepository.totalExpenseByDay(DEFAULT_DATE, BOOK_KEY);
 
         /* then */
         final TotalExpense income = TotalExpense.builder()
@@ -191,7 +191,7 @@ public class BookLineRepositoryTest {
         bookLineRepository.save(bookLine);
         bookLineRepository.save(bookLine2);
 
-        LocalDate targetDate = LOCAL_DATE;
+        LocalDate targetDate = DEFAULT_DATE;
         assertThat(bookLineRepository.allLinesByDay(targetDate, BOOK_KEY).size()).isEqualTo(3);
     }
 
@@ -213,7 +213,7 @@ public class BookLineRepositoryTest {
         bookLineRepository.save(bookLine2);
 
         LocalDate start = LocalDate.of(2023, 10, 21);
-        LocalDate end = LOCAL_DATE;
+        LocalDate end = DEFAULT_DATE;
 
         DatesDuration datesRequest = DatesDuration.builder()
                 .startDate(start)
@@ -307,8 +307,8 @@ public class BookLineRepositoryTest {
         bookLine3.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory3);
 
         final DatesDuration datesDuration = DatesDuration.builder()
-                .startDate(LOCAL_DATE)
-                .endDate(LOCAL_DATE.plusDays(1))
+                .startDate(DEFAULT_DATE)
+                .endDate(DEFAULT_DATE.plusDays(1))
                 .build();
 
         /* when */
