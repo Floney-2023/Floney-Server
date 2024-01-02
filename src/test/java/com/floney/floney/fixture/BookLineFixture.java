@@ -37,7 +37,9 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static BookLine createBookLineWithWriter(Book book, double money, BookUser writer) {
+    public static BookLine bookLineWithMoney(final Book book,
+                                             final BookUser writer,
+                                             final double money) {
         return BookLine.builder()
                 .book(book)
                 .money(money)

@@ -36,7 +36,7 @@ import java.util.Map;
 import static com.floney.floney.book.CategoryFixture.*;
 import static com.floney.floney.fixture.BookFixture.*;
 import static com.floney.floney.fixture.BookLineFixture.DEFAULT_DATE;
-import static com.floney.floney.fixture.BookLineFixture.createBookLineWithWriter;
+import static com.floney.floney.fixture.BookLineFixture.bookLineWithMoney;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -80,8 +80,8 @@ public class BookLineRepositoryTest {
     @DisplayName("각 가계부 내역 지정된 기간의 수입/지출의 총합을 조회한다")
     void income() {
         /* given */
-        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
-        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
+        final BookLine bookLine2 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         final BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
@@ -116,8 +116,8 @@ public class BookLineRepositoryTest {
     @DisplayName("각 가계부 내역 지정된 달의 총수입/총지출을 조회한다")
     void all_expenses() {
         /* given */
-        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
-        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
+        final BookLine bookLine2 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         final BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
@@ -149,8 +149,8 @@ public class BookLineRepositoryTest {
     @DisplayName("날짜별로 총수입/총지출을 조회한다")
     void day_expenses() {
         /* given */
-        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
-        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
+        final BookLine bookLine2 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         final BookLineCategory category = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, category);
@@ -178,8 +178,8 @@ public class BookLineRepositoryTest {
     @DisplayName("날짜 별로 가계부 내역과 연관된 모든 카테고리와 금액을 조회한다")
     void days_line() {
         BookUser bookUser = bookUserRepository.save(createBookUser(user, book));
-        BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
-        BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
+        BookLine bookLine2 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         BookLineCategory incomeBookLineCategory = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         BookLineCategory childLineCategory = bookLineCategoryRepository.save(createChildLineCategory(childIncomeCategory, bookLine));
@@ -201,8 +201,8 @@ public class BookLineRepositoryTest {
     void all_dates_with_bookUsers() {
         BookUser bookUser = bookUserRepository.save(BookFixture.createBookUser(user, book));
 
-        BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
-        BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
+        BookLine bookLine2 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         BookLineCategory incomeBookLineCategory = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         bookLine.add(CategoryEnum.FLOW, incomeBookLineCategory);
@@ -228,7 +228,7 @@ public class BookLineRepositoryTest {
     @DisplayName("가계부 내역을 추가 시, 카테고리 3개(내역, 자산, 내역 분류)을 선택하여 생성한다")
     void saveBookLine() {
         /* given */
-        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         // 내역 카테고리
         final DefaultCategory flowCategory = DefaultCategory.builder()
@@ -280,7 +280,7 @@ public class BookLineRepositoryTest {
     @DisplayName("카테고리 별 분석을 조회하면, 카테고리의 이름과 해당 월의 내역 합계가 나온다 - 성공")
     void analyzeByCategory() {
         /* given */
-        final BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
 
         // 카테고리 생성
         final DefaultCategory category = DefaultCategory.builder()
@@ -298,12 +298,12 @@ public class BookLineRepositoryTest {
         bookLine.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory);
 
         // 가계부 내역2와 급여 카테고리 매핑
-        final BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine2 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
         final BookLineCategory bookLineFlowLineCategory2 = bookLineCategoryRepository.save(createLineCategory(category2, bookLine2));
         bookLine2.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory2);
 
         // 가계부 내역3과 용돈 카테고리 매핑
-        final BookLine bookLine3 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        final BookLine bookLine3 = bookLineRepository.save(bookLineWithMoney(book, bookUser, 1000.0));
         final BookLineCategory bookLineFlowLineCategory3 = bookLineCategoryRepository.save(createLineCategory(category, bookLine3));
         bookLine3.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory3);
 
