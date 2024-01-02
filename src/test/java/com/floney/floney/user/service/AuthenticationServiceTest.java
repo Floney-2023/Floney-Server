@@ -45,7 +45,7 @@ public class AuthenticationServiceTest {
     @DisplayName("로그인에 성공한다")
     void login_success() {
         // given
-        User user = UserFixture.createUser();
+        User user = UserFixture.emailUser();
 
         LoginRequest request = LoginRequest.builder()
                 .email(user.getEmail())
@@ -81,7 +81,7 @@ public class AuthenticationServiceTest {
     @DisplayName("로그인에 실패한다 - 일치하지 않는 비밀번호")
     void login_fail_throws_badCredentialException() {
         // given
-        User user = UserFixture.getUser();
+        User user = UserFixture.emailUser();
 
         LoginRequest request = LoginRequest.builder()
                 .email(user.getEmail())

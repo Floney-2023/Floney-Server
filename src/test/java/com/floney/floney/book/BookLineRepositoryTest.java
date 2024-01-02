@@ -68,7 +68,7 @@ public class BookLineRepositoryTest {
 
     @BeforeEach
     void init() {
-        user = userRepository.save(UserFixture.createUser());
+        user = userRepository.save(UserFixture.emailUser());
         book = bookRepository.save(BookFixture.createBook());
         bookUser = bookUserRepository.save(BookUser.of(user, book));
         incomeCategory = categoryRepository.save(incomeBookCategory());

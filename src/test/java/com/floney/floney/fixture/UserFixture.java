@@ -11,13 +11,7 @@ public class UserFixture {
 
     public static final String DELETE_VALUE = "알수없음";
 
-    private static final User user = createUser();
-
-    public static User getUser() {
-        return user;
-    }
-
-    public static User createUser() {
+    public static User emailUser() {
         return User.builder()
                 .nickname("floney")
                 .email(EMAIL)
@@ -29,7 +23,7 @@ public class UserFixture {
                 .build();
     }
 
-    public static User createKakaoUser() {
+    public static User kakaoUser() {
         return User.builder()
                 .nickname("floney")
                 .email("floney2@naver.com")

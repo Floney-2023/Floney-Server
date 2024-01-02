@@ -60,7 +60,7 @@ class UserServiceTest {
     @DisplayName("회원가입에 성공한다")
     void signup_success() {
         // given
-        User user = UserFixture.getUser();
+        User user = UserFixture.emailUser();
         SignupRequest signupRequest = SignupRequest.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -81,7 +81,7 @@ class UserServiceTest {
     @DisplayName("회원가입에 실패한다 - 이미 가입된 회원")
     void signup_fail_throws_userFoundException1() {
         // given
-        User user = UserFixture.getUser();
+        User user = UserFixture.emailUser();
         SignupRequest signupRequest = SignupRequest.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -98,7 +98,7 @@ class UserServiceTest {
     @DisplayName("회원탈퇴에 성공한다")
     void signout_success() {
         // given
-        User user = UserFixture.createUser();
+        User user = UserFixture.emailUser();
         ReflectionTestUtils.setField(user, "id", 1L);
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
@@ -150,7 +150,7 @@ class UserServiceTest {
     @DisplayName("회원탈퇴에 실패한다 - 비어있는 기타 탈퇴 사유")
     void signout_fail_throws_signoutOtherReasonEmptyException(final String value) {
         // given
-        User user = UserFixture.createUser();
+        User user = UserFixture.emailUser();
         ReflectionTestUtils.setField(user, "id", 1L);
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
         given(bookRepository.findAllByUserEmail(user.getEmail())).willReturn(List.of());
@@ -166,7 +166,7 @@ class UserServiceTest {
     @DisplayName("회원정보 얻기에 성공한다")
     void getUserInfo_success() {
         // given
-        User user = UserFixture.getUser();
+        User user = UserFixture.emailUser();
         given(bookUserRepository.findMyBookInfos(user)).willReturn(Collections.singletonList(BookFixture.myBookInfo()));
 
         // when & then
@@ -193,7 +193,7 @@ class UserServiceTest {
     @DisplayName("마케팅 수신 동의 여부를 변경하는데 성공한다")
     void updateReceiveMarketing_success() {
         // given
-        User user = UserFixture.createUser();
+        User user = UserFixture.emailUser();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
@@ -218,7 +218,7 @@ class UserServiceTest {
     @DisplayName("비밀번호 재발급 및 변경에 성공한다")
     void updateRegeneratedPassword_success() {
         // given
-        final User user = UserFixture.createUser();
+        final User user = UserFixture.emailUser();
 
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
@@ -240,7 +240,7 @@ class UserServiceTest {
     void updateRegeneratedPassword_fail_throws_notEmailUserException() {
         // given
         final String email = "notEmailUser";
-        final User notEmailUser = UserFixture.createKakaoUser();
+        final User notEmailUser = UserFixture.kakaoUser();
 
         given(userRepository.findByEmail(email)).willReturn(Optional.of(notEmailUser));
 
@@ -253,7 +253,7 @@ class UserServiceTest {
     @DisplayName("마케팅 수신 동의 여부를 조회하는데 성공한다")
     void getReceiveMarketing_success() {
         // given
-        User user = UserFixture.createUser();
+        User user = UserFixture.emailUser();
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when
