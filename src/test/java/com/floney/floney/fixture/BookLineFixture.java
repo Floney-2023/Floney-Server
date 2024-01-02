@@ -37,31 +37,12 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static BookLine createBookLine(Book book, double money) {
-        return BookLine.builder()
-                .book(book)
-                .money(money)
-                .lineDate(DEFAULT_DATE)
-                .exceptStatus(Boolean.FALSE)
-                .build();
-    }
-
     public static BookLine createBookLineWithWriter(Book book, double money, BookUser writer) {
         return BookLine.builder()
                 .book(book)
                 .money(money)
                 .lineDate(DEFAULT_DATE)
                 .writer(writer)
-                .exceptStatus(Boolean.FALSE)
-                .build();
-    }
-
-    public static BookLine createBookLineWith(BookUser user, Book book, double money) {
-        return BookLine.builder()
-                .book(book)
-                .writer(user)
-                .money(money)
-                .lineDate(DEFAULT_DATE)
                 .exceptStatus(Boolean.FALSE)
                 .build();
     }

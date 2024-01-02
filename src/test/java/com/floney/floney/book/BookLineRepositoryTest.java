@@ -35,7 +35,8 @@ import java.util.Map;
 
 import static com.floney.floney.book.CategoryFixture.*;
 import static com.floney.floney.fixture.BookFixture.*;
-import static com.floney.floney.fixture.BookLineFixture.*;
+import static com.floney.floney.fixture.BookLineFixture.DEFAULT_DATE;
+import static com.floney.floney.fixture.BookLineFixture.createBookLineWithWriter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -177,8 +178,8 @@ public class BookLineRepositoryTest {
     @DisplayName("날짜 별로 가계부 내역과 연관된 모든 카테고리와 금액을 조회한다")
     void days_line() {
         BookUser bookUser = bookUserRepository.save(createBookUser(user, book));
-        BookLine bookLine = bookLineRepository.save(createBookLineWith(bookUser, book, 1000.0));
-        BookLine bookLine2 = bookLineRepository.save(createBookLineWith(bookUser, book, 1000.0));
+        BookLine bookLine = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
+        BookLine bookLine2 = bookLineRepository.save(createBookLineWithWriter(book, 1000.0, bookUser));
 
         BookLineCategory incomeBookLineCategory = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) incomeCategory, bookLine));
         BookLineCategory childLineCategory = bookLineCategoryRepository.save(createChildLineCategory(childIncomeCategory, bookLine));
