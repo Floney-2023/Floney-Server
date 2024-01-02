@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("User 테스트")
 class UserTest {
@@ -15,7 +16,7 @@ class UserTest {
     class signupByEmailTest {
 
         @Test
-        @DisplayName("성공")
+        @DisplayName("성공한다.")
         void success() {
             /* given */
             final String email = "test@email.com";
@@ -33,6 +34,28 @@ class UserTest {
                     .hasFieldOrPropertyWithValue("password", password)
                     .hasFieldOrPropertyWithValue("provider", Provider.EMAIL)
                     .hasFieldOrPropertyWithValue("receiveMarketing", receiveMarketing);
+        }
+
+        @Test
+        @DisplayName("email이 비어있어 실패한다.")
+        void fail_blankEmail() {
+            /* given */
+            final String email = " ";
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
+                    .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        @DisplayName("email의 길이가 350자를 넘어 실패한다.")
+        void fail_tooLongEmail() {
+            /* given */
+            final String email = "a".repeat(351);
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
+                    .isInstanceOf(RuntimeException.class);
         }
     }
 }
