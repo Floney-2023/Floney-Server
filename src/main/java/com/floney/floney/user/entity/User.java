@@ -165,7 +165,7 @@ public class User extends BaseEntity {
     }
 
     private static void validateEmail(final String email) {
-        if (email.isEmpty()) {
+        if (email.isBlank()) {
             throw new RuntimeException("이메일이 비어 있습니다");
         }
 
@@ -175,7 +175,7 @@ public class User extends BaseEntity {
     }
 
     private static void validatePassword(final String password) {
-        if (password.isEmpty()) {
+        if (password.isBlank()) {
             throw new RuntimeException("비밀번호가 비어 있습니다");
         }
 
@@ -189,7 +189,7 @@ public class User extends BaseEntity {
     }
 
     private static void validateNickname(final String nickname) {
-        if (nickname.isEmpty()) {
+        if (nickname.isBlank()) {
             throw new RuntimeException("닉네임이 비어 있습니다");
         }
 
