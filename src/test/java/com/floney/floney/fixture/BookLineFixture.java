@@ -56,7 +56,6 @@ public class BookLineFixture {
                 .build();
     }
 
-
     public static BookLine createBookLineWith(BookUser user, Book book, double money) {
         return BookLine.builder()
                 .book(book)
@@ -71,7 +70,7 @@ public class BookLineFixture {
         return BookLineExpense.builder()
                 .assetType(INCOME)
                 .date(LOCAL_DATE)
-                .money(1000f)
+                .money(1000.0)
                 .build();
     }
 }
