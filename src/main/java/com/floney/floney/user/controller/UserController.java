@@ -105,8 +105,9 @@ public class UserController {
 
     /**
      * 이메일 회원 비밀번호와 요청 비밀번호가 일치하는 지 검사
+     *
      * @param userDetails 회원 정보
-     * @param request 검사할 비밀번호
+     * @param request     검사할 비밀번호
      */
     @PostMapping("/password")
     @ResponseStatus(HttpStatus.OK)
@@ -148,7 +149,7 @@ public class UserController {
     @GetMapping("/password/find")
     @ResponseStatus(HttpStatus.OK)
     public void regeneratePassword(@RequestParam final String email) {
-        userService.updateRegeneratedPassword(email);
+        userService.updatePasswordByGeneration(email);
     }
 
     /**
@@ -202,6 +203,7 @@ public class UserController {
 
     /**
      * 회원 마케팅 수신 동의 여부 조회
+     *
      * @param customUserDetails 회원 정보
      * @return 회원 마케팅 수신 동의 여부
      */

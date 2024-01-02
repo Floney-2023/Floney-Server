@@ -94,7 +94,7 @@ public class UserService {
         updatePassword(password, user);
     }
 
-    public void updateRegeneratedPassword(final String email) {
+    public void updatePasswordByGeneration(final String email) {
         final User user = findUserByEmail(email);
         user.validateEmailUser();
 

@@ -223,14 +223,14 @@ class UserServiceTest {
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
         // when & then
-        assertThatNoException().isThrownBy(() -> userService.updateRegeneratedPassword(user.getEmail()));
+        assertThatNoException().isThrownBy(() -> userService.updatePasswordByGeneration(user.getEmail()));
     }
 
     @Test
     @DisplayName("비밀번호 재발급 및 변경에 실패한다 - 존재하지 않는 회원")
     void updateRegeneratedPassword_fail_throws_userNotFoundException() {
         // when & then
-        assertThatThrownBy(() -> userService.updateRegeneratedPassword("notUser"))
+        assertThatThrownBy(() -> userService.updatePasswordByGeneration("notUser"))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
@@ -245,7 +245,7 @@ class UserServiceTest {
         given(userRepository.findByEmail(email)).willReturn(Optional.of(notEmailUser));
 
         // when & then
-        assertThatThrownBy(() -> userService.updateRegeneratedPassword(email))
+        assertThatThrownBy(() -> userService.updatePasswordByGeneration(email))
                 .isInstanceOf(NotEmailUserException.class);
     }
 
