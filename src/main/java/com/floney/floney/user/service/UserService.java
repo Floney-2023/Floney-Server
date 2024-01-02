@@ -40,7 +40,7 @@ import java.util.Optional;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
@@ -54,7 +54,6 @@ public class UserService {
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
 
-    @Transactional
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
         User user = request.to();
@@ -63,7 +62,6 @@ public class UserService {
         return request.toLoginRequest();
     }
 
-    @Transactional
     public SignoutResponse signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
 
@@ -78,26 +76,24 @@ public class UserService {
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }
 
+    @Transactional(readOnly = true)
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         List<MyBookInfo> myBooks = bookUserRepository.findMyBookInfos(user);
         return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 
-    @Transactional
     public void updateNickname(String nickname, CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         user.updateNickname(nickname);
         userRepository.save(user);
     }
 
-    @Transactional
     public void updatePassword(final String password, final String email) {
         final User user = findUserByEmail(email);
         updatePassword(password, user);
     }
 
-    @Transactional
     public void updateRegeneratedPassword(final String email) {
         final User user = findUserByEmail(email);
         user.validateEmailUser();
@@ -106,7 +102,6 @@ public class UserService {
         updatePassword(newPassword, user);
     }
 
-    @Transactional
     public void updateProfileImg(String profileImg, CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         user.updateProfileImg(profileImg);
@@ -119,19 +114,18 @@ public class UserService {
         });
     }
 
-    @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
         User user = findUserByEmail(username);
         user.saveRecentBookKey(request.getBookKey());
         userRepository.save(user);
     }
 
-    @Transactional
     public void updateReceiveMarketing(final boolean receiveMarketing, final String username) {
         final User user = findUserByEmail(username);
         user.updateReceiveMarketing(receiveMarketing);
     }
 
+    @Transactional(readOnly = true)
     public ReceiveMarketingResponse getReceiveMarketing(final String email) {
         return new ReceiveMarketingResponse(findUserByEmail(email).isReceiveMarketing());
     }
