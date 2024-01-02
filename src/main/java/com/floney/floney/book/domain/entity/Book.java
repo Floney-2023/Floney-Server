@@ -39,10 +39,10 @@ public class Book extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String bookKey;
 
-    @Column(columnDefinition = "TINYINT", length = 1)
+    @Column(columnDefinition = "TINYINT")
     private Boolean seeProfile;
 
-    @Column(columnDefinition = "TINYINT", length = 1)
+    @Column(columnDefinition = "TINYINT")
     private Boolean carryOverStatus;
 
     @Column(nullable = false, length = 10)

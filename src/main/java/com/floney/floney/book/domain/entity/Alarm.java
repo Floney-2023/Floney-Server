@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -35,6 +36,7 @@ public class Alarm extends BaseEntity {
 
     private LocalDateTime date;
 
+    @Column(columnDefinition = "TINYINT")
     private Boolean isReceived;
 
     @Builder

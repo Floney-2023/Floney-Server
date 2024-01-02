@@ -3,15 +3,14 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-    url: jdbc:h2:mem:test;NON_KEYWORDS=USER
+    url: jdbc:h2:mem:test;MODE=MySQL;NON_KEYWORDS=USER
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
     open-in-view: false
   redis:
     host: localhost
@@ -24,9 +23,8 @@ spring:
     port: 0
     host: host
     password: password
-  sql:
-    init:
-      mode: never
+  flyway:
+    baseline-on-migrate: true
 
 jwt:
   token:
@@ -35,3 +33,7 @@ jwt:
 server:
   error:
     include-message: always
+
+logging:
+  level:
+    root: debug

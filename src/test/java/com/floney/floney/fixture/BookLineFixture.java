@@ -15,7 +15,7 @@ public class BookLineFixture {
     public static final String OUTCOME = "지출";
     public static final String INCOME = "수입";
 
-    public static LocalDate LOCAL_DATE = LocalDate.of(2023, 10, 22);
+    public static LocalDate DEFAULT_DATE = LocalDate.of(2023, 10, 22);
 
     public static BookLineRequest outcomeRequest(final double money) {
         return BookLineRequest.builder()
@@ -37,41 +37,23 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static BookLine createBookLine(Book book, double money) {
+    public static BookLine bookLineWithMoney(final Book book,
+                                             final BookUser writer,
+                                             final double money) {
         return BookLine.builder()
                 .book(book)
                 .money(money)
-                .lineDate(LOCAL_DATE)
-                .exceptStatus(Boolean.FALSE)
-                .build();
-    }
-
-    public static BookLine createBookLineWithWriter(Book book, double money, BookUser writer) {
-        return BookLine.builder()
-                .book(book)
-                .money(money)
-                .lineDate(LOCAL_DATE)
+                .lineDate(DEFAULT_DATE)
                 .writer(writer)
                 .exceptStatus(Boolean.FALSE)
                 .build();
     }
 
-
-    public static BookLine createBookLineWith(BookUser user, Book book, double money) {
-        return BookLine.builder()
-                .book(book)
-                .writer(user)
-                .money(money)
-                .lineDate(LOCAL_DATE)
-                .exceptStatus(Boolean.FALSE)
-                .build();
-    }
-
-    public static BookLineExpense createBookLineExpense() {
+    public static BookLineExpense incomeBookLineExpense() {
         return BookLineExpense.builder()
                 .assetType(INCOME)
-                .date(LOCAL_DATE)
-                .money(1000f)
+                .date(DEFAULT_DATE)
+                .money(1000.0)
                 .build();
     }
 }
