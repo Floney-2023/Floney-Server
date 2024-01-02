@@ -57,5 +57,38 @@ class UserTest {
             assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
                     .isInstanceOf(RuntimeException.class);
         }
+
+        @Test
+        @DisplayName("password가 비어있어 실패한다.")
+        void fail_passwordEmail() {
+            /* given */
+            final String password = " ";
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
+                    .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        @DisplayName("password의 길이가 8자를 넘지 않아 실패한다.")
+        void fail_tooShortPassword() {
+            /* given */
+            final String password = "a".repeat(7);
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
+                    .isInstanceOf(RuntimeException.class);
+        }
+
+        @Test
+        @DisplayName("password의 길이가 32자를 넘어 실패한다.")
+        void fail_tooLongPassword() {
+            /* given */
+            final String password = "a".repeat(33);
+
+            /* when & then */
+            assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
+                    .isInstanceOf(RuntimeException.class);
+        }
     }
 }
