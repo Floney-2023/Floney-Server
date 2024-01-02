@@ -33,7 +33,7 @@ public class User extends BaseEntity {
     private static final String DELETE_VALUE = "알수없음";
     private static final int EMAIL_MAX_LENGTH = 350;
     private static final int PASSWORD_MIN_LENGTH = 8;
-    private static final int PASSWORD_MAX_LENGTH = 32;
+    public static final int PASSWORD_MAX_LENGTH = 32;
     private static final int NICKNAME_MAX_LENGTH = 8;
 
     @Column(nullable = false)
