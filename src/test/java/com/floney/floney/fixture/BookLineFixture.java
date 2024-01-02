@@ -49,7 +49,7 @@ public class BookLineFixture {
                 .build();
     }
 
-    public static BookLineExpense createBookLineExpense() {
+    public static BookLineExpense incomeBookLineExpense() {
         return BookLineExpense.builder()
                 .assetType(INCOME)
                 .date(DEFAULT_DATE)
