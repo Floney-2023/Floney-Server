@@ -12,6 +12,9 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+  sql:
+    init:
+      mode: never
   redis:
     host: localhost
     port: 6379
