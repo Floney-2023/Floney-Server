@@ -1,5 +1,6 @@
 package com.floney.floney.user.entity;
 
+import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.constant.Provider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -132,6 +133,72 @@ class UserTest {
             @DisplayName("예외가 발생한다.")
             void it_throws_exception() {
                 assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
+                    .isInstanceOf(RuntimeException.class);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("updatePassword 메서드에서")
+    class Describe_UpdatePassword {
+
+        @Nested
+        @DisplayName("새 password가 올바른 경우")
+        class Context_ValidPassword {
+
+            final User user = UserFixture.emailUser();
+            final String password = "newPassword";
+
+            @Test
+            @DisplayName("password를 변경한다.")
+            void it_changes_password() {
+                user.updatePassword(password);
+
+                assertThat(user.getPassword()).isEqualTo(password);
+            }
+        }
+
+        @Nested
+        @DisplayName("새 password가 비어있는 경우")
+        class Context_BlankPassword {
+
+            final User user = UserFixture.emailUser();
+            final String password = " ";
+
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> user.updatePassword(password))
+                    .isInstanceOf(RuntimeException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("새 password의 길이가 8자를 넘지 않는 경우")
+        class Context_TooShortPassword {
+
+            final User user = UserFixture.emailUser();
+            final String password = "a".repeat(7);
+
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> user.updatePassword(password))
+                    .isInstanceOf(RuntimeException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("새 password의 길이가 32자를 넘는 경우")
+        class Context_TooLongPassword {
+
+            final User user = UserFixture.emailUser();
+            final String password = "a".repeat(33);
+
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> user.updatePassword(password))
                     .isInstanceOf(RuntimeException.class);
             }
         }
