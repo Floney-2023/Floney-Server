@@ -1,7 +1,5 @@
 package com.floney.floney.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
@@ -19,8 +17,6 @@ import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.SignoutResponse;
 import com.floney.floney.user.entity.User;
 import io.restassured.RestAssured;
-import java.util.List;
-import java.util.Map;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +24,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("인수 테스트: 회원")
 @AcceptanceTest
@@ -44,28 +45,28 @@ class UserAcceptanceTest {
             final User user = UserFixture.emailUser();
 
             final SignupRequest request = SignupRequest.builder()
-                    .email(user.getEmail())
-                    .password(user.getPassword())
-                    .nickname(user.getNickname())
-                    .receiveMarketing(user.isReceiveMarketing())
-                    .build();
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .receiveMarketing(user.isReceiveMarketing())
+                .build();
 
             @Test
             @DisplayName("토큰을 반환한다.")
             void it_returns_token() {
                 final Token response = RestAssured
-                        .given()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/users")
-                        .then()
-                        .statusCode(HttpStatus.CREATED.value())
-                        .extract().as(Token.class);
+                    .given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/users")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract().as(Token.class);
 
                 assertThat(response)
-                        .hasFieldOrProperty("accessToken")
-                        .hasFieldOrProperty("refreshToken")
-                        .hasNoNullFieldsOrProperties();
+                    .hasFieldOrProperty("accessToken")
+                    .hasFieldOrProperty("refreshToken")
+                    .hasNoNullFieldsOrProperties();
             }
         }
 
@@ -76,27 +77,27 @@ class UserAcceptanceTest {
             final User user = UserFixture.emailUser();
 
             final SignupRequest request = SignupRequest.builder()
-                    .password(user.getPassword())
-                    .nickname(user.getNickname())
-                    .receiveMarketing(user.isReceiveMarketing())
-                    .build();
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .receiveMarketing(user.isReceiveMarketing())
+                .build();
 
 
             @Test
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/users")
-                        .then()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/users")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "1")
-                        .hasFieldOrPropertyWithValue("message", "이메일을 입력해주세요");
+                    .hasFieldOrPropertyWithValue("code", "1")
+                    .hasFieldOrPropertyWithValue("message", "이메일을 입력해주세요");
             }
         }
 
@@ -107,11 +108,11 @@ class UserAcceptanceTest {
             final User user = UserFixture.emailUser();
 
             final SignupRequest request = SignupRequest.builder()
-                    .email(user.getEmail())
-                    .password(user.getPassword())
-                    .nickname(user.getNickname())
-                    .receiveMarketing(user.isReceiveMarketing())
-                    .build();
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .receiveMarketing(user.isReceiveMarketing())
+                .build();
 
             @BeforeEach
             public void init() {
@@ -122,18 +123,18 @@ class UserAcceptanceTest {
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final Map<String, Object> response = RestAssured
-                        .given()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/users")
-                        .then()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract().as(Map.class);
+                    .given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/users")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(Map.class);
 
                 assertThat(response)
-                        .containsEntry("code", "U001")
-                        .containsEntry("message", "이미 존재하는 유저입니다")
-                        .containsEntry("provider", Provider.EMAIL.name());
+                    .containsEntry("code", "U001")
+                    .containsEntry("message", "이미 존재하는 유저입니다")
+                    .containsEntry("provider", Provider.EMAIL.name());
             }
         }
 
@@ -144,26 +145,26 @@ class UserAcceptanceTest {
             final User user = UserFixture.emailUser();
 
             final SignupRequest request = SignupRequest.builder()
-                    .email(user.getEmail())
-                    .password(user.getPassword())
-                    .receiveMarketing(user.isReceiveMarketing())
-                    .build();
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .receiveMarketing(user.isReceiveMarketing())
+                .build();
 
             final ErrorResponse response = RestAssured
-                    .given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
-                    .when().post("/users")
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .extract().as(ErrorResponse.class);
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().post("/users")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract().as(ErrorResponse.class);
 
             @Test
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "1")
-                        .hasFieldOrPropertyWithValue("message", "닉네임을 입력해주세요");
+                    .hasFieldOrPropertyWithValue("code", "1")
+                    .hasFieldOrPropertyWithValue("message", "닉네임을 입력해주세요");
             }
         }
 
@@ -174,26 +175,26 @@ class UserAcceptanceTest {
             final User user = UserFixture.emailUser();
 
             final SignupRequest request = SignupRequest.builder()
-                    .email(user.getEmail())
-                    .password(user.getPassword())
-                    .nickname(user.getNickname())
-                    .build();
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .build();
 
             final ErrorResponse response = RestAssured
-                    .given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
-                    .when().post("/users")
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .extract().as(ErrorResponse.class);
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().post("/users")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract().as(ErrorResponse.class);
 
             @Test
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "1")
-                        .hasFieldOrPropertyWithValue("message", "마케팅 수신 동의 여부를 입력해주세요");
+                    .hasFieldOrPropertyWithValue("code", "1")
+                    .hasFieldOrPropertyWithValue("message", "마케팅 수신 동의 여부를 입력해주세요");
             }
         }
     }
@@ -220,18 +221,18 @@ class UserAcceptanceTest {
             @DisplayName("bookKey를 반환하지 않는다.")
             void it_does_not_return() {
                 final SignoutResponse response = RestAssured
-                        .given()
-                        .param("accessToken", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().delete("/users")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(SignoutResponse.class);
+                    .given()
+                    .param("accessToken", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().delete("/users")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(SignoutResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("deletedBookKeys", List.of())
-                        .hasFieldOrPropertyWithValue("otherBookKeys", List.of());
+                    .hasFieldOrPropertyWithValue("deletedBookKeys", List.of())
+                    .hasFieldOrPropertyWithValue("otherBookKeys", List.of());
             }
         }
 
@@ -255,18 +256,18 @@ class UserAcceptanceTest {
             @DisplayName("가계부를 삭제하고 bookKey를 반환한다.")
             void it_returns_bookKey() {
                 final SignoutResponse response = RestAssured
-                        .given()
-                        .param("accessToken", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().delete("/users")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(SignoutResponse.class);
+                    .given()
+                    .param("accessToken", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().delete("/users")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(SignoutResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("deletedBookKeys", List.of(createBookResponse.getBookKey()))
-                        .hasFieldOrPropertyWithValue("otherBookKeys", List.of());
+                    .hasFieldOrPropertyWithValue("deletedBookKeys", List.of(createBookResponse.getBookKey()))
+                    .hasFieldOrPropertyWithValue("otherBookKeys", List.of());
             }
         }
 
@@ -294,18 +295,18 @@ class UserAcceptanceTest {
             @DisplayName("가계부를 삭제하지 않고 bookKey를 반환한다.")
             void it_returns_bookKey() {
                 final SignoutResponse response = RestAssured
-                        .given()
-                        .param("accessToken", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().delete("/users")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(SignoutResponse.class);
+                    .given()
+                    .param("accessToken", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().delete("/users")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(SignoutResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("deletedBookKeys", List.of())
-                        .hasFieldOrPropertyWithValue("otherBookKeys", List.of(createBookResponse.getBookKey()));
+                    .hasFieldOrPropertyWithValue("deletedBookKeys", List.of())
+                    .hasFieldOrPropertyWithValue("otherBookKeys", List.of(createBookResponse.getBookKey()));
             }
         }
 
@@ -333,18 +334,18 @@ class UserAcceptanceTest {
             @DisplayName("가계부를 삭제하지 않고 bookKey를 반환한다.")
             void it_returns_bookKey() {
                 final SignoutResponse response = RestAssured
-                        .given()
-                        .param("accessToken", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().delete("/users")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(SignoutResponse.class);
+                    .given()
+                    .param("accessToken", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().delete("/users")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(SignoutResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("deletedBookKeys", List.of())
-                        .hasFieldOrPropertyWithValue("otherBookKeys", List.of(createBookResponse.getBookKey()));
+                    .hasFieldOrPropertyWithValue("deletedBookKeys", List.of())
+                    .hasFieldOrPropertyWithValue("otherBookKeys", List.of(createBookResponse.getBookKey()));
             }
         }
 
@@ -367,18 +368,18 @@ class UserAcceptanceTest {
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .param("accessToken", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().delete("/users")
-                        .then()
-                        .statusCode(HttpStatus.UNAUTHORIZED.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .param("accessToken", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().delete("/users")
+                    .then()
+                    .statusCode(HttpStatus.UNAUTHORIZED.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "U008")
-                        .hasFieldOrPropertyWithValue("message", "해당 이메일로 가입된 유저가 없습니다");
+                    .hasFieldOrPropertyWithValue("code", "U008")
+                    .hasFieldOrPropertyWithValue("message", "해당 이메일로 가입된 유저가 없습니다");
             }
         }
 
@@ -400,18 +401,18 @@ class UserAcceptanceTest {
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .param("accessToken", token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().delete("/users")
-                        .then()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .param("accessToken", token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().delete("/users")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "U019")
-                        .hasFieldOrPropertyWithValue("message", "기타 탈퇴 사유가 없습니다");
+                    .hasFieldOrPropertyWithValue("code", "U019")
+                    .hasFieldOrPropertyWithValue("message", "기타 탈퇴 사유가 없습니다");
             }
         }
     }
@@ -437,21 +438,21 @@ class UserAcceptanceTest {
             @DisplayName("빈 myBooks 리스트를 포함한 정보를 반환한다.")
             void it_returns_userInfo() {
                 final MyPageResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/users/mypage")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(MyPageResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/users/mypage")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(MyPageResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("nickname", user.getNickname())
-                        .hasFieldOrPropertyWithValue("email", user.getEmail())
-                        .hasFieldOrPropertyWithValue("profileImg", user.getProfileImg())
-                        .hasFieldOrPropertyWithValue("provider", user.getProvider())
-                        .hasFieldOrProperty("lastAdTime")
-                        .hasFieldOrPropertyWithValue("myBooks", List.of());
+                    .hasFieldOrPropertyWithValue("nickname", user.getNickname())
+                    .hasFieldOrPropertyWithValue("email", user.getEmail())
+                    .hasFieldOrPropertyWithValue("profileImg", user.getProfileImg())
+                    .hasFieldOrPropertyWithValue("provider", user.getProvider())
+                    .hasFieldOrProperty("lastAdTime")
+                    .hasFieldOrPropertyWithValue("myBooks", List.of());
             }
         }
 
@@ -473,23 +474,23 @@ class UserAcceptanceTest {
             @DisplayName("비어있지 않은 myBooks 리스트를 포함한 정보를 반환한다.")
             void it_returns_userInfo() {
                 final MyPageResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/users/mypage")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(MyPageResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/users/mypage")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(MyPageResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("nickname", user.getNickname())
-                        .hasFieldOrPropertyWithValue("email", user.getEmail())
-                        .hasFieldOrPropertyWithValue("profileImg", user.getProfileImg())
-                        .hasFieldOrPropertyWithValue("provider", user.getProvider())
-                        .hasFieldOrProperty("lastAdTime")
-                        .extracting("myBooks")
-                        .asInstanceOf(InstanceOfAssertFactories.list(MyBookInfo.class))
-                        .hasSize(1);
+                    .hasFieldOrPropertyWithValue("nickname", user.getNickname())
+                    .hasFieldOrPropertyWithValue("email", user.getEmail())
+                    .hasFieldOrPropertyWithValue("profileImg", user.getProfileImg())
+                    .hasFieldOrPropertyWithValue("provider", user.getProvider())
+                    .hasFieldOrProperty("lastAdTime")
+                    .extracting("myBooks")
+                    .asInstanceOf(InstanceOfAssertFactories.list(MyBookInfo.class))
+                    .hasSize(1);
             }
         }
     }
@@ -518,13 +519,13 @@ class UserAcceptanceTest {
                 final UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword);
 
                 RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().put("/users/password")
-                        .then()
-                        .statusCode(HttpStatus.OK.value());
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().put("/users/password")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
             }
         }
 
@@ -547,18 +548,18 @@ class UserAcceptanceTest {
                 final UpdatePasswordRequest request = new UpdatePasswordRequest(user.getPassword());
 
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().put("/users/password")
-                        .then()
-                        .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().put("/users/password")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "U017")
-                        .hasFieldOrPropertyWithValue("message", "이전 비밀번호와 같습니다");
+                    .hasFieldOrPropertyWithValue("code", "U017")
+                    .hasFieldOrPropertyWithValue("message", "이전 비밀번호와 같습니다");
             }
         }
     }
