@@ -21,10 +21,13 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-        
+
+      - name: 인수 테스트 용 Redis 추가
+        uses: shogo82148/actions-setup-redis@v1
+
       - name: gradlew에 실행 권한 부여
         run: chmod +x gradlew
-        
+
       - name: 프로젝트 빌드
         run: ./gradlew clean build
 
