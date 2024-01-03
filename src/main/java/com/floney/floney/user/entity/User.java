@@ -100,12 +100,12 @@ public class User extends BaseEntity {
         validateSignup(email, password, nickname);
 
         return User.builder()
-                .email(email)
-                .password(password)
-                .nickname(nickname)
-                .provider(Provider.EMAIL)
-                .receiveMarketing(receiveMarketing)
-                .build();
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .provider(Provider.EMAIL)
+            .receiveMarketing(receiveMarketing)
+            .build();
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -117,6 +117,7 @@ public class User extends BaseEntity {
     }
 
     public void updatePassword(String password) {
+        validatePassword(password);
         this.password = password;
     }
 
