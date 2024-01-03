@@ -12,105 +12,128 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class UserTest {
 
     @Nested
-    @DisplayName("provider가 email인 User를 생성할 때")
-    class signupByEmailTest {
+    @DisplayName("signupByEmail 메서드에서")
+    class Describe_SignupByEmail {
 
-        @Test
-        @DisplayName("성공한다.")
-        void success() {
-            /* given */
+        @Nested
+        @DisplayName("email, password, nickname, receiveMarketing 이 조건을 만족하는 경우")
+        class Context_ValidParameters {
+
             final String email = "test@email.com";
             final String password = "password";
             final String nickname = "nickname";
             final boolean receiveMarketing = true;
 
-            /* when */
-            final User user = User.signupByEmail(email, password, nickname, receiveMarketing);
+            @Test
+            @DisplayName("User를 생성한다.")
+            void it_returns_user() {
+                final User user = User.signupByEmail(email, password, nickname, receiveMarketing);
 
-            /* then */
-            assertThat(user)
+                assertThat(user)
                     .hasFieldOrPropertyWithValue("email", email)
                     .hasFieldOrPropertyWithValue("nickname", nickname)
                     .hasFieldOrPropertyWithValue("password", password)
                     .hasFieldOrPropertyWithValue("provider", Provider.EMAIL)
                     .hasFieldOrPropertyWithValue("receiveMarketing", receiveMarketing);
+            }
         }
 
-        @Test
-        @DisplayName("email이 비어있어 실패한다.")
-        void fail_blankEmail() {
-            /* given */
+        @Nested
+        @DisplayName("email이 비어있는 경우")
+        class Context_BlankEmail {
+
             final String email = " ";
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
 
-        @Test
-        @DisplayName("email의 길이가 350자를 넘어 실패한다.")
-        void fail_tooLongEmail() {
-            /* given */
+        @Nested
+        @DisplayName("email의 길이가 350자를 넘는 경우")
+        class Context_TooLongEmail {
+
             final String email = "a".repeat(351);
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail(email, "password", "nickname", true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
 
-        @Test
-        @DisplayName("password가 비어있어 실패한다.")
-        void fail_passwordEmail() {
-            /* given */
+        @Nested
+        @DisplayName("password가 비어있는 경우")
+        class Context_BlankPassword {
+
             final String password = " ";
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
 
-        @Test
-        @DisplayName("password의 길이가 8자를 넘지 않아 실패한다.")
-        void fail_tooShortPassword() {
-            /* given */
+        @Nested
+        @DisplayName("password의 길이가 8자를 넘지 않는 경우")
+        class Context_TooShortPassword {
+
             final String password = "a".repeat(7);
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
 
-        @Test
-        @DisplayName("password의 길이가 32자를 넘어 실패한다.")
-        void fail_tooLongPassword() {
-            /* given */
+        @Nested
+        @DisplayName("password의 길이가 32자를 넘는 경우")
+        class Context_TooLongPassword {
+
             final String password = "a".repeat(33);
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail("test@email.com", password, "nickname", true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
 
-        @Test
-        @DisplayName("nickname이 비어있어 실패한다.")
-        void fail_blankNickname() {
-            /* given */
+        @Nested
+        @DisplayName("nickname이 비어있는 경우")
+        class Context_BlankNickname {
+
             final String nickname = " ";
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
 
-        @Test
-        @DisplayName("nickname의 길이가 8자를 넘어 실패한다.")
-        void fail_tooLongNickname() {
-            /* given */
+        @Nested
+        @DisplayName("nickname의 길이가 8자를 넘는 경우")
+        class Context_TooLongNickname {
+
             final String nickname = "a".repeat(9);
 
-            /* when & then */
-            assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
+            @Test
+            @DisplayName("예외가 발생한다.")
+            void it_throws_exception() {
+                assertThatThrownBy(() -> User.signupByEmail("test@email.com", "password", nickname, true))
                     .isInstanceOf(RuntimeException.class);
+            }
         }
     }
 }
