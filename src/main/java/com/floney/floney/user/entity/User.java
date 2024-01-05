@@ -30,15 +30,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    private static final String DELETE_VALUE = "알수없음";
+    public static final String DELETE_VALUE = "알수없음";
+    private static final int EMAIL_MAX_LENGTH = 350;
+    private static final int PASSWORD_MIN_LENGTH = 8;
+    public static final int PASSWORD_MAX_LENGTH = 32;
+    private static final int NICKNAME_MAX_LENGTH = 8;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false)
     private String nickname;
 
-    @Column(length = 100)
+    @Column
     private String password;
 
     @Column(length = 300)
@@ -49,7 +53,7 @@ public class User extends BaseEntity {
     @Builder.Default
     private LocalDateTime lastAdTime = LocalDateTime.now();
 
-    @Column(nullable = false, updatable = false, length = 10)
+    @Column(nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
@@ -89,6 +93,21 @@ public class User extends BaseEntity {
         this.receiveMarketing = receiveMarketing;
     }
 
+    public static User signupByEmail(final String email,
+                                     final String password,
+                                     final String nickname,
+                                     final Boolean receiveMarketing) {
+        validateSignup(email, password, nickname);
+
+        return User.builder()
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .provider(Provider.EMAIL)
+            .receiveMarketing(receiveMarketing)
+            .build();
+    }
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
     }
@@ -98,6 +117,7 @@ public class User extends BaseEntity {
     }
 
     public void updatePassword(String password) {
+        validatePassword(password);
         this.password = password;
     }
 
@@ -140,6 +160,46 @@ public class User extends BaseEntity {
     public void validateEmailUser() {
         if (!Provider.EMAIL.equals(provider)) {
             throw new NotEmailUserException(provider);
+        }
+    }
+
+    private static void validateSignup(final String email, final String password, final String nickname) {
+        validateEmail(email);
+        validatePassword(password);
+        validateNickname(nickname);
+    }
+
+    private static void validateEmail(final String email) {
+        if (email.isBlank()) {
+            throw new RuntimeException("이메일이 비어 있습니다");
+        }
+
+        if (email.length() > EMAIL_MAX_LENGTH) {
+            throw new RuntimeException("이메일의 길이는 " + EMAIL_MAX_LENGTH + "자를 넘을 수 없습니다");
+        }
+    }
+
+    private static void validatePassword(final String password) {
+        if (password.isBlank()) {
+            throw new RuntimeException("비밀번호가 비어 있습니다");
+        }
+
+        if (password.length() < PASSWORD_MIN_LENGTH) {
+            throw new RuntimeException("비밀번호의 길이는 " + PASSWORD_MIN_LENGTH + "자를 넘어야 합니다");
+        }
+
+        if (password.length() > PASSWORD_MAX_LENGTH) {
+            throw new RuntimeException("비밀번호의 길이는 " + PASSWORD_MAX_LENGTH + "자를 넘을 수 없습니다");
+        }
+    }
+
+    private static void validateNickname(final String nickname) {
+        if (nickname.isBlank()) {
+            throw new RuntimeException("닉네임이 비어 있습니다");
+        }
+
+        if (nickname.length() > NICKNAME_MAX_LENGTH) {
+            throw new RuntimeException("닉네임의 길이는 " + NICKNAME_MAX_LENGTH + "자를 넘을 수 없습니다");
         }
     }
 }

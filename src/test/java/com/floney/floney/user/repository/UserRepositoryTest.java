@@ -27,7 +27,7 @@ public class UserRepositoryTest {
     @DisplayName("status가 active인 유저만 조회하는 데 성공한다")
     void findActiveUsers_success() {
         // given
-        userRepository.save(UserFixture.createUser());
+        userRepository.save(UserFixture.emailUser());
 
         // when
         User user = userRepository.findByEmailAndStatus(EMAIL, ACTIVE).orElseThrow();
