@@ -32,7 +32,7 @@ public class BookLine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine", cascade = {CascadeType.ALL})
     @MapKeyEnumerated(EnumType.STRING)
     private final Map<CategoryType, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryType.class);
 
