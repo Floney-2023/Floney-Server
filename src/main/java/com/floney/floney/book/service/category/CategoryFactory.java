@@ -3,7 +3,7 @@ package com.floney.floney.book.service.category;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.category.Category;
-import com.floney.floney.book.dto.constant.CategoryType;
+import com.floney.floney.book.domain.vo.CategoryType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.floney.floney.book.domain.entity.BookLineCategory.of;
-import static com.floney.floney.book.dto.constant.CategoryType.*;
+import static com.floney.floney.book.domain.vo.CategoryType.*;
 
 @Component
 @Getter

@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.dto.constant.AssetType;
+import com.floney.floney.book.domain.vo.AssetType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -49,24 +49,24 @@ public class DayLineInfo {
 
     public static DayLineInfo toDayViewInfos(DayLineByDayView dayLine) {
         return DayLineInfo.builder()
-                .id(dayLine.getId())
-                .assetType(dayLine.getCategories())
-                .categories(new ArrayList<>())
-                .money(dayLine.getMoney())
-                .content(dayLine.getContent())
-                .img(dayLine.getProfileImg())
-                .exceptStatus(dayLine.isExceptStatus())
-                .userNickName(dayLine.getNickName())
-                .build();
+            .id(dayLine.getId())
+            .assetType(dayLine.getCategories())
+            .categories(new ArrayList<>())
+            .money(dayLine.getMoney())
+            .content(dayLine.getContent())
+            .img(dayLine.getProfileImg())
+            .exceptStatus(dayLine.isExceptStatus())
+            .userNickName(dayLine.getNickName())
+            .build();
     }
 
     public static DayLineInfo toDayInfos(DayLine dayLine) {
         return DayLineInfo.builder()
-                .assetType(dayLine.getCategories())
-                .categories(new ArrayList<>())
-                .money(dayLine.getMoney())
-                .content(dayLine.getContent())
-                .userEmail(dayLine.getUserEmail())
-                .build();
+            .assetType(dayLine.getCategories())
+            .categories(new ArrayList<>())
+            .money(dayLine.getMoney())
+            .content(dayLine.getContent())
+            .userEmail(dayLine.getUserEmail())
+            .build();
     }
 }

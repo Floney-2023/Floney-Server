@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
-import static com.floney.floney.book.dto.constant.CategoryType.*;
+import static com.floney.floney.book.domain.vo.CategoryType.*;
 
 @Getter
 public class BookLineResponse {

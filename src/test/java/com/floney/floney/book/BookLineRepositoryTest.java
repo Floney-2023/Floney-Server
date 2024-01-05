@@ -8,7 +8,7 @@ import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.domain.entity.category.DefaultCategory;
-import com.floney.floney.book.dto.constant.CategoryType;
+import com.floney.floney.book.domain.vo.CategoryType;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.TotalExpense;

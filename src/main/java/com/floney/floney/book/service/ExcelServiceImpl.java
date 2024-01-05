@@ -1,7 +1,7 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.dto.constant.CategoryType;
+import com.floney.floney.book.domain.vo.CategoryType;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;

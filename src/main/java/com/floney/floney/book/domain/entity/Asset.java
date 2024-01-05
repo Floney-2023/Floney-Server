@@ -11,8 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 
-import static com.floney.floney.book.dto.constant.AssetType.INCOME;
-import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.domain.vo.AssetType.INCOME;
+import static com.floney.floney.book.domain.vo.AssetType.OUTCOME;
 
 @Entity
 @Getter
@@ -33,16 +33,16 @@ public class Asset extends BaseEntity {
     public static Asset of(BookLineRequest request, Book book, LocalDate date) {
         if (OUTCOME.getKind().equals(request.getFlow())) {
             return Asset.builder()
-                    .money(-1 * request.getMoney())
-                    .book(book)
-                    .date(date)
-                    .build();
-        }
-        return Asset.builder()
-                .money(request.getMoney())
+                .money(-1 * request.getMoney())
                 .book(book)
                 .date(date)
                 .build();
+        }
+        return Asset.builder()
+            .money(request.getMoney())
+            .book(book)
+            .date(date)
+            .build();
     }
 
     public void add(final double money, final String flow) {

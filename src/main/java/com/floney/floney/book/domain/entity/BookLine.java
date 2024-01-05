@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.dto.constant.CategoryType;
+import com.floney.floney.book.domain.vo.AssetType;
+import com.floney.floney.book.domain.vo.CategoryType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
