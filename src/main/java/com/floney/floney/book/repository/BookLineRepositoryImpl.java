@@ -5,7 +5,9 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
-import com.floney.floney.book.domain.entity.*;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
@@ -61,24 +63,14 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             );
     }
 
-
     @Override
-    public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
-        return jpaQueryFactory.select(
-                new QDayLineByDayView(
-                    bookLine.id,
-                    bookLine.money,
-                    bookLine.description,
-                    bookLineCategory.name,
-                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
-                    bookLine.exceptStatus,
-                    user.nickname
-                ))
+    public List<DayLineResponse> allBookLineAndCategoryByDay(LocalDate date, String bookKey) {
+        return jpaQueryFactory.select(new QDayLineResponse(bookLine.id, bookLine, user.nickname, user.profileImg))
             .from(bookLine)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.bookLineCategories, bookLineCategory).fetchJoin()
             .innerJoin(bookLine.book, book)
-            .leftJoin(bookLine.writer, bookUser)
-            .leftJoin(bookUser.user, user)
+            .innerJoin(bookLine.writer, bookUser).fetchJoin()
+            .innerJoin(bookUser.user, user)
             .where(
                 book.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
@@ -87,8 +79,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookUser.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE)
             )
-            .groupBy(bookLine.id, bookLineCategory.name)
-            .fetch();
+            .fetch().stream().distinct().toList();
     }
 
     @Override
