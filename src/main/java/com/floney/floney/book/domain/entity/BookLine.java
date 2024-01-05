@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.dto.constant.AssetType;
-import com.floney.floney.book.dto.constant.CategoryEnum;
+import com.floney.floney.book.dto.constant.CategoryType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
@@ -34,7 +34,7 @@ public class BookLine extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
     @MapKeyEnumerated(EnumType.STRING)
-    private final Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
+    private final Map<CategoryType, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryType.class);
 
     @Column(nullable = false)
     private Double money;
@@ -58,11 +58,11 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = exceptStatus;
     }
 
-    public void add(CategoryEnum flow, BookLineCategory category) {
+    public void add(CategoryType flow, BookLineCategory category) {
         this.bookLineCategories.put(flow, category);
     }
 
-    public String getTargetCategory(CategoryEnum key) {
+    public String getTargetCategory(CategoryType key) {
         return this.bookLineCategories.get(key).getName();
     }
 
@@ -83,6 +83,6 @@ public class BookLine extends BaseEntity {
     }
 
     public boolean includedInAsset() {
-        return !AssetType.BANK.getKind().equals(bookLineCategories.get(CategoryEnum.FLOW).getName());
+        return !AssetType.BANK.getKind().equals(bookLineCategories.get(CategoryType.FLOW).getName());
     }
 }

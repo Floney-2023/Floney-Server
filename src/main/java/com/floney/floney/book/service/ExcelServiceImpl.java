@@ -1,7 +1,7 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.dto.constant.CategoryType;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
@@ -60,7 +60,7 @@ public class ExcelServiceImpl implements ExcelService {
             dateCell.setCellStyle(dateStyle);
 
             final Cell flowCell = row.createCell(cellIdx++);
-            flowCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.FLOW));
+            flowCell.setCellValue(bookLine.getTargetCategory(CategoryType.FLOW));
             flowCell.setCellStyle(cellStyle);
 
             final Cell moneyCell = row.createCell(cellIdx++);
@@ -72,11 +72,11 @@ public class ExcelServiceImpl implements ExcelService {
             currencyCell.setCellStyle(cellStyle);
 
             final Cell assetCell = row.createCell(cellIdx++);
-            assetCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.ASSET));
+            assetCell.setCellValue(bookLine.getTargetCategory(CategoryType.ASSET));
             assetCell.setCellStyle(cellStyle);
 
             final Cell flowLineCell = row.createCell(cellIdx++);
-            flowLineCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.FLOW_LINE));
+            flowLineCell.setCellValue(bookLine.getTargetCategory(CategoryType.FLOW_LINE));
             flowLineCell.setCellStyle(cellStyle);
 
             final Cell descriptionCell = row.createCell(cellIdx);
@@ -89,8 +89,8 @@ public class ExcelServiceImpl implements ExcelService {
 
     private short getDataFormat(final Workbook workbook) {
         return workbook.getCreationHelper()
-                .createDataFormat()
-                .getFormat("yyyy-mm-dd");
+            .createDataFormat()
+            .getFormat("yyyy-mm-dd");
     }
 
     private static void setWidthOfCells(final List<BookLine> bookLines, final Sheet sheet) {

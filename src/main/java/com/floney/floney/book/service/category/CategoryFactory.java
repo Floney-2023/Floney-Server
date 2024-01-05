@@ -1,10 +1,10 @@
 package com.floney.floney.book.service.category;
 
-import com.floney.floney.book.dto.constant.CategoryEnum;
-import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.category.Category;
+import com.floney.floney.book.dto.constant.CategoryType;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.floney.floney.book.dto.constant.CategoryEnum.*;
 import static com.floney.floney.book.domain.entity.BookLineCategory.of;
+import static com.floney.floney.book.dto.constant.CategoryType.*;
 
 @Component
 @Getter
@@ -39,7 +39,7 @@ public class CategoryFactory {
     }
 
     private BookLineCategory changeAssetCategory(BookLine bookLine, String requestCategory, String bookKey) {
-        Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
+        Map<CategoryType, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(ASSET);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
             //기존 카테고리 삭제
@@ -52,7 +52,7 @@ public class CategoryFactory {
     }
 
     private BookLineCategory changeLineCategory(BookLine bookLine, String bookKey, String requestCategory) {
-        Map<CategoryEnum, BookLineCategory> categories = bookLine.getBookLineCategories();
+        Map<CategoryType, BookLineCategory> categories = bookLine.getBookLineCategories();
         BookLineCategory currentCategory = categories.get(FLOW_LINE);
         if (!Objects.equals(currentCategory.getName(), requestCategory)) {
 

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
-import static com.floney.floney.book.dto.constant.CategoryEnum.*;
+import static com.floney.floney.book.dto.constant.CategoryType.*;
 
 @Getter
 public class BookLineResponse {
@@ -41,14 +41,14 @@ public class BookLineResponse {
 
     public static BookLineResponse from(final BookLine bookLine) {
         return BookLineResponse.builder()
-                .money(bookLine.getMoney())
-                .flow(bookLine.getTargetCategory(FLOW))
-                .asset(bookLine.getTargetCategory(ASSET))
-                .line(bookLine.getTargetCategory(FLOW_LINE))
-                .lineDate(bookLine.getLineDate())
-                .description(bookLine.getDescription())
-                .except(bookLine.getExceptStatus())
-                .nickname(bookLine.getWriter())
-                .build();
+            .money(bookLine.getMoney())
+            .flow(bookLine.getTargetCategory(FLOW))
+            .asset(bookLine.getTargetCategory(ASSET))
+            .line(bookLine.getTargetCategory(FLOW_LINE))
+            .lineDate(bookLine.getLineDate())
+            .description(bookLine.getDescription())
+            .except(bookLine.getExceptStatus())
+            .nickname(bookLine.getWriter())
+            .build();
     }
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
-import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.book.dto.constant.CategoryType.FLOW;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -81,7 +81,7 @@ public class AssetServiceImpl implements AssetService {
     @Transactional
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
-                .orElseThrow(NotFoundBookLineException::new);
+            .orElseThrow(NotFoundBookLineException::new);
         if (!bookLine.includedInAsset()) {
             return;
         }
