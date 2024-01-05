@@ -5,10 +5,7 @@ import com.floney.floney.analyze.service.CarryOverServiceImpl;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.DatesDuration;
-import com.floney.floney.book.dto.process.DayLines;
-import com.floney.floney.book.dto.process.TotalExpense;
+import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -69,10 +66,10 @@ public class BookLineServiceImpl implements BookLineService {
         DatesDuration dates = DateFactory.getDateDuration(date);
 
         return MonthLinesResponse.of(
-                date,
-                daysExpense(bookKey, dates),
-                totalExpense(bookKey, dates),
-                carryOverFactory.getCarryOverInfo(book, date)
+            date,
+            daysExpense(bookKey, dates),
+            totalExpense(bookKey, dates),
+            carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
@@ -80,14 +77,14 @@ public class BookLineServiceImpl implements BookLineService {
     public TotalDayLinesResponse showByDays(String bookKey, String date) {
         Book book = findBook(bookKey);
 
-        List<DayLines> dayLines = DayLines.forDayView(bookLineRepository.allLinesByDay(parse(date), bookKey));
+        List<DayLineResponse> dayLines = bookLineRepository.allBookLineAndCategoryByDay(parse(date), bookKey);
         List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
 
         return TotalDayLinesResponse.of(
-                dayLines,
-                totalExpenses,
-                book.getSeeProfile(),
-                carryOverFactory.getCarryOverInfo(book, date)
+            dayLines,
+            totalExpenses,
+            book.getSeeProfile(),
+            carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
@@ -101,7 +98,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public BookLineResponse changeLine(final BookLineRequest request) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
-                .orElseThrow(NotFoundBookLineException::new);
+            .orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
@@ -129,7 +126,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Transactional
     public void deleteLine(final Long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
-                .orElseThrow(NotFoundBookLineException::new);
+            .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
     }
 
@@ -141,12 +138,12 @@ public class BookLineServiceImpl implements BookLineService {
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
         return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
-                .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
+            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(bookKey));
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(String bookKey, DatesDuration dates) {

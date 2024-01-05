@@ -1,6 +1,7 @@
 package com.floney.floney.book.repository.category;
 
-import com.floney.floney.book.domain.entity.*;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.domain.entity.category.DefaultCategory;
@@ -23,8 +24,8 @@ import java.util.Optional;
 import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
-import static com.floney.floney.book.domain.entity.QCategory.category;
 import static com.floney.floney.book.domain.entity.category.QBookCategory.bookCategory;
+import static com.floney.floney.book.domain.entity.category.QCategory.category;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 
