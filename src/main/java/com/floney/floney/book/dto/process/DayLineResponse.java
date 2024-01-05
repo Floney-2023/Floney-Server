@@ -1,7 +1,7 @@
 package com.floney.floney.book.dto.process;
 
 import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.dto.constant.CategoryEnum;
+import com.floney.floney.book.domain.vo.CategoryType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,9 +28,9 @@ public class DayLineResponse {
         this.description = bookLine.getDescription();
         this.userNickName = userNickName;
         this.profileImg = profileImg;
-        this.flowCategory = bookLine.getBookLineCategories().get(CategoryEnum.FLOW).getName();
-        this.lineCategory = bookLine.getBookLineCategories().get(CategoryEnum.FLOW_LINE).getName();
-        this.assetCategory = bookLine.getBookLineCategories().get(CategoryEnum.ASSET).getName();
+        this.flowCategory = bookLine.getBookLineCategories().get(CategoryType.FLOW).getName();
+        this.lineCategory = bookLine.getBookLineCategories().get(CategoryType.FLOW_LINE).getName();
+        this.assetCategory = bookLine.getBookLineCategories().get(CategoryType.ASSET).getName();
         this.exceptStatus = bookLine.getExceptStatus();
     }
 
