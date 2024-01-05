@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.dto.constant.AssetType;
+import com.floney.floney.book.domain.vo.AssetType;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

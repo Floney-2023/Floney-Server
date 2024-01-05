@@ -1,7 +1,7 @@
 package com.floney.floney.analyze.dto.process;
 
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
-import com.floney.floney.book.dto.constant.AssetType;
+import com.floney.floney.book.domain.vo.AssetType;
 import com.floney.floney.book.dto.process.AssetInfo;
 
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ public class BookAnalyzer {
         return totalExpenses.get(AssetType.INCOME.getKind()) - totalExpenses.get(AssetType.OUTCOME.getKind());
     }
 
-    public AnalyzeResponseByAsset analyzeAsset(String requestMonth,double savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
+    public AnalyzeResponseByAsset analyzeAsset(String requestMonth, double savedAsset, Map<LocalDate, AssetInfo> assetInfo) {
         double difference = differenceInAndOutCome();
         LocalDate requestDate = LocalDate.parse(requestMonth);
         double currentAsset = assetInfo.get(requestDate).getAssetMoney();

@@ -1,4 +1,4 @@
-package com.floney.floney.book.domain;
+package com.floney.floney.book.domain.vo;
 
 import lombok.Getter;
 

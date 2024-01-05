@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.request;
 
-import com.floney.floney.book.dto.constant.Currency;
+import com.floney.floney.book.domain.vo.Currency;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
