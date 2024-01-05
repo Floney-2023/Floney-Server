@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.response;
 
-import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.Category;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,8 +19,8 @@ public class CreateCategoryResponse {
 
     public static CreateCategoryResponse of(Category category) {
         return CreateCategoryResponse.builder()
-                .name(category.getName())
-                .build();
+            .name(category.getName())
+            .build();
     }
 
     @Override

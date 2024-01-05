@@ -2,6 +2,9 @@ package com.floney.floney.book.repository.category;
 
 import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.domain.entity.category.BookCategory;
+import com.floney.floney.book.domain.entity.category.Category;
+import com.floney.floney.book.domain.entity.category.DefaultCategory;
+import com.floney.floney.book.domain.entity.category.RootCategory;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.process.QCategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
@@ -204,8 +207,8 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public List<Category> findAllDefaultChildCategoryByRoot(Category root){
-       return jpaQueryFactory.select(category)
+    public List<Category> findAllDefaultChildCategoryByRoot(Category root) {
+        return jpaQueryFactory.select(category)
             .from(category)
             .where(category.parent.eq(root),
                 category.instanceOf(DefaultCategory.class))
@@ -213,7 +216,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     }
 
     @Override
-    public List<BookCategory> findAllCustomChildCategoryByRootAndRoot(Category root, String bookKey){
+    public List<BookCategory> findAllCustomChildCategoryByRootAndRoot(Category root, String bookKey) {
         return jpaQueryFactory.select(bookCategory)
             .from(bookCategory)
             .innerJoin(bookCategory.parent, category)

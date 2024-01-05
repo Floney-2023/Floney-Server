@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
@@ -36,9 +37,9 @@ public class BookLineCategory extends BaseEntity {
 
     public static BookLineCategory of(BookLine bookLine, Category category) {
         return BookLineCategory.builder()
-                .bookLine(bookLine)
-                .category(category)
-                .name(category.getName())
-                .build();
+            .bookLine(bookLine)
+            .category(category)
+            .name(category.getName())
+            .build();
     }
 }

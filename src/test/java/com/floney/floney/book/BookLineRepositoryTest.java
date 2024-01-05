@@ -3,6 +3,8 @@ package com.floney.floney.book;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.domain.entity.category.BookCategory;
+import com.floney.floney.book.domain.entity.category.Category;
+import com.floney.floney.book.domain.entity.category.DefaultCategory;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
@@ -90,24 +92,24 @@ public class BookLineRepositoryTest {
         bookLine2.add(CategoryEnum.FLOW, category2);
 
         final DatesDuration dates = DatesDuration.builder()
-                .startDate(DEFAULT_DATE.minusDays(1))
-                .endDate(DEFAULT_DATE)
-                .build();
+            .startDate(DEFAULT_DATE.minusDays(1))
+            .endDate(DEFAULT_DATE)
+            .build();
 
         /* when */
         final List<BookLineExpense> result = bookLineRepository.dayIncomeAndOutcome(BOOK_KEY, dates);
 
         /* then */
         final BookLineExpense income = BookLineExpense.builder()
-                .money(1000.0)
-                .assetType("수입")
-                .date(DEFAULT_DATE)
-                .build();
+            .money(1000.0)
+            .assetType("수입")
+            .date(DEFAULT_DATE)
+            .build();
         final BookLineExpense outcome = BookLineExpense.builder()
-                .money(1000.0)
-                .assetType("지출")
-                .date(DEFAULT_DATE)
-                .build();
+            .money(1000.0)
+            .assetType("지출")
+            .date(DEFAULT_DATE)
+            .build();
 
         assertThat(result).containsExactlyInAnyOrder(income, outcome);
     }
@@ -126,23 +128,23 @@ public class BookLineRepositoryTest {
         bookLine2.add(CategoryEnum.FLOW, category2);
 
         final DatesDuration dates = DatesDuration.builder()
-                .startDate(LocalDate.of(2023, 10, 1))
-                .endDate(DEFAULT_DATE)
-                .build();
+            .startDate(LocalDate.of(2023, 10, 1))
+            .endDate(DEFAULT_DATE)
+            .build();
 
         /* when */
         final Map<String, Double> result = bookLineRepository.totalExpenseByMonth(BOOK_KEY, dates);
 
         /* then */
         assertThat(result).hasSize(2)
-                .hasEntrySatisfying(
-                        "수입",
-                        income -> assertThat(income).isCloseTo(1000.0, Percentage.withPercentage(99.9))
-                )
-                .hasEntrySatisfying(
-                        "지출",
-                        outcome -> assertThat(outcome).isCloseTo(1000.0, Percentage.withPercentage(99.9))
-                );
+            .hasEntrySatisfying(
+                "수입",
+                income -> assertThat(income).isCloseTo(1000.0, Percentage.withPercentage(99.9))
+            )
+            .hasEntrySatisfying(
+                "지출",
+                outcome -> assertThat(outcome).isCloseTo(1000.0, Percentage.withPercentage(99.9))
+            );
     }
 
     @Test
@@ -163,13 +165,13 @@ public class BookLineRepositoryTest {
 
         /* then */
         final TotalExpense income = TotalExpense.builder()
-                .money(1000.0)
-                .assetType("수입")
-                .build();
+            .money(1000.0)
+            .assetType("수입")
+            .build();
         final TotalExpense outcome = TotalExpense.builder()
-                .money(1000.0)
-                .assetType("지출")
-                .build();
+            .money(1000.0)
+            .assetType("지출")
+            .build();
 
         assertThat(result).containsExactlyInAnyOrder(income, outcome);
     }
@@ -217,9 +219,9 @@ public class BookLineRepositoryTest {
         LocalDate end = DEFAULT_DATE;
 
         DatesDuration datesRequest = DatesDuration.builder()
-                .startDate(start)
-                .endDate(end)
-                .build();
+            .startDate(start)
+            .endDate(end)
+            .build();
         AllOutcomesRequest request = new AllOutcomesRequest(BOOK_KEY, Collections.singletonList(EMAIL), datesRequest);
         assertThat(bookLineRepository.getAllLines(request).size()).isEqualTo(2);
     }
@@ -232,8 +234,8 @@ public class BookLineRepositoryTest {
 
         // 내역 카테고리
         final DefaultCategory flowCategory = DefaultCategory.builder()
-                .name("수입")
-                .build();
+            .name("수입")
+            .build();
         categoryRepository.save(flowCategory);
 
         final BookLineCategory bookLineFlowCategory = bookLineCategoryRepository.save(createFlowCategory(flowCategory, bookLine));
@@ -241,8 +243,8 @@ public class BookLineRepositoryTest {
 
         // 자산 카테고리
         final DefaultCategory assetCategory = DefaultCategory.builder()
-                .name("은행")
-                .build();
+            .name("은행")
+            .build();
         categoryRepository.save(assetCategory);
 
         final BookLineCategory bookLineAssetCategory = bookLineCategoryRepository.save(createLineCategory(assetCategory, bookLine));
@@ -250,8 +252,8 @@ public class BookLineRepositoryTest {
 
         // 내역 분류 카테고리
         final DefaultCategory flowLineCategory = DefaultCategory.builder()
-                .name("급여")
-                .build();
+            .name("급여")
+            .build();
         categoryRepository.save(flowLineCategory);
 
         final BookLineCategory bookLineFlowLineCategory = bookLineCategoryRepository.save(createLineCategory(flowLineCategory, bookLine));
@@ -262,18 +264,18 @@ public class BookLineRepositoryTest {
 
         /* then */
         assertThat(result).hasSize(3)
-                .hasEntrySatisfying(
-                        CategoryEnum.FLOW,
-                        bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineFlowCategory)
-                )
-                .hasEntrySatisfying(
-                        CategoryEnum.ASSET,
-                        bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineAssetCategory)
-                )
-                .hasEntrySatisfying(
-                        CategoryEnum.FLOW_LINE,
-                        bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineFlowLineCategory)
-                );
+            .hasEntrySatisfying(
+                CategoryEnum.FLOW,
+                bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineFlowCategory)
+            )
+            .hasEntrySatisfying(
+                CategoryEnum.ASSET,
+                bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineAssetCategory)
+            )
+            .hasEntrySatisfying(
+                CategoryEnum.FLOW_LINE,
+                bookLineCategory -> assertThat(bookLineCategory).isSameAs(bookLineFlowLineCategory)
+            );
     }
 
     @Test
@@ -284,13 +286,13 @@ public class BookLineRepositoryTest {
 
         // 카테고리 생성
         final DefaultCategory category = DefaultCategory.builder()
-                .name("급여")
-                .build();
+            .name("급여")
+            .build();
         categoryRepository.save(category);
 
         final DefaultCategory category2 = DefaultCategory.builder()
-                .name("용돈")
-                .build();
+            .name("용돈")
+            .build();
         categoryRepository.save(category2);
 
         // 가계부 내역과 급여 카테고리 매핑
@@ -308,13 +310,13 @@ public class BookLineRepositoryTest {
         bookLine3.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory3);
 
         final DatesDuration datesDuration = DatesDuration.builder()
-                .startDate(DEFAULT_DATE)
-                .endDate(DEFAULT_DATE.plusDays(1))
-                .build();
+            .startDate(DEFAULT_DATE)
+            .endDate(DEFAULT_DATE.plusDays(1))
+            .build();
 
         /* when */
         final List<AnalyzeResponseByCategory> results = bookLineRepository.analyzeByCategory(
-                Arrays.asList(category2, category), datesDuration, book.getBookKey()
+            Arrays.asList(category2, category), datesDuration, book.getBookKey()
         );
 
         /* then */
@@ -323,14 +325,14 @@ public class BookLineRepositoryTest {
 
         for (final AnalyzeResponseByCategory result : results) {
             assertThat(result)
-                    .extracting(AnalyzeResponseByCategory::getCategory)
-                    .usingRecursiveComparison()
-                    .isIn(categoryName);
+                .extracting(AnalyzeResponseByCategory::getCategory)
+                .usingRecursiveComparison()
+                .isIn(categoryName);
 
             assertThat(result)
-                    .extracting(AnalyzeResponseByCategory::getMoney)
-                    .usingRecursiveComparison()
-                    .isIn(analyzeResult);
+                .extracting(AnalyzeResponseByCategory::getMoney)
+                .usingRecursiveComparison()
+                .isIn(analyzeResult);
         }
     }
 }

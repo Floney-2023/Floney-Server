@@ -1,5 +1,6 @@
-package com.floney.floney.book.domain.entity;
+package com.floney.floney.book.domain.entity.category;
 
+import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;

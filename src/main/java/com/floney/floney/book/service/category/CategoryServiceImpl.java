@@ -1,7 +1,7 @@
 package com.floney.floney.book.service.category;
 
 import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.floney.floney.book.domain.entity.DefaultCategory.rootParent;
+import static com.floney.floney.book.domain.entity.category.DefaultCategory.rootParent;
 
 @Service
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.floney.floney.book.domain.entity;
+package com.floney.floney.book.domain.entity.category;
 
 import lombok.AccessLevel;
 import lombok.Getter;

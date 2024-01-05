@@ -4,7 +4,7 @@ import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
-import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
@@ -83,17 +83,17 @@ public class CategoryFactory {
 
     private Category findLineCategory(String line, String bookKey, String flow) {
         return categoryRepository.findLineCategory(line, bookKey, flow)
-                .orElseThrow(() -> new NotFoundCategoryException(line));
+            .orElseThrow(() -> new NotFoundCategoryException(line));
     }
 
     private Category findFlowCategory(String flow) {
         return categoryRepository.findFlowCategory(flow)
-                .orElseThrow(() -> new NotFoundCategoryException(flow));
+            .orElseThrow(() -> new NotFoundCategoryException(flow));
     }
 
     private Category findAssetCategory(String asset, String bookKey) {
         return categoryRepository.findAssetCategory(asset, bookKey)
-                .orElseThrow(() -> new NotFoundCategoryException(asset));
+            .orElseThrow(() -> new NotFoundCategoryException(asset));
     }
 
 }

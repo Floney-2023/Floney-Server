@@ -10,7 +10,7 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.process.DatesDuration;

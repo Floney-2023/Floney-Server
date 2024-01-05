@@ -4,7 +4,7 @@ import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.domain.entity.category.Category;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 
 import java.util.List;
