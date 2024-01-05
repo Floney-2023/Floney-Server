@@ -58,8 +58,8 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = exceptStatus;
     }
 
-    public void add(CategoryType flow, BookLineCategory category) {
-        this.bookLineCategories.put(flow, category);
+    public void add(CategoryType type, BookLineCategory category) {
+        this.bookLineCategories.put(type, category);
     }
 
     public String getTargetCategory(CategoryType key) {
