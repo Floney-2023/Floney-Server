@@ -8,7 +8,10 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.category.Category;
-import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.process.DayLineResponse;
+import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 
 import java.time.LocalDate;
@@ -28,7 +31,7 @@ public interface BookLineCustomRepository {
 
     void inactiveAllBy(String bookKey);
 
-    List<DayLine> getAllLines(AllOutcomesRequest request);
+    List<DayLineResponse> getAllLinesByDurationAndUserEmails(AllOutcomesRequest request);
 
     Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 

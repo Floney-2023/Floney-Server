@@ -65,7 +65,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     public List<DayLineResponse> allBookLineAndCategoryByDay(LocalDate date, String bookKey) {
-        return jpaQueryFactory.select(new QDayLineResponse(bookLine.id, bookLine, user.nickname, user.profileImg))
+        return jpaQueryFactory.select(new QDayLineResponse(bookLine, user.nickname, user.profileImg, user.email))
             .from(bookLine)
             .innerJoin(bookLine.bookLineCategories, bookLineCategory).fetchJoin()
             .innerJoin(bookLine.book, book)
@@ -79,7 +79,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookUser.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE)
             )
-            .fetch().stream().distinct().toList();
+            .fetch()
+            .stream()
+            .distinct()
+            .toList();
     }
 
     @Override
@@ -151,21 +154,20 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> getAllLines(AllOutcomesRequest request) {
+    public List<DayLineResponse> getAllLinesByDurationAndUserEmails(AllOutcomesRequest request) {
         DatesDuration duration = request.getDuration();
         return jpaQueryFactory
-            .select(new QDayLine(
-                bookLine.id,
-                bookLine.description,
-                bookLine.money,
-                bookLineCategory.name,
+            .select(new QDayLineResponse(
+                bookLine,
+                user.nickname,
+                user.profileImg,
                 user.email)
             )
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.writer, bookUser)
+            .innerJoin(bookLine.writer, bookUser).fetchJoin()
             .innerJoin(bookUser.user, user)
-            .leftJoin(bookLine.bookLineCategories, bookLineCategory)
+            .leftJoin(bookLine.bookLineCategories, bookLineCategory).fetchJoin()
             .where(
                 bookUser.status.eq(ACTIVE),
                 user.status.eq(ACTIVE),
@@ -175,8 +177,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE)
             )
-            .groupBy(bookLine.id, bookLineCategory.name)
-            .fetch();
+            .fetch()
+            .stream()
+            .distinct()
+            .toList();
     }
 
     @Override
