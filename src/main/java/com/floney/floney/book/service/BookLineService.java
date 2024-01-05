@@ -1,6 +1,6 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.process.DayLines;
+import com.floney.floney.book.dto.process.DayLineResponse;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -17,7 +17,7 @@ public interface BookLineService {
 
     TotalDayLinesResponse showByDays(String bookKey, String date);
 
-    List<DayLines> allOutcomes(AllOutcomesRequest allSettlements);
+    List<DayLineResponse> getAllOutcomes(AllOutcomesRequest allSettlements);
 
     BookLineResponse changeLine(BookLineRequest request);
 
