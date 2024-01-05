@@ -203,7 +203,7 @@ public class BookController {
      */
     @PostMapping("/outcomes")
     public ResponseEntity<?> allOutcomes(@RequestBody @Valid AllOutcomesRequest allOutcomesRequest) {
-        return new ResponseEntity<>(bookLineService.allOutcomes(allOutcomesRequest), HttpStatus.OK);
+        return new ResponseEntity<>(bookLineService.getAllOutcomes(allOutcomesRequest), HttpStatus.OK);
     }
 
     /**

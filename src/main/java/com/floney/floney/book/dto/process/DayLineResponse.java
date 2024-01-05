@@ -20,10 +20,11 @@ public class DayLineResponse {
     private String lineCategory;
     private String assetCategory;
     private boolean exceptStatus;
+    private String userEmail;
 
     @QueryProjection
-    public DayLineResponse(final long id, final BookLine bookLine, final String userNickName, final String profileImg) {
-        this.id = id;
+    public DayLineResponse(final BookLine bookLine, final String userNickName, final String profileImg, final String userEmail) {
+        this.id = bookLine.getId();
         this.money = bookLine.getMoney();
         this.description = bookLine.getDescription();
         this.userNickName = userNickName;
@@ -32,6 +33,7 @@ public class DayLineResponse {
         this.lineCategory = bookLine.getBookLineCategories().get(CategoryType.FLOW_LINE).getName();
         this.assetCategory = bookLine.getBookLineCategories().get(CategoryType.ASSET).getName();
         this.exceptStatus = bookLine.getExceptStatus();
+        this.userEmail = userEmail;
     }
 
 
