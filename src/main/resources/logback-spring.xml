@@ -14,12 +14,11 @@
         </root>
     </springProfile>
 
-    <springProfile name="develop,local,production">
+    <springProfile name="develop,production">
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
         <include resource="slack-error-appender.xml"/>
-        <include resource="console-appender.xml"/>
 
         <root level="INFO">
             <appender-ref ref="FILE-INFO"/>
@@ -28,7 +27,7 @@
         </root>
 
         <logger name="LogByAop" additivity="false">
-            <level value = "DEBUG" />
+            <level value="DEBUG"/>
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE-INFO"/>
             <appender-ref ref="FILE-WARN"/>
@@ -36,16 +35,16 @@
         </logger>
 
         <logger name="ErrorControllerAdvice" additivity="false">
-            <level value = "DEBUG" />
+            <level value="DEBUG"/>
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE-ERROR"/>
-            <springProfile name = "develop,production">
+            <springProfile name="develop,production">
                 <appender-ref ref="ASYNC_SLACK"/>
             </springProfile>
         </logger>
 
         <logger name="org.hibernate.SQL" additivity="false">
-            <level value = "DEBUG"/>
+            <level value="DEBUG"/>
             <appender-ref ref="CONSOLE"/>
         </logger>
     </springProfile>
