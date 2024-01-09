@@ -21,12 +21,12 @@ import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.book.dto.constant.DayType.FIVE_YEAR_TO_DAY;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @RequiredArgsConstructor
 @Component
 public class CarryOverServiceImpl implements CarryOverService {
-    private static final int FIVE_YEARS = 60;
     private final CarryOverRepository carryOverRepository;
     private final BookLineRepository bookLineRepository;
 
@@ -62,7 +62,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         targetDate = targetDate.plusMonths(1);
 
         // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
+        for (int i = 0; i < FIVE_YEAR_TO_DAY.getValue(); i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, book, ACTIVE);
 
             if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.getKind())) {
@@ -95,7 +95,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         List<CarryOver> carryOvers = new ArrayList<>();
 
         // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEARS; i++) {
+        for (int i = 0; i < FIVE_YEAR_TO_DAY.getValue(); i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, savedBookLine.getBook(), ACTIVE);
             savedCarryOver.ifPresent(carryOver -> {
                 carryOver.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));

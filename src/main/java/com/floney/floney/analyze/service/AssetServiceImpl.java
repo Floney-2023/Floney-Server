@@ -22,15 +22,13 @@ import java.util.Map;
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.book.dto.constant.DayType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AssetServiceImpl implements AssetService {
-
-    private static final int SAVED_MONTHS = 5 * 12; // 자산 데이터 생성 기간
-
     private final AssetRepository assetRepository;
     private final BookLineRepository bookLineRepository;
 
@@ -52,9 +50,9 @@ public class AssetServiceImpl implements AssetService {
         LocalDate localDate = LocalDate.parse(date);
         Map<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i <= FIVE_YEAR.getValue(); i++) {
             initAssets.put(localDate, AssetInfo.init(book.getAsset(), localDate));
-            localDate = localDate.minusMonths(1);
+            localDate = localDate.minusMonths(ONE_MONTH.getValue());
         }
 
         return initAssets;
@@ -71,7 +69,7 @@ public class AssetServiceImpl implements AssetService {
 
         final LocalDate startMonth = DateFactory.getFirstDayOf(request.getLineDate());
 
-        for (int month = 0; month < SAVED_MONTHS; month++) {
+        for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
         }
@@ -81,14 +79,14 @@ public class AssetServiceImpl implements AssetService {
     @Transactional
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
-                .orElseThrow(NotFoundBookLineException::new);
+            .orElseThrow(NotFoundBookLineException::new);
         if (!bookLine.includedInAsset()) {
             return;
         }
 
         final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
 
-        for (int month = 0; month < SAVED_MONTHS; month++) {
+        for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.subtractMoneyByDateAndBook(getMoney(bookLine), currentMonth, bookLine.getBook());
         }
