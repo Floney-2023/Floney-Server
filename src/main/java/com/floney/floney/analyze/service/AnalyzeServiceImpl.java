@@ -47,7 +47,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         // 분석 종류 - 지출 or 수입
         Category rootCategory = categoryRepository.findParentCategory(request.getRoot())
             .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        DatesDuration duration = DateFactory.getStartAndEndOfMonth(request.getDate());
         String bookKey = request.getBookKey();
 
         // 부모가 지출 or 수입인 자식 카테고리 조회
@@ -64,7 +64,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Override
     @Transactional(readOnly = true)
     public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        DatesDuration duration = DateFactory.getStartAndEndOfMonth(request.getDate());
         Book savedBook = findBook(request.getBookKey());
 
         // 자산 조회

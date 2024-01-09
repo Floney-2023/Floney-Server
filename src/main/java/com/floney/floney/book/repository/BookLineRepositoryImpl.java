@@ -5,7 +5,10 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
-import com.floney.floney.book.domain.entity.*;
+import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.util.DateFactory;
@@ -27,7 +30,6 @@ import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
-import static com.floney.floney.book.domain.entity.QCategory.category;
 import static com.floney.floney.book.dto.constant.AssetType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
@@ -230,7 +232,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     public Map<String, Double> totalExpensesForAsset(AnalyzeRequestByAsset request) {
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        DatesDuration duration = DateFactory.getStartAndEndOfMonth(request.getDate());
 
         Map<String, Double> totalExpenses = new HashMap<>();
 

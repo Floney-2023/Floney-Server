@@ -17,10 +17,12 @@ import static com.floney.floney.book.dto.constant.DayType.*;
 
 public class DateFactory {
 
-    public static DatesDuration getDateDuration(String targetDate) {
+    public static DatesDuration getStartAndEndOfMonth(String targetDate) {
         LocalDate startDate = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
-        YearMonth yearMonth = YearMonth.from(startDate);
-        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        // 각 달의 끝이 28,30,31일 중 어떤건지 계산
+        YearMonth currentMonth = YearMonth.from(startDate);
+        LocalDate endDate = currentMonth.atEndOfMonth();
 
         return DatesDuration.builder()
             .startDate(startDate)
@@ -64,7 +66,7 @@ public class DateFactory {
     }
 
     public static Map<MonthKey, BookLineExpense> initDates(String targetDate) {
-        DatesDuration dates = getDateDuration(targetDate);
+        DatesDuration dates = getStartAndEndOfMonth(targetDate);
         Map<MonthKey, BookLineExpense> initDates = new LinkedHashMap<>();
 
         LocalDate currentDate = dates.start();
