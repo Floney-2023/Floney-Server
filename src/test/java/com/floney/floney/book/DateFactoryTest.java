@@ -1,9 +1,12 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.util.DateFactory;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -24,5 +27,14 @@ public class DateFactoryTest {
         Assertions.assertThat(DateFactory.getInitBookLineExpenseByMonth("2023-05-01")
                 .size())
             .isEqualTo(62);
+    }
+
+    @Test
+    @DisplayName("해당 날짜가 속한 년도의 첫날과 마지막날을 반환한다")
+    void getFirstAndEndDayOfYear() {
+        DatesDuration duration = DateFactory.getFirstAndEndDayOfYear(LocalDate.of(2023, 10, 1));
+        Assertions.assertThat(duration.getStartDate())
+            .isEqualTo(LocalDate.of(2023, 1, 1));
+        Assertions.assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2023, 12, 31));
     }
 }

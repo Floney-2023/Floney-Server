@@ -42,7 +42,7 @@ public class DateFactory {
             .build();
     }
 
-    public static DatesDuration getYearDuration(LocalDate firstDate) {
+    public static DatesDuration getFirstAndEndDayOfYear(LocalDate firstDate) {
         LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY.getValue());
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());
 
