@@ -1,5 +1,7 @@
 package com.floney.floney.book.util;
 
+import com.floney.floney.book.dto.constant.AssetType;
+import com.floney.floney.book.dto.constant.DayType;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.MonthKey;
@@ -20,7 +22,7 @@ public class DateFactory {
     public static DatesDuration getStartAndEndOfMonth(String targetDate) {
         LocalDate startDate = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
 
-        // 각 달의 끝이 28,30,31일 중 어떤건지 계산
+        // 각 달의 끝이 28,30,31중 어느날인지 계산
         YearMonth currentMonth = YearMonth.from(startDate);
         LocalDate endDate = currentMonth.atEndOfMonth();
 
@@ -30,13 +32,13 @@ public class DateFactory {
             .build();
     }
 
-    public static DatesDuration getAssetDuration(LocalDate date) {
+    public static DatesDuration getAssetDuration(LocalDate currentDate) {
         // 현재 날짜로부터 5개월 이전의 날짜 계산
-        LocalDate startDate = date.minusMonths(FIVE_MOTH.getValue());
+        LocalDate beforeMonth = getDateBeforeMonth(currentDate, FIVE_MOTH);
 
         return DatesDuration.builder()
-            .startDate(startDate)
-            .endDate(date)
+            .startDate(beforeMonth)
+            .endDate(currentDate)
             .build();
     }
 
@@ -51,7 +53,7 @@ public class DateFactory {
     }
 
     public static DatesDuration getBeforeDateDuration(LocalDate targetDate) {
-        LocalDate before = getBeforeMonth(targetDate);
+        LocalDate before = getDateBeforeMonth(targetDate, ONE_MONTH);
         YearMonth yearMonth = YearMonth.from(before);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
@@ -61,26 +63,29 @@ public class DateFactory {
             .build();
     }
 
-    public static LocalDate getBeforeMonth(LocalDate targetDate) {
-        return targetDate.minusMonths(ONE_MONTH.getValue());
+    private static LocalDate getDateBeforeMonth(LocalDate targetDate, DayType dayType) {
+        return targetDate.minusMonths(dayType.getValue());
     }
 
-    public static Map<MonthKey, BookLineExpense> initDates(String targetDate) {
+    // 해당 월의 일별로 지출, 수입 초기화 객체를 만들어주는 메서드
+    // ex. { { "2024-01-09" : INCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : INCOME } }
+    // ex. { { "2024-01-09" : OUTCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : OUTCOME } }
+    public static Map<MonthKey, BookLineExpense> getInitBookLineExpenseByMonth(String targetDate) {
         DatesDuration dates = getStartAndEndOfMonth(targetDate);
         Map<MonthKey, BookLineExpense> initDates = new LinkedHashMap<>();
 
         LocalDate currentDate = dates.start();
         while (!currentDate.isAfter(dates.end())) {
-            initDates.put(MonthKey.of(currentDate, INCOME),
-                BookLineExpense.initExpense(currentDate, INCOME));
-
-            initDates.put(MonthKey.of(currentDate, OUTCOME),
-                BookLineExpense.initExpense(currentDate, OUTCOME));
-
+            addExpense(initDates, currentDate, INCOME);
+            addExpense(initDates, currentDate, OUTCOME);
             currentDate = currentDate.plusDays(ONE_DAY.getValue());
         }
 
         return initDates;
+    }
+
+    private static void addExpense(Map<MonthKey, BookLineExpense> initDates, LocalDate currentDate, AssetType type) {
+        initDates.put(MonthKey.of(currentDate, type), BookLineExpense.initExpense(currentDate, type));
     }
 
     public static LocalDate formatToDate(LocalDateTime createdAt) {
