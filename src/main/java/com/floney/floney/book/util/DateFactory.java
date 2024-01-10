@@ -2,10 +2,12 @@ package com.floney.floney.book.util;
 
 import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.constant.DayType;
+import com.floney.floney.book.dto.constant.ExcelDuration;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.MonthKey;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +17,8 @@ import java.util.Map;
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 import static com.floney.floney.book.dto.constant.DayType.*;
+import static java.time.temporal.TemporalAdjusters.nextOrSame;
+import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 public class DateFactory {
 
@@ -47,6 +51,16 @@ public class DateFactory {
         return DatesDuration.builder()
             .startDate(firstDayOfMonth)
             .endDate(afterMonth.minusDays(1))
+            .build();
+    }
+
+    public static DatesDuration getFirstAndEndDayOfWeek(LocalDate currentDate) {
+        LocalDate monday = currentDate.with(previousOrSame(DayOfWeek.MONDAY));
+        LocalDate sunday = currentDate.with(nextOrSame(DayOfWeek.SUNDAY));
+
+        return DatesDuration.builder()
+            .startDate(monday)
+            .endDate(sunday)
             .build();
     }
 
@@ -86,6 +100,34 @@ public class DateFactory {
         }
 
         return initDates;
+    }
+
+    public static DatesDuration getDurationByExcelDuration(String currentDate, ExcelDuration excelDuration) {
+        LocalDate targetDate = LocalDate.parse(currentDate, DateTimeFormatter.ISO_DATE);
+
+        switch (excelDuration) {
+            case THIS_WEEK -> {
+                return getFirstAndEndDayOfWeek(targetDate);
+            }
+            case THIS_MONTH -> {
+                return getStartAndEndOfMonth(currentDate);
+            }
+            case LAST_MONTH -> {
+                return getLastMonthDateDuration(targetDate);
+            }
+            case THREE_MONTH -> {
+                return getAfterMonthDuration(targetDate, THREE_MONTH);
+            }
+            case SIX_MONTH -> {
+                return getAfterMonthDuration(targetDate, DayType.SIX_MONTH);
+            }
+            case ONE_YEAR -> {
+                return getAfterMonthDuration(targetDate, DayType.ONE_YEAR_TO_MONTH);
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 
     private static void addExpense(Map<MonthKey, BookLineExpense> initDates, LocalDate currentDate, AssetType type) {

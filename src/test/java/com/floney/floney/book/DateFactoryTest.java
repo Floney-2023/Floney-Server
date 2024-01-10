@@ -4,12 +4,13 @@ import com.floney.floney.book.dto.constant.DayType;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.util.DateFactory;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static com.floney.floney.book.util.DateFactory.getInitBookLineExpenseByMonth;
-import static com.floney.floney.book.util.DateFactory.isFirstDay;
+import static com.floney.floney.book.dto.constant.ExcelDuration.*;
+import static com.floney.floney.book.util.DateFactory.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class DateFactoryTest {
@@ -97,7 +98,65 @@ public class DateFactoryTest {
             .endDate(LocalDate.of(2024, 3, 31))
             .build();
 
-        assertThat(DateFactory.getAfterMonthDuration(firstDayOfMonth, DayType.THREE_MONTH)).isEqualTo(duration);
+        assertThat(getAfterMonthDuration(firstDayOfMonth, DayType.THREE_MONTH)).isEqualTo(duration);
+    }
+
+    @Nested
+    @DisplayName("엑셀 추출 기간에 따라 현재 날짜를 기준으로 startDate와 EndDate 기간을 반환한다")
+    class ExcelDate {
+        @Test
+        @DisplayName("이번주 월요일과 요일을 기간으로 반환한다")
+        void thisWeek() {
+            String currentDate = "2024-01-10";
+            DatesDuration duration = getDurationByExcelDuration(currentDate, THIS_WEEK);
+            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 8));
+            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 1, 14));
+        }
+
+        @Test
+        @DisplayName("이번달 1일과 마지막 날을 기간으로 반환한다")
+        void thisMonth() {
+            String currentDate = "2024-01-01";
+            DatesDuration duration = getDurationByExcelDuration(currentDate, THIS_MONTH);
+            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
+            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 1, 31));
+        }
+
+        @Test
+        @DisplayName("지난달 1일과 마지막날을 기간으로 반환한다")
+        void lastMonth() {
+            String currentDate = "2024-01-01";
+            DatesDuration duration = getDurationByExcelDuration(currentDate, LAST_MONTH);
+            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2023, 12, 1));
+            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2023, 12, 31));
+        }
+
+        @Test
+        @DisplayName("현 시점으로 부터, 3개월 기간을 반환한다")
+        void afterThreeMonth() {
+            String currentDate = "2024-01-01";
+            DatesDuration duration = getDurationByExcelDuration(currentDate, THREE_MONTH);
+            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
+            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 3, 31));
+        }
+
+        @Test
+        @DisplayName("현 시점으로 부터, 6개월 기간을 반환한다")
+        void afterSixMonth() {
+            String currentDate = "2024-01-01";
+            DatesDuration duration = getDurationByExcelDuration(currentDate, SIX_MONTH);
+            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
+            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 6, 30));
+        }
+
+        @Test
+        @DisplayName("현 시점으로 부터, 6개월 기간을 반환한다")
+        void afterOneYear() {
+            String currentDate = "2024-01-01";
+            DatesDuration duration = getDurationByExcelDuration(currentDate, ONE_YEAR);
+            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
+            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 31));
+        }
     }
 
 }
