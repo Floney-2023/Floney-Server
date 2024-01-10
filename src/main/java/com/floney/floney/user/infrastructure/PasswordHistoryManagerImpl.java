@@ -25,6 +25,10 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
         validatePasswordInHistory(password, email);
 
         listOperations.rightPush(email, password);
+        removeExceedingPasswords(email);
+    }
+
+    private void removeExceedingPasswords(final String email) {
         while (listOperations.size(email) > MAX_HISTORY_SIZE) {
             listOperations.leftPop(email);
         }
