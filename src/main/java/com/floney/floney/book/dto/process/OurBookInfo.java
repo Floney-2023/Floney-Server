@@ -7,8 +7,6 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.floney.floney.book.util.DateFactory.formatToDate;
-
 @Getter
 public class OurBookInfo {
     private final String bookImg;
@@ -34,13 +32,13 @@ public class OurBookInfo {
         iSMyAccount(bookUsers, myEmail);
 
         return OurBookInfo.builder()
-                .bookImg(book.getBookImg())
-                .bookName(book.getName())
-                .startDay(formatToDate(book.getCreatedAt()))
-                .bookUsers(bookUsers)
-                .seeProfileStatus(book.getSeeProfile())
-                .carryOver(book.getCarryOverStatus())
-                .build();
+            .bookImg(book.getBookImg())
+            .bookName(book.getName())
+            .startDay(book.getCreatedAt().toLocalDate())
+            .bookUsers(bookUsers)
+            .seeProfileStatus(book.getSeeProfile())
+            .carryOver(book.getCarryOverStatus())
+            .build();
     }
 
     private static void checkRole(Book book, List<OurBookUser> bookUsers) {

@@ -55,7 +55,7 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Transactional
     @Override
     public void createCarryOverByAddBookLine(BookLineRequest request, Book book) {
-        LocalDate targetDate = DateFactory.getFirstDayOf(request.getLineDate());
+        LocalDate targetDate = DateFactory.getFirstDayOfMonth(request.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
 
         // 다음달부터 생성
@@ -90,7 +90,7 @@ public class CarryOverServiceImpl implements CarryOverService {
             return;
         }
 
-        LocalDate targetDate = DateFactory.getFirstDayOf(savedBookLine.getLineDate());
+        LocalDate targetDate = DateFactory.getFirstDayOfMonth(savedBookLine.getLineDate());
         targetDate = targetDate.plusMonths(1);
         List<CarryOver> carryOvers = new ArrayList<>();
 

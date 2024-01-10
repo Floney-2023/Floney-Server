@@ -67,7 +67,7 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
-        final LocalDate startMonth = DateFactory.getFirstDayOf(request.getLineDate());
+        final LocalDate startMonth = DateFactory.getFirstDayOfMonth(request.getLineDate());
 
         for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
@@ -84,7 +84,7 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
-        final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
+        final LocalDate startMonth = DateFactory.getFirstDayOfMonth(bookLine.getLineDate());
 
         for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);

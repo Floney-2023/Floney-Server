@@ -7,7 +7,6 @@ import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.MonthKey;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -52,7 +51,7 @@ public class DateFactory {
             .build();
     }
 
-    public static DatesDuration getBeforeDateDuration(LocalDate targetDate) {
+    public static DatesDuration getLastMonthDateDuration(LocalDate targetDate) {
         LocalDate before = getDateBeforeMonth(targetDate, ONE_MONTH);
         YearMonth yearMonth = YearMonth.from(before);
         LocalDate endDate = yearMonth.atEndOfMonth();
@@ -63,18 +62,14 @@ public class DateFactory {
             .build();
     }
 
-    private static LocalDate getDateBeforeMonth(LocalDate targetDate, DayType dayType) {
-        return targetDate.minusMonths(dayType.getValue());
-    }
-
     // 해당 월의 일별로 지출, 수입 초기화 객체를 만들어주는 메서드
-    // ex. { { "2024-01-09" : INCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : INCOME } }
-    // ex. { { "2024-01-09" : OUTCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : OUTCOME } }
+    // return ex. { { "2024-01-09" : INCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : INCOME } }
+    // { { "2024-01-09" : OUTCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : OUTCOME } }
     public static Map<MonthKey, BookLineExpense> getInitBookLineExpenseByMonth(String targetDate) {
         DatesDuration dates = getStartAndEndOfMonth(targetDate);
         Map<MonthKey, BookLineExpense> initDates = new LinkedHashMap<>();
-
         LocalDate currentDate = dates.start();
+
         while (!currentDate.isAfter(dates.end())) {
             addExpense(initDates, currentDate, INCOME);
             addExpense(initDates, currentDate, OUTCOME);
@@ -88,16 +83,16 @@ public class DateFactory {
         initDates.put(MonthKey.of(currentDate, type), BookLineExpense.initExpense(currentDate, type));
     }
 
-    public static LocalDate formatToDate(LocalDateTime createdAt) {
-        return createdAt.toLocalDate();
-    }
-
     public static boolean isFirstDay(String date) {
         return LocalDate.parse(date).getDayOfMonth() == FIRST_DAY.getValue();
     }
 
-    public static LocalDate getFirstDayOf(LocalDate requestDate) {
+    public static LocalDate getFirstDayOfMonth(LocalDate requestDate) {
         return requestDate.withDayOfMonth(FIRST_DAY.getValue());
+    }
+
+    private static LocalDate getDateBeforeMonth(LocalDate targetDate, DayType beforeMonth) {
+        return targetDate.minusMonths(beforeMonth.getValue());
     }
 }
 

@@ -192,7 +192,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     public Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
-        DatesDuration duration = DateFactory.getBeforeDateDuration(request.getLocalDate());
+        DatesDuration duration = DateFactory.getLastMonthDateDuration(request.getLocalDate());
         return jpaQueryFactory
             .select(bookLine.money.sum().coalesce(0.0))
             .from(bookLine)
