@@ -14,7 +14,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class DateFactoryTest {
 
     @Test
-    @DisplayName("현재 날짜로, 해당 월의 첫날과 마지막날을 반환한다")
+    @DisplayName("현재 날짜가 속한 해당 월의 첫날을 startDate로, 마지막날을 endDate로 기간을 반환한다")
     void getStartAndEndOfMonth() {
         DatesDuration datesDuration = DateFactory.getStartAndEndOfMonth("2023-05-01");
 
@@ -33,7 +33,7 @@ public class DateFactoryTest {
     }
 
     @Test
-    @DisplayName("해당 날짜가 속한 년도의 첫날과 마지막날을 반환한다")
+    @DisplayName("해당 날짜가 속한 년도의 첫날을 startDate로, 마지막날을 endDate로 기간을 반환한다")
     void getFirstAndEndDayOfYear() {
         LocalDate currentDate = LocalDate.of(2023, 10, 1);
         DatesDuration duration = DateFactory.getFirstAndEndDayOfYear(currentDate);
@@ -45,7 +45,7 @@ public class DateFactoryTest {
     }
 
     @Test
-    @DisplayName("현재 날짜로부터 5개월 이전(자산 분석 기간)을 시작으로 기간을 반환한다")
+    @DisplayName("현재 날짜로부터 5개월 이전(자산 분석 기간)을 startDate로, 현재 날짜를 endDate로 기간을 반환한다")
     void getAssetDuration() {
         LocalDate currentDate = LocalDate.of(2023, 10, 1);
         DatesDuration duration = DateFactory.getAssetDuration(currentDate);
