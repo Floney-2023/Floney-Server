@@ -63,6 +63,19 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             );
     }
 
+    @Override
+    public List<BookLine> findAllBookLineByDuration(String bookKey, DatesDuration duration) {
+        return jpaQueryFactory
+            .selectFrom(bookLine)
+            .innerJoin(bookLine.book, book)
+            .where(
+                bookLine.lineDate.between(duration.start(), duration.end()),
+                book.bookKey.eq(bookKey),
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE)
+            )
+            .fetch();
+    }
 
     @Override
     public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {

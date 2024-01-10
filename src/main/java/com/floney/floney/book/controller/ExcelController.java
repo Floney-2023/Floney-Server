@@ -1,5 +1,7 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.dto.constant.ExcelDuration;
+import com.floney.floney.book.dto.request.ExcelDownloadRequest;
 import com.floney.floney.book.service.ExcelService;
 import com.floney.floney.common.exception.book.ExcelMakingException;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -27,9 +29,17 @@ public class ExcelController {
 
     @GetMapping
     public void download(@AuthenticationPrincipal CustomUserDetails userDetails,
-                         @RequestParam String bookKey,
+                         @RequestParam("bookKey") String bookKey,
+                         @RequestParam("currentDate") String currentDate,
+                         @RequestParam("excelDuration") ExcelDuration excelDuration,
                          HttpServletResponse response) {
-        try (final Workbook bookExcel = excelService.createBookExcel(userDetails.getUsername(), bookKey)) {
+        ExcelDownloadRequest downloadRequest = ExcelDownloadRequest.builder()
+                .excelDuration(excelDuration)
+                .currentDate(currentDate)
+                .bookKey(bookKey)
+                .build();
+
+        try (final Workbook bookExcel = excelService.createBookExcel(userDetails.getUsername(), downloadRequest)) {
             response.setContentType("application/vnd.ms-excel");
             response.setHeader("Content-Disposition", "attachment;filename=" + FILENAME + ".xlsx");
 

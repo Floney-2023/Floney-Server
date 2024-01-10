@@ -1,7 +1,10 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.dto.constant.CategoryEnum;
+import com.floney.floney.book.dto.constant.ExcelDuration;
+import com.floney.floney.book.dto.process.DatesDuration;
+import com.floney.floney.book.dto.request.ExcelDownloadRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
@@ -14,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.floney.floney.book.util.DateFactory.getDurationByExcelDuration;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -22,11 +27,30 @@ public class ExcelServiceImpl implements ExcelService {
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
 
+    private static void setWidthOfCells(final List<BookLine> bookLines, final Sheet sheet) {
+        int maxLengthOfWriter = 10;
+        int maxLengthOfMoney = 5;
+        int maxLengthOfDescription = 15;
+
+        for (final BookLine bookLine : bookLines) {
+            maxLengthOfWriter = Math.max(maxLengthOfWriter, bookLine.getWriter().length());
+            maxLengthOfMoney = Math.max(maxLengthOfMoney, String.valueOf(bookLine.getMoney()).length());
+            maxLengthOfDescription = Math.max(maxLengthOfDescription, bookLine.getDescription().length());
+        }
+
+        sheet.setColumnWidth(0, 10 + 256 * maxLengthOfWriter * 2);
+        sheet.setColumnWidth(1, 10 + 256 * 15);
+        sheet.setColumnWidth(3, 10 + 256 * maxLengthOfMoney * 2);
+        sheet.setColumnWidth(7, 10 + 256 * maxLengthOfDescription * 2);
+    }
+
     @Override
-    public Workbook createBookExcel(final String userEmail, final String bookKey) {
+    public Workbook createBookExcel(final String userEmail, final ExcelDownloadRequest downloadRequest) {
+        String bookKey = downloadRequest.getBookKey();
         validateBookUser(userEmail, bookKey);
 
-        final List<BookLine> bookLines = bookLineRepository.findAllByBook(bookKey);
+        final List<BookLine> bookLines = getBookLinesByDuration(downloadRequest);
+
         final Workbook workbook = new XSSFWorkbook();
         final Sheet sheet = workbook.createSheet();
 
@@ -55,9 +79,10 @@ public class ExcelServiceImpl implements ExcelService {
             final Cell dateCell = row.createCell(cellIdx++);
             dateCell.setCellValue(bookLine.getLineDate());
             dateCell.setCellStyle(cellStyle);
+
             final CellStyle dateStyle = workbook.createCellStyle();
             dateStyle.setDataFormat(getDataFormat(workbook));
-            dateCell.setCellStyle(dateStyle);
+            dateCell.setCellStyle(cellStyle);
 
             final Cell flowCell = row.createCell(cellIdx++);
             flowCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.FLOW));
@@ -87,27 +112,21 @@ public class ExcelServiceImpl implements ExcelService {
         return workbook;
     }
 
+    private List<BookLine> getBookLinesByDuration(ExcelDownloadRequest downloadRequest) {
+        String bookKey = downloadRequest.getBookKey();
+
+        if (downloadRequest.getExcelDuration() != ExcelDuration.ALL) {
+            DatesDuration duration = getDurationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
+            return bookLineRepository.findAllBookLineByDuration(bookKey, duration);
+        } else {
+            return bookLineRepository.findAllByBook(bookKey);
+        }
+    }
+
     private short getDataFormat(final Workbook workbook) {
         return workbook.getCreationHelper()
                 .createDataFormat()
                 .getFormat("yyyy-mm-dd");
-    }
-
-    private static void setWidthOfCells(final List<BookLine> bookLines, final Sheet sheet) {
-        int maxLengthOfWriter = 10;
-        int maxLengthOfMoney = 5;
-        int maxLengthOfDescription = 15;
-
-        for (final BookLine bookLine : bookLines) {
-            maxLengthOfWriter = Math.max(maxLengthOfWriter, bookLine.getWriter().length());
-            maxLengthOfMoney = Math.max(maxLengthOfMoney, String.valueOf(bookLine.getMoney()).length());
-            maxLengthOfDescription = Math.max(maxLengthOfDescription, bookLine.getDescription().length());
-        }
-
-        sheet.setColumnWidth(0, 10 + 256 * maxLengthOfWriter * 2);
-        sheet.setColumnWidth(1, 10 + 256 * 15);
-        sheet.setColumnWidth(3, 10 + 256 * maxLengthOfMoney * 2);
-        sheet.setColumnWidth(7, 10 + 256 * maxLengthOfDescription * 2);
     }
 
     private CellStyle createBorderStyle(final Workbook workbook) {

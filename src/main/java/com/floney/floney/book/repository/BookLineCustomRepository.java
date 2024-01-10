@@ -4,12 +4,12 @@ import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.dto.process.*;
-import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.Category;
+import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.request.AllOutcomesRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +19,8 @@ import java.util.Optional;
 public interface BookLineCustomRepository {
 
     Map<String, Double> totalExpenseByMonth(String bookKey, DatesDuration dates);
+
+    List<BookLine> findAllBookLineByDuration(String bookKey, DatesDuration duration);
 
     List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey);
 
