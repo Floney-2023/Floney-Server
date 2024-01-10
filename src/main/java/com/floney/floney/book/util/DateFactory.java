@@ -41,6 +41,15 @@ public class DateFactory {
             .build();
     }
 
+    // 현시점으로 부터 특정 개월 이후의 기간을 반환한다. ex. 3개월 - 1월 1일 ~ 3월 31일
+    public static DatesDuration getAfterMonthDuration(LocalDate firstDayOfMonth, DayType month) {
+        LocalDate afterMonth = firstDayOfMonth.plusMonths(month.getValue());
+        return DatesDuration.builder()
+            .startDate(firstDayOfMonth)
+            .endDate(afterMonth.minusDays(1))
+            .build();
+    }
+
     public static DatesDuration getFirstAndEndDayOfYear(LocalDate firstDate) {
         LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY.getValue());
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());

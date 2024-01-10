@@ -1,5 +1,6 @@
 package com.floney.floney.book;
 
+import com.floney.floney.book.dto.constant.DayType;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.util.DateFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -84,6 +85,19 @@ public class DateFactoryTest {
         LocalDate currentDate = LocalDate.of(2024, 1, 20);
         assertThat(DateFactory.getFirstDayOfMonth(currentDate))
             .isEqualTo(LocalDate.of(2024, 1, 1));
+    }
+
+    @Test
+    @DisplayName("현시점을 startDate로, 특정 개월 이후를 endDate로 기간을 반환한다")
+    void afterMonth() {
+        LocalDate firstDayOfMonth = LocalDate.of(2024, 1, 1);
+
+        DatesDuration duration = DatesDuration.builder()
+            .startDate(firstDayOfMonth)
+            .endDate(LocalDate.of(2024, 3, 31))
+            .build();
+
+        assertThat(DateFactory.getAfterMonthDuration(firstDayOfMonth, DayType.THREE_MONTH)).isEqualTo(duration);
     }
 
 }
