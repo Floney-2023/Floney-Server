@@ -30,9 +30,9 @@ public class DateFactory {
         LocalDate endDate = currentMonth.atEndOfMonth();
 
         return DatesDuration.builder()
-            .startDate(startDate)
-            .endDate(endDate)
-            .build();
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
     }
 
     public static DatesDuration getAssetDuration(LocalDate currentDate) {
@@ -40,18 +40,18 @@ public class DateFactory {
         LocalDate beforeMonth = getDateBeforeMonth(currentDate, FIVE_MOTH);
 
         return DatesDuration.builder()
-            .startDate(beforeMonth)
-            .endDate(currentDate)
-            .build();
+                .startDate(beforeMonth)
+                .endDate(currentDate)
+                .build();
     }
 
-    // 현시점으로 부터 특정 개월 이후의 기간을 반환한다. ex. 3개월 - 1월 1일 ~ 3월 31일
+    // 현시점으로 부터 특정 개월 이후의 기간을 반환한다. ex. 1년 - 1월 1일 ~ 12월 31일
     public static DatesDuration getAfterMonthDuration(LocalDate firstDayOfMonth, DayType month) {
         LocalDate afterMonth = firstDayOfMonth.plusMonths(month.getValue());
         return DatesDuration.builder()
-            .startDate(firstDayOfMonth)
-            .endDate(afterMonth.minusDays(1))
-            .build();
+                .startDate(firstDayOfMonth)
+                .endDate(afterMonth.minusDays(1))
+                .build();
     }
 
     public static DatesDuration getFirstAndEndDayOfWeek(LocalDate currentDate) {
@@ -59,9 +59,9 @@ public class DateFactory {
         LocalDate sunday = currentDate.with(nextOrSame(DayOfWeek.SUNDAY));
 
         return DatesDuration.builder()
-            .startDate(monday)
-            .endDate(sunday)
-            .build();
+                .startDate(monday)
+                .endDate(sunday)
+                .build();
     }
 
     public static DatesDuration getFirstAndEndDayOfYear(LocalDate firstDate) {
@@ -69,9 +69,9 @@ public class DateFactory {
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());
 
         return DatesDuration.builder()
-            .startDate(startDate)
-            .endDate(endDate)
-            .build();
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
     }
 
     public static DatesDuration getLastMonthDateDuration(LocalDate targetDate) {
@@ -80,9 +80,9 @@ public class DateFactory {
         LocalDate endDate = yearMonth.atEndOfMonth();
 
         return DatesDuration.builder()
-            .startDate(before)
-            .endDate(endDate)
-            .build();
+                .startDate(before)
+                .endDate(endDate)
+                .build();
     }
 
     // 해당 월의 일별로 지출, 수입 초기화 객체를 만들어주는 메서드
@@ -106,20 +106,11 @@ public class DateFactory {
         LocalDate targetDate = LocalDate.parse(currentDate, DateTimeFormatter.ISO_DATE);
 
         switch (excelDuration) {
-            case THIS_WEEK -> {
-                return getFirstAndEndDayOfWeek(targetDate);
-            }
             case THIS_MONTH -> {
                 return getStartAndEndOfMonth(currentDate);
             }
             case LAST_MONTH -> {
                 return getLastMonthDateDuration(targetDate);
-            }
-            case THREE_MONTH -> {
-                return getAfterMonthDuration(targetDate, THREE_MONTH);
-            }
-            case SIX_MONTH -> {
-                return getAfterMonthDuration(targetDate, DayType.SIX_MONTH);
             }
             case ONE_YEAR -> {
                 return getAfterMonthDuration(targetDate, DayType.ONE_YEAR_TO_MONTH);

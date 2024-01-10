@@ -21,17 +21,17 @@ public class DateFactoryTest {
         DatesDuration datesDuration = DateFactory.getStartAndEndOfMonth("2023-05-01");
 
         assertThat(datesDuration.start())
-            .isEqualTo("2023-05-01");
+                .isEqualTo("2023-05-01");
         assertThat(datesDuration.end())
-            .isEqualTo("2023-05-31");
+                .isEqualTo("2023-05-31");
     }
 
     @Test
     @DisplayName("해당 월의 모든 일별로 지출,수입을 Key로 초기화하는 객체를 반한한다")
     void getInitExpenseByMonth() {
         assertThat(getInitBookLineExpenseByMonth("2023-05-01")
-            .size())
-            .isEqualTo(62);
+                .size())
+                .isEqualTo(62);
     }
 
     @Test
@@ -41,9 +41,9 @@ public class DateFactoryTest {
         DatesDuration duration = DateFactory.getFirstAndEndDayOfYear(currentDate);
 
         assertThat(duration.start())
-            .isEqualTo(LocalDate.of(2023, 1, 1));
+                .isEqualTo(LocalDate.of(2023, 1, 1));
         assertThat(duration.end())
-            .isEqualTo(LocalDate.of(2023, 12, 31));
+                .isEqualTo(LocalDate.of(2023, 12, 31));
     }
 
     @Test
@@ -53,9 +53,9 @@ public class DateFactoryTest {
         DatesDuration duration = DateFactory.getAssetDuration(currentDate);
 
         assertThat(duration.start())
-            .isEqualTo(LocalDate.of(2023, 5, 1));
+                .isEqualTo(LocalDate.of(2023, 5, 1));
         assertThat(duration.end())
-            .isEqualTo(currentDate);
+                .isEqualTo(currentDate);
     }
 
     @Test
@@ -65,9 +65,9 @@ public class DateFactoryTest {
         DatesDuration duration = DateFactory.getLastMonthDateDuration(currentDate);
 
         assertThat(duration.start())
-            .isEqualTo(LocalDate.of(2023, 9, 1));
+                .isEqualTo(LocalDate.of(2023, 9, 1));
         assertThat(duration.end())
-            .isEqualTo(LocalDate.of(2023, 9, 30));
+                .isEqualTo(LocalDate.of(2023, 9, 30));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DateFactoryTest {
     void getFirstDayOfMonth() {
         LocalDate currentDate = LocalDate.of(2024, 1, 20);
         assertThat(DateFactory.getFirstDayOfMonth(currentDate))
-            .isEqualTo(LocalDate.of(2024, 1, 1));
+                .isEqualTo(LocalDate.of(2024, 1, 1));
     }
 
     @Test
@@ -94,9 +94,9 @@ public class DateFactoryTest {
         LocalDate firstDayOfMonth = LocalDate.of(2024, 1, 1);
 
         DatesDuration duration = DatesDuration.builder()
-            .startDate(firstDayOfMonth)
-            .endDate(LocalDate.of(2024, 3, 31))
-            .build();
+                .startDate(firstDayOfMonth)
+                .endDate(LocalDate.of(2024, 3, 31))
+                .build();
 
         assertThat(getAfterMonthDuration(firstDayOfMonth, DayType.THREE_MONTH)).isEqualTo(duration);
     }
@@ -104,15 +104,6 @@ public class DateFactoryTest {
     @Nested
     @DisplayName("엑셀 추출 기간에 따라 현재 날짜를 기준으로 startDate와 EndDate 기간을 반환한다")
     class ExcelDate {
-        @Test
-        @DisplayName("이번주 월요일과 요일을 기간으로 반환한다")
-        void thisWeek() {
-            String currentDate = "2024-01-10";
-            DatesDuration duration = getDurationByExcelDuration(currentDate, THIS_WEEK);
-            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 8));
-            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 1, 14));
-        }
-
         @Test
         @DisplayName("이번달 1일과 마지막 날을 기간으로 반환한다")
         void thisMonth() {
@@ -129,24 +120,6 @@ public class DateFactoryTest {
             DatesDuration duration = getDurationByExcelDuration(currentDate, LAST_MONTH);
             assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2023, 12, 1));
             assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2023, 12, 31));
-        }
-
-        @Test
-        @DisplayName("현 시점으로 부터, 3개월 기간을 반환한다")
-        void afterThreeMonth() {
-            String currentDate = "2024-01-01";
-            DatesDuration duration = getDurationByExcelDuration(currentDate, THREE_MONTH);
-            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
-            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 3, 31));
-        }
-
-        @Test
-        @DisplayName("현 시점으로 부터, 6개월 기간을 반환한다")
-        void afterSixMonth() {
-            String currentDate = "2024-01-01";
-            DatesDuration duration = getDurationByExcelDuration(currentDate, SIX_MONTH);
-            assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
-            assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 6, 30));
         }
 
         @Test
