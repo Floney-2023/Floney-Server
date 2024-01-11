@@ -2,46 +2,57 @@ package com.floney.floney.user.infrastructure;
 
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.user.service.PasswordHistoryManager;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
+    private static final String KEY_PASSWORD_HISTORY = "user:passwords:";
     private static final int MAX_HISTORY_SIZE = 5;
 
     @Resource(name = "redisTemplate")
     private ListOperations<String, String> listOperations;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void addPassword(final String password, final String email) {
-        checkHistorySize(email);
-        validatePasswordInHistory(password, email);
+        final String encodedPassword = passwordEncoder.encode(password);
+        final String key = email.concat(KEY_PASSWORD_HISTORY);
+        checkHistorySize(key);
+        validateCanAddPassword(password, key);
 
-        listOperations.rightPush(email, password);
-        removeExceedingPasswords(email);
+        listOperations.rightPush(key, encodedPassword);
+        removeExceedingPasswords(key);
     }
 
-    private void removeExceedingPasswords(final String email) {
-        while (listOperations.size(email) > MAX_HISTORY_SIZE) {
-            listOperations.leftPop(email);
+    private void removeExceedingPasswords(final String key) {
+        while (listOperations.size(key) > MAX_HISTORY_SIZE) {
+            listOperations.leftPop(key);
         }
     }
 
-    private void validatePasswordInHistory(final String password, final String email) {
-        if (listOperations.indexOf(email, password) != null) {
-            throw new PasswordSameException();
+    private void validateCanAddPassword(final String password, final String key) {
+        final List<String> history = listOperations.range(key, 0, -1);
+        for (final String encodedPassword : history) {
+            if (passwordEncoder.matches(password, encodedPassword)) {
+                throw new PasswordSameException();
+            }
         }
     }
 
-    private void checkHistorySize(final String email) {
-        if (listOperations.size(email) > MAX_HISTORY_SIZE) {
+    private void checkHistorySize(final String key) {
+        if (listOperations.size(key) > MAX_HISTORY_SIZE) {
             logger.error("이전 비밀번호 내역이 {}개를 초과", MAX_HISTORY_SIZE);
         }
     }
