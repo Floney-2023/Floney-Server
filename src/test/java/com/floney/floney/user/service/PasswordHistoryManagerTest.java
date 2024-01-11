@@ -58,7 +58,7 @@ class PasswordHistoryManagerTest {
 
             @Test
             @DisplayName("현재 비밀번호를 내역에 추가한다.")
-            void it_returns_nothing() {
+            void it_succeeds() {
                 passwordHistoryManager.addPassword(password, userId);
 
                 final String encodedPassword = listOperations.rightPop(key);
@@ -82,7 +82,7 @@ class PasswordHistoryManagerTest {
 
             @Test
             @DisplayName("현재 비밀번호를 내역에 추가한다.")
-            void it_returns_nothing() {
+            void it_succeeds() {
                 passwordHistoryManager.addPassword(password, userId);
 
                 final String encodedPassword = listOperations.rightPop(key);
