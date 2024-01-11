@@ -74,6 +74,7 @@ public class UserService {
 
         user.signout();
         addSignoutReason(request);
+        passwordHistoryManager.deleteHistory(user.getId());
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }

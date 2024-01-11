@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
     private static final String KEY_PASSWORDS = ":passwords";
     private static final int MAX_HISTORY_SIZE = 5;
 
+    private final RedisTemplate<String, String> redisTemplate;
     @Resource(name = "redisTemplate")
     private ListOperations<String, String> listOperations;
     private final PasswordEncoder passwordEncoder;
@@ -35,6 +37,12 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
 
         listOperations.rightPush(key, encodedPassword);
         removeExceedingPasswords(key);
+    }
+
+    @Override
+    public void deleteHistory(final long userId) {
+        final String key = KEY_USER + userId + KEY_PASSWORDS;
+        redisTemplate.unlink(key);
     }
 
     private void removeExceedingPasswords(final String key) {
