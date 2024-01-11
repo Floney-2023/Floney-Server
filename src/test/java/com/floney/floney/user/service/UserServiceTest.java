@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -42,7 +43,9 @@ class UserServiceTest {
     private SignoutReasonRepository signoutReasonRepository;
     @Mock
     private MailProvider mailProvider;
-   
+    @Mock
+    private PasswordHistoryManager passwordHistoryManager;
+
     @Test
     @DisplayName("마케팅 수신 동의 여부를 변경하는데 성공한다")
     void updateReceiveMarketing_success() {
@@ -73,6 +76,7 @@ class UserServiceTest {
     void updateRegeneratedPassword_success() {
         // given
         final User user = UserFixture.emailUser();
+        ReflectionTestUtils.setField(user, "id", 1L);
 
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
