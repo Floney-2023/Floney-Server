@@ -116,4 +116,32 @@ class PasswordHistoryManagerTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("deleteHistory 메서드에서")
+    class Describe_DeleteHistory {
+
+        @Nested
+        @DisplayName("회원이 비밀번호 내역을 가지고 있는 경우")
+        class Context_UserHasPasswordHistory {
+
+            final long userId = 1;
+            final String key = KEY_USER + userId + KEY_PASSWORDS;
+
+            @BeforeEach
+            public void init() {
+                passwordHistoryManager.addPassword("a", userId);
+                passwordHistoryManager.addPassword("b", userId);
+                passwordHistoryManager.addPassword("c", userId);
+            }
+
+            @Test
+            @DisplayName("비밀번호 내역을 지운다.")
+            void it_succeeds() {
+                passwordHistoryManager.deleteHistory(userId);
+
+                assertThat(redisTemplate.hasKey(key)).isFalse();
+            }
+        }
+    }
 }
