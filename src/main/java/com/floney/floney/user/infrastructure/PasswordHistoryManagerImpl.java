@@ -18,7 +18,8 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    private static final String KEY_PASSWORD_HISTORY = "user:passwords:";
+    private static final String KEY_USER = "user:";
+    private static final String KEY_PASSWORDS = ":passwords";
     private static final int MAX_HISTORY_SIZE = 5;
 
     @Resource(name = "redisTemplate")
@@ -26,9 +27,9 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void addPassword(final String password, final String email) {
+    public void addPassword(final String password, final long userId) {
         final String encodedPassword = passwordEncoder.encode(password);
-        final String key = email.concat(KEY_PASSWORD_HISTORY);
+        final String key = KEY_USER + userId + KEY_PASSWORDS;
         checkHistorySize(key);
         validateCanAddPassword(password, key);
 
