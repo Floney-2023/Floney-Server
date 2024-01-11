@@ -53,6 +53,7 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
+    private final PasswordHistoryManager passwordHistoryManager;
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
@@ -169,6 +170,7 @@ public class UserService {
 
     private void updatePassword(String newPassword, User user) {
         validatePasswordNotSame(newPassword, user);
+        passwordHistoryManager.addPassword(newPassword, user.getId());
         user.updatePassword(newPassword);
         user.encodePassword(passwordEncoder);
     }
@@ -189,7 +191,7 @@ public class UserService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {
