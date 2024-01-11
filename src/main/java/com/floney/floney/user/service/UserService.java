@@ -60,6 +60,7 @@ public class UserService {
         final User user = request.to();
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
+        passwordHistoryManager.addPassword(user.getPassword(), user.getId());
         return request.toLoginRequest();
     }
 
