@@ -2,7 +2,6 @@ package com.floney.floney.user.infrastructure;
 
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.user.service.PasswordHistoryManager;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.ListOperations;
@@ -10,11 +9,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -24,9 +21,15 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
     private static final int MAX_HISTORY_SIZE = 5;
 
     private final RedisTemplate<String, String> redisTemplate;
-    @Resource(name = "redisTemplate")
-    private ListOperations<String, String> listOperations;
+    private final ListOperations<String, String> listOperations;
     private final PasswordEncoder passwordEncoder;
+
+    private PasswordHistoryManagerImpl(final RedisTemplate<String, String> redisTemplate,
+                                       final PasswordEncoder passwordEncoder) {
+        this.redisTemplate = redisTemplate;
+        this.listOperations = redisTemplate.opsForList();
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void addPassword(final String password, final long userId) {
