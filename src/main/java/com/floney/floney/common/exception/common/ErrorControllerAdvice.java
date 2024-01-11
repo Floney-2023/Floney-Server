@@ -296,7 +296,6 @@ public class ErrorControllerAdvice {
         }
 
         logger.error(stringBuilder.toString());
-        exception.printStackTrace();
     }
 }
 
