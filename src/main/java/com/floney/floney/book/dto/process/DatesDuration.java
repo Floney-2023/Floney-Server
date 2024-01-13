@@ -1,13 +1,13 @@
 package com.floney.floney.book.dto.process;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
-@EqualsAndHashCode
 public class DatesDuration {
     private LocalDate startDate;
 
