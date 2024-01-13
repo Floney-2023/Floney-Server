@@ -1,6 +1,5 @@
 package com.floney.floney.book.controller;
 
-import com.floney.floney.book.dto.constant.ExcelDuration;
 import com.floney.floney.book.dto.request.ExcelDownloadRequest;
 import com.floney.floney.book.service.ExcelService;
 import com.floney.floney.common.exception.book.ExcelMakingException;
@@ -10,8 +9,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,15 +28,8 @@ public class ExcelController {
 
     @GetMapping
     public void download(@AuthenticationPrincipal CustomUserDetails userDetails,
-                         @RequestParam("bookKey") String bookKey,
-                         @RequestParam("currentDate") String currentDate,
-                         @RequestParam("excelDuration") ExcelDuration excelDuration,
+                         @RequestBody ExcelDownloadRequest downloadRequest,
                          HttpServletResponse response) {
-        ExcelDownloadRequest downloadRequest = ExcelDownloadRequest.builder()
-                .excelDuration(excelDuration)
-                .currentDate(currentDate)
-                .bookKey(bookKey)
-                .build();
 
         try (final Workbook bookExcel = excelService.createBookExcel(userDetails.getUsername(), downloadRequest)) {
             response.setContentType("application/vnd.ms-excel");
