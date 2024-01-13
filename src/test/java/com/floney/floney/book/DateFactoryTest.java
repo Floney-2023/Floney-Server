@@ -3,6 +3,7 @@ package com.floney.floney.book;
 import com.floney.floney.book.dto.constant.DayType;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.exception.book.LimitRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,10 @@ import java.time.LocalDate;
 
 import static com.floney.floney.book.dto.constant.ExcelDuration.*;
 import static com.floney.floney.book.util.DateFactory.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@DisplayName("DateFactory 테스트")
 public class DateFactoryTest {
 
     @Test
@@ -97,10 +100,10 @@ public class DateFactoryTest {
     }
 
     @Nested
-    @DisplayName("엑셀 추출 기간에 따라 현재 날짜를 기준으로 startDate와 EndDate 기간을 반환한다")
+    @DisplayName("getDurationByExcelDuration 메서드는 ")
     class ExcelDate {
         @Test
-        @DisplayName("이번달 1일과 마지막 날을 기간으로 반환한다")
+        @DisplayName("이번달을 ExcelDuration으로 넣을 경우, 1일과 마지막 날을 기간으로 반환한다")
         void thisMonth() {
             String currentDate = "2024-01-01";
             DatesDuration duration = getDurationByExcelDuration(currentDate, THIS_MONTH);
@@ -109,7 +112,7 @@ public class DateFactoryTest {
         }
 
         @Test
-        @DisplayName("지난달 1일과 마지막날을 기간으로 반환한다")
+        @DisplayName("지난달을 ExcelDuration으로 넣을 경우, 1일과 마지막날을 기간으로 반환한다")
         void lastMonth() {
             String currentDate = "2024-01-01";
             DatesDuration duration = getDurationByExcelDuration(currentDate, LAST_MONTH);
@@ -118,12 +121,20 @@ public class DateFactoryTest {
         }
 
         @Test
-        @DisplayName("현 시점으로 부터, 6개월 기간을 반환한다")
+        @DisplayName("1년을 ExcelDuration으로 넣을 경우, 현 시점으로 부터, 1년의 기간을 반환한다")
         void afterOneYear() {
             String currentDate = "2024-01-01";
             DatesDuration duration = getDurationByExcelDuration(currentDate, ONE_YEAR);
             assertThat(duration.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 1));
             assertThat(duration.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 31));
+        }
+
+        @Test
+        @DisplayName("이번달,저번달,1년 그 외의 값을 넣을 경우, 예외를 반환한다")
+        void occurError() {
+            String currentDate = "2024-01-01";
+            assertThatThrownBy(() -> getDurationByExcelDuration(currentDate, ALL))
+                    .isInstanceOf(LimitRequestException.class);
         }
     }
 
