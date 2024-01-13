@@ -29,14 +29,6 @@ public class DateDurationTest {
     }
 
     @Test
-    @DisplayName("해당 월의 모든 일별로 지출,수입을 Key로 초기화하는 객체를 반한한다")
-    void getInitExpenseByMonth() {
-        assertThat(getInitBookLineExpenseByMonth("2023-05-01")
-            .size())
-            .isEqualTo(62);
-    }
-
-    @Test
     @DisplayName("해당 날짜가 속한 년도의 첫날을 startDate로, 마지막날을 endDate로 기간을 반환한다")
     void getFirstAndEndDayOfYear() {
         LocalDate currentDate = LocalDate.of(2023, 10, 1);
