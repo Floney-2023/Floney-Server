@@ -7,7 +7,7 @@ import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
-import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         boolean carryOverStatus = book.getCarryOverStatus();
         LocalDate localDate = LocalDate.parse(date);
         // 1일일 경우, 이월 내역 포함하여 전송
-        if (carryOverStatus && DateFactory.isFirstDay(date)) {
+        if (carryOverStatus && DateDuration.isFirstDay(date)) {
             Optional<CarryOver> carryOverOptional = carryOverRepository.findCarryOverByDateAndBookAndStatus(localDate, book, ACTIVE);
             if (carryOverOptional.isPresent()) {
                 return CarryOverInfo.of(true, carryOverOptional.get());
@@ -55,7 +55,7 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Transactional
     @Override
     public void createCarryOverByAddBookLine(BookLineRequest request, Book book) {
-        LocalDate targetDate = DateFactory.getFirstDayOfMonth(request.getLineDate());
+        LocalDate targetDate = DateDuration.getFirstDayOfMonth(request.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
 
         // 다음달부터 생성
@@ -84,13 +84,13 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Transactional
     public void deleteCarryOver(Long bookLineId) {
         BookLine savedBookLine = bookLineRepository.findById(bookLineId)
-            .orElseThrow(NotFoundBookLineException::new);
+                .orElseThrow(NotFoundBookLineException::new);
 
         if (!savedBookLine.getBook().getCarryOverStatus()) {
             return;
         }
 
-        LocalDate targetDate = DateFactory.getFirstDayOfMonth(savedBookLine.getLineDate());
+        LocalDate targetDate = DateDuration.getFirstDayOfMonth(savedBookLine.getLineDate());
         targetDate = targetDate.plusMonths(1);
         List<CarryOver> carryOvers = new ArrayList<>();
 

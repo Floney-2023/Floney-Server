@@ -4,11 +4,10 @@ import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.AssetInfo;
-import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
-import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
-        DatesDuration datesDuration = DateFactory.getAssetDuration(localDate);
+        DateDuration datesDuration = DateDuration.getAssetDuration(localDate);
         // 기본 응답값 -> 초기 자산으로 셋팅
         Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
@@ -67,7 +66,7 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
-        final LocalDate startMonth = DateFactory.getFirstDayOfMonth(request.getLineDate());
+        final LocalDate startMonth = DateDuration.getFirstDayOfMonth(request.getLineDate());
 
         for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
@@ -79,12 +78,12 @@ public class AssetServiceImpl implements AssetService {
     @Transactional
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
-            .orElseThrow(NotFoundBookLineException::new);
+                .orElseThrow(NotFoundBookLineException::new);
         if (!bookLine.includedInAsset()) {
             return;
         }
 
-        final LocalDate startMonth = DateFactory.getFirstDayOfMonth(bookLine.getLineDate());
+        final LocalDate startMonth = DateDuration.getFirstDayOfMonth(bookLine.getLineDate());
 
         for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);

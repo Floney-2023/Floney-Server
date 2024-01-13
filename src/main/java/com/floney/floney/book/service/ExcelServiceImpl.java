@@ -3,10 +3,10 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.constant.ExcelDuration;
-import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.request.ExcelDownloadRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.floney.floney.book.util.DateFactory.getDurationByExcelDuration;
+import static com.floney.floney.common.domain.vo.DateDuration.getDurationByExcelDuration;
 
 @Service
 @Transactional(readOnly = true)
@@ -116,7 +116,7 @@ public class ExcelServiceImpl implements ExcelService {
         String bookKey = downloadRequest.getBookKey();
 
         if (downloadRequest.getExcelDuration() != ExcelDuration.ALL) {
-            DatesDuration duration = getDurationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
+            DateDuration duration = getDurationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
             return bookLineRepository.findAllBookLineByDuration(bookKey, duration);
         } else {
             return bookLineRepository.findAllByBook(bookKey);

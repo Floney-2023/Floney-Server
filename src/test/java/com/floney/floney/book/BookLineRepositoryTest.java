@@ -5,7 +5,6 @@ import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.constant.CategoryEnum;
 import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.repository.BookLineRepository;
@@ -13,6 +12,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.config.TestConfig;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.UserFixture;
@@ -89,7 +89,7 @@ public class BookLineRepositoryTest {
         final BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
         bookLine2.add(CategoryEnum.FLOW, category2);
 
-        final DatesDuration dates = DatesDuration.builder()
+        final DateDuration dates = DateDuration.builder()
                 .startDate(DEFAULT_DATE.minusDays(1))
                 .endDate(DEFAULT_DATE)
                 .build();
@@ -125,7 +125,7 @@ public class BookLineRepositoryTest {
         final BookLineCategory category2 = bookLineCategoryRepository.save(createFlowCategory((DefaultCategory) outcomeCategory, bookLine2));
         bookLine2.add(CategoryEnum.FLOW, category2);
 
-        final DatesDuration dates = DatesDuration.builder()
+        final DateDuration dates = DateDuration.builder()
                 .startDate(LocalDate.of(2023, 10, 1))
                 .endDate(DEFAULT_DATE)
                 .build();
@@ -216,7 +216,7 @@ public class BookLineRepositoryTest {
         LocalDate start = LocalDate.of(2023, 10, 21);
         LocalDate end = DEFAULT_DATE;
 
-        DatesDuration datesRequest = DatesDuration.builder()
+        DateDuration datesRequest = DateDuration.builder()
                 .startDate(start)
                 .endDate(end)
                 .build();
@@ -307,7 +307,7 @@ public class BookLineRepositoryTest {
         final BookLineCategory bookLineFlowLineCategory3 = bookLineCategoryRepository.save(createLineCategory(category, bookLine3));
         bookLine3.add(CategoryEnum.FLOW_LINE, bookLineFlowLineCategory3);
 
-        final DatesDuration datesDuration = DatesDuration.builder()
+        final DateDuration datesDuration = DateDuration.builder()
                 .startDate(DEFAULT_DATE)
                 .endDate(DEFAULT_DATE.plusDays(1))
                 .build();

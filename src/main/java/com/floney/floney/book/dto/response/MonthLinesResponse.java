@@ -3,7 +3,7 @@ package com.floney.floney.book.dto.response;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.MonthKey;
-import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.domain.vo.DateDuration;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -39,20 +39,20 @@ public class MonthLinesResponse {
 
     public static MonthLinesResponse of(String monthDate, List<BookLineExpense> dayExpenses, Map<String, Double> totalExpenses, CarryOverInfo carryOverInfo) {
         return MonthLinesResponse.builder()
-            .expenses(reflectDB(monthDate, dayExpenses))
-            .totalIncome(totalExpenses.getOrDefault(INCOME, DEFAULT_MONEY))
-            .totalOutcome(totalExpenses.getOrDefault(OUTCOME, DEFAULT_MONEY))
-            .carryOverInfo(carryOverInfo)
-            .build();
+                .expenses(reflectDB(monthDate, dayExpenses))
+                .totalIncome(totalExpenses.getOrDefault(INCOME, DEFAULT_MONEY))
+                .totalOutcome(totalExpenses.getOrDefault(OUTCOME, DEFAULT_MONEY))
+                .carryOverInfo(carryOverInfo)
+                .build();
     }
 
     public static List<BookLineExpense> reflectDB(String monthDate, List<BookLineExpense> dayExpenses) {
-        Map<MonthKey, BookLineExpense> initDatesFrame = DateFactory.getInitBookLineExpenseByMonth(monthDate);
+        Map<MonthKey, BookLineExpense> initDatesFrame = DateDuration.getInitBookLineExpenseByMonth(monthDate);
 
         dayExpenses.forEach(dayExpense -> initDatesFrame.replace(toMonthKey(dayExpense), dayExpense));
 
         return initDatesFrame.values()
-            .stream()
-            .toList();
+                .stream()
+                .toList();
     }
 }
