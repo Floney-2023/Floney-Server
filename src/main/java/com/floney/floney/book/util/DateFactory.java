@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.constant.ExcelDuration;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.process.MonthKey;
+import com.floney.floney.common.exception.book.LimitRequestException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -116,7 +117,7 @@ public class DateFactory {
                 return getAfterMonthDuration(targetDate, DayType.ONE_YEAR_TO_MONTH);
             }
             default -> {
-                return null;
+                throw new LimitRequestException();
             }
         }
     }
