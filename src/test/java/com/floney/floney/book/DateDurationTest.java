@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.constant.DayType;
+import com.floney.floney.book.dto.constant.DateType;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import org.junit.jupiter.api.DisplayName;
@@ -86,7 +86,7 @@ public class DateDurationTest {
     @DisplayName("현시점을 startDate로, 특정 개월 이후를 endDate로 기간을 반환한다")
     void afterMonth() {
         LocalDate firstDayOfMonth = LocalDate.of(2024, 1, 1);
-        assertThat(getAfterMonthDuration(firstDayOfMonth, DayType.THREE_MONTH).end())
+        assertThat(getAfterMonthDuration(firstDayOfMonth, DateType.THREE_MONTH).end())
             .isEqualTo(LocalDate.of(2024, 3, 31));
     }
 

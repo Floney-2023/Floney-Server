@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
-import static com.floney.floney.book.dto.constant.DayType.FIVE_YEAR_TO_DAY;
+import static com.floney.floney.book.dto.constant.DateType.FIVE_YEAR_TO_DAY;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @RequiredArgsConstructor
@@ -84,7 +84,7 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Transactional
     public void deleteCarryOver(Long bookLineId) {
         BookLine savedBookLine = bookLineRepository.findById(bookLineId)
-                .orElseThrow(NotFoundBookLineException::new);
+            .orElseThrow(NotFoundBookLineException::new);
 
         if (!savedBookLine.getBook().getCarryOverStatus()) {
             return;
