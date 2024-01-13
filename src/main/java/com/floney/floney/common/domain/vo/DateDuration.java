@@ -1,10 +1,7 @@
 package com.floney.floney.common.domain.vo;
 
-import com.floney.floney.book.dto.constant.AssetType;
 import com.floney.floney.book.dto.constant.DayType;
 import com.floney.floney.book.dto.constant.ExcelDuration;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.MonthKey;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,11 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
-import static com.floney.floney.book.dto.constant.AssetType.INCOME;
-import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 import static com.floney.floney.book.dto.constant.DayType.*;
 
 @RequiredArgsConstructor
@@ -69,23 +62,6 @@ public class DateDuration {
         return new DateDuration(before, endDate);
     }
 
-    // 해당 월의 일별로 지출, 수입 초기화 객체를 만들어주는 메서드
-    // return ex. { { "2024-01-09" : INCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : INCOME } }
-    // { { "2024-01-09" : OUTCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : OUTCOME } }
-    public static Map<MonthKey, BookLineExpense> getInitBookLineExpenseByMonth(String targetDate) {
-        DateDuration dates = getStartAndEndOfMonth(targetDate);
-        Map<MonthKey, BookLineExpense> initDates = new LinkedHashMap<>();
-        LocalDate currentDate = dates.start();
-
-        while (!currentDate.isAfter(dates.end())) {
-            addExpense(initDates, currentDate, INCOME);
-            addExpense(initDates, currentDate, OUTCOME);
-            currentDate = currentDate.plusDays(ONE_DAY.getValue());
-        }
-
-        return initDates;
-    }
-
     public static DateDuration getDurationByExcelDuration(String currentDate, ExcelDuration excelDuration) {
         LocalDate targetDate = LocalDate.parse(currentDate, DateTimeFormatter.ISO_DATE);
 
@@ -103,10 +79,6 @@ public class DateDuration {
                 throw new LimitRequestException();
             }
         }
-    }
-
-    private static void addExpense(Map<MonthKey, BookLineExpense> initDates, LocalDate currentDate, AssetType type) {
-        initDates.put(MonthKey.of(currentDate, type), BookLineExpense.initExpense(currentDate, type));
     }
 
     public static boolean isFirstDay(String date) {
