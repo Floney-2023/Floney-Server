@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -20,8 +19,6 @@ import java.util.Map;
 import static com.floney.floney.book.dto.constant.AssetType.INCOME;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 import static com.floney.floney.book.dto.constant.DayType.*;
-import static java.time.temporal.TemporalAdjusters.nextOrSame;
-import static java.time.temporal.TemporalAdjusters.previousOrSame;
 
 @RequiredArgsConstructor
 @Getter
@@ -34,14 +31,6 @@ public class DateDuration {
     private DateDuration(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-    }
-
-    public LocalDate start() {
-        return startDate;
-    }
-
-    public LocalDate end() {
-        return endDate;
     }
 
     public static DateDuration getStartAndEndOfMonth(String targetDate) {
@@ -66,18 +55,11 @@ public class DateDuration {
         return new DateDuration(firstDayOfMonth, afterMonth.minusDays(1));
     }
 
-    public static DateDuration getFirstAndEndDayOfWeek(LocalDate currentDate) {
-        LocalDate monday = currentDate.with(previousOrSame(DayOfWeek.MONDAY));
-        LocalDate sunday = currentDate.with(nextOrSame(DayOfWeek.SUNDAY));
-        return new DateDuration(monday, sunday);
-    }
-
     public static DateDuration getFirstAndEndDayOfYear(LocalDate firstDate) {
         LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY.getValue());
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());
         return new DateDuration(startDate, endDate);
     }
-
 
     public static DateDuration getLastMonthDateDuration(LocalDate targetDate) {
         LocalDate before = getDateBeforeMonth(targetDate, ONE_MONTH);
@@ -137,6 +119,14 @@ public class DateDuration {
 
     private static LocalDate getDateBeforeMonth(LocalDate targetDate, DayType beforeMonth) {
         return targetDate.minusMonths(beforeMonth.getValue());
+    }
+
+    public LocalDate start() {
+        return startDate;
+    }
+
+    public LocalDate end() {
+        return endDate;
     }
 
 }

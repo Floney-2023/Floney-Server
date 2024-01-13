@@ -23,17 +23,17 @@ public class DateDurationTest {
         DateDuration datesDuration = DateDuration.getStartAndEndOfMonth("2023-05-01");
 
         assertThat(datesDuration.start())
-                .isEqualTo("2023-05-01");
+            .isEqualTo("2023-05-01");
         assertThat(datesDuration.end())
-                .isEqualTo("2023-05-31");
+            .isEqualTo("2023-05-31");
     }
 
     @Test
     @DisplayName("해당 월의 모든 일별로 지출,수입을 Key로 초기화하는 객체를 반한한다")
     void getInitExpenseByMonth() {
         assertThat(getInitBookLineExpenseByMonth("2023-05-01")
-                .size())
-                .isEqualTo(62);
+            .size())
+            .isEqualTo(62);
     }
 
     @Test
@@ -43,9 +43,9 @@ public class DateDurationTest {
         DateDuration duration = DateDuration.getFirstAndEndDayOfYear(currentDate);
 
         assertThat(duration.start())
-                .isEqualTo(LocalDate.of(2023, 1, 1));
+            .isEqualTo(LocalDate.of(2023, 1, 1));
         assertThat(duration.end())
-                .isEqualTo(LocalDate.of(2023, 12, 31));
+            .isEqualTo(LocalDate.of(2023, 12, 31));
     }
 
     @Test
@@ -55,9 +55,9 @@ public class DateDurationTest {
         DateDuration duration = DateDuration.getAssetDuration(currentDate);
 
         assertThat(duration.start())
-                .isEqualTo(LocalDate.of(2023, 5, 1));
+            .isEqualTo(LocalDate.of(2023, 5, 1));
         assertThat(duration.end())
-                .isEqualTo(currentDate);
+            .isEqualTo(currentDate);
     }
 
     @Test
@@ -67,9 +67,9 @@ public class DateDurationTest {
         DateDuration duration = DateDuration.getLastMonthDateDuration(currentDate);
 
         assertThat(duration.start())
-                .isEqualTo(LocalDate.of(2023, 9, 1));
+            .isEqualTo(LocalDate.of(2023, 9, 1));
         assertThat(duration.end())
-                .isEqualTo(LocalDate.of(2023, 9, 30));
+            .isEqualTo(LocalDate.of(2023, 9, 30));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class DateDurationTest {
     void getFirstDayOfMonth() {
         LocalDate currentDate = LocalDate.of(2024, 1, 20);
         assertThat(DateDuration.getFirstDayOfMonth(currentDate))
-                .isEqualTo(LocalDate.of(2024, 1, 1));
+            .isEqualTo(LocalDate.of(2024, 1, 1));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class DateDurationTest {
     void afterMonth() {
         LocalDate firstDayOfMonth = LocalDate.of(2024, 1, 1);
         assertThat(getAfterMonthDuration(firstDayOfMonth, DayType.THREE_MONTH).end())
-                .isEqualTo(LocalDate.of(2024, 3, 31));
+            .isEqualTo(LocalDate.of(2024, 3, 31));
     }
 
     @Nested
@@ -133,7 +133,7 @@ public class DateDurationTest {
         void occurError() {
             String currentDate = "2024-01-01";
             assertThatThrownBy(() -> getDurationByExcelDuration(currentDate, ALL))
-                    .isInstanceOf(LimitRequestException.class);
+                .isInstanceOf(LimitRequestException.class);
         }
     }
 
