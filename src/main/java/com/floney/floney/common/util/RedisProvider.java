@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+// TODO: 해당 클래스 삭제
 @Component
 @RequiredArgsConstructor
 public class RedisProvider {
@@ -14,10 +15,10 @@ public class RedisProvider {
 
     public void set(String key, String value, long timeout) {
         redisTemplate.opsForValue().set(
-                key,
-                value,
-                timeout,
-                TimeUnit.MILLISECONDS
+            key,
+            value,
+            timeout,
+            TimeUnit.MILLISECONDS
         );
     }
 

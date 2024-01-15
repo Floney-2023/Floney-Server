@@ -1,11 +1,5 @@
 package com.floney.floney.user.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.anyString;
-import static org.mockito.BDDMockito.given;
-
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.common.exception.user.NotEmailUserException;
@@ -16,7 +10,6 @@ import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.SignoutReasonRepository;
 import com.floney.floney.user.repository.UserRepository;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -43,6 +43,8 @@ class UserServiceTest {
     private SignoutReasonRepository signoutReasonRepository;
     @Mock
     private MailProvider mailProvider;
+    @Mock
+    private PasswordHistoryManager passwordHistoryManager;
 
     @Test
     @DisplayName("마케팅 수신 동의 여부를 변경하는데 성공한다")
@@ -53,7 +55,7 @@ class UserServiceTest {
 
         // when & then
         assertThatNoException()
-                .isThrownBy(() -> userService.updateReceiveMarketing(false, user.getEmail()));
+            .isThrownBy(() -> userService.updateReceiveMarketing(false, user.getEmail()));
         assertThat(user.isReceiveMarketing()).isFalse();
     }
 
@@ -66,7 +68,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.updateReceiveMarketing(false, email))
-                .isInstanceOf(UserNotFoundException.class);
+            .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
@@ -74,6 +76,7 @@ class UserServiceTest {
     void updateRegeneratedPassword_success() {
         // given
         final User user = UserFixture.emailUser();
+        ReflectionTestUtils.setField(user, "id", 1L);
 
         given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
 
@@ -86,7 +89,7 @@ class UserServiceTest {
     void updateRegeneratedPassword_fail_throws_userNotFoundException() {
         // when & then
         assertThatThrownBy(() -> userService.updatePasswordByGeneration("notUser"))
-                .isInstanceOf(UserNotFoundException.class);
+            .isInstanceOf(UserNotFoundException.class);
     }
 
 
@@ -101,7 +104,7 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy(() -> userService.updatePasswordByGeneration(email))
-                .isInstanceOf(NotEmailUserException.class);
+            .isInstanceOf(NotEmailUserException.class);
     }
 
     @Test
@@ -126,6 +129,6 @@ class UserServiceTest {
 
         // when
         assertThatThrownBy(() -> userService.getReceiveMarketing("fail@email.com"))
-                .isInstanceOf(UserNotFoundException.class);
+            .isInstanceOf(UserNotFoundException.class);
     }
 }

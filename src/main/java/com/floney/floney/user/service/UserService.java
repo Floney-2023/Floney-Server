@@ -53,12 +53,14 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
+    private final PasswordHistoryManager passwordHistoryManager;
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
         final User user = request.to();
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
+        passwordHistoryManager.addPassword(user.getPassword(), user.getId());
         return request.toLoginRequest();
     }
 
@@ -72,6 +74,7 @@ public class UserService {
 
         user.signout();
         addSignoutReason(request);
+        passwordHistoryManager.deleteHistory(user.getId());
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }
@@ -169,6 +172,7 @@ public class UserService {
 
     private void updatePassword(String newPassword, User user) {
         validatePasswordNotSame(newPassword, user);
+        passwordHistoryManager.addPassword(newPassword, user.getId());
         user.updatePassword(newPassword);
         user.encodePassword(passwordEncoder);
     }
@@ -189,7 +193,7 @@ public class UserService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {
