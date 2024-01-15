@@ -65,7 +65,7 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
 
     private void checkHistorySize(final String key) {
         if (listOperations.size(key) > MAX_HISTORY_SIZE) {
-            logger.error("이전 비밀번호 내역이 {}개를 초과", MAX_HISTORY_SIZE);
+            logger.warn("Redis에서 이전 비밀번호 내역이 {}개를 초과", MAX_HISTORY_SIZE);
         }
     }
 }
