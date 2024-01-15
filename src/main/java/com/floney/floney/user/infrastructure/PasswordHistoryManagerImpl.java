@@ -19,6 +19,8 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
     private static final String KEY_USER = "user:";
     private static final String KEY_PASSWORDS = ":passwords";
     private static final int MAX_HISTORY_SIZE = 5;
+    private static final int START_INDEX = 0;
+    private static final int END_INDEX = -1;
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ListOperations<String, String> listOperations;
@@ -55,7 +57,7 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
     }
 
     private void validateCanAddPassword(final String password, final String key) {
-        final List<String> history = listOperations.range(key, 0, -1);
+        final List<String> history = listOperations.range(key, START_INDEX, END_INDEX);
         for (final String encodedPassword : history) {
             if (passwordEncoder.matches(password, encodedPassword)) {
                 throw new PasswordSameException();
