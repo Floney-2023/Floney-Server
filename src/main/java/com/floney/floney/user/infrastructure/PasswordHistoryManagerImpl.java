@@ -58,11 +58,14 @@ public class PasswordHistoryManagerImpl implements PasswordHistoryManager {
 
     private void validateCanAddPassword(final String password, final String key) {
         final List<String> history = listOperations.range(key, START_INDEX, END_INDEX);
-        for (final String encodedPassword : history) {
-            if (passwordEncoder.matches(password, encodedPassword)) {
-                throw new PasswordSameException();
-            }
+        if (isPasswordInHistory(password, history)) {
+            throw new PasswordSameException();
         }
+    }
+
+    private boolean isPasswordInHistory(final String password, final List<String> history) {
+        return history.stream()
+            .anyMatch(encodedPassword -> passwordEncoder.matches(password, encodedPassword));
     }
 
     private void checkHistorySize(final String key) {
