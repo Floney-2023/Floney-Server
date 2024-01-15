@@ -21,13 +21,16 @@ import java.util.Optional;
 
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
-import static com.floney.floney.book.dto.constant.DateType.FIVE_YEAR_TO_DAY;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @RequiredArgsConstructor
 @Component
 public class CarryOverServiceImpl implements CarryOverService {
+    private final static int SAVE_CARRY_OVER_DURATION = 60;
+    private final static int ONE_MONTH = 1;
+
     private final CarryOverRepository carryOverRepository;
+
     private final BookLineRepository bookLineRepository;
 
     @Override
@@ -59,10 +62,10 @@ public class CarryOverServiceImpl implements CarryOverService {
         List<CarryOver> carryOvers = new ArrayList<>();
 
         // 다음달부터 생성
-        targetDate = targetDate.plusMonths(1);
+        targetDate = getNextMonth(targetDate);
 
         // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEAR_TO_DAY.getValue(); i++) {
+        for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, book, ACTIVE);
 
             if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.getKind())) {
@@ -74,7 +77,7 @@ public class CarryOverServiceImpl implements CarryOverService {
                     carryOvers.add(carryOver);
                 });
             }
-            targetDate = targetDate.plusMonths(1);
+            targetDate = getNextMonth(targetDate);
         }
 
         carryOverRepository.saveAll(carryOvers);
@@ -91,19 +94,23 @@ public class CarryOverServiceImpl implements CarryOverService {
         }
 
         LocalDate targetDate = DateDuration.getFirstDayOfMonth(savedBookLine.getLineDate());
-        targetDate = targetDate.plusMonths(1);
+        targetDate = getNextMonth(targetDate);
         List<CarryOver> carryOvers = new ArrayList<>();
 
         // 5년(60개월) 동안의 엔티티 생성
-        for (int i = 0; i < FIVE_YEAR_TO_DAY.getValue(); i++) {
+        for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             Optional<CarryOver> savedCarryOver = carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, savedBookLine.getBook(), ACTIVE);
             savedCarryOver.ifPresent(carryOver -> {
                 carryOver.delete(savedBookLine.getMoney(), savedBookLine.getBookLineCategories().get(FLOW));
                 carryOvers.add(carryOver);
             });
-            targetDate = targetDate.plusMonths(1);
+            targetDate = getNextMonth(targetDate);
         }
 
         carryOverRepository.saveAll(carryOvers);
+    }
+
+    private LocalDate getNextMonth(LocalDate targetDate) {
+        return targetDate.plusMonths(ONE_MONTH);
     }
 }

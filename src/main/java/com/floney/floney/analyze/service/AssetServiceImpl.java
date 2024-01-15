@@ -21,7 +21,6 @@ import java.util.Map;
 import static com.floney.floney.book.dto.constant.AssetType.BANK;
 import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
 import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
-import static com.floney.floney.book.dto.constant.DateType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -30,15 +29,21 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 public class AssetServiceImpl implements AssetService {
     private final AssetRepository assetRepository;
     private final BookLineRepository bookLineRepository;
+    private static final int SHOW_ASSET_DURATION = 5;
+    private static final int SAVE_ASSET_DURATION = 60;
+    private static final int ONE_MONTH = 1;
 
     @Override
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
-        DateDuration datesDuration = DateDuration.getAssetDuration(localDate);
-        // 기본 응답값 -> 초기 자산으로 셋팅
+
+        // 1. 현재 기간으로부터 asset_duration 전의 기간
+        DateDuration datesDuration = DateDuration.getBeforeMonthToCurrentDuration(localDate, SHOW_ASSET_DURATION);
+
+        // 2. 기본 응답값 -> 초기 자산으로 셋팅
         Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
-        // 날짜를 key로 하여, 저장된 데이터가 있다면 대체
+        // 3. 1번에서 추출한 기간을 기준으로 저장된 데이터가 있다면 대체
         List<Asset> assets = assetRepository.findByDateBetweenAndBookAndStatus(datesDuration.getStartDate(), datesDuration.getEndDate(), book, ACTIVE);
         assets.forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
 
@@ -49,9 +54,9 @@ public class AssetServiceImpl implements AssetService {
         LocalDate localDate = LocalDate.parse(date);
         Map<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
 
-        for (int i = 0; i <= FIVE_YEAR.getValue(); i++) {
+        for (int i = 0; i <= SHOW_ASSET_DURATION; i++) {
             initAssets.put(localDate, AssetInfo.init(book.getAsset(), localDate));
-            localDate = localDate.minusMonths(ONE_MONTH.getValue());
+            localDate = localDate.minusMonths(ONE_MONTH);
         }
 
         return initAssets;
@@ -68,7 +73,7 @@ public class AssetServiceImpl implements AssetService {
 
         final LocalDate startMonth = DateDuration.getFirstDayOfMonth(request.getLineDate());
 
-        for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
+        for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
         }
@@ -85,7 +90,7 @@ public class AssetServiceImpl implements AssetService {
 
         final LocalDate startMonth = DateDuration.getFirstDayOfMonth(bookLine.getLineDate());
 
-        for (int month = 0; month < FIVE_YEAR_TO_DAY.getValue(); month++) {
+        for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.subtractMoneyByDateAndBook(getMoney(bookLine), currentMonth, bookLine.getBook());
         }
@@ -104,5 +109,6 @@ public class AssetServiceImpl implements AssetService {
         }
         return bookLine.getMoney();
     }
+
 }
 

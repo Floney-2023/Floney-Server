@@ -1,6 +1,5 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.dto.constant.DateType;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import org.junit.jupiter.api.DisplayName;
@@ -41,10 +40,10 @@ public class DateDurationTest {
     }
 
     @Test
-    @DisplayName("현재 날짜로부터 5개월 이전(자산 분석 기간)을 startDate로, 현재 날짜를 endDate로 기간을 반환한다")
+    @DisplayName("현재 날짜로부터 N개월 전을 startDate로, 현재 날짜를 endDate로 기간을 반환한다")
     void getAssetDuration() {
         LocalDate currentDate = LocalDate.of(2023, 10, 1);
-        DateDuration duration = DateDuration.getAssetDuration(currentDate);
+        DateDuration duration = DateDuration.getBeforeMonthToCurrentDuration(currentDate, 5);
 
         assertThat(duration.start())
             .isEqualTo(LocalDate.of(2023, 5, 1));
@@ -86,7 +85,7 @@ public class DateDurationTest {
     @DisplayName("현시점을 startDate로, 특정 개월 이후를 endDate로 기간을 반환한다")
     void afterMonth() {
         LocalDate firstDayOfMonth = LocalDate.of(2024, 1, 1);
-        assertThat(getAfterMonthDuration(firstDayOfMonth, DateType.THREE_MONTH).end())
+        assertThat(getAfterMonthDuration(firstDayOfMonth, 3).end())
             .isEqualTo(LocalDate.of(2024, 3, 31));
     }
 

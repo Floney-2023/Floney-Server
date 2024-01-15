@@ -1,6 +1,5 @@
 package com.floney.floney.common.domain.vo;
 
-import com.floney.floney.book.dto.constant.DateType;
 import com.floney.floney.book.dto.constant.ExcelDuration;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import lombok.Builder;
@@ -11,11 +10,15 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
-import static com.floney.floney.book.dto.constant.DateType.*;
-
 @RequiredArgsConstructor
 @Getter
 public class DateDuration {
+    private static final int FIRST_DAY_OF_MONTH = 1;
+    private static final int FIRST_DAY_OF_YEAR = 1;
+    private static final int BEFORE_ONE_MONTH = 1;
+    private static final int ASSET_DURATION = 5;
+    private static final int ONE_DAY = 1;
+    private static final int ONE_YEAR_TO_MONTH = 12;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -36,26 +39,25 @@ public class DateDuration {
         return new DateDuration(startDate, endDate);
     }
 
-    public static DateDuration getAssetDuration(LocalDate currentDate) {
-        // 현재 날짜로부터 5개월 이전의 날짜 계산
-        LocalDate beforeMonth = getDateBeforeMonth(currentDate, FIVE_MONTH);
-        return new DateDuration(beforeMonth, currentDate);
+    // 현재 날짜로부터 N개월 이전의 날짜 계산
+    public static DateDuration getBeforeMonthToCurrentDuration(LocalDate currentDate, int beforeMonth) {
+        return new DateDuration(getDateBeforeMonth(currentDate, beforeMonth), currentDate);
     }
 
     // 현시점으로 부터 특정 개월 이후의 기간을 반환한다. ex. 1년 - 1월 1일 ~ 12월 31일
-    public static DateDuration getAfterMonthDuration(LocalDate firstDayOfMonth, DateType month) {
-        LocalDate afterMonth = firstDayOfMonth.plusMonths(month.getValue());
-        return new DateDuration(firstDayOfMonth, afterMonth.minusDays(1));
+    public static DateDuration getAfterMonthDuration(LocalDate firstDayOfMonth, int month) {
+        LocalDate afterMonth = firstDayOfMonth.plusMonths(month);
+        return new DateDuration(firstDayOfMonth, afterMonth.minusDays(ONE_DAY));
     }
 
     public static DateDuration getFirstAndEndDayOfYear(LocalDate firstDate) {
-        LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY.getValue());
+        LocalDate startDate = firstDate.withDayOfYear(FIRST_DAY_OF_YEAR);
         LocalDate endDate = firstDate.withDayOfYear(firstDate.lengthOfYear());
         return new DateDuration(startDate, endDate);
     }
 
     public static DateDuration getLastMonthDateDuration(LocalDate targetDate) {
-        LocalDate before = getDateBeforeMonth(targetDate, ONE_MONTH);
+        LocalDate before = getDateBeforeMonth(targetDate, BEFORE_ONE_MONTH);
         YearMonth yearMonth = YearMonth.from(before);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
@@ -73,7 +75,7 @@ public class DateDuration {
                 return getLastMonthDateDuration(targetDate);
             }
             case ONE_YEAR -> {
-                return getAfterMonthDuration(targetDate, DateType.ONE_YEAR_TO_MONTH);
+                return getAfterMonthDuration(targetDate, ONE_YEAR_TO_MONTH);
             }
             default -> {
                 throw new LimitRequestException();
@@ -82,15 +84,15 @@ public class DateDuration {
     }
 
     public static boolean isFirstDay(String date) {
-        return LocalDate.parse(date).getDayOfMonth() == FIRST_DAY.getValue();
+        return LocalDate.parse(date).getDayOfMonth() == FIRST_DAY_OF_MONTH;
     }
 
     public static LocalDate getFirstDayOfMonth(LocalDate requestDate) {
-        return requestDate.withDayOfMonth(FIRST_DAY.getValue());
+        return requestDate.withDayOfMonth(FIRST_DAY_OF_MONTH);
     }
 
-    private static LocalDate getDateBeforeMonth(LocalDate targetDate, DateType beforeMonth) {
-        return targetDate.minusMonths(beforeMonth.getValue());
+    private static LocalDate getDateBeforeMonth(LocalDate targetDate, int beforeMonth) {
+        return targetDate.minusMonths(beforeMonth);
     }
 
     public LocalDate start() {

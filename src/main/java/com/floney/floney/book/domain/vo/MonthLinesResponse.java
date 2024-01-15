@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.dto.constant.DateType.ONE_DAY;
 import static com.floney.floney.book.dto.process.MonthKey.toMonthKey;
 import static com.floney.floney.common.domain.vo.DateDuration.getStartAndEndOfMonth;
 
@@ -25,6 +24,8 @@ public class MonthLinesResponse {
     private static final String OUTCOME = "지출";
 
     private static final double DEFAULT_MONEY = 0.0;
+
+    private static final int ONE_DAY = 1;
 
     private final List<BookLineExpense> expenses;
 
@@ -73,7 +74,7 @@ public class MonthLinesResponse {
         while (!currentDate.isAfter(dates.end())) {
             addExpense(initDates, currentDate, AssetType.INCOME);
             addExpense(initDates, currentDate, AssetType.OUTCOME);
-            currentDate = currentDate.plusDays(ONE_DAY.getValue());
+            currentDate = currentDate.plusDays(ONE_DAY);
         }
 
         return initDates;
