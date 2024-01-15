@@ -29,8 +29,6 @@
 
         <logger name="LogByAop" additivity="false">
             <appender-ref ref="FILE-INFO"/>
-            <appender-ref ref="FILE-WARN"/>
-            <appender-ref ref="FILE-ERROR"/>
         </logger>
 
         <logger name="ErrorControllerAdvice" additivity="false">
