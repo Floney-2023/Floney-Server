@@ -1,13 +1,13 @@
 package com.floney.floney.common.domain.vo;
 
 import com.floney.floney.book.dto.constant.ExcelDuration;
+import com.floney.floney.book.util.DateUtil;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 import static com.floney.floney.book.util.DateUtil.getDateBeforeMonth;
@@ -30,13 +30,9 @@ public class DateDuration {
         this.endDate = endDate;
     }
 
-    public static DateDuration startAndEndOfMonth(String targetDate) {
-        LocalDate startDate = LocalDate.parse(targetDate, DateTimeFormatter.ISO_DATE);
-
-        // 각 달의 끝이 28,30,31중 어느날인지 계산
-        YearMonth currentMonth = YearMonth.from(startDate);
-        LocalDate endDate = currentMonth.atEndOfMonth();
-
+    public static DateDuration startAndEndOfMonth(String currentDate) {
+        LocalDate startDate = LocalDate.parse(currentDate, DateTimeFormatter.ISO_DATE);
+        LocalDate endDate = DateUtil.getLastDateOfMonth(startDate);
         return new DateDuration(startDate, endDate);
     }
 
@@ -58,11 +54,9 @@ public class DateDuration {
     }
 
     public static DateDuration firstAndLastDayFromLastMonth(LocalDate targetDate) {
-        LocalDate before = getDateBeforeMonth(targetDate, BEFORE_ONE_MONTH);
-        YearMonth yearMonth = YearMonth.from(before);
-        LocalDate endDate = yearMonth.atEndOfMonth();
-
-        return new DateDuration(before, endDate);
+        LocalDate startDate = getDateBeforeMonth(targetDate, BEFORE_ONE_MONTH);
+        LocalDate endDate = DateUtil.getLastDateOfMonth(startDate);
+        return new DateDuration(startDate, endDate);
     }
 
     public static DateDuration durationByExcelDuration(String currentDate, ExcelDuration excelDuration) {

@@ -36,4 +36,13 @@ public class DateUtilTest {
         assertThat(DateUtil.getDateBeforeMonth(currentDate, 2))
             .isEqualTo(LocalDate.of(2024, 10, 1));
     }
+
+    @Test
+    @DisplayName("현 날짜가 속한 달의 마지막날을 구한다")
+    void getLastDateOfMonth() {
+        LocalDate currentDate = LocalDate.of(2024, 12, 1);
+        assertThat(DateUtil.getLastDateOfMonth(currentDate))
+            .isEqualTo(LocalDate.of(2024, 12, 31));
+    }
+    
 }
