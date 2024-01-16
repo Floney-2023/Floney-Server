@@ -19,7 +19,7 @@ import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -72,7 +72,7 @@ public class BookServiceImpl implements BookService {
         User user = userDetails.getUser();
 
         Book book = bookRepository.findBookExclusivelyByCodeAndStatus(code, ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(code));
+            .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
         validateJoinByBookCapacity(user);
@@ -176,10 +176,10 @@ public class BookServiceImpl implements BookService {
 
         final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
         users.addAll(findAllByBookAndStatus(bookKey)
-                .stream()
-                .map(BookUser::getUser)
-                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-                .toList());
+            .stream()
+            .map(BookUser::getUser)
+            .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+            .toList());
 
         return userToResponse(users);
     }
@@ -221,18 +221,18 @@ public class BookServiceImpl implements BookService {
         bookLineCategoryRepository.inactiveAllByBookKey(bookKey);
 
         categoryRepository.findAllCustomCategory(book)
-                .stream()
-                .map(BookCategory::delete)
-                .forEach(categoryRepository::delete);
+            .stream()
+            .map(BookCategory::delete)
+            .forEach(categoryRepository::delete);
         assetRepository.inactiveAllByBook(book);
         settlementRepository.inactiveAllByBookKey(bookKey);
         bookLineRepository.inactiveAllBy(bookKey);
         carryOverRepository.inactiveAllByBookKey(bookKey);
 
         List<Budget> initBudgets = budgetRepository.findAllByBook(book)
-                .stream()
-                .map(Budget::initMoney)
-                .toList();
+            .stream()
+            .map(Budget::initMoney)
+            .toList();
         budgetRepository.saveAll(initBudgets);
 
         return bookRepository.save(book);
@@ -248,7 +248,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public BookInfoResponse getBookInfoByCode(final String code) {
         final Book book = bookRepository.findBookByCodeAndStatus(code, ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(code));
+            .orElseThrow(() -> new NotFoundBookException(code));
         final int memberCount = bookUserRepository.countByBook(book);
         return BookInfoResponse.of(book, memberCount);
     }
@@ -270,7 +270,7 @@ public class BookServiceImpl implements BookService {
         LocalDate date = LocalDate.parse(firstDate);
         Map<Month, Double> monthlyMap = getInitBudgetFrame();
 
-        List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateFactory.getYearDuration(date));
+        List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateDuration.firstAndEndDayOfYear(date));
 
         for (BudgetYearResponse budget : savedBudget) {
             Month month = budget.getDate().getMonth();
@@ -300,11 +300,11 @@ public class BookServiceImpl implements BookService {
     private void saveAnotherRecentBookKey(User user) {
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
         myBookInfos.stream()
-                .findFirst()
-                .ifPresentOrElse(
-                        bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
-                        () -> user.saveRecentBookKey(null)
-                );
+            .findFirst()
+            .ifPresentOrElse(
+                bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
+                () -> user.saveRecentBookKey(null)
+            );
     }
 
     private void validateJoinByBookUserCapacity(Book book) {
@@ -330,7 +330,7 @@ public class BookServiceImpl implements BookService {
     private void inactiveAllBy(final BookUser bookUser) {
         alarmRepository.inactiveAllByBookUser(bookUser);
         bookLineRepository.findAllByBookUser(bookUser)
-                .forEach(BookLine::inactive);
+            .forEach(BookLine::inactive);
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
     }
 
@@ -357,7 +357,7 @@ public class BookServiceImpl implements BookService {
 
     private Book findBook(String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(bookKey));
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void validateCanDeleteBookBy(final BookUser bookUser) {
@@ -368,8 +368,8 @@ public class BookServiceImpl implements BookService {
 
     private List<BookUserResponse> userToResponse(final List<User> users) {
         return users.stream()
-                .map(BookUserResponse::from)
-                .toList();
+            .map(BookUserResponse::from)
+            .toList();
     }
 
     private List<BookUser> findAllByBookAndStatus(String bookKey) {
@@ -378,12 +378,12 @@ public class BookServiceImpl implements BookService {
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
         return bookUserRepository.findBookUserByKey(userEmail, bookKey)
-                .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
+            .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
     }
 
     private Book findBook(String userEmail, String bookKey) {
         return bookRepository.findByBookUserEmailAndBookKey(userEmail, bookKey)
-                .orElseThrow(() -> new NotFoundBookException(bookKey));
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void saveDefaultBookKey(User user, Book book) {

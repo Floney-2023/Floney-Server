@@ -4,11 +4,11 @@ import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.AssetInfo;
-import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
-import com.floney.floney.book.util.DateFactory;
+import com.floney.floney.book.util.DateUtil;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,29 +19,32 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.dto.constant.AssetType.BANK;
-import static com.floney.floney.book.dto.constant.AssetType.OUTCOME;
-import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.book.domain.constant.AssetType.BANK;
+import static com.floney.floney.book.domain.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.domain.constant.CategoryEnum.FLOW;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AssetServiceImpl implements AssetService {
-
-    private static final int SAVED_MONTHS = 5 * 12; // 자산 데이터 생성 기간
-
     private final AssetRepository assetRepository;
     private final BookLineRepository bookLineRepository;
+    private static final int SHOW_ASSET_DURATION = 5;
+    private static final int SAVE_ASSET_DURATION = 60;
+    private static final int ONE_MONTH = 1;
 
     @Override
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
         LocalDate localDate = LocalDate.parse(date);
-        DatesDuration datesDuration = DateFactory.getAssetDuration(localDate);
-        // 기본 응답값 -> 초기 자산으로 셋팅
+
+        // 1. 현재 기간으로부터 asset_duration 전의 기간
+        DateDuration datesDuration = DateDuration.beforeMonthToCurrent(localDate, SHOW_ASSET_DURATION);
+
+        // 2. 기본 응답값 -> 초기 자산으로 셋팅
         Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
 
-        // 날짜를 key로 하여, 저장된 데이터가 있다면 대체
+        // 3. 1번에서 추출한 기간을 기준으로 저장된 데이터가 있다면 대체
         List<Asset> assets = assetRepository.findByDateBetweenAndBookAndStatus(datesDuration.getStartDate(), datesDuration.getEndDate(), book, ACTIVE);
         assets.forEach((asset) -> initAssets.replace(asset.getDate(), AssetInfo.of(asset, book)));
 
@@ -52,9 +55,9 @@ public class AssetServiceImpl implements AssetService {
         LocalDate localDate = LocalDate.parse(date);
         Map<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i <= SHOW_ASSET_DURATION; i++) {
             initAssets.put(localDate, AssetInfo.init(book.getAsset(), localDate));
-            localDate = localDate.minusMonths(1);
+            localDate = localDate.minusMonths(ONE_MONTH);
         }
 
         return initAssets;
@@ -69,9 +72,9 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
-        final LocalDate startMonth = DateFactory.getFirstDayOf(request.getLineDate());
+        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(request.getLineDate());
 
-        for (int month = 0; month < SAVED_MONTHS; month++) {
+        for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
         }
@@ -81,14 +84,14 @@ public class AssetServiceImpl implements AssetService {
     @Transactional
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
-                .orElseThrow(NotFoundBookLineException::new);
+            .orElseThrow(NotFoundBookLineException::new);
         if (!bookLine.includedInAsset()) {
             return;
         }
 
-        final LocalDate startMonth = DateFactory.getFirstDayOf(bookLine.getLineDate());
+        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
-        for (int month = 0; month < SAVED_MONTHS; month++) {
+        for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.subtractMoneyByDateAndBook(getMoney(bookLine), currentMonth, bookLine.getBook());
         }
@@ -107,5 +110,6 @@ public class AssetServiceImpl implements AssetService {
         }
         return bookLine.getMoney();
     }
+
 }
 
