@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.floney.floney.book.dto.process.MonthKey.toMonthKey;
-import static com.floney.floney.common.domain.vo.DateDuration.getStartAndEndOfMonth;
+import static com.floney.floney.common.domain.vo.DateDuration.startAndEndOfMonth;
 
 @Getter
 public class MonthLinesResponse {
@@ -67,11 +67,11 @@ public class MonthLinesResponse {
     // return ex. { { "2024-01-09" : INCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : INCOME } }
     // { { "2024-01-09" : OUTCOME } : { date  : "2024-01-09" , money : 0.0 , assetType : OUTCOME } }
     private static Map<MonthKey, BookLineExpense> getInitBookLineExpenseByMonth(String targetDate) {
-        DateDuration dates = getStartAndEndOfMonth(targetDate);
+        DateDuration dates = startAndEndOfMonth(targetDate);
         Map<MonthKey, BookLineExpense> initDates = new LinkedHashMap<>();
-        LocalDate currentDate = dates.start();
+        LocalDate currentDate = dates.getStartDate();
 
-        while (!currentDate.isAfter(dates.end())) {
+        while (!currentDate.isAfter(dates.getEndDate())) {
             addExpense(initDates, currentDate, AssetType.INCOME);
             addExpense(initDates, currentDate, AssetType.OUTCOME);
             currentDate = currentDate.plusDays(ONE_DAY);

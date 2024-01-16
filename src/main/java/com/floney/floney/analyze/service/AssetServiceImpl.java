@@ -7,6 +7,7 @@ import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
+import com.floney.floney.book.util.DateUtil;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class AssetServiceImpl implements AssetService {
         LocalDate localDate = LocalDate.parse(date);
 
         // 1. 현재 기간으로부터 asset_duration 전의 기간
-        DateDuration datesDuration = DateDuration.getBeforeMonthToCurrentDuration(localDate, SHOW_ASSET_DURATION);
+        DateDuration datesDuration = DateDuration.beforeMonthToCurrent(localDate, SHOW_ASSET_DURATION);
 
         // 2. 기본 응답값 -> 초기 자산으로 셋팅
         Map<LocalDate, AssetInfo> initAssets = getInitAssetInfo(book, date);
@@ -71,7 +72,7 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
-        final LocalDate startMonth = DateDuration.getFirstDayOfMonth(request.getLineDate());
+        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(request.getLineDate());
 
         for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
@@ -88,7 +89,7 @@ public class AssetServiceImpl implements AssetService {
             return;
         }
 
-        final LocalDate startMonth = DateDuration.getFirstDayOfMonth(bookLine.getLineDate());
+        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
         for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);

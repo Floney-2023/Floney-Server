@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.floney.floney.common.domain.vo.DateDuration.getDurationByExcelDuration;
+import static com.floney.floney.common.domain.vo.DateDuration.durationByExcelDuration;
 
 @Service
 @Transactional(readOnly = true)
@@ -116,7 +116,7 @@ public class ExcelServiceImpl implements ExcelService {
         String bookKey = downloadRequest.getBookKey();
 
         if (downloadRequest.getExcelDuration() != ExcelDuration.ALL) {
-            DateDuration duration = getDurationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
+            DateDuration duration = durationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
             return bookLineRepository.findAllBookLineByDuration(bookKey, duration);
         } else {
             return bookLineRepository.findAllByBook(bookKey);
@@ -125,8 +125,8 @@ public class ExcelServiceImpl implements ExcelService {
 
     private short getDataFormat(final Workbook workbook) {
         return workbook.getCreationHelper()
-                .createDataFormat()
-                .getFormat("yyyy-mm-dd");
+            .createDataFormat()
+            .getFormat("yyyy-mm-dd");
     }
 
     private CellStyle createBorderStyle(final Workbook workbook) {

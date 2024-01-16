@@ -65,7 +65,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     public MonthLinesResponse showByMonth(String bookKey, String date) {
         Book book = findBook(bookKey);
-        DateDuration dates = DateDuration.getStartAndEndOfMonth(date);
+        DateDuration dates = DateDuration.startAndEndOfMonth(date);
 
         return MonthLinesResponse.of(
             date,
