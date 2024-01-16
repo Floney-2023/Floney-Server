@@ -1,8 +1,8 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.domain.constant.CategoryEnum;
+import com.floney.floney.book.domain.constant.ExcelDuration;
 import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.dto.constant.CategoryEnum;
-import com.floney.floney.book.dto.constant.ExcelDuration;
 import com.floney.floney.book.dto.request.ExcelDownloadRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookUserRepository;

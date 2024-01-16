@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.floney.floney.book.dto.constant.AssetType.BANK;
-import static com.floney.floney.book.dto.constant.CategoryEnum.FLOW;
+import static com.floney.floney.book.domain.constant.AssetType.BANK;
+import static com.floney.floney.book.domain.constant.CategoryEnum.FLOW;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @RequiredArgsConstructor

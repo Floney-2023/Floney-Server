@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.floney.floney.book.domain.constant.AssetType.*;
 import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
-import static com.floney.floney.book.dto.constant.AssetType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;

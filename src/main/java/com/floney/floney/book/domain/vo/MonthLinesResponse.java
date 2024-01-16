@@ -1,6 +1,6 @@
 package com.floney.floney.book.domain.vo;
 
-import com.floney.floney.book.dto.constant.AssetType;
+import com.floney.floney.book.domain.constant.AssetType;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.process.MonthKey;

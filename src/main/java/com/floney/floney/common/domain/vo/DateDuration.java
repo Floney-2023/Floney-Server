@@ -1,6 +1,6 @@
 package com.floney.floney.common.domain.vo;
 
-import com.floney.floney.book.dto.constant.ExcelDuration;
+import com.floney.floney.book.domain.constant.ExcelDuration;
 import com.floney.floney.book.util.DateUtil;
 import com.floney.floney.common.exception.book.LimitRequestException;
 import lombok.Builder;
