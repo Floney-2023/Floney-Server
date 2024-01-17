@@ -80,9 +80,8 @@ public class ExcelServiceImpl implements ExcelService {
             dateCell.setCellValue(bookLine.getLineDate());
             dateCell.setCellStyle(cellStyle);
 
-            final CellStyle dateStyle = workbook.createCellStyle();
-            dateStyle.setDataFormat(getDataFormat(workbook));
-            dateCell.setCellStyle(cellStyle);
+            final CellStyle dateStyle = createDateStyle(workbook);
+            dateCell.setCellStyle(dateStyle);
 
             final Cell flowCell = row.createCell(cellIdx++);
             flowCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.FLOW));
@@ -112,6 +111,13 @@ public class ExcelServiceImpl implements ExcelService {
         return workbook;
     }
 
+    private CellStyle createDateStyle(Workbook workbook) {
+        final CellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat(getDataFormat(workbook));
+        dateStyle.setBorderBottom(BorderStyle.THIN);
+        return dateStyle;
+    }
+
     private List<BookLine> getBookLinesByDuration(ExcelDownloadRequest downloadRequest) {
         String bookKey = downloadRequest.getBookKey();
 
@@ -126,7 +132,7 @@ public class ExcelServiceImpl implements ExcelService {
     private short getDataFormat(final Workbook workbook) {
         return workbook.getCreationHelper()
             .createDataFormat()
-            .getFormat("yyyy-mm-dd");
+            .getFormat("yyyy-MM-dd");
     }
 
     private CellStyle createBorderStyle(final Workbook workbook) {
