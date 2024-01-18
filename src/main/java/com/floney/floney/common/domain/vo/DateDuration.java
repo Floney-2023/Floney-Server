@@ -19,6 +19,7 @@ public class DateDuration {
     private static final int BEFORE_ONE_MONTH = 1;
     private static final int ASSET_DURATION = 5;
     private static final int ONE_DAY = 1;
+    private static final int ONE_YEAR = 1;
     private static final int ONE_YEAR_TO_MONTH = 12;
 
     private LocalDate startDate;
@@ -71,6 +72,9 @@ public class DateDuration {
             }
             case ONE_YEAR -> {
                 return currentToAfterMonth(targetDate, ONE_YEAR_TO_MONTH);
+            }
+            case LAST_YEAR -> {
+                return firstAndEndDayOfYear(targetDate.minusYears(ONE_YEAR));
             }
             default -> {
                 throw new LimitRequestException();

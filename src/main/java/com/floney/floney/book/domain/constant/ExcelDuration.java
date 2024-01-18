@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ExcelDuration {
     THIS_MONTH,
     LAST_MONTH,
+    LAST_YEAR,
     ONE_YEAR,
     ALL
 }
