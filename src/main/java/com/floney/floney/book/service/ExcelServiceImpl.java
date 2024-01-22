@@ -123,9 +123,9 @@ public class ExcelServiceImpl implements ExcelService {
 
         if (downloadRequest.getExcelDuration() != ExcelDuration.ALL) {
             DateDuration duration = durationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
-            return bookLineRepository.findAllBookLineByDuration(bookKey, duration);
+            return bookLineRepository.findAllBookLineByDurationOrderByDateDesc(bookKey, duration);
         } else {
-            return bookLineRepository.findAllByBook(bookKey);
+            return bookLineRepository.findAllByBookOrderByDateDesc(bookKey);
         }
     }
 
