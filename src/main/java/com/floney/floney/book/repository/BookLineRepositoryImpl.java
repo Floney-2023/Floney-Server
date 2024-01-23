@@ -64,7 +64,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLine> findAllBookLineByDuration(String bookKey, DateDuration duration) {
+    public List<BookLine> findAllBookLineByDurationOrderByDateDesc(String bookKey, DateDuration duration) {
         return jpaQueryFactory
             .selectFrom(bookLine)
             .innerJoin(bookLine.book, book)
@@ -74,6 +74,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 book.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE)
             )
+            .orderBy(bookLine.lineDate.desc())
             .fetch();
     }
 
@@ -278,7 +279,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLine> findAllByBook(final String bookKey) {
+    public List<BookLine> findAllByBookOrderByDateDesc(final String bookKey) {
         return jpaQueryFactory
             .selectFrom(bookLine)
             .innerJoin(bookLine.book, book).fetchJoin()
@@ -294,6 +295,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE)
             )
+            .orderBy(bookLine.lineDate.desc())
             .fetch();
     }
 

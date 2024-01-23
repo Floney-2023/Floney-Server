@@ -24,7 +24,7 @@ public interface BookLineCustomRepository {
 
     Map<String, Double> totalExpenseByMonth(String bookKey, DateDuration dates);
 
-    List<BookLine> findAllBookLineByDuration(String bookKey, DateDuration duration);
+    List<BookLine> findAllBookLineByDurationOrderByDateDesc(String bookKey, DateDuration duration);
 
     List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey);
 
@@ -46,7 +46,7 @@ public interface BookLineCustomRepository {
 
     Optional<BookLine> findByIdWithCategories(Long id);
 
-    List<BookLine> findAllByBook(String bookKey);
+    List<BookLine> findAllByBookOrderByDateDesc(String bookKey);
 
     void inactiveAllByBook(Book book);
 
