@@ -1,7 +1,5 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.constant.AssetType;
-import com.floney.floney.book.domain.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
@@ -16,8 +14,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.EnumMap;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -32,9 +28,8 @@ public class BookLine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
-    @MapKeyEnumerated(EnumType.STRING)
-    private final Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
+    @OneToOne(mappedBy = "bookLine", cascade = CascadeType.ALL)
+    private BookLineCategory categories;
 
     @Column(nullable = false)
     private Double money;
@@ -58,14 +53,6 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = exceptStatus;
     }
 
-    public void add(CategoryEnum flow, BookLineCategory category) {
-        this.bookLineCategories.put(flow, category);
-    }
-
-    public String getTargetCategory(CategoryEnum key) {
-        return this.bookLineCategories.get(key).getName();
-    }
-
     public void update(BookLineRequest request) {
         this.money = request.getMoney();
         this.lineDate = request.getLineDate();
@@ -80,9 +67,5 @@ public class BookLine extends BaseEntity {
     public void inactive() {
         Events.raise(new BookLineDeletedEvent(this.getId()));
         this.status = Status.INACTIVE;
-    }
-
-    public boolean includedInAsset() {
-        return !AssetType.BANK.getKind().equals(bookLineCategories.get(CategoryEnum.FLOW).getName());
     }
 }
