@@ -136,6 +136,12 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(PasswordNotSameException.class)
+    protected ResponseEntity<ErrorResponse> notSamePassword(PasswordNotSameException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // BOOK
     @ExceptionHandler(NotFoundBookException.class)
     protected ResponseEntity<ErrorResponse> notFoundBook(NotFoundBookException exception) {
