@@ -136,9 +136,9 @@ public class UserController {
      */
     @PutMapping("/password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@RequestBody final UpdatePasswordRequest request,
+    public void updatePassword(@RequestBody @Valid final UpdatePasswordRequest request,
                                @AuthenticationPrincipal final CustomUserDetails userDetails) {
-        userService.updatePassword(request.getNewPassword(), userDetails.getUsername());
+        userService.updatePassword(request, userDetails.getUsername());
     }
 
     /**
