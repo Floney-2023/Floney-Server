@@ -1,38 +1,18 @@
 package com.floney.floney.book.dto.response;
 
-import com.floney.floney.book.domain.entity.Category;
-import lombok.Builder;
-import lombok.Getter;
-
-import java.util.Objects;
+import com.floney.floney.book.domain.category.CustomSubCategory;
+import lombok.*;
 
 
 @Getter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateCategoryResponse {
 
-    private final String name;
+    private String name;
 
-    @Builder
-    private CreateCategoryResponse(String name) {
-        this.name = name;
-    }
-
-    public static CreateCategoryResponse of(Category category) {
-        return CreateCategoryResponse.builder()
-                .name(category.getName())
-                .build();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CreateCategoryResponse that = (CreateCategoryResponse) o;
-        return Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
+    public static CreateCategoryResponse of(final CustomSubCategory category) {
+        return new CreateCategoryResponse(category.getName());
     }
 }

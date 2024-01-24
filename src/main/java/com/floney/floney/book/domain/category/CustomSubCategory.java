@@ -28,4 +28,12 @@ public class CustomSubCategory extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
+    public static CustomSubCategory of(final Category parent, final Book book, final String name) {
+        return CustomSubCategory.builder()
+            .parent(parent)
+            .book(book)
+            .name(name)
+            .build();
+    }
 }

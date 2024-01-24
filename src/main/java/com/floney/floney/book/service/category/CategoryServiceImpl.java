@@ -1,8 +1,8 @@
 package com.floney.floney.book.service.category;
 
+import com.floney.floney.book.domain.category.Category;
+import com.floney.floney.book.domain.category.CustomSubCategory;
 import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
@@ -10,8 +10,8 @@ import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.repository.category.CustomSubCategoryRepository;
 import com.floney.floney.book.service.BookLineService;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.AlreadyExistException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
@@ -21,69 +21,76 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.floney.floney.book.domain.entity.DefaultCategory.rootParent;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+
     private final CategoryRepository categoryRepository;
+    private final CustomSubCategoryRepository customSubCategoryRepository;
     private final BookRepository bookRepository;
     private final BookLineService bookLineService;
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
-    @Transactional
-    public CreateCategoryResponse createUserCategory(CreateCategoryRequest request) {
-        Category parent = rootParent();
-        if (request.hasParent()) {
-            parent = categoryRepository.findParentCategory(request.getParent())
-                .orElseThrow(() -> new NotFoundCategoryException(request.getParent()));
-        }
+    public CreateCategoryResponse createUserCategory(final CreateCategoryRequest request) {
+        final Category category = findCategory(request.getParent());
+        final Book book = findBook(request.getBookKey());
 
-        // 같은 이름으로 카테고리 생성 방지
-        categoryRepository.findCustomTarget(parent, request.getBookKey(), request.getName()).ifPresent(saved -> {
-            throw new AlreadyExistException(request.getName());
-        });
+        validateDifferentSubCategory(book, category, request.getName());
 
-        BookCategory newCategory = categoryRepository.save(request.of(parent, findBook(request.getBookKey())));
-        return CreateCategoryResponse.of(newCategory);
+        final CustomSubCategory subCategory = CustomSubCategory.of(category, book, request.getName());
+        customSubCategoryRepository.save(subCategory);
+
+        return CreateCategoryResponse.of(subCategory);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllBy(String root, String bookKey) {
-        return categoryRepository.findAllCategory(root, bookKey);
+    public List<CategoryInfo> findAllBy(final String categoryName, final String bookKey) {
+        return categoryRepository.findAllCategory(categoryName, bookKey);
     }
 
     @Override
-    @Transactional
-    public void deleteCustomCategory(DeleteCategoryRequest request) {
-        Category root = categoryRepository.findParentCategory(request.getRoot())
-            .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
+    public void deleteCustomCategory(final DeleteCategoryRequest request) {
+        final Category category = findCategory(request.getRoot());
+        final Book book = findBook(request.getBookKey());
 
-        Category category = categoryRepository.findCustomTarget(root, request.getBookKey(), request.getName())
+        final CustomSubCategory subCategory = categoryRepository.findCustomTarget(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
-        categoryRepository.findAllBookLineByCategory(category)
+        categoryRepository.findAllBookLineByCategory(subCategory)
             .forEach((bookLine) -> {
-                // 예산, 자산, 이월설정 관련 내역 모두 삭제
+                // 예산, 자산, 이월 설정 관련 내역 모두 삭제
                 bookLineService.deleteLine(bookLine.getId());
             });
 
-        //카테고리 삭제
-        category.inactive();
-        categoryRepository.save(category);
+        subCategory.inactive();
     }
 
     @Override
-    @Transactional
-    public void deleteAllBookLineCategory(long bookLineId) {
+    public void deleteAllBookLineCategory(final long bookLineId) {
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
-    private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+    private Category findCategory(final String request) {
+        return categoryRepository.findParentCategory(request)
+            .orElseThrow(() -> new NotFoundCategoryException(request));
     }
 
+    private void validateDifferentSubCategory(final Book book,
+                                              final Category parent,
+                                              final String name) {
+        categoryRepository.findCustomTarget(parent, book, name)
+            .ifPresent(subCategory -> {
+                throw new AlreadyExistException(subCategory.getName());
+            });
+    }
+
+    private Book findBook(final String bookKey) {
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
+    }
 }
