@@ -30,6 +30,7 @@ public enum ErrorType {
     EMPTY_SIGNOUT_OTHER_REASON("U019", "기타 탈퇴 사유가 없습니다"),
     SUBSCRIBE("U020", "구독자 입니다"),
     NOT_EMAIL_USER("U021", "이메일 유저가 아닙니다"),
+    NOT_SAME_PASSWORD("U022", "비밀번호가 같지 않습니다"),
 
     NOT_FOUND_BOOK("B001", "가계부가 존재하지 않습니다"),
     MAX_MEMBER("B002", "최대 인원이 초과되었습니다"),

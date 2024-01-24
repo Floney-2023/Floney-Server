@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.user.PasswordNotSameException;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
@@ -15,6 +16,7 @@ import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.request.UpdatePasswordRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
 import com.floney.floney.user.dto.response.SignoutResponse;
@@ -92,9 +94,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updatePassword(final String password, final String email) {
+    public void updatePassword(final UpdatePasswordRequest request, final String email) {
         final User user = findUserByEmail(email);
-        updatePassword(password, user);
+        validatePasswordSame(request.getOldPassword(), user.getPassword());
+        updatePassword(request.getNewPassword(), user);
     }
 
     public void updatePasswordByGeneration(final String email) {
@@ -131,6 +134,12 @@ public class UserService {
     @Transactional(readOnly = true)
     public ReceiveMarketingResponse getReceiveMarketing(final String email) {
         return new ReceiveMarketingResponse(findUserByEmail(email).isReceiveMarketing());
+    }
+
+    private void validatePasswordSame(final String rawPassword, final String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new PasswordNotSameException();
+        }
     }
 
     private void leaveBooks(final User user,

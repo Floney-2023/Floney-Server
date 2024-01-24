@@ -516,7 +516,7 @@ class UserAcceptanceTest {
             @Test
             @DisplayName("성공한다.")
             void it_succeeds() {
-                final UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword);
+                final UpdatePasswordRequest request = new UpdatePasswordRequest(newPassword, user.getPassword());
 
                 RestAssured
                     .given()
@@ -545,7 +545,7 @@ class UserAcceptanceTest {
             @Test
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
-                final UpdatePasswordRequest request = new UpdatePasswordRequest(user.getPassword());
+                final UpdatePasswordRequest request = new UpdatePasswordRequest(user.getPassword(), user.getPassword());
 
                 final ErrorResponse response = RestAssured
                     .given()
@@ -560,6 +560,40 @@ class UserAcceptanceTest {
                 assertThat(response)
                     .hasFieldOrPropertyWithValue("code", "U017")
                     .hasFieldOrPropertyWithValue("message", "이전 비밀번호와 같습니다");
+            }
+        }
+
+        @Nested
+        @DisplayName("기존 비밀번호를 다르게 입력한 경우")
+        class Context_With_DifferentOldPassword {
+
+            final User user = UserFixture.emailUser();
+
+            Token token;
+
+            @BeforeEach
+            public void init() {
+                token = UserApiFixture.loginAfterSignup(user);
+            }
+
+            @Test
+            @DisplayName("에러를 반환한다.")
+            void it_returns_error() {
+                final UpdatePasswordRequest request = new UpdatePasswordRequest(user.getPassword(), "wrong");
+
+                final ErrorResponse response = RestAssured
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().put("/users/password")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(ErrorResponse.class);
+
+                assertThat(response)
+                    .hasFieldOrPropertyWithValue("code", "U022")
+                    .hasFieldOrPropertyWithValue("message", "비밀번호가 같지 않습니다");
             }
         }
     }

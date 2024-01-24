@@ -16,4 +16,8 @@ public class UpdatePasswordRequest {
     @NotNull(message = "새 비밀번호를 입력해주세요")
     @NotBlank(message = "새 비밀번호를 입력해주세요")
     private String newPassword;
+
+    @NotNull(message = "기존 비밀번호를 입력해주세요")
+    @NotBlank(message = "기존 비밀번호를 입력해주세요")
+    private String oldPassword;
 }
