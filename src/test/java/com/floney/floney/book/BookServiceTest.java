@@ -2,8 +2,8 @@ package com.floney.floney.book;
 
 import com.floney.floney.book.domain.BookCapacity;
 import com.floney.floney.book.domain.BookUserCapacity;
-import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.service.BookServiceImpl;
@@ -51,7 +51,7 @@ public class BookServiceTest {
     @DisplayName("초대코드로 가계부에 가입한다")
     void create_book() {
         Book testBook = BookFixture.createBookWith("1234");
-        User testUser = UserFixture.getUser();
+        User testUser = UserFixture.emailUser();
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(CODE, ACTIVE))
                 .willReturn(Optional.ofNullable(testBook));
@@ -71,7 +71,7 @@ public class BookServiceTest {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
                 .willReturn(2);
 
-        assertThatThrownBy(() -> bookService.addBook(UserFixture.createUser(), createBookRequest()))
+        assertThatThrownBy(() -> bookService.addBook(UserFixture.emailUser(), createBookRequest()))
                 .isInstanceOf(LimitRequestException.class);
     }
 
@@ -83,7 +83,7 @@ public class BookServiceTest {
         given(bookRepository.save(any(Book.class)))
                 .willReturn(BookFixture.createBook());
 
-        Assertions.assertThat(bookService.addBook(UserFixture.createUser(), createBookRequest()).getClass())
+        Assertions.assertThat(bookService.addBook(UserFixture.emailUser(), createBookRequest()).getClass())
                 .isEqualTo(CreateBookResponse.class);
     }
 
@@ -97,7 +97,7 @@ public class BookServiceTest {
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
                 .willReturn(Optional.ofNullable(createBook()));
 
-        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
+        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
 
         // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
@@ -117,7 +117,7 @@ public class BookServiceTest {
         given(bookUserRepository.countByBookExclusively(any(Book.class)))
                 .willReturn(BookUserCapacity.DEFAULT.getValue());
 
-        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.createUser());
+        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
 
         // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))

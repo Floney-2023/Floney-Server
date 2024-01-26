@@ -13,13 +13,12 @@ import com.floney.floney.book.domain.entity.Budget;
 import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.AssetInfo;
-import com.floney.floney.book.dto.process.DatesDuration;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.util.DateFactory;
 import com.floney.floney.common.constant.Status;
+import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         // 분석 종류 - 지출 or 수입
         Category rootCategory = categoryRepository.findParentCategory(request.getRoot())
             .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
         String bookKey = request.getBookKey();
 
         // 부모가 지출 or 수입인 자식 카테고리 조회
@@ -64,7 +63,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Override
     @Transactional(readOnly = true)
     public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
-        DatesDuration duration = DateFactory.getDateDuration(request.getDate());
+        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
         Book savedBook = findBook(request.getBookKey());
 
         // 자산 조회

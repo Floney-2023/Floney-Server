@@ -61,9 +61,6 @@ public class AuthenticationService {
             redisProvider.delete(email);
         }
 
-        final long expiration = jwtProvider.getExpiration(accessToken);
-        redisProvider.set(accessToken, "logout", expiration);
-
         return email;
     }
 

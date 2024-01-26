@@ -6,6 +6,7 @@ import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.user.PasswordNotSameException;
 import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
@@ -15,6 +16,7 @@ import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
 import com.floney.floney.user.dto.request.SignoutRequest;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.request.UpdatePasswordRequest;
 import com.floney.floney.user.dto.response.MyPageResponse;
 import com.floney.floney.user.dto.response.ReceiveMarketingResponse;
 import com.floney.floney.user.dto.response.SignoutResponse;
@@ -40,7 +42,7 @@ import java.util.Optional;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
@@ -53,17 +55,17 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
+    private final PasswordHistoryManager passwordHistoryManager;
 
-    @Transactional
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
-        User user = request.to();
+        final User user = request.to();
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
+        passwordHistoryManager.addPassword(user.getPassword(), user.getId());
         return request.toLoginRequest();
     }
 
-    @Transactional
     public SignoutResponse signout(final String email, final SignoutRequest request) {
         final User user = findUserByEmail(email);
 
@@ -74,31 +76,31 @@ public class UserService {
 
         user.signout();
         addSignoutReason(request);
+        passwordHistoryManager.deleteHistory(user.getId());
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }
 
+    @Transactional(readOnly = true)
     public MyPageResponse getUserInfo(CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         List<MyBookInfo> myBooks = bookUserRepository.findMyBookInfos(user);
         return MyPageResponse.from(UserResponse.from(user), myBooks);
     }
 
-    @Transactional
     public void updateNickname(String nickname, CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         user.updateNickname(nickname);
         userRepository.save(user);
     }
 
-    @Transactional
-    public void updatePassword(final String password, final String email) {
+    public void updatePassword(final UpdatePasswordRequest request, final String email) {
         final User user = findUserByEmail(email);
-        updatePassword(password, user);
+        validatePasswordSame(request.getOldPassword(), user.getPassword());
+        updatePassword(request.getNewPassword(), user);
     }
 
-    @Transactional
-    public void updateRegeneratedPassword(final String email) {
+    public void updatePasswordByGeneration(final String email) {
         final User user = findUserByEmail(email);
         user.validateEmailUser();
 
@@ -106,7 +108,6 @@ public class UserService {
         updatePassword(newPassword, user);
     }
 
-    @Transactional
     public void updateProfileImg(String profileImg, CustomUserDetails userDetails) {
         User user = userDetails.getUser();
         user.updateProfileImg(profileImg);
@@ -119,21 +120,26 @@ public class UserService {
         });
     }
 
-    @Transactional
     public void saveRecentBookKey(SaveRecentBookKeyRequest request, String username) {
         User user = findUserByEmail(username);
         user.saveRecentBookKey(request.getBookKey());
         userRepository.save(user);
     }
 
-    @Transactional
     public void updateReceiveMarketing(final boolean receiveMarketing, final String username) {
         final User user = findUserByEmail(username);
         user.updateReceiveMarketing(receiveMarketing);
     }
 
+    @Transactional(readOnly = true)
     public ReceiveMarketingResponse getReceiveMarketing(final String email) {
         return new ReceiveMarketingResponse(findUserByEmail(email).isReceiveMarketing());
+    }
+
+    private void validatePasswordSame(final String rawPassword, final String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new PasswordNotSameException();
+        }
     }
 
     private void leaveBooks(final User user,
@@ -175,12 +181,13 @@ public class UserService {
 
     private void updatePassword(String newPassword, User user) {
         validatePasswordNotSame(newPassword, user);
+        passwordHistoryManager.addPassword(newPassword, user.getId());
         user.updatePassword(newPassword);
         user.encodePassword(passwordEncoder);
     }
 
     private String generatePassword(final String email) {
-        final String newPassword = RandomStringUtils.random(50, true, true);
+        final String newPassword = RandomStringUtils.random(User.PASSWORD_MAX_LENGTH, true, true);
         final RegeneratePasswordMail mail = RegeneratePasswordMail.create(email, newPassword);
         mailProvider.sendMail(mail);
         return newPassword;
@@ -195,7 +202,7 @@ public class UserService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     private void validateUserExistByEmail(String email) {

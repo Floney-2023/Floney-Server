@@ -6,20 +6,20 @@
               value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] %green([%thread]) %highlight(%-5level) %logger{40} - %msg%n"/>
     <property name="LOG_FILE_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{40} - %msg%n"/>
 
+    <!-- local profile 사용 시 -->
     <springProfile name="local">
         <include resource="console-appender.xml"/>
-
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
-    <springProfile name="develop,local,production">
+    <!-- develop,production profile 사용 시 -->
+    <springProfile name="develop,production">
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
         <include resource="slack-error-appender.xml"/>
-        <include resource="console-appender.xml"/>
 
         <root level="INFO">
             <appender-ref ref="FILE-INFO"/>
@@ -28,25 +28,13 @@
         </root>
 
         <logger name="LogByAop" additivity="false">
-            <level value = "DEBUG" />
-            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE-INFO"/>
-            <appender-ref ref="FILE-WARN"/>
-            <appender-ref ref="FILE-ERROR"/>
         </logger>
 
         <logger name="ErrorControllerAdvice" additivity="false">
-            <level value = "DEBUG" />
-            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE-ERROR"/>
-            <springProfile name = "develop,production">
-                <appender-ref ref="ASYNC_SLACK"/>
-            </springProfile>
+            <appender-ref ref="ASYNC_SLACK"/>
         </logger>
 
-        <logger name="org.hibernate.SQL" additivity="false">
-            <level value = "DEBUG"/>
-            <appender-ref ref="CONSOLE"/>
-        </logger>
     </springProfile>
 </configuration>
