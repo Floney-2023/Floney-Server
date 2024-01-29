@@ -30,63 +30,63 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     @Transactional
     public void inactiveAllByBookKey(final String bookKey) {
         final JPQLQuery<BookLine> bookLineByBookKey = JPAExpressions.selectFrom(bookLine)
-                .innerJoin(bookLine.book, book)
-                .where(book.bookKey.eq(bookKey));
+            .innerJoin(bookLine.book, book)
+            .where(book.bookKey.eq(bookKey));
 
         jpaQueryFactory.update(bookLineCategory)
-                .set(bookLineCategory.status, INACTIVE)
-                .set(bookLineCategory.updatedAt, LocalDateTime.now())
-                .where(
-                        bookLineCategory.bookLine.in(bookLineByBookKey),
-                        bookLineCategory.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(bookLineCategory.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .where(
+                bookLineCategory.bookLine.in(bookLineByBookKey),
+                bookLineCategory.status.eq(ACTIVE)
+            )
+            .execute();
     }
 
     @Override
     @Transactional
     public void inactiveAllByBookLineId(final Long bookLineId) {
         jpaQueryFactory.update(bookLineCategory)
-                .set(bookLineCategory.status, INACTIVE)
-                .set(bookLineCategory.updatedAt, LocalDateTime.now())
-                .where(
-                        bookLineCategory.bookLine.id.eq(bookLineId),
-                        bookLineCategory.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(bookLineCategory.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .where(
+                bookLineCategory.bookLine.id.eq(bookLineId),
+                bookLineCategory.status.eq(ACTIVE)
+            )
+            .execute();
     }
 
     @Override
     @Transactional
     public void inactiveAllByBookUser(final BookUser targetBookUser) {
         final JPQLQuery<BookLine> bookLineByBookUser = JPAExpressions.selectFrom(bookLine)
-                .innerJoin(bookLine.writer, bookUser)
-                .where(bookUser.eq(targetBookUser));
+            .innerJoin(bookLine.writer, bookUser)
+            .where(bookUser.eq(targetBookUser));
 
         jpaQueryFactory.update(bookLineCategory)
-                .set(bookLineCategory.status, INACTIVE)
-                .set(bookLineCategory.updatedAt, LocalDateTime.now())
-                .where(
-                        bookLineCategory.bookLine.in(bookLineByBookUser),
-                        bookLineCategory.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(bookLineCategory.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .where(
+                bookLineCategory.bookLine.in(bookLineByBookUser),
+                bookLineCategory.status.eq(ACTIVE)
+            )
+            .execute();
     }
 
     @Override
     @Transactional
     public void inactiveAllByBook(final Book targetBook) {
         final JPQLQuery<BookLine> bookLineByBook = JPAExpressions.selectFrom(bookLine)
-                .leftJoin(bookLine.book, book)
-                .where(book.eq(targetBook));
+            .leftJoin(bookLine.book, book)
+            .where(book.eq(targetBook));
 
         jpaQueryFactory.update(bookLineCategory)
-                .set(bookLineCategory.status, INACTIVE)
-                .set(bookLineCategory.updatedAt, LocalDateTime.now())
-                .where(
-                        bookLineCategory.bookLine.in(bookLineByBook),
-                        bookLineCategory.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(bookLineCategory.status, INACTIVE)
+            .set(bookLineCategory.updatedAt, LocalDateTime.now())
+            .where(
+                bookLineCategory.bookLine.in(bookLineByBook),
+                bookLineCategory.status.eq(ACTIVE)
+            )
+            .execute();
     }
 }
