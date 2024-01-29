@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.category.Category;
-import com.floney.floney.book.domain.category.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.entity.CustomSubCategory;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
 

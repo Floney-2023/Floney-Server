@@ -1,5 +1,6 @@
-package com.floney.floney.book.domain.category;
+package com.floney.floney.book.domain.category.entity;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;

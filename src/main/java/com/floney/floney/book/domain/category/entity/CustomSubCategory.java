@@ -1,4 +1,4 @@
-package com.floney.floney.book.domain.category;
+package com.floney.floney.book.domain.category.entity;
 
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.common.entity.BaseEntity;

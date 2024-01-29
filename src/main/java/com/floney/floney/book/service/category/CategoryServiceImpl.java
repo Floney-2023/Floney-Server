@@ -1,7 +1,7 @@
 package com.floney.floney.book.service.category;
 
-import com.floney.floney.book.domain.category.Category;
-import com.floney.floney.book.domain.category.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.entity.CustomSubCategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;

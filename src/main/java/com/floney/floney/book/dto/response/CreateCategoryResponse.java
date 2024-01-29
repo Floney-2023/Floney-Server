@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.response;
 
-import com.floney.floney.book.domain.category.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.CustomSubCategory;
 import lombok.*;
 
 

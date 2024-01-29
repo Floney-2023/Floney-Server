@@ -6,7 +6,7 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.domain.category.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.CustomSubCategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;

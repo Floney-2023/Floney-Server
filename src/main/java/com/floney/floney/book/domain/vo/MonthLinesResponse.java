@@ -3,7 +3,6 @@ package com.floney.floney.book.domain.vo;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.CarryOverInfo;
-import com.floney.floney.book.dto.process.MonthKey;
 import com.floney.floney.common.domain.vo.DateDuration;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.dto.process.MonthKey.toMonthKey;
+import static com.floney.floney.book.domain.vo.MonthKey.toMonthKey;
 import static com.floney.floney.common.domain.vo.DateDuration.startAndEndOfMonth;
 
 @Getter
