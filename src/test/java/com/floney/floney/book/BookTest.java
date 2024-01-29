@@ -1,6 +1,6 @@
 package com.floney.floney.book;
 
-import com.floney.floney.book.domain.constant.Currency;
+import com.floney.floney.book.domain.Currency;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.common.exception.common.NoAuthorityException;
 import com.floney.floney.fixture.BookFixture;

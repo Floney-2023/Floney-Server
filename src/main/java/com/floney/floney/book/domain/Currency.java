@@ -1,4 +1,4 @@
-package com.floney.floney.book.domain.constant;
+package com.floney.floney.book.domain;
 
 public enum Currency {
     KRW,
