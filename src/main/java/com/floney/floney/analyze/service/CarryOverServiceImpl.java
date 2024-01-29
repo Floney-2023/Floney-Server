@@ -16,10 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-import static com.floney.floney.book.domain.constant.AssetType.BANK;
+import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -67,7 +66,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
 
-            if (savedCarryOver.isEmpty() && !Objects.equals(request.getFlow(), BANK.getKind())) {
+            if (savedCarryOver.isEmpty() && TRANSFER.getMeaning().equals(request.getFlow())) {
                 CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
