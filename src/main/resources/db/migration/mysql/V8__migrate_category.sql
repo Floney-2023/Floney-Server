@@ -1,13 +1,13 @@
 -- 기존 데이터를 새 테이블로 마이그레이션
 -- 기존 카테고리의 DefaultRoot
 INSERT INTO `category`(name)
-VALUES ('수입');
+VALUES ('INCOME');
 INSERT INTO `category`(name)
-VALUES ('지출');
+VALUES ('OUTCOME');
 INSERT INTO `category`(name)
-VALUES ('이체');
+VALUES ('TRANSFER');
 INSERT INTO `category`(name)
-VALUES ('자산');
+VALUES ('ASSET');
 
 -- 기존 카테고리의 Default -> Subcategory에 가계부 마다 추가
 INSERT INTO `subcategory`(parent_id, book_id, name)
