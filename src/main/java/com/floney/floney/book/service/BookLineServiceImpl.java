@@ -1,12 +1,16 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.analyze.service.AssetService;
-import com.floney.floney.analyze.service.CarryOverServiceImpl;
+import com.floney.floney.analyze.service.CarryOverService;
+import com.floney.floney.book.domain.category.Category;
+import com.floney.floney.book.domain.category.CustomSubCategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.BookLineWithWriterView;
 import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
@@ -16,45 +20,49 @@ import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.service.category.CategoryFactory;
+import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class BookLineServiceImpl implements BookLineService {
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
-    private final CategoryFactory categoryFactory;
-    private final CarryOverServiceImpl carryOverFactory;
+    private final CarryOverService carryOverFactory;
     private final AssetService assetService;
+    private final CategoryCustomRepository categoryRepository;
 
     @Override
-    @Transactional
     public BookLineResponse createBookLine(final String email, final BookLineRequest request) {
         final Book book = findBook(request.getBookKey());
-        final BookLine bookLine = request.to(findBookUser(email, request), book);
+        final BookUser bookUser = findBookUser(email, request);
+        final BookLineCategory bookLineCategory = findCategories(request, book);
+        final BookLine bookLine = request.to(bookUser, bookLineCategory);
         bookLineRepository.save(bookLine);
 
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOverByAddBookLine(request, book);
         }
-        categoryFactory.saveCategories(bookLine, request);
         if (bookLine.includedInAsset()) {
             assetService.addAssetOf(request, book);
         }
@@ -63,9 +71,10 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     @Override
-    public MonthLinesResponse showByMonth(String bookKey, String date) {
-        Book book = findBook(bookKey);
-        DateDuration dates = DateDuration.startAndEndOfMonth(date);
+    @Transactional(readOnly = true)
+    public MonthLinesResponse showByMonth(final String bookKey, final String date) {
+        final Book book = findBook(bookKey);
+        final DateDuration dates = DateDuration.startAndEndOfMonth(date);
 
         return MonthLinesResponse.of(
             date,
@@ -76,24 +85,33 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     @Override
-    public TotalDayLinesResponse showByDays(String bookKey, String date) {
-        Book book = findBook(bookKey);
+    @Transactional(readOnly = true)
+    public TotalDayLinesResponse showByDays(final String bookKey, final String date) {
+        final Book book = findBook(bookKey);
+        final LocalDate day = parse(date);
 
-        List<DayLines> dayLines = DayLines.forDayView(bookLineRepository.allLinesByDay(parse(date), bookKey));
-        List<TotalExpense> totalExpenses = bookLineRepository.totalExpenseByDay(parse(date), bookKey);
+        final List<BookLineWithWriterView> bookLinesOfDay = bookLineRepository.allLinesByDay(day, bookKey);
+
+        final List<TotalExpense> totalExpensesOfDay = List.of(
+            bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME),
+            bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME)
+        );
 
         return TotalDayLinesResponse.of(
-            dayLines,
-            totalExpenses,
+            bookLinesOfDay,
+            totalExpensesOfDay,
             book.getSeeProfile(),
             carryOverFactory.getCarryOverInfo(book, date)
         );
     }
 
     @Override
-    @Transactional
-    public List<DayLines> allOutcomes(AllOutcomesRequest allOutcomesRequest) {
-        return DayLines.forOutcomes(bookLineRepository.getAllLines(allOutcomesRequest));
+    @Transactional(readOnly = true)
+    public List<DayLines> allOutcomes(final AllOutcomesRequest allOutcomesRequest) {
+        return bookLineRepository.findAllOutcomes(allOutcomesRequest)
+            .stream()
+            .map(DayLines::from)
+            .toList();
     }
 
     @Override
@@ -119,7 +137,8 @@ public class BookLineServiceImpl implements BookLineService {
         if (bookLine.includedInAsset()) {
             assetService.addAssetOf(request, book);
         }
-        categoryFactory.changeCategories(bookLine, request);
+        // TODO: CategoryService 로 이동
+        updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
 
         return BookLineResponse.from(bookLine);
     }
@@ -130,6 +149,55 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
+    }
+
+    private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
+        final String categoryName = request.getFlow();
+        final Category lineCategory = findLineCategory(categoryName);
+
+        final CustomSubCategory lineSubCategory = findLineSubCategory(request.getLine(), lineCategory, book);
+        final CustomSubCategory assetSubCategory = findAssetSubCategory(book, request.getAsset());
+        return BookLineCategory.create(lineCategory, lineSubCategory, assetSubCategory);
+    }
+
+    private void updateCategory(final BookLineCategory bookLineCategory,
+                                final String lineSubCategoryName,
+                                final String assetSubCategoryName) {
+        updateLineSubCategory(bookLineCategory, lineSubCategoryName);
+        updateAssetSubCategory(bookLineCategory, assetSubCategoryName);
+    }
+
+    private void updateAssetSubCategory(final BookLineCategory bookLineCategory,
+                                        final String assetSubCategoryName) {
+        final Book book = bookLineCategory.getBookLine().getBook();
+        final CustomSubCategory assetSubCategory = findAssetSubCategory(book, assetSubCategoryName);
+        bookLineCategory.updateAssetSubCategory(assetSubCategory);
+    }
+
+    private void updateLineSubCategory(final BookLineCategory bookLineCategory,
+                                       final String lineSubCategoryName) {
+        final Book book = bookLineCategory.getBookLine().getBook();
+        final Category lineCategory = bookLineCategory.getLineCategory();
+        final CustomSubCategory lineSubCategory = findLineSubCategory(lineSubCategoryName, lineCategory, book);
+        bookLineCategory.updateLineSubCategory(lineSubCategory);
+    }
+
+    private Category findLineCategory(final String categoryName) {
+        return categoryRepository.findLineCategory(categoryName)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryName));
+    }
+
+    private CustomSubCategory findLineSubCategory(final String lineSubCategoryName,
+                                                  final Category lineCategory,
+                                                  final Book book) {
+        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory)
+            .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
+    }
+
+    private CustomSubCategory findAssetSubCategory(final Book book,
+                                                   final String assetSubCategoryName) {
+        return categoryRepository.findAssetSubCategory(assetSubCategoryName, book)
+            .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 
     private void validateBookLineIncludedInBook(final Book bookOfBookLine, final Book book) {
@@ -148,11 +216,17 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private List<BookLineExpense> daysExpense(String bookKey, DateDuration dates) {
-        return bookLineRepository.dayIncomeAndOutcome(bookKey, dates);
+    private List<BookLineExpense> daysExpense(final String bookKey, final DateDuration dates) {
+        return bookLineRepository.findIncomeAndOutcomeByDurationPerDay(bookKey, dates);
     }
 
     private Map<String, Double> totalExpense(String bookKey, DateDuration dates) {
-        return bookLineRepository.totalExpenseByMonth(bookKey, dates);
+        final double income = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, INCOME);
+        final double outcome = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, OUTCOME);
+        // TODO: Map 대신 새로운 객체 생성
+        return Map.of(
+            INCOME.getMeaning(), income,
+            OUTCOME.getMeaning(), outcome
+        );
     }
 }

@@ -236,6 +236,13 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(CannotAnalyzeException.class)
+    protected ResponseEntity<ErrorResponse> cannotAnalyzeException(CannotAnalyzeException exception) {
+        logger.warn("분석이 불가능한 카테고리: {}", exception.getCategoryType());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // SETTLEMENT
     @ExceptionHandler(SettlementNotFoundException.class)
     protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {

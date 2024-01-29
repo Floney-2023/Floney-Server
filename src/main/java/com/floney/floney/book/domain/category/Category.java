@@ -10,6 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+
 @Entity
 @Getter
 @DynamicInsert
@@ -22,4 +25,16 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private CategoryType name;
+
+    public boolean isIncomeOrOutcome() {
+        return INCOME.equals(name) || OUTCOME.equals(name);
+    }
+
+    public boolean isIncome() {
+        return INCOME.equals(name);
+    }
+
+    public boolean isOutcome() {
+        return OUTCOME.equals(name);
+    }
 }

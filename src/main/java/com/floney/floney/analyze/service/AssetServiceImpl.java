@@ -19,20 +19,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.domain.constant.AssetType.BANK;
-import static com.floney.floney.book.domain.constant.AssetType.OUTCOME;
-import static com.floney.floney.book.domain.constant.CategoryEnum.FLOW;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AssetServiceImpl implements AssetService {
-    private final AssetRepository assetRepository;
-    private final BookLineRepository bookLineRepository;
+
     private static final int SHOW_ASSET_DURATION = 5;
     private static final int SAVE_ASSET_DURATION = 60;
     private static final int ONE_MONTH = 1;
+
+    private final AssetRepository assetRepository;
+    private final BookLineRepository bookLineRepository;
 
     @Override
     public Map<LocalDate, AssetInfo> getAssetInfo(Book book, String date) {
@@ -68,7 +69,7 @@ public class AssetServiceImpl implements AssetService {
     public void addAssetOf(final BookLineRequest request, final Book book) {
         // 이체 내역일 경우 자산 포함 X
         // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (BANK.getKind().equals(request.getFlow())) {
+        if (TRANSFER.getMeaning().equals(request.getFlow())) {
             return;
         }
 
@@ -98,18 +99,17 @@ public class AssetServiceImpl implements AssetService {
     }
 
     private double getMoney(final BookLineRequest request) {
-        if (OUTCOME.getKind().equals(request.getFlow())) {
+        if (OUTCOME.getMeaning().equals(request.getFlow())) {
             return (-1) * request.getMoney();
         }
         return request.getMoney();
     }
 
     private double getMoney(final BookLine bookLine) {
-        if (bookLine.getTargetCategory(FLOW).equals(OUTCOME.getKind())) {
+        if (bookLine.getCategories().isOutcome()) {
             return (-1) * bookLine.getMoney();
         }
         return bookLine.getMoney();
     }
-
 }
 

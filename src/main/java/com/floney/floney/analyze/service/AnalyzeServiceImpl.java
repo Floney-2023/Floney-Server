@@ -8,10 +8,10 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.domain.category.Category;
+import com.floney.floney.book.domain.category.CustomSubCategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
@@ -19,6 +19,7 @@ import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.domain.vo.DateDuration;
+import com.floney.floney.common.exception.book.CannotAnalyzeException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AnalyzeServiceImpl implements AnalyzeService {
 
@@ -40,24 +42,24 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    @Transactional
-    public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
+    @Transactional(readOnly = true)
+    public AnalyzeResponse analyzeByCategory(final AnalyzeByCategoryRequest request) {
+        // lineCategory 가 지출 또는 수입일 때만 분석
+        final Category category = findCategory(request.getRoot());
+        validateCanAnalyze(category);
 
-        // 분석 종류 - 지출 or 수입
-        Category rootCategory = categoryRepository.findParentCategory(request.getRoot())
-            .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
-        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
-        String bookKey = request.getBookKey();
+        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
+        final String bookKey = request.getBookKey();
 
-        // 부모가 지출 or 수입인 자식 카테고리 조회
-        List<Category> childCategoriesByRoot = getAllChildCategoryByRoot(rootCategory, bookKey);
+        final List<CustomSubCategory> subCategories = getSubCategoriesByParentAndBookKey(category, bookKey);
 
-        // 카테고리 별, 가계부 내역 합계 조회
-        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(childCategoriesByRoot, duration, bookKey);
-
-        double totalMoney = calculateTotalMoney(analyzeResultByCategory);
-        double difference = calculateDifference(request, totalMoney);
-        return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
+        // lineSubCategory 별로 가계부 내역 합계 조회
+        final List<AnalyzeResponseByCategory> analyzeByCategory = bookLineRepository.analyzeByLineSubCategory(
+            subCategories, duration, bookKey
+        );
+        final double totalMoney = calculateTotalMoney(analyzeByCategory);
+        final double difference = calculateDifference(request, totalMoney);
+        return AnalyzeResponse.of(analyzeByCategory, totalMoney, difference);
     }
 
     @Override
@@ -77,15 +79,26 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     @Override
     @Transactional(readOnly = true)
-    public AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request) {
-        Book savedBook = findBook(request.getBookKey());
+    public AnalyzeResponseByAsset analyzeByAsset(final AnalyzeRequestByAsset request) {
+        final Book savedBook = findBook(request.getBookKey());
 
         // 총 지출, 수입 조회
-        Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        final Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(request);
 
-        BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
+        final BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
+        final Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
         return bookAnalyzer.analyzeAsset(request.getDate(), savedBook.getAsset(), assetInfo);
+    }
+
+    private void validateCanAnalyze(final Category category) {
+        if (!category.isIncomeOrOutcome()) {
+            throw new CannotAnalyzeException(category.getName());
+        }
+    }
+
+    private Category findCategory(final String name) {
+        return categoryRepository.findParentCategory(name)
+            .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
     private Book findBook(String bookKey) {
@@ -98,11 +111,9 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return totalMoney - beforeMonthTotal;
     }
 
-    private List<Category> getAllChildCategoryByRoot(Category rootCategory, String bookKey) {
-        List<Category> childCategoriesByRoot = categoryRepository.findAllDefaultChildCategoryByRoot(rootCategory);
-        List<BookCategory> customCategories = categoryRepository.findAllCustomChildCategoryByRootAndRoot(rootCategory, bookKey);
-        childCategoriesByRoot.addAll(customCategories);
-        return childCategoriesByRoot;
+    private List<CustomSubCategory> getSubCategoriesByParentAndBookKey(final Category parent,
+                                                                       final String bookKey) {
+        return categoryRepository.findAllLineSubCategoryByLineCategory(parent, bookKey);
     }
 
     private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {

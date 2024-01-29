@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.domain.constant.AssetType;
+import com.floney.floney.book.domain.category.CategoryType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -8,18 +8,18 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDate;
 
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MonthKey {
-    private LocalDate date;
-    private AssetType assetType;
 
-    public static MonthKey of(LocalDate date, AssetType assetType) {
+    private final LocalDate date;
+    private final CategoryType categoryType;
+
+    public static MonthKey of(final LocalDate date, final CategoryType assetType) {
         return new MonthKey(date, assetType);
     }
 
-    public static MonthKey toMonthKey(BookLineExpense expense) {
-        return new MonthKey(expense.getDate(), expense.getAssetType());
+    public static MonthKey toMonthKey(final BookLineExpense bookLineExpense) {
+        return new MonthKey(bookLineExpense.getDate(), bookLineExpense.getCategoryType());
     }
-
 }

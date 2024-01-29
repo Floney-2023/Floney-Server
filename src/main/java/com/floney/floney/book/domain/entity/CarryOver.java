@@ -35,7 +35,7 @@ public class CarryOver extends BaseEntity {
 
     @Builder
     @QueryProjection
-    private CarryOver(double money, Book book, LocalDate date) {
+    public CarryOver(double money, Book book, LocalDate date) {
         this.money = money;
         this.book = book;
         this.date = date;
@@ -76,12 +76,11 @@ public class CarryOver extends BaseEntity {
     }
 
     // 내역을 삭제하는 경우, 이월된 값을 되돌리기
-    public void delete(double updateMoney, BookLineCategory flow) {
-        if (Objects.equals(flow.getName(), AssetType.INCOME.getKind())) {
+    public void delete(double updateMoney, BookLineCategory bookLineCategory) {
+        if (!bookLineCategory.isIncomeOrOutcome()) return;
+        if (bookLineCategory.isIncome()) {
             money -= updateMoney;
-        } else if (Objects.equals(flow.getName(), AssetType.OUTCOME.getKind())) {
-            money += updateMoney;
         }
+        money += updateMoney;
     }
-
 }

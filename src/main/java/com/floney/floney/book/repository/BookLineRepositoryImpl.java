@@ -5,10 +5,11 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.category.CustomSubCategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
@@ -26,7 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.floney.floney.book.domain.constant.AssetType.*;
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+import static com.floney.floney.book.domain.category.QCategory.category;
+import static com.floney.floney.book.domain.category.QCustomSubCategory.customSubCategory;
 import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
@@ -34,133 +38,136 @@ import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
-import static com.querydsl.core.group.GroupBy.groupBy;
 
 @Repository
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Map<String, Double> totalExpenseByMonth(String bookKey, DateDuration dates) {
-        return jpaQueryFactory
-            .from(bookLine)
+    @Transactional(readOnly = true)
+    public List<BookLine> findAllByDurationOrderByDateDesc(final String bookKey,
+                                                           final DateDuration duration) {
+        return jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubCategory, customSubCategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubCategory, customSubCategory).fetchJoin()
             .where(
-                bookLine.lineDate.between(dates.getStartDate(), dates.getEndDate()),
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind()),
                 book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE)
+                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate())
             )
-            .groupBy(bookLineCategory.name)
-            .orderBy(bookLineCategory.name.asc())
-            .transform(
-                groupBy(bookLineCategory.name).as(bookLine.money.sum())
-            );
-    }
-
-    @Override
-    public List<BookLine> findAllBookLineByDurationOrderByDateDesc(String bookKey, DateDuration duration) {
-        return jpaQueryFactory
-            .selectFrom(bookLine)
-            .innerJoin(bookLine.book, book)
             .where(
-                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                book.bookKey.eq(bookKey),
                 book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE)
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubCategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubCategory.status.eq(ACTIVE)
             )
             .orderBy(bookLine.lineDate.desc())
             .fetch();
     }
 
     @Override
-    public List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey) {
+    @Transactional(readOnly = true)
+    public List<BookLineWithWriterView> allLinesByDay(final LocalDate date, final String bookKey) {
         return jpaQueryFactory.select(
-                new QDayLineByDayView(
+                new QBookLineWithWriterView(
                     bookLine.id,
                     bookLine.money,
                     bookLine.description,
-                    bookLineCategory.name,
-                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
                     bookLine.exceptStatus,
-                    user.nickname
+                    bookLineCategory.lineCategory.name,
+                    bookLineCategory.lineSubCategory.name,
+                    bookLineCategory.assetSubCategory.name,
+                    user.email,
+                    user.nickname,
+                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg)
                 ))
             .from(bookLine)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory)
             .innerJoin(bookLine.book, book)
-            .leftJoin(bookLine.writer, bookUser)
-            .leftJoin(bookUser.user, user)
+            .innerJoin(bookLine.writer, bookUser)
+            .innerJoin(bookUser.user, user)
             .where(
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE),
                 bookLine.lineDate.eq(date),
-                book.bookKey.eq(bookKey),
-                bookUser.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE)
-            )
-            .groupBy(bookLine.id, bookLineCategory.name)
-            .fetch();
-    }
-
-    @Override
-    public List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey) {
-        return jpaQueryFactory.select(
-                new QTotalExpense(
-                    bookLine.money.sum(),
-                    bookLineCategory.name
-                ))
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(
-                bookLine.status.eq(ACTIVE),
-                book.status.eq(ACTIVE),
-                bookLine.lineDate.eq(date),
-                bookLineCategory.name.in(
-                    INCOME.getKind(),
-                    OUTCOME.getKind()
-                ),
                 book.bookKey.eq(bookKey)
             )
-            .groupBy(bookLineCategory.name)
-            .orderBy(bookLineCategory.name.asc())
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                user.status.eq(ACTIVE)
+            )
             .fetch();
     }
 
     @Override
-    public List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DateDuration dates) {
+    @Transactional(readOnly = true)
+    public TotalExpense totalMoneyByDateAndCategoryType(final String bookKey,
+                                                        final LocalDate date,
+                                                        final CategoryType categoryType) {
+        return jpaQueryFactory.select(
+                new QTotalExpense(
+                    bookLineCategory.lineCategory.name,
+                    bookLine.money.sum().coalesce(0.0)
+                ))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                book.bookKey.eq(bookKey),
+                bookLineCategory.lineCategory.name.eq(categoryType),
+                bookLine.lineDate.eq(date)
+            )
+            .where(
+                bookLine.status.eq(ACTIVE),
+                book.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .groupBy(bookLineCategory.lineCategory.name)
+            .fetchOne();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(final String bookKey,
+                                                                      final DateDuration dates) {
         return jpaQueryFactory.select(
                 new QBookLineExpense(
                     bookLine.lineDate,
-                    bookLine.money.sum(),
-                    bookLineCategory.name
+                    bookLine.money.sum().coalesce(0.0),
+                    bookLineCategory.lineCategory.name
                 )
             )
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                book.bookKey.eq(bookKey),
+                bookLine.lineDate.between(dates.getStartDate(), dates.getEndDate()),
+                bookLineCategory.lineCategory.name.in(INCOME, OUTCOME)
+            )
             .where(
                 bookLine.status.eq(ACTIVE),
                 book.status.eq(ACTIVE),
-                bookLine.lineDate.between(dates.getStartDate(), dates.getEndDate()),
-                bookLineCategory.name.in(
-                    INCOME.getKind(),
-                    OUTCOME.getKind()
-                ),
-                book.bookKey.eq(bookKey)
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
-            .groupBy(bookLine.lineDate, bookLineCategory.name)
+            .groupBy(bookLine.lineDate, bookLineCategory.lineCategory.name)
             .fetch();
     }
 
     @Override
-    @Transactional
-    public void inactiveAllBy(String bookKey) {
+    public void inactiveAllBy(final String bookKey) {
         final JPQLQuery<Book> bookByBookKey = JPAExpressions
             .selectFrom(book)
             .where(book.bookKey.eq(bookKey));
@@ -176,131 +183,184 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<DayLine> getAllLines(AllOutcomesRequest request) {
-        DateDuration duration = request.getDuration();
-        return jpaQueryFactory
-            .select(new QDayLine(
-                bookLine.id,
-                bookLine.description,
-                bookLine.money,
-                bookLineCategory.name,
-                user.email)
+    @Transactional(readOnly = true)
+    public List<BookLineWithWriterView> findAllOutcomes(final AllOutcomesRequest request) {
+        final DateDuration duration = request.getDuration();
+        return jpaQueryFactory.select(
+                new QBookLineWithWriterView(
+                    bookLine.id,
+                    bookLine.money,
+                    bookLine.description,
+                    bookLine.exceptStatus,
+                    bookLineCategory.lineCategory.name,
+                    bookLineCategory.lineSubCategory.name,
+                    bookLineCategory.assetSubCategory.name,
+                    user.email,
+                    user.nickname,
+                    user.profileImg
+                )
             )
             .from(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.writer, bookUser)
             .innerJoin(bookUser.user, user)
-            .leftJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                book.bookKey.eq(request.getBookKey()),
+                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
+                bookLineCategory.lineCategory.name.eq(OUTCOME),
+                user.email.in(request.getUsersEmails())
+            )
             .where(
                 bookUser.status.eq(ACTIVE),
                 user.status.eq(ACTIVE),
-                book.bookKey.eq(request.getBookKey()),
-                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                user.email.in(request.getUsersEmails()),
                 bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE)
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
-            .groupBy(bookLine.id, bookLineCategory.name)
             .fetch();
     }
 
     @Override
-    public Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request) {
-        DateDuration duration = DateDuration.firstAndLastDayFromLastMonth(request.getLocalDate());
-        return jpaQueryFactory
-            .select(bookLine.money.sum().coalesce(0.0))
+    @Transactional(readOnly = true)
+    public double totalExpenseForBeforeMonth(final AnalyzeByCategoryRequest request) {
+        final DateDuration duration = DateDuration.firstAndLastDayFromLastMonth(request.getLocalDate());
+        final CategoryType categoryType = CategoryType.findLineByMeaning(request.getRoot());
+
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
             .where(
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                bookLineCategory.name.eq(request.getRoot()),
-                book.bookKey.eq(request.getBookKey()),
+                bookLineCategory.lineCategory.name.eq(categoryType),
+                book.bookKey.eq(request.getBookKey())
+            )
+            .where(
                 book.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE)
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AnalyzeResponseByCategory> analyzeByLineSubCategory(final List<CustomSubCategory> childCategories,
+                                                                    final DateDuration duration,
+                                                                    final String bookKey) {
+        return jpaQueryFactory.select(
+                new QAnalyzeResponseByCategory(
+                    bookLineCategory.lineSubCategory.name,
+                    bookLine.money.sum().coalesce(0.0)
+                )
+            )
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .where(
+                book.bookKey.eq(bookKey),
+                bookLineCategory.lineSubCategory.in(childCategories),
+                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate())
+            )
+            .where(
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                book.status.eq(ACTIVE)
+            )
+            .groupBy(bookLineCategory.lineSubCategory.name)
+            .fetch();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Double totalOutcomeMoneyForBudget(final AnalyzeRequestByBudget request,
+                                             final DateDuration duration) {
+        return jpaQueryFactory.select(bookLine.money.sum().coalesce(0.0))
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                book.bookKey.eq(request.getBookKey()),
+                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
+                bookLineCategory.lineCategory.name.eq(OUTCOME),
+                bookLine.exceptStatus.eq(false)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
             .fetchOne();
     }
 
     @Override
-    public List<AnalyzeResponseByCategory> analyzeByCategory(List<Category> childCategories, DateDuration duration, String bookKey) {
-        return jpaQueryFactory.select(
-                new QAnalyzeResponseByCategory(bookLineCategory.name, bookLine.money.sum()))
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .where(book.bookKey.eq(bookKey))
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .where(bookLineCategory.category.in(childCategories),
-                bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE))
-            .where(bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()))
-            .groupBy(bookLineCategory.name)
-            .fetch();
-    }
+    @Transactional(readOnly = true)
+    public Map<String, Double> totalExpensesForAsset(final AnalyzeRequestByAsset request) {
+        final String bookKey = request.getBookKey();
+        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
 
-    @Override
-    public Double totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DateDuration duration) {
-        return totalOutcomeMoney(duration, request.getBookKey());
-    }
+        final Map<String, Double> totalExpenses = new HashMap<>();
+        final double totalIncomeMoney = totalMoneyByDurationAndCategoryTypeExceptAsset(bookKey, duration, INCOME);
+        final double totalOutcomeMoney = totalMoneyByDurationAndCategoryTypeExceptAsset(bookKey, duration, OUTCOME);
 
-    @Override
-    public Map<String, Double> totalExpensesForAsset(AnalyzeRequestByAsset request) {
-        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
-
-        Map<String, Double> totalExpenses = new HashMap<>();
-
-        double totalIncomeMoney = totalIncomeMoney(duration, request.getBookKey());
-
-        double totalOutcomeMoney = totalOutcomeMoney(duration, request.getBookKey());
-
-        totalExpenses.put(INCOME.getKind(), totalIncomeMoney);
-        totalExpenses.put(OUTCOME.getKind(), totalOutcomeMoney);
+        totalExpenses.put(INCOME.getMeaning(), totalIncomeMoney);
+        totalExpenses.put(OUTCOME.getMeaning(), totalOutcomeMoney);
         return totalExpenses;
     }
 
     @Override
-    public Optional<BookLine> findByIdWithCategories(Long id) {
-        return Optional.ofNullable(jpaQueryFactory
-            .selectFrom(bookLine)
+    @Transactional(readOnly = true)
+    public Optional<BookLine> findByIdWithCategories(final Long id) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
+            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubCategory, customSubCategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubCategory, customSubCategory).fetchJoin()
             .where(
-                bookLine.id.eq(id),
-                bookLine.status.eq(ACTIVE),
-                user.status.eq(ACTIVE),
-                bookUser.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE)
+                bookLine.id.eq(id)
             )
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .fetchJoin()
-            .innerJoin(bookLine.writer, bookUser).fetchJoin()
-            .leftJoin(bookUser.user, user).fetchJoin()
+            .where(
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubCategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubCategory.status.eq(ACTIVE)
+            )
             .fetchOne()
         );
     }
 
     @Override
-    public List<BookLine> findAllByBookOrderByDateDesc(final String bookKey) {
-        return jpaQueryFactory
-            .selectFrom(bookLine)
+    @Transactional(readOnly = true)
+    public List<BookLine> findAllByBookKeyOrderByDateDesc(final String bookKey) {
+        return jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book).fetchJoin()
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
-            .innerJoin(bookLine.writer, bookUser).fetchJoin()
-            .innerJoin(bookUser.user, user).fetchJoin()
+            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubCategory, customSubCategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubCategory, customSubCategory).fetchJoin()
             .where(
-                bookLineCategory.name.in(INCOME.getKind(), OUTCOME.getKind(), BANK.getKind()),
-                book.bookKey.eq(bookKey),
+                book.bookKey.eq(bookKey)
+            )
+            .where(
                 book.status.eq(ACTIVE),
-                bookUser.status.eq(ACTIVE),
-                user.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE)
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubCategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubCategory.status.eq(ACTIVE)
             )
             .orderBy(bookLine.lineDate.desc())
             .fetch();
     }
 
     @Override
-    @Transactional
     public void inactiveAllByBook(final Book book) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
@@ -312,43 +372,62 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLine> findAllByBookUser(BookUser bookUser) {
+    @Transactional(readOnly = true)
+    public List<BookLine> findAllByBookUser(final BookUser bookUser) {
         return jpaQueryFactory.selectFrom(bookLine)
-            .where(bookLine.writer.eq(bookUser), bookLine.status.eq(ACTIVE))
+            .where(
+                bookLine.writer.eq(bookUser)
+            )
+            .where(
+                bookLine.status.eq(ACTIVE)
+            )
             .fetch();
     }
 
-    private Double totalIncomeMoney(DateDuration duration, String bookKey) {
-        return jpaQueryFactory
-            .select(bookLine.money.sum().coalesce(0.0))
+    @Override
+    @Transactional(readOnly = true)
+    public double totalMoneyByDurationAndCategoryType(final String bookKey,
+                                                      final DateDuration duration,
+                                                      final CategoryType categoryType) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
             .where(
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                bookLineCategory.name.eq(INCOME.getKind()),
-                book.bookKey.eq(bookKey),
+                bookLineCategory.lineCategory.name.eq(categoryType),
+                book.bookKey.eq(bookKey)
+            )
+            .where(
                 book.status.eq(ACTIVE),
                 bookLine.status.eq(ACTIVE),
-                bookLine.exceptStatus.eq(false)
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
-            .fetchOne();
+            .fetchOne()).orElse(0.0);
     }
 
-    private Double totalOutcomeMoney(DateDuration duration, String bookKey) {
-        return jpaQueryFactory
-            .select(bookLine.money.sum().coalesce(0.0))
+    private double totalMoneyByDurationAndCategoryTypeExceptAsset(final String bookKey,
+                                                                  final DateDuration duration,
+                                                                  final CategoryType categoryType) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.bookLineCategories, bookLineCategory)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
             .where(
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                bookLineCategory.name.eq(OUTCOME.getKind()),
+                bookLineCategory.lineCategory.name.eq(categoryType),
                 book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE),
                 bookLine.exceptStatus.eq(false)
             )
-            .fetchOne();
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
     }
 }

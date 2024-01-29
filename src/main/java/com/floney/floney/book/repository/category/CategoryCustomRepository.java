@@ -1,38 +1,31 @@
 package com.floney.floney.book.repository.category;
 
+import com.floney.floney.book.domain.category.Category;
+import com.floney.floney.book.domain.category.CustomSubCategory;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.CategoryInfo;
-import com.floney.floney.book.dto.request.DeleteCategoryRequest;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CategoryCustomRepository {
 
-    List<CategoryInfo> findAllCategory(String name, String bookKey);
+    List<CategoryInfo> findAllCategory(String parentName, String bookKey);
 
-    Optional<Category> findFlowCategory(String name);
+    Optional<Category> findLineCategory(String name);
 
-    Optional<Category> findAssetCategory(String name, String bookKey);
+    Optional<CustomSubCategory> findAssetSubCategory(String name, Book book);
 
-    Optional<Category> findLineCategory(String name, String bookKey, String parent);
+    Optional<CustomSubCategory> findLineSubCategory(String name, Book book, Category parent);
 
-    List<BookLine> findAllBookLineByCategory(Category category);
+    List<BookLine> findAllBookLineByCategory(CustomSubCategory subCategory);
 
-    Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target);
+    Optional<CustomSubCategory> findCustomTarget(Category parent, Book targetBook, String name);
 
-    void inactiveCustomCategory(DeleteCategoryRequest request);
+    List<CustomSubCategory> findAllLineSubCategoryByLineCategory(Category parent, String bookKey);
 
-    List<BookCategory> findAllCustomCategory(Book book);
-
-    List<Category> findAllDefaultChildCategoryByRoot(Category root);
-
-    List<BookCategory> findAllCustomChildCategoryByRootAndRoot(Category root, String bookKey);
-
-    Optional<Category> findParentCategory(String parentName);
+    Optional<Category> findParentCategory(String name);
 
     void inactiveAllByBook(Book book);
 }

@@ -5,7 +5,6 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
@@ -218,15 +217,12 @@ public class BookServiceImpl implements BookService {
     public Book makeInitBook(String bookKey) {
         Book book = findBook(bookKey);
         book.initBook();
-        bookLineCategoryRepository.inactiveAllByBookKey(bookKey);
 
-        categoryRepository.findAllCustomCategory(book)
-            .stream()
-            .map(BookCategory::delete)
-            .forEach(categoryRepository::delete);
+        bookLineRepository.inactiveAllBy(bookKey);
+        bookLineCategoryRepository.inactiveAllByBookKey(bookKey);
+        categoryRepository.inactiveAllByBook(book);
         assetRepository.inactiveAllByBook(book);
         settlementRepository.inactiveAllByBookKey(bookKey);
-        bookLineRepository.inactiveAllBy(bookKey);
         carryOverRepository.inactiveAllByBookKey(bookKey);
 
         List<Budget> initBudgets = budgetRepository.findAllByBook(book)

@@ -15,7 +15,7 @@ public class CategoryInfo {
 
     @Builder
     @QueryProjection
-    private CategoryInfo(final boolean isDefault, final String name) {
+    public CategoryInfo(final boolean isDefault, final String name) {
         this.isDefault = isDefault;
         this.name = name;
     }
