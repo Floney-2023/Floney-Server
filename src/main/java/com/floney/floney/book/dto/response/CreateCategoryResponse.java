@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.response;
 
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import lombok.*;
 
 
@@ -12,7 +12,7 @@ public class CreateCategoryResponse {
 
     private String name;
 
-    public static CreateCategoryResponse of(final CustomSubCategory category) {
+    public static CreateCategoryResponse of(final Subcategory category) {
         return new CreateCategoryResponse(category.getName());
     }
 }

@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
 
@@ -24,27 +24,27 @@ public class BookLineCategory extends BaseEntity {
     private Category lineCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private CustomSubCategory lineSubCategory;
+    private Subcategory lineSubcategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private CustomSubCategory assetSubCategory;
+    private Subcategory assetSubcategory;
 
     public static BookLineCategory create(final Category lineCategory,
-                                          final CustomSubCategory lineSubCategory,
-                                          final CustomSubCategory assetSubCategory) {
+                                          final Subcategory lineSubcategory,
+                                          final Subcategory assetSubcategory) {
         return BookLineCategory.builder()
             .lineCategory(lineCategory)
-            .lineSubCategory(lineSubCategory)
-            .assetSubCategory(assetSubCategory)
+            .lineSubcategory(lineSubcategory)
+            .assetSubcategory(assetSubcategory)
             .build();
     }
 
-    public void updateLineSubCategory(final CustomSubCategory lineSubCategory) {
-        this.lineSubCategory = lineSubCategory;
+    public void updateLineSubCategory(final Subcategory lineSubcategory) {
+        this.lineSubcategory = lineSubcategory;
     }
 
-    public void updateAssetSubCategory(final CustomSubCategory assetSubCategory) {
-        this.assetSubCategory = assetSubCategory;
+    public void updateAssetSubCategory(final Subcategory assetSubcategory) {
+        this.assetSubcategory = assetSubcategory;
     }
 
     public boolean isIncomeOrOutcome() {

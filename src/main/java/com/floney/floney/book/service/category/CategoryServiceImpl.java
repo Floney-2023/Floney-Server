@@ -1,7 +1,7 @@
 package com.floney.floney.book.service.category;
 
 import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
@@ -10,7 +10,7 @@ import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.repository.category.CustomSubCategoryRepository;
+import com.floney.floney.book.repository.category.SubcategoryRepository;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.common.exception.book.AlreadyExistException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -29,7 +29,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CustomSubCategoryRepository customSubCategoryRepository;
+    private final SubcategoryRepository subcategoryRepository;
     private final BookRepository bookRepository;
     private final BookLineService bookLineService;
     private final BookLineCategoryRepository bookLineCategoryRepository;
@@ -41,8 +41,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         validateDifferentSubCategory(book, category, request.getName());
 
-        final CustomSubCategory subCategory = CustomSubCategory.of(category, book, request.getName());
-        customSubCategoryRepository.save(subCategory);
+        final Subcategory subCategory = Subcategory.of(category, book, request.getName());
+        subcategoryRepository.save(subCategory);
 
         return CreateCategoryResponse.of(subCategory);
     }
@@ -58,7 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
         final Category category = findCategory(request.getRoot());
         final Book book = findBook(request.getBookKey());
 
-        final CustomSubCategory subCategory = categoryRepository.findCustomTarget(category, book, request.getName())
+        final Subcategory subCategory = categoryRepository.findCustomTarget(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
         categoryRepository.findAllBookLineByCategory(subCategory)

@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CustomSubCategory extends BaseEntity {
+public class Subcategory extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Category parent;
@@ -29,8 +29,8 @@ public class CustomSubCategory extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    public static CustomSubCategory of(final Category parent, final Book book, final String name) {
-        return CustomSubCategory.builder()
+    public static Subcategory of(final Category parent, final Book book, final String name) {
+        return Subcategory.builder()
             .parent(parent)
             .book(book)
             .name(name)

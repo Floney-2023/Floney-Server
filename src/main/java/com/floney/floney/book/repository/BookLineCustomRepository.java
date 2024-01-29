@@ -5,7 +5,7 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
@@ -36,7 +36,7 @@ public interface BookLineCustomRepository {
 
     double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
-    List<AnalyzeResponseByCategory> analyzeByLineSubCategory(List<CustomSubCategory> childCategories, DateDuration duration, String bookKey);
+    List<AnalyzeResponseByCategory> analyzeByLineSubcategory(List<Subcategory> childCategories, DateDuration duration, String bookKey);
 
     Double totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DateDuration duration);
 

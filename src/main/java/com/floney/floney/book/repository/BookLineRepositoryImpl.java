@@ -6,7 +6,7 @@ import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
@@ -29,8 +29,8 @@ import java.util.Optional;
 
 import static com.floney.floney.book.domain.category.CategoryType.INCOME;
 import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
-import static com.floney.floney.book.domain.category.QCategory.category;
-import static com.floney.floney.book.domain.category.QCustomSubCategory.customSubCategory;
+import static com.floney.floney.book.domain.category.entity.QCategory.category;
+import static com.floney.floney.book.domain.category.entity.QSubcategory.subcategory;
 import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
@@ -54,8 +54,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
             .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
-            .innerJoin(bookLineCategory.lineSubCategory, customSubCategory).fetchJoin()
-            .innerJoin(bookLineCategory.assetSubCategory, customSubCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
             .where(
                 book.bookKey.eq(bookKey),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate())
@@ -65,8 +65,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE),
                 bookLineCategory.lineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineSubCategory.status.eq(ACTIVE),
-                bookLineCategory.assetSubCategory.status.eq(ACTIVE)
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
             .orderBy(bookLine.lineDate.desc())
             .fetch();
@@ -82,8 +82,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLine.description,
                     bookLine.exceptStatus,
                     bookLineCategory.lineCategory.name,
-                    bookLineCategory.lineSubCategory.name,
-                    bookLineCategory.assetSubCategory.name,
+                    bookLineCategory.lineSubcategory.name,
+                    bookLineCategory.assetSubcategory.name,
                     user.email,
                     user.nickname,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg)
@@ -193,8 +193,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLine.description,
                     bookLine.exceptStatus,
                     bookLineCategory.lineCategory.name,
-                    bookLineCategory.lineSubCategory.name,
-                    bookLineCategory.assetSubCategory.name,
+                    bookLineCategory.lineSubcategory.name,
+                    bookLineCategory.assetSubcategory.name,
                     user.email,
                     user.nickname,
                     user.profileImg
@@ -249,12 +249,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AnalyzeResponseByCategory> analyzeByLineSubCategory(final List<CustomSubCategory> childCategories,
+    public List<AnalyzeResponseByCategory> analyzeByLineSubcategory(final List<Subcategory> childCategories,
                                                                     final DateDuration duration,
                                                                     final String bookKey) {
         return jpaQueryFactory.select(
                 new QAnalyzeResponseByCategory(
-                    bookLineCategory.lineSubCategory.name,
+                    bookLineCategory.lineSubcategory.name,
                     bookLine.money.sum().coalesce(0.0)
                 )
             )
@@ -263,7 +263,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.categories, bookLineCategory)
             .where(
                 book.bookKey.eq(bookKey),
-                bookLineCategory.lineSubCategory.in(childCategories),
+                bookLineCategory.lineSubcategory.in(childCategories),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate())
             )
             .where(
@@ -271,7 +271,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.status.eq(ACTIVE),
                 book.status.eq(ACTIVE)
             )
-            .groupBy(bookLineCategory.lineSubCategory.name)
+            .groupBy(bookLineCategory.lineSubcategory.name)
             .fetch();
     }
 
@@ -320,8 +320,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
             .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
-            .innerJoin(bookLineCategory.lineSubCategory, customSubCategory).fetchJoin()
-            .innerJoin(bookLineCategory.assetSubCategory, customSubCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
             .where(
                 bookLine.id.eq(id)
             )
@@ -329,8 +329,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE),
                 bookLineCategory.lineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineSubCategory.status.eq(ACTIVE),
-                bookLineCategory.assetSubCategory.status.eq(ACTIVE)
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
             .fetchOne()
         );
@@ -343,8 +343,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book).fetchJoin()
             .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
             .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
-            .innerJoin(bookLineCategory.lineSubCategory, customSubCategory).fetchJoin()
-            .innerJoin(bookLineCategory.assetSubCategory, customSubCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
             .where(
                 book.bookKey.eq(bookKey)
             )
@@ -353,8 +353,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE),
                 bookLineCategory.lineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineSubCategory.status.eq(ACTIVE),
-                bookLineCategory.assetSubCategory.status.eq(ACTIVE)
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
             .orderBy(bookLine.lineDate.desc())
             .fetch();

@@ -3,7 +3,7 @@ package com.floney.floney.book.service;
 import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
 import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
@@ -155,9 +155,9 @@ public class BookLineServiceImpl implements BookLineService {
         final String categoryName = request.getFlow();
         final Category lineCategory = findLineCategory(categoryName);
 
-        final CustomSubCategory lineSubCategory = findLineSubCategory(request.getLine(), lineCategory, book);
-        final CustomSubCategory assetSubCategory = findAssetSubCategory(book, request.getAsset());
-        return BookLineCategory.create(lineCategory, lineSubCategory, assetSubCategory);
+        final Subcategory lineSubcategory = findLineSubCategory(request.getLine(), lineCategory, book);
+        final Subcategory assetSubcategory = findAssetSubCategory(book, request.getAsset());
+        return BookLineCategory.create(lineCategory, lineSubcategory, assetSubcategory);
     }
 
     private void updateCategory(final BookLineCategory bookLineCategory,
@@ -170,16 +170,16 @@ public class BookLineServiceImpl implements BookLineService {
     private void updateAssetSubCategory(final BookLineCategory bookLineCategory,
                                         final String assetSubCategoryName) {
         final Book book = bookLineCategory.getBookLine().getBook();
-        final CustomSubCategory assetSubCategory = findAssetSubCategory(book, assetSubCategoryName);
-        bookLineCategory.updateAssetSubCategory(assetSubCategory);
+        final Subcategory assetSubcategory = findAssetSubCategory(book, assetSubCategoryName);
+        bookLineCategory.updateAssetSubCategory(assetSubcategory);
     }
 
     private void updateLineSubCategory(final BookLineCategory bookLineCategory,
                                        final String lineSubCategoryName) {
         final Book book = bookLineCategory.getBookLine().getBook();
         final Category lineCategory = bookLineCategory.getLineCategory();
-        final CustomSubCategory lineSubCategory = findLineSubCategory(lineSubCategoryName, lineCategory, book);
-        bookLineCategory.updateLineSubCategory(lineSubCategory);
+        final Subcategory lineSubcategory = findLineSubCategory(lineSubCategoryName, lineCategory, book);
+        bookLineCategory.updateLineSubCategory(lineSubcategory);
     }
 
     private Category findLineCategory(final String categoryName) {
@@ -187,15 +187,15 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
-    private CustomSubCategory findLineSubCategory(final String lineSubCategoryName,
-                                                  final Category lineCategory,
-                                                  final Book book) {
+    private Subcategory findLineSubCategory(final String lineSubCategoryName,
+                                            final Category lineCategory,
+                                            final Book book) {
         return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory)
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
-    private CustomSubCategory findAssetSubCategory(final Book book,
-                                                   final String assetSubCategoryName) {
+    private Subcategory findAssetSubCategory(final Book book,
+                                             final String assetSubCategoryName) {
         return categoryRepository.findAssetSubCategory(assetSubCategoryName, book)
             .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }

@@ -9,7 +9,7 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.domain.category.entity.CustomSubCategory;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Budget;
 import com.floney.floney.book.dto.process.AssetInfo;
@@ -51,10 +51,10 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
         final String bookKey = request.getBookKey();
 
-        final List<CustomSubCategory> subCategories = getSubCategoriesByParentAndBookKey(category, bookKey);
+        final List<Subcategory> subCategories = getSubCategoriesByParentAndBookKey(category, bookKey);
 
         // lineSubCategory 별로 가계부 내역 합계 조회
-        final List<AnalyzeResponseByCategory> analyzeByCategory = bookLineRepository.analyzeByLineSubCategory(
+        final List<AnalyzeResponseByCategory> analyzeByCategory = bookLineRepository.analyzeByLineSubcategory(
             subCategories, duration, bookKey
         );
         final double totalMoney = calculateTotalMoney(analyzeByCategory);
@@ -111,8 +111,8 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return totalMoney - beforeMonthTotal;
     }
 
-    private List<CustomSubCategory> getSubCategoriesByParentAndBookKey(final Category parent,
-                                                                       final String bookKey) {
+    private List<Subcategory> getSubCategoriesByParentAndBookKey(final Category parent,
+                                                                 final String bookKey) {
         return categoryRepository.findAllLineSubCategoryByLineCategory(parent, bookKey);
     }
 

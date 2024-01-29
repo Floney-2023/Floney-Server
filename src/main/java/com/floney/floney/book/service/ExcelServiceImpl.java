@@ -79,12 +79,12 @@ public class ExcelServiceImpl implements ExcelService {
             currencyCell.setCellStyle(cellStyle);
 
             final Cell assetSubCell = row.createCell(cellIdx++);
-            final String assetSubName = bookLine.getCategories().getAssetSubCategory().getName();
+            final String assetSubName = bookLine.getCategories().getAssetSubcategory().getName();
             assetSubCell.setCellValue(assetSubName);
             assetSubCell.setCellStyle(cellStyle);
 
             final Cell lineSubCell = row.createCell(cellIdx++);
-            final String lineSubName = bookLine.getCategories().getLineSubCategory().getName();
+            final String lineSubName = bookLine.getCategories().getLineSubcategory().getName();
             lineSubCell.setCellValue(lineSubName);
             lineSubCell.setCellStyle(cellStyle);
 
