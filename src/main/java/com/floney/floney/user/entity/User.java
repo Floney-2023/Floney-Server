@@ -143,9 +143,8 @@ public class User extends BaseEntity {
 
     public void signout() {
         deleteInformation();
-        inactive();
-
         Events.raise(new UserSignedOutEvent(getId()));
+        inactive();
     }
 
     private void deleteInformation() {
