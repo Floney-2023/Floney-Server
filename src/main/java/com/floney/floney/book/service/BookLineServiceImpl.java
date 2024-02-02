@@ -36,8 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.floney.floney.book.domain.category.CategoryType.INCOME;
-import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
@@ -192,13 +191,13 @@ public class BookLineServiceImpl implements BookLineService {
     private Subcategory findLineSubCategory(final String lineSubCategoryName,
                                             final Category lineCategory,
                                             final Book book) {
-        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory)
+        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory.getName())
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
     private Subcategory findAssetSubCategory(final Book book,
                                              final String assetSubCategoryName) {
-        return categoryRepository.findAssetSubCategory(assetSubCategoryName, book)
+        return categoryRepository.findLineSubCategory(assetSubCategoryName, book, ASSET)
             .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 

@@ -77,9 +77,10 @@ public class CategoryServiceImpl implements CategoryService {
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
-    private Category findCategory(final String request) {
-        return categoryRepository.findParentCategory(request)
-            .orElseThrow(() -> new NotFoundCategoryException(request));
+    private Category findCategory(final String name) {
+        CategoryType categoryType = CategoryType.findByMeaning(name);
+        return categoryRepository.findLineCategory(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
     private void validateDifferentSubCategory(final Book book,

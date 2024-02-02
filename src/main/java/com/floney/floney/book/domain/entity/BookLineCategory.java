@@ -58,4 +58,8 @@ public class BookLineCategory extends BaseEntity {
     public boolean isOutcome() {
         return lineCategory.isOutcome();
     }
+
+    public void bookLine(BookLine bookLine) {
+        this.bookLine = bookLine;
+    }
 }

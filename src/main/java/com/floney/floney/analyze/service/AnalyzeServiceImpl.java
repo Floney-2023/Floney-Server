@@ -8,6 +8,7 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -97,7 +98,8 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     }
 
     private Category findCategory(final String name) {
-        return categoryRepository.findParentCategory(name)
+        CategoryType categoryType = CategoryType.findByMeaning(name);
+        return categoryRepository.findLineCategory(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
