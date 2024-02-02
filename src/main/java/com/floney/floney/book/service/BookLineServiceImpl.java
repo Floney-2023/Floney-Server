@@ -2,6 +2,7 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -183,7 +184,8 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private Category findLineCategory(final String categoryName) {
-        return categoryRepository.findLineCategory(categoryName)
+        final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
+        return categoryRepository.findLineCategory(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 

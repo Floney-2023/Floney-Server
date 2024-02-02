@@ -59,8 +59,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Category> findLineCategory(final String name) {
-        final CategoryType categoryType = CategoryType.findLineByMeaning(name);
+    public Optional<Category> findLineCategory(CategoryType categoryType) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(
                 category.name.eq(categoryType)

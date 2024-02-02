@@ -1,5 +1,6 @@
 package com.floney.floney.book.repository.category;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -13,7 +14,7 @@ public interface CategoryCustomRepository {
 
     List<CategoryInfo> findAllCategory(String parentName, String bookKey);
 
-    Optional<Category> findLineCategory(String name);
+    Optional<Category> findLineCategory(CategoryType categoryType);
 
     Optional<Subcategory> findAssetSubCategory(String name, Book book);
 
