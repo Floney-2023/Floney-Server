@@ -115,7 +115,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     private List<Subcategory> getSubCategoriesByParentAndBookKey(final Category parent,
                                                                  final String bookKey) {
-        return categoryRepository.findAllLineSubCategoryByLineCategory(parent, bookKey);
+        return categoryRepository.findAllSubCategoryByLineCategory(parent, bookKey);
     }
 
     private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {

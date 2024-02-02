@@ -38,7 +38,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllSubCategoryByParent(final CategoryType parent, final String bookKey) {
+    public List<CategoryInfo> findAllSubCategoryInfoByParent(final CategoryType parent, final String bookKey) {
         return jpaQueryFactory.select(
                 new QCategoryInfo(constant(true), subcategory.name)
             )
@@ -92,7 +92,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookLine> findAllBookLineByCategory(final Subcategory subCategory) {
+    public List<BookLine> findAllBookLineBySubCategory(final Subcategory subCategory) {
         return jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
             .where(
@@ -129,8 +129,8 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Subcategory> findAllLineSubCategoryByLineCategory(final Category parent,
-                                                                  final String bookKey) {
+    public List<Subcategory> findAllSubCategoryByLineCategory(final Category parent,
+                                                              final String bookKey) {
         return jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)

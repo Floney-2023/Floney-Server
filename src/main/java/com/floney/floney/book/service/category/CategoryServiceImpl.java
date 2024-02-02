@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryInfo> findAllBy(final String categoryName, final String bookKey) {
         final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
-        return categoryRepository.findAllSubCategoryByParent(categoryType, bookKey);
+        return categoryRepository.findAllSubCategoryInfoByParent(categoryType, bookKey);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         final Subcategory subCategory = categoryRepository.findCustomCategory(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
-        categoryRepository.findAllBookLineByCategory(subCategory)
+        categoryRepository.findAllBookLineBySubCategory(subCategory)
             .forEach((bookLine) -> {
                 // 예산, 자산, 이월 설정 관련 내역 모두 삭제
                 bookLineService.deleteLine(bookLine.getId());
