@@ -6,11 +6,8 @@ import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.config.QueryDslTest;
 import com.floney.floney.fixture.BookFixture;
-import com.floney.floney.user.entity.User;
-import com.floney.floney.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,11 +23,6 @@ class CategoryCustomRepositoryTest {
     @Autowired
     private BookRepository bookRepository;
 
-    @Autowired
-    private BookUserRepository bookUserRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -38,7 +30,6 @@ class CategoryCustomRepositoryTest {
     @Autowired
     private SubcategoryRepository subcategoryRepository;
 
-    private User user;
     private Book book;
     private Category incomeLineCategory;
     private Category outcomeLineCategory;
@@ -192,4 +183,32 @@ class CategoryCustomRepositoryTest {
 
     }
 
+    @Nested
+    @DisplayName("findLineCategory 메서드에서")
+    class Describe_FindLineCategory {
+
+        @Test
+        @DisplayName("ASSET을 조회한다")
+        void find_asset() {
+            Assertions.assertThat(categoryRepository.findLineCategory(CategoryType.ASSET)).isNotEmpty();
+        }
+
+        @Test
+        @DisplayName("INCOME을 조회한다")
+        void find_income() {
+            Assertions.assertThat(categoryRepository.findLineCategory(CategoryType.INCOME)).isNotEmpty();
+        }
+
+        @Test
+        @DisplayName("TRANSFER을 조회한다")
+        void find_transfer() {
+            Assertions.assertThat(categoryRepository.findLineCategory(CategoryType.TRANSFER)).isNotEmpty();
+        }
+
+        @Test
+        @DisplayName("OUTCOME을 조회한다")
+        void find_outcome() {
+            Assertions.assertThat(categoryRepository.findLineCategory(CategoryType.OUTCOME)).isNotEmpty();
+        }
+    }
 }
