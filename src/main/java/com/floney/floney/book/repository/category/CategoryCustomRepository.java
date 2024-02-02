@@ -16,11 +16,11 @@ public interface CategoryCustomRepository {
 
     Optional<Category> findLineCategory(CategoryType categoryType);
 
-    Optional<Subcategory> findLineSubCategory(String name, Book book, CategoryType parentName);
+    Optional<Subcategory> findLineSubCategory(String name, Book book, CategoryType parent);
 
     List<BookLine> findAllBookLineByCategory(Subcategory subCategory);
 
-    Optional<Subcategory> findCustomTarget(Category parent, Book targetBook, String name);
+    Optional<Subcategory> findCustomCategory(Category parent, Book targetBook, String name);
 
     List<Subcategory> findAllLineSubCategoryByLineCategory(Category parent, String bookKey);
 

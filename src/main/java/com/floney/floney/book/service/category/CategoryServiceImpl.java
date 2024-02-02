@@ -60,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
         final Category category = findCategory(request.getRoot());
         final Book book = findBook(request.getBookKey());
 
-        final Subcategory subCategory = categoryRepository.findCustomTarget(category, book, request.getName())
+        final Subcategory subCategory = categoryRepository.findCustomCategory(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
         categoryRepository.findAllBookLineByCategory(subCategory)
@@ -86,7 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
     private void validateDifferentSubCategory(final Book book,
                                               final Category parent,
                                               final String name) {
-        categoryRepository.findCustomTarget(parent, book, name)
+        categoryRepository.findCustomCategory(parent, book, name)
             .ifPresent(subCategory -> {
                 throw new AlreadyExistException(subCategory.getName());
             });

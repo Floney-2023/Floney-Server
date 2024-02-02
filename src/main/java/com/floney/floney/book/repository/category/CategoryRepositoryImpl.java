@@ -108,9 +108,9 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Subcategory> findCustomTarget(final Category parent,
-                                                  final Book targetBook,
-                                                  final String name) {
+    public Optional<Subcategory> findCustomCategory(final Category parent,
+                                                    final Book targetBook,
+                                                    final String name) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
