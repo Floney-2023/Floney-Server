@@ -1,5 +1,6 @@
 package com.floney.floney.book.service.category;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -50,7 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryInfo> findAllBy(final String categoryName, final String bookKey) {
-        return categoryRepository.findAllCategory(categoryName, bookKey);
+        final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
+        return categoryRepository.findAllSubCategoryByCategoryType(categoryType, bookKey);
     }
 
     @Override
