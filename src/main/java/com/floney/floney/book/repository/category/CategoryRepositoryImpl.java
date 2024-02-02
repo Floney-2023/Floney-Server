@@ -38,7 +38,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllSubCategoryByCategoryType(final CategoryType categoryType, final String bookKey) {
+    public List<CategoryInfo> findAllSubCategoryByParent(final CategoryType categoryType, final String bookKey) {
         return jpaQueryFactory.select(
                 new QCategoryInfo(constant(true), subcategory.name)
             )

@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryInfo> findAllBy(final String categoryName, final String bookKey) {
         final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
-        return categoryRepository.findAllSubCategoryByCategoryType(categoryType, bookKey);
+        return categoryRepository.findAllSubCategoryByParent(categoryType, bookKey);
     }
 
     @Override
