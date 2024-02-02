@@ -266,7 +266,7 @@ public class BookServiceImpl implements BookService {
         LocalDate date = LocalDate.parse(firstDate);
         Map<Month, Double> monthlyMap = getInitBudgetFrame();
 
-        List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateDuration.firstAndEndDayOfYear(date));
+        List<BudgetYearResponse> savedBudget = budgetRepository.findBudgetByYear(bookKey, DateDuration.firstAndEndDayOfYear(date));
 
         for (BudgetYearResponse budget : savedBudget) {
             Month month = budget.getDate().getMonth();
