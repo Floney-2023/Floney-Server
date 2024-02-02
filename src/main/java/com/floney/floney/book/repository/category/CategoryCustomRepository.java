@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface CategoryCustomRepository {
 
-    List<CategoryInfo> findAllCategory(String parentName, String bookKey);
+    List<CategoryInfo> findAllSubCategoryByCategoryType(CategoryType categoryType, String bookKey);
 
     Optional<Category> findLineCategory(CategoryType categoryType);
 
