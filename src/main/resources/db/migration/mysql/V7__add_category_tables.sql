@@ -1,6 +1,6 @@
 -- 기존 카테고리 관련 테이블 복사
-RENAME TABLE `category` TO `old_category`;
-RENAME TABLE `book_line_category` TO `old_book_line_category`;
+ALTER TABLE `category` RENAME TO `old_category`;
+ALTER TABLE `book_line_category` RENAME TO `old_book_line_category`;
 
 
 -- 새 카테고리 관련 테이블 생성
