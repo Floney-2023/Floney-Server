@@ -59,15 +59,18 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     @Override
     @Transactional
     public void inactiveAllByBookUser(final BookUser targetBookUser) {
-        final JPQLQuery<BookLine> bookLineByBookUser = JPAExpressions.selectFrom(bookLine)
-            .innerJoin(bookLine.writer, bookUser)
-            .where(bookUser.eq(targetBookUser));
+        final JPQLQuery<Long> bookLineIdByBookUser =
+            JPAExpressions.select(bookLine.id)
+                .from(bookLine)
+                .innerJoin(bookLine.writer, bookUser)
+                .where(bookUser.eq(targetBookUser),
+                    bookLine.status.eq(ACTIVE));
 
         jpaQueryFactory.update(bookLineCategory)
             .set(bookLineCategory.status, INACTIVE)
             .set(bookLineCategory.updatedAt, LocalDateTime.now())
             .where(
-                bookLineCategory.bookLine.in(bookLineByBookUser),
+                bookLineCategory.bookLine.id.in(bookLineIdByBookUser),
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();
@@ -76,7 +79,8 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
     @Override
     @Transactional
     public void inactiveAllByBook(final Book targetBook) {
-        final JPQLQuery<BookLine> bookLineByBook = JPAExpressions.selectFrom(bookLine)
+        final JPQLQuery<Long> bookLineIdByBook = JPAExpressions.select(bookLine.id)
+            .from(bookLine)
             .leftJoin(bookLine.book, book)
             .where(book.eq(targetBook));
 
@@ -84,7 +88,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
             .set(bookLineCategory.status, INACTIVE)
             .set(bookLineCategory.updatedAt, LocalDateTime.now())
             .where(
-                bookLineCategory.bookLine.in(bookLineByBook),
+                bookLineCategory.bookLine.id.in(bookLineIdByBook),
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();
