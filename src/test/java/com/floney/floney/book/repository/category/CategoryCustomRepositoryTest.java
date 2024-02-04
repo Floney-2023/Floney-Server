@@ -13,6 +13,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.config.QueryDslTest;
 import com.floney.floney.fixture.BookFixture;
+import com.floney.floney.fixture.SubCategoryFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -65,27 +66,40 @@ class CategoryCustomRepositoryTest {
         transferLineCategory = categoryRepository.findLineCategory(CategoryType.TRANSFER).get();
     }
 
+    private Subcategory incomeSubCategory(String name) {
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, incomeLineCategory, name);
+        return subcategoryRepository.save(subCategoryForIncome1);
+    }
+
+    private void outcomeSubCategory(String name) {
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, outcomeLineCategory, name);
+        subcategoryRepository.save(subCategoryForIncome1);
+    }
+
+    private Subcategory assetSubCategory(String name) {
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, assetLineCategory, name);
+        return subcategoryRepository.save(subCategoryForIncome1);
+    }
+
+    private void transferSubCategory(String name) {
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, transferLineCategory, name);
+        subcategoryRepository.save(subCategoryForIncome1);
+    }
+
     @Nested
     @DisplayName("findAllSubCategoryByCategoryType 메서드에서")
     class Describe_FindAllSubCategoryType {
         @Nested
         @DisplayName("INCOME이 부모인 SubCategory가 주어진다면")
         class income {
-            @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(incomeLineCategory)
-                    .name("급여")
-                    .build();
+            private static final String incomeSubCategoryName1 = "급여";
+            private static final String incomeSubCategoryName2 = "용돈";
 
-                Subcategory subCategoryForLine2 = Subcategory.builder()
-                    .book(book)
-                    .parent(incomeLineCategory)
-                    .name("용돈")
-                    .build();
-                subcategoryRepository.save(subCategoryForLine1);
-                subcategoryRepository.save(subCategoryForLine2);
+            @BeforeEach
+            void save_income_sub_category() {
+                incomeSubCategory(incomeSubCategoryName1);
+                Subcategory subCategoryForIncome2 = SubCategoryFixture.createSubCategory(book, incomeLineCategory, incomeSubCategoryName2);
+                subcategoryRepository.save(subCategoryForIncome2);
             }
 
             @Test
@@ -96,28 +110,22 @@ class CategoryCustomRepositoryTest {
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
-                    .containsExactlyInAnyOrder("급여", "용돈");
+                    .containsExactlyInAnyOrder(incomeSubCategoryName1, incomeSubCategoryName2);
             }
         }
 
         @Nested
         @DisplayName("OUTCOME이 부모인 SubCategory가 주어진다면")
         class outcome {
-            @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(outcomeLineCategory)
-                    .name("식비")
-                    .build();
+            private static final String outcomeSubCategoryName1 = "식비";
+            private static final String outcomeSubCategoryName2 = "경조사";
 
-                Subcategory subCategoryForLine2 = Subcategory.builder()
-                    .book(book)
-                    .parent(outcomeLineCategory)
-                    .name("경조사")
-                    .build();
-                subcategoryRepository.save(subCategoryForLine1);
-                subcategoryRepository.save(subCategoryForLine2);
+            @BeforeEach
+            void save_sub_category() {
+                outcomeSubCategory(outcomeSubCategoryName1);
+                Subcategory subCategoryForOutcome2 = SubCategoryFixture.createSubCategory(book, outcomeLineCategory, outcomeSubCategoryName2);
+                subcategoryRepository.save(subCategoryForOutcome2);
+
             }
 
             @Test
@@ -128,28 +136,23 @@ class CategoryCustomRepositoryTest {
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
-                    .containsExactlyInAnyOrder("식비", "경조사");
+                    .containsExactlyInAnyOrder(outcomeSubCategoryName1, outcomeSubCategoryName2);
             }
         }
 
         @Nested
         @DisplayName("ASSET이 부모인 SubCategory가 주어진다면")
         class asset {
-            @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(assetLineCategory)
-                    .name("현금")
-                    .build();
+            private static final String assetSubCategoryName1 = "신용카드";
+            private static final String assetSubCategoryName2 = "현금";
 
-                Subcategory subCategoryForLine2 = Subcategory.builder()
-                    .book(book)
-                    .parent(assetLineCategory)
-                    .name("체크카드")
-                    .build();
-                subcategoryRepository.save(subCategoryForLine1);
-                subcategoryRepository.save(subCategoryForLine2);
+            @BeforeEach
+            void save_sub_category() {
+                Subcategory subCategoryForAsset1 = SubCategoryFixture.createSubCategory(book, assetLineCategory, assetSubCategoryName1);
+                Subcategory subCategoryForAsset2 = SubCategoryFixture.createSubCategory(book, assetLineCategory, assetSubCategoryName2);
+
+                subcategoryRepository.save(subCategoryForAsset1);
+                subcategoryRepository.save(subCategoryForAsset2);
             }
 
             @Test
@@ -157,32 +160,23 @@ class CategoryCustomRepositoryTest {
             void find_by_asset() {
                 List<CategoryInfo> subCategories = categoryRepository.findAllSubCategoryInfoByParent(ASSET, book.getBookKey());
 
-                // then
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
-                    .containsExactlyInAnyOrder("현금", "체크카드");
+                    .containsExactlyInAnyOrder(assetSubCategoryName1, assetSubCategoryName2);
             }
         }
 
         @Nested
         @DisplayName("TRANSFER가 부모인 SubCategory가 주어진다면")
         class transfer {
-            @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(transferLineCategory)
-                    .name("은행")
-                    .build();
+            private static final String transferSubCategoryName1 = "은행";
+            private static final String transferSubCategoryName2 = "이체";
 
-                Subcategory subCategoryForLine2 = Subcategory.builder()
-                    .book(book)
-                    .parent(transferLineCategory)
-                    .name("이체")
-                    .build();
-                subcategoryRepository.save(subCategoryForLine1);
-                subcategoryRepository.save(subCategoryForLine2);
+            @BeforeEach
+            void save_sub_category() {
+                transferSubCategory(transferSubCategoryName1);
+                transferSubCategory(transferSubCategoryName2);
             }
 
             @Test
@@ -193,10 +187,9 @@ class CategoryCustomRepositoryTest {
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
-                    .containsExactlyInAnyOrder("은행", "이체");
+                    .containsExactlyInAnyOrder(transferSubCategoryName1, transferSubCategoryName2);
             }
         }
-
     }
 
     @Nested
@@ -236,14 +229,8 @@ class CategoryCustomRepositoryTest {
             private final String categoryName = "급여";
 
             @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(incomeLineCategory)
-                    .name(categoryName)
-                    .build();
-
-                subcategoryRepository.save(subCategoryForLine1);
+            void save_sub_category() {
+                incomeSubCategory(categoryName);
             }
 
             @Test
@@ -261,7 +248,7 @@ class CategoryCustomRepositoryTest {
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
-            void inactive_parent() {
+            void inactive_by_parent() {
                 Optional<Category> parent = categoryRepository.findLineCategory(INCOME);
                 parent.get().inactive();
                 Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, INCOME)).isEmpty();
@@ -274,14 +261,8 @@ class CategoryCustomRepositoryTest {
             private final String categoryName = "식비";
 
             @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(outcomeLineCategory)
-                    .name(categoryName)
-                    .build();
-
-                subcategoryRepository.save(subCategoryForLine1);
+            void save_sub_category() {
+                outcomeSubCategory(categoryName);
             }
 
             @Test
@@ -299,7 +280,7 @@ class CategoryCustomRepositoryTest {
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
-            void inactive_parent() {
+            void inactive_by_parent() {
                 Optional<Category> parent = categoryRepository.findLineCategory(OUTCOME);
                 parent.get().inactive();
                 Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, OUTCOME)).isEmpty();
@@ -312,14 +293,8 @@ class CategoryCustomRepositoryTest {
             private final String categoryName = "체크카드";
 
             @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(assetLineCategory)
-                    .name(categoryName)
-                    .build();
-
-                subcategoryRepository.save(subCategoryForLine1);
+            void save_sub_category() {
+                assetSubCategory(categoryName);
             }
 
             @Test
@@ -337,7 +312,7 @@ class CategoryCustomRepositoryTest {
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
-            void inactive_parent() {
+            void inactive_by_parent() {
                 Optional<Category> parent = categoryRepository.findLineCategory(ASSET);
                 parent.get().inactive();
                 Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, ASSET)).isEmpty();
@@ -350,14 +325,8 @@ class CategoryCustomRepositoryTest {
             private final String categoryName = "이체";
 
             @BeforeEach
-            void saveSubCategory() {
-                Subcategory subCategoryForLine1 = Subcategory.builder()
-                    .book(book)
-                    .parent(transferLineCategory)
-                    .name(categoryName)
-                    .build();
-
-                subcategoryRepository.save(subCategoryForLine1);
+            void save_sub_category() {
+                transferSubCategory(categoryName);
             }
 
             @Test
@@ -375,7 +344,7 @@ class CategoryCustomRepositoryTest {
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
-            void inactive_parent() {
+            void inactive_by_parent() {
                 Optional<Category> parent = categoryRepository.findLineCategory(TRANSFER);
                 parent.get().inactive();
                 Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, TRANSFER)).isEmpty();
@@ -386,40 +355,30 @@ class CategoryCustomRepositoryTest {
     @Nested
     @DisplayName("findAllBookLineByCategory 메서드에서")
     class Describe_FindAllBookLineByCategory {
-        private BookUser bookUser;
-        private User user;
         private Subcategory subCategoryForLine;
         private Subcategory subCategoryForAsset;
 
         @Nested
         @DisplayName("가계부 내역이 주어진다면")
         class bookLine {
+            private static final String incomeCategoryName = "급여";
+            private static final String assetCategoryName = "체크카드";
+
             @BeforeEach
             void save_bookLine() {
-                user = userRepository.save(UserFixture.emailUser());
+                User user = userRepository.save(UserFixture.emailUser());
                 BookUser newBookUser = BookUser.builder()
                     .book(book)
                     .user(user)
                     .build();
-                bookUser = bookUserRepository.save(newBookUser);
+                BookUser bookUser = bookUserRepository.save(newBookUser);
 
+                subCategoryForLine = incomeSubCategory(incomeCategoryName);
+                subCategoryForAsset = assetSubCategory(assetCategoryName);
+
+                // parent
                 incomeLineCategory = categoryRepository.findLineCategory(CategoryType.INCOME).get();
                 assetLineCategory = categoryRepository.findLineCategory(CategoryType.ASSET).get();
-
-                subCategoryForLine = Subcategory.builder()
-                    .book(book)
-                    .parent(incomeLineCategory)
-                    .name("급여")
-                    .build();
-
-                subCategoryForAsset = Subcategory.builder()
-                    .book(book)
-                    .name("은행")
-                    .parent(assetLineCategory)
-                    .build();
-
-                subcategoryRepository.save(subCategoryForLine);
-                subcategoryRepository.save(subCategoryForAsset);
 
                 BookLineCategory bookLineCategory = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
                 BookLineCategory bookLineCategory2 = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
@@ -459,26 +418,22 @@ class CategoryCustomRepositoryTest {
     @Nested
     @DisplayName("findCustomCategory 메서드에서")
     class Describe_FindCustomCategory {
-        private Subcategory customCategory;
 
         @Nested
         @DisplayName("사용자가 추가한 커스텀 카테고리가 주어진다면")
         class customCategory {
+            private static final String customCategoryName = "사용자가 추가한 카테고리";
+
             @BeforeEach
             void custom_category() {
-                customCategory = Subcategory.builder()
-                    .book(book)
-                    .name("사용자가 추가한 카테고리")
-                    .parent(assetLineCategory)
-                    .build();
-
+                Subcategory customCategory = SubCategoryFixture.createSubCategory(book, assetLineCategory, customCategoryName);
                 subcategoryRepository.save(customCategory);
             }
 
             @Test
             @DisplayName("카테고리 이름으로 조회할 수 있다")
             void find_custom_category() {
-                Assertions.assertThat(categoryRepository.findCustomCategory(assetLineCategory, book, customCategory.getName())).isNotEmpty();
+                Assertions.assertThat(categoryRepository.findCustomCategory(assetLineCategory, book, customCategoryName)).isNotEmpty();
             }
         }
     }
@@ -496,20 +451,11 @@ class CategoryCustomRepositoryTest {
             void save_bookLine() {
                 assetLineCategory = categoryRepository.findLineCategory(CategoryType.ASSET).get();
 
-                subCategoryForAsset1 = Subcategory.builder()
-                    .book(book)
-                    .name("은행")
-                    .parent(assetLineCategory)
-                    .build();
+                String assetSubCategoryName1 = "신용카드";
+                subCategoryForAsset1 = assetSubCategory(assetSubCategoryName1);
 
-                subCategoryForAsset2 = Subcategory.builder()
-                    .book(book)
-                    .name("체크카드")
-                    .parent(assetLineCategory)
-                    .build();
-
-                subcategoryRepository.save(subCategoryForAsset1);
-                subcategoryRepository.save(subCategoryForAsset2);
+                String assetSubCategoryName2 = "체크카드";
+                subCategoryForAsset2 = assetSubCategory(assetSubCategoryName2);
             }
 
             @Test
