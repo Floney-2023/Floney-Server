@@ -38,4 +38,8 @@ public class Category extends BaseEntity {
     public boolean isOutcome() {
         return OUTCOME.equals(name);
     }
+
+    public boolean isLine() {
+        return CategoryType.isLine(name);
+    }
 }

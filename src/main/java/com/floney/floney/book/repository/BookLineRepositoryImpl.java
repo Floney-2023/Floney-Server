@@ -112,28 +112,29 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public TotalExpense totalMoneyByDateAndCategoryType(final String bookKey,
                                                         final LocalDate date,
                                                         final CategoryType categoryType) {
-        return jpaQueryFactory.select(
-                new QTotalExpense(
-                    bookLineCategory.lineCategory.name,
-                    bookLine.money.sum().coalesce(0.0)
-                ))
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.categories, bookLineCategory)
-            .innerJoin(bookLineCategory.lineCategory, category)
-            .where(
-                book.bookKey.eq(bookKey),
-                bookLineCategory.lineCategory.name.eq(categoryType),
-                bookLine.lineDate.eq(date)
-            )
-            .where(
-                bookLine.status.eq(ACTIVE),
-                book.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineCategory.status.eq(ACTIVE)
-            )
-            .groupBy(bookLineCategory.lineCategory.name)
-            .fetchOne();
+        return Optional.ofNullable(jpaQueryFactory.select(
+                    new QTotalExpense(
+                        bookLineCategory.lineCategory.name,
+                        bookLine.money.sum().coalesce(0.0)
+                    ))
+                .from(bookLine)
+                .innerJoin(bookLine.book, book)
+                .innerJoin(bookLine.categories, bookLineCategory)
+                .innerJoin(bookLineCategory.lineCategory, category)
+                .where(
+                    book.bookKey.eq(bookKey),
+                    bookLineCategory.lineCategory.name.eq(categoryType),
+                    bookLine.lineDate.eq(date)
+                )
+                .where(
+                    bookLine.status.eq(ACTIVE),
+                    book.status.eq(ACTIVE),
+                    bookLineCategory.status.eq(ACTIVE),
+                    bookLineCategory.lineCategory.status.eq(ACTIVE)
+                )
+                .groupBy(bookLineCategory.lineCategory.name)
+                .fetchOne())
+            .orElse(new TotalExpense(categoryType, 0.0));
     }
 
     @Override
@@ -252,6 +253,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     public List<AnalyzeResponseByCategory> analyzeByLineSubcategory(final List<Subcategory> childCategories,
                                                                     final DateDuration duration,
                                                                     final String bookKey) {
+        for (final Subcategory subcategory : childCategories) {
+            validateLineSubcategory(subcategory);
+        }
+
         return jpaQueryFactory.select(
                 new QAnalyzeResponseByCategory(
                     bookLineCategory.lineSubcategory.name,
@@ -406,6 +411,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
             .fetchOne()).orElse(0.0);
+    }
+
+    private void validateLineSubcategory(final Subcategory subcategory) {
+        // TODO: 리팩토링
+        if (!subcategory.getParent().isLine()) {
+            throw new RuntimeException("LineSubcategory가 아닙니다.");
+        }
     }
 
     private double totalMoneyByDurationAndCategoryTypeExceptAsset(final String bookKey,

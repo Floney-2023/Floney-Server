@@ -35,4 +35,8 @@ public enum CategoryType {
             .findFirst()
             .orElseThrow();
     }
+
+    public static boolean isLine(final CategoryType categoryType) {
+        return INCOME.equals(categoryType) || OUTCOME.equals(categoryType) || TRANSFER.equals(categoryType);
+    }
 }
