@@ -6,9 +6,8 @@ import java.time.LocalDate;
 
 @Getter
 @ToString
-@Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AnalyzeByCategoryRequest {
 
     // TODO: validation 추가

@@ -3,18 +3,16 @@ package com.floney.floney.common.domain.vo;
 import com.floney.floney.book.domain.ExcelDuration;
 import com.floney.floney.book.util.DateUtil;
 import com.floney.floney.common.exception.book.LimitRequestException;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static com.floney.floney.book.util.DateUtil.getDateBeforeMonth;
 
-@RequiredArgsConstructor
 @Getter
 public class DateDuration {
+
     private static final int FIRST_DAY_OF_YEAR = 1;
     private static final int BEFORE_ONE_MONTH = 1;
     private static final int ASSET_DURATION = 5;
@@ -22,11 +20,10 @@ public class DateDuration {
     private static final int ONE_YEAR = 1;
     private static final int ONE_YEAR_TO_MONTH = 12;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
 
-    @Builder
-    private DateDuration(LocalDate startDate, LocalDate endDate) {
+    public DateDuration(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

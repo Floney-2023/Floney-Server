@@ -1,12 +1,14 @@
 package com.floney.floney.analyze.dto.request;
 
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AnalyzeRequestByBudget {
-    private String bookKey;
 
+    // TODO: validation 추가
+    private String bookKey;
     private String date;
 }
