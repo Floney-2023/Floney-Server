@@ -1,7 +1,6 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.CategoryType;
@@ -306,13 +305,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Double> totalExpensesForAsset(final AnalyzeRequestByAsset request) {
-        final String bookKey = request.getBookKey();
-        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
+    public Map<String, Double> totalExpensesForAsset(final Book book, final LocalDate date) {
+        final DateDuration duration = DateDuration.startAndEndOfMonth(date.toString());
 
         final Map<String, Double> totalExpenses = new HashMap<>();
-        final double totalIncomeMoney = totalMoneyByDurationAndCategoryTypeExceptAsset(bookKey, duration, INCOME);
-        final double totalOutcomeMoney = totalMoneyByDurationAndCategoryTypeExceptAsset(bookKey, duration, OUTCOME);
+        final double totalIncomeMoney = totalMoneyByDurationAndCategoryTypeExceptAsset(book, duration, INCOME);
+        final double totalOutcomeMoney = totalMoneyByDurationAndCategoryTypeExceptAsset(book, duration, OUTCOME);
 
         totalExpenses.put(INCOME.getMeaning(), totalIncomeMoney);
         totalExpenses.put(OUTCOME.getMeaning(), totalOutcomeMoney);
@@ -420,7 +418,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
         }
     }
 
-    private double totalMoneyByDurationAndCategoryTypeExceptAsset(final String bookKey,
+    private double totalMoneyByDurationAndCategoryTypeExceptAsset(final Book targetBook,
                                                                   final DateDuration duration,
                                                                   final CategoryType categoryType) {
         return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
@@ -431,7 +429,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .where(
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
                 bookLineCategory.lineCategory.name.eq(categoryType),
-                book.bookKey.eq(bookKey),
+                book.eq(targetBook),
                 bookLine.exceptStatus.eq(false)
             )
             .where(

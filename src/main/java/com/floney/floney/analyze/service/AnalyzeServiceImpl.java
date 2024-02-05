@@ -83,7 +83,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         final Book savedBook = findBook(request.getBookKey());
 
         // 총 지출, 수입 조회
-        final Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        final Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(savedBook, LocalDate.parse(request.getDate()));
 
         final BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
         final Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
