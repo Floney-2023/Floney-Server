@@ -2,7 +2,6 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Subcategory;
@@ -38,7 +37,7 @@ public interface BookLineCustomRepository {
 
     List<AnalyzeResponseByCategory> analyzeByLineSubcategory(List<Subcategory> childCategories, DateDuration duration, String bookKey);
 
-    Double totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DateDuration duration);
+    double totalOutcomeMoneyForBudget(Book targetBook, DateDuration duration);
 
     Map<String, Double> totalExpensesForAsset(AnalyzeRequestByAsset request);
 

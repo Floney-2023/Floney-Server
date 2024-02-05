@@ -2,7 +2,6 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
 import com.floney.floney.book.domain.category.CategoryType;
@@ -282,26 +281,27 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Double totalOutcomeMoneyForBudget(final AnalyzeRequestByBudget request,
+    public double totalOutcomeMoneyForBudget(final Book targetBook,
                                              final DateDuration duration) {
-        return jpaQueryFactory.select(bookLine.money.sum().coalesce(0.0))
-            .from(bookLine)
-            .innerJoin(bookLine.book, book)
-            .innerJoin(bookLine.categories, bookLineCategory)
-            .innerJoin(bookLineCategory.lineCategory, category)
-            .where(
-                book.bookKey.eq(request.getBookKey()),
-                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                bookLineCategory.lineCategory.name.eq(OUTCOME),
-                bookLine.exceptStatus.eq(false)
-            )
-            .where(
-                book.status.eq(ACTIVE),
-                bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineCategory.status.eq(ACTIVE)
-            )
-            .fetchOne();
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum().coalesce(0.0))
+                .from(bookLine)
+                .innerJoin(bookLine.book, book)
+                .innerJoin(bookLine.categories, bookLineCategory)
+                .innerJoin(bookLineCategory.lineCategory, category)
+                .where(
+                    book.eq(targetBook),
+                    bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
+                    bookLineCategory.lineCategory.name.eq(OUTCOME),
+                    bookLine.exceptStatus.eq(false)
+                )
+                .where(
+                    book.status.eq(ACTIVE),
+                    bookLine.status.eq(ACTIVE),
+                    bookLineCategory.status.eq(ACTIVE),
+                    bookLineCategory.lineCategory.status.eq(ACTIVE)
+                )
+                .fetchOne())
+            .orElse(0.0);
     }
 
     @Override

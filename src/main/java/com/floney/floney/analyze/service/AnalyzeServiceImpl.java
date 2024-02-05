@@ -64,16 +64,16 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     @Override
     @Transactional(readOnly = true)
-    public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
-        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
-        Book savedBook = findBook(request.getBookKey());
+    public AnalyzeResponseByBudget analyzeByBudget(final AnalyzeRequestByBudget request) {
+        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
+        final Book book = findBook(request.getBookKey());
 
         // 자산 조회
-        Budget budget = budgetRepository.findBudgetByBookAndDate(savedBook, LocalDate.parse(request.getDate()))
+        final Budget budget = budgetRepository.findBudgetByBookAndDate(book, LocalDate.parse(request.getDate()))
             .orElse(Budget.init());
 
         // 총 수입 조회
-        double totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
+        final double totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(book, duration);
         return AnalyzeResponseByBudget.of(totalOutcome, budget.getMoney());
     }
 
