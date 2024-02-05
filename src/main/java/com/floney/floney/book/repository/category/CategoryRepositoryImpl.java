@@ -38,8 +38,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllCategory(final String parentName, final String bookKey) {
-        final CategoryType categoryType = CategoryType.findByMeaning(parentName);
+    public List<CategoryInfo> findAllSubCategoryInfoByParent(final CategoryType parent, final String bookKey) {
         return jpaQueryFactory.select(
                 new QCategoryInfo(constant(true), subcategory.name)
             )
@@ -47,7 +46,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
             .where(
-                category.name.eq(categoryType),
+                category.name.eq(parent),
                 book.bookKey.eq(bookKey)
             )
             .where(
@@ -59,8 +58,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Category> findLineCategory(final String name) {
-        final CategoryType categoryType = CategoryType.findLineByMeaning(name);
+    public Optional<Category> findLineCategory(CategoryType categoryType) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(
                 category.name.eq(categoryType)
@@ -73,34 +71,15 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Subcategory> findAssetSubCategory(final String name, final Book targetBook) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
-            .innerJoin(subcategory.book, book)
-            .innerJoin(subcategory.parent, category)
-            .where(
-                book.eq(targetBook),
-                category.name.eq(CategoryType.ASSET),
-                subcategory.name.eq(name)
-            )
-            .where(
-                subcategory.status.eq(ACTIVE),
-                book.status.eq(ACTIVE),
-                category.status.eq(ACTIVE)
-            )
-            .fetchOne());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Optional<Subcategory> findLineSubCategory(final String name,
                                                      final Book targetBook,
-                                                     final Category parent) {
+                                                     final CategoryType parentName) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
             .where(
                 subcategory.name.eq(name),
-                category.eq(parent),
+                category.name.eq(parentName),
                 book.eq(book)
             )
             .where(
@@ -113,7 +92,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookLine> findAllBookLineByCategory(final Subcategory subCategory) {
+    public List<BookLine> findAllBookLineBySubCategory(final Subcategory subCategory) {
         return jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
             .where(
@@ -129,9 +108,9 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Subcategory> findCustomTarget(final Category parent,
-                                                  final Book targetBook,
-                                                  final String name) {
+    public Optional<Subcategory> findCustomCategory(final Category parent,
+                                                    final Book targetBook,
+                                                    final String name) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
@@ -150,8 +129,8 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Subcategory> findAllLineSubCategoryByLineCategory(final Category parent,
-                                                                  final String bookKey) {
+    public List<Subcategory> findAllSubCategoryByLineCategory(final Category parent,
+                                                              final String bookKey) {
         return jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
@@ -167,19 +146,6 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .fetch();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Category> findParentCategory(final String name) {
-        final CategoryType categoryType = CategoryType.findByMeaning(name);
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
-            .where(
-                category.name.eq(categoryType)
-            )
-            .where(
-                category.status.eq(ACTIVE)
-            )
-            .fetchOne());
-    }
 
     @Override
     public void inactiveAllByBook(final Book book) {

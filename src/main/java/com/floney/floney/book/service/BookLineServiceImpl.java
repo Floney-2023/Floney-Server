@@ -2,6 +2,7 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -35,8 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.floney.floney.book.domain.category.CategoryType.INCOME;
-import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static java.time.LocalDate.parse;
 
@@ -183,20 +183,21 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private Category findLineCategory(final String categoryName) {
-        return categoryRepository.findLineCategory(categoryName)
+        final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
+        return categoryRepository.findLineCategory(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
     private Subcategory findLineSubCategory(final String lineSubCategoryName,
                                             final Category lineCategory,
                                             final Book book) {
-        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory)
+        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory.getName())
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
     private Subcategory findAssetSubCategory(final Book book,
                                              final String assetSubCategoryName) {
-        return categoryRepository.findAssetSubCategory(assetSubCategoryName, book)
+        return categoryRepository.findLineSubCategory(assetSubCategoryName, book, ASSET)
             .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 

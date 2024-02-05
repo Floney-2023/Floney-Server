@@ -1,5 +1,6 @@
 package com.floney.floney.book.service.category;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -50,7 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryInfo> findAllBy(final String categoryName, final String bookKey) {
-        return categoryRepository.findAllCategory(categoryName, bookKey);
+        final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
+        return categoryRepository.findAllSubCategoryInfoByParent(categoryType, bookKey);
     }
 
     @Override
@@ -58,10 +60,10 @@ public class CategoryServiceImpl implements CategoryService {
         final Category category = findCategory(request.getRoot());
         final Book book = findBook(request.getBookKey());
 
-        final Subcategory subCategory = categoryRepository.findCustomTarget(category, book, request.getName())
+        final Subcategory subCategory = categoryRepository.findCustomCategory(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
-        categoryRepository.findAllBookLineByCategory(subCategory)
+        categoryRepository.findAllBookLineBySubCategory(subCategory)
             .forEach((bookLine) -> {
                 // 예산, 자산, 이월 설정 관련 내역 모두 삭제
                 bookLineService.deleteLine(bookLine.getId());
@@ -75,15 +77,16 @@ public class CategoryServiceImpl implements CategoryService {
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
-    private Category findCategory(final String request) {
-        return categoryRepository.findParentCategory(request)
-            .orElseThrow(() -> new NotFoundCategoryException(request));
+    private Category findCategory(final String name) {
+        CategoryType categoryType = CategoryType.findByMeaning(name);
+        return categoryRepository.findLineCategory(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
     private void validateDifferentSubCategory(final Book book,
                                               final Category parent,
                                               final String name) {
-        categoryRepository.findCustomTarget(parent, book, name)
+        categoryRepository.findCustomCategory(parent, book, name)
             .ifPresent(subCategory -> {
                 throw new AlreadyExistException(subCategory.getName());
             });
