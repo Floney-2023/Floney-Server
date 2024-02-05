@@ -5,7 +5,10 @@ import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.common.util.Events;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -14,10 +17,8 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Builder
 @DynamicInsert
 @DynamicUpdate
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 
@@ -41,6 +42,25 @@ public class BookLine extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
+
+    @Builder
+    private BookLine(final BookUser writer,
+                     final Book book,
+                     final BookLineCategory categories,
+                     final Double money,
+                     final LocalDate lineDate,
+                     final String description,
+                     final Boolean exceptStatus) {
+        categories.setBookLine(this);
+
+        this.writer = writer;
+        this.book = book;
+        this.categories = categories;
+        this.money = money;
+        this.lineDate = lineDate;
+        this.description = description;
+        this.exceptStatus = exceptStatus;
+    }
 
     public void update(BookLineRequest request) {
         this.money = request.getMoney();

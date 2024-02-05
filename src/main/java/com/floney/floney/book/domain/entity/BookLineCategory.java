@@ -39,6 +39,10 @@ public class BookLineCategory extends BaseEntity {
             .build();
     }
 
+    public void setBookLine(final BookLine bookLine) {
+        this.bookLine = bookLine;
+    }
+
     public void updateLineSubCategory(final Subcategory lineSubcategory) {
         this.lineSubcategory = lineSubcategory;
     }
