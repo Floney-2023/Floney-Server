@@ -373,7 +373,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
-        return bookUserRepository.findBookUserByKey(userEmail, bookKey)
+        return bookUserRepository.findBookUserByEmailAndBookKey(userEmail, bookKey)
             .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
     }
 
