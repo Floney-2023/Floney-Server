@@ -8,10 +8,11 @@ import com.floney.floney.book.dto.request.CreateBookRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 
+import static com.floney.floney.fixture.UserFixture.DEFAULT_EMAIL;
+
 public class BookFixture {
 
     public static String NAME = "플로니";
-    public static String EMAIL = "floney@naver.com";
     public static String URL = "https://fileisHere.com";
     public static String UPDATE_URL = "https://fileisUpdate.com";
     public static String CODE = "code";
@@ -30,7 +31,7 @@ public class BookFixture {
             .name(NAME)
             .profileImg(URL)
             .bookKey(bookKey)
-            .owner(EMAIL)
+            .owner(DEFAULT_EMAIL)
             .code(CODE)
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
             .build();
@@ -45,7 +46,7 @@ public class BookFixture {
             .name(NAME)
             .profileImg(URL)
             .bookKey(BOOK_KEY)
-            .owner(EMAIL)
+            .owner(DEFAULT_EMAIL)
             .code(CODE)
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
             .build();
@@ -67,7 +68,7 @@ public class BookFixture {
             .name(NAME)
             .profileImg(URL)
             .bookKey(BOOK_KEY)
-            .owner(EMAIL)
+            .owner(DEFAULT_EMAIL)
             .code(code)
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
             .build();
@@ -84,7 +85,7 @@ public class BookFixture {
         return OurBookUser.builder()
             .name(NAME)
             .profileImg(URL)
-            .email(EMAIL)
+            .email(DEFAULT_EMAIL)
             .build();
     }
 
