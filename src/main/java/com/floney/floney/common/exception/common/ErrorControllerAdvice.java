@@ -243,6 +243,13 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(NotFoundParentCategoryException.class)
+    protected ResponseEntity<ErrorResponse> notFoundParentCategoryException(NotFoundParentCategoryException exception) {
+        logger.warn("[{}] {}", exception.getCategoryName(), exception.getErrorType().getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // SETTLEMENT
     @ExceptionHandler(SettlementNotFoundException.class)
     protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {
