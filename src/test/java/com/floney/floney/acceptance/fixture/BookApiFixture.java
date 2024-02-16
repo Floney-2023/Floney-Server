@@ -7,7 +7,10 @@ import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class BookApiFixture {
+public final class BookApiFixture {
+
+    private BookApiFixture() {
+    }
 
     public static CreateBookResponse createBook(final String accessToken) {
         final CreateBookRequest request = CreateBookRequest.builder()
