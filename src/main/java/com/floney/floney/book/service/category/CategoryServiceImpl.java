@@ -36,40 +36,40 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookLineCategoryRepository bookLineCategoryRepository;
 
     @Override
-    public CreateCategoryResponse createUserCategory(final CreateCategoryRequest request) {
+    public CreateCategoryResponse createSubcategory(final String bookKey, final CreateCategoryRequest request) {
         final Category category = findCategory(request.getParent());
-        final Book book = findBook(request.getBookKey());
+        final Book book = findBook(bookKey);
 
-        validateDifferentSubCategory(book, category, request.getName());
+        validateDifferentSubcategory(book, category, request.getName());
 
-        final Subcategory subCategory = Subcategory.of(category, book, request.getName());
-        subcategoryRepository.save(subCategory);
+        final Subcategory subcategory = Subcategory.of(category, book, request.getName());
+        subcategoryRepository.save(subcategory);
 
-        return CreateCategoryResponse.of(subCategory);
+        return CreateCategoryResponse.of(subcategory);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllBy(final String categoryName, final String bookKey) {
+    public List<CategoryInfo> findAllSubcategoriesByCategory(final String bookKey, final String categoryName) {
         final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
         return categoryRepository.findAllSubCategoryInfoByParent(categoryType, bookKey);
     }
 
     @Override
-    public void deleteCustomCategory(final DeleteCategoryRequest request) {
-        final Category category = findCategory(request.getRoot());
-        final Book book = findBook(request.getBookKey());
+    public void deleteSubcategory(final String bookKey, final DeleteCategoryRequest request) {
+        final Category category = findCategory(request.getParent());
+        final Book book = findBook(bookKey);
 
-        final Subcategory subCategory = categoryRepository.findCustomCategory(category, book, request.getName())
+        final Subcategory subcategory = categoryRepository.findCustomCategory(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
-        categoryRepository.findAllBookLineBySubCategory(subCategory)
+        categoryRepository.findAllBookLineBySubCategory(subcategory)
             .forEach((bookLine) -> {
                 // 예산, 자산, 이월 설정 관련 내역 모두 삭제
                 bookLineService.deleteLine(bookLine.getId());
             });
 
-        subCategory.inactive();
+        subcategory.inactive();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
             .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
-    private void validateDifferentSubCategory(final Book book,
+    private void validateDifferentSubcategory(final Book book,
                                               final Category parent,
                                               final String name) {
         categoryRepository.findCustomCategory(parent, book, name)

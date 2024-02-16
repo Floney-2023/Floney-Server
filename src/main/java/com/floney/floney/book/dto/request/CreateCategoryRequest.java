@@ -10,7 +10,6 @@ import lombok.*;
 public class CreateCategoryRequest {
 
     // TODO: validation 추가
-    private String bookKey;
     private String parent;
     private String name;
 }

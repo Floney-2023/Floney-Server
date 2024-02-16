@@ -9,7 +9,6 @@ import lombok.*;
 public class DeleteCategoryRequest {
 
     // TODO: validation 추가
-    private String bookKey;
-    private String root;
+    private String parent;
     private String name;
 }
