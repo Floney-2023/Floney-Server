@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
+import com.floney.floney.book.dto.request.CarryOverRequest;
 import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.common.dto.Token;
@@ -174,7 +175,45 @@ public class BookAcceptanceTest {
 
     }
 
-    // TODO 이월 내역 설정 변경
+    @Nested
+    @DisplayName("이월 내역 설정을 변경할 때")
+    class Describe_ChangeCarryOver {
+
+        @Nested
+        @DisplayName("가계부가 존재할 경우")
+        class Context_With_BookExists {
+
+            final User user = UserFixture.emailUser();
+
+            Token token;
+            String bookKey;
+
+            @BeforeEach
+            public void init() {
+                token = UserApiFixture.loginAfterSignup(user);
+                bookKey = BookApiFixture.createBook(token.getAccessToken()).getBookKey();
+            }
+
+            @Test
+            @DisplayName("성공한다.")
+            void it_succeeds() {
+                final CarryOverRequest request = new CarryOverRequest(
+                        Boolean.FALSE,
+                        bookKey
+                );
+
+                RestAssured
+                        .given()
+                        .auth().oauth2(token.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body(request)
+                        .when().post("/books/info/carryOver")
+                        .then()
+                        .statusCode(HttpStatus.OK.value());
+            }
+        }
+
+    }
 
     // TODO 예산 변경
 
