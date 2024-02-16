@@ -9,6 +9,7 @@ import com.floney.floney.book.dto.request.CarryOverRequest;
 import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.common.ErrorResponse;
 import com.floney.floney.fixture.BookFixture;
@@ -295,7 +296,77 @@ public class BookAcceptanceTest {
 
     }
 
-    // TODO 유저 가계부 유효 확인
+    @Nested
+    @DisplayName("유저 가계부 유효 확인할 때")
+    class Describe_FindInvolveBook {
+
+        @Nested
+        @DisplayName("유저가 참여하는 가계부가 존재할 경우")
+        class Context_With_InvolveBookExists {
+
+            final User user = UserFixture.emailUser();
+
+            Token token;
+            String lastAccessedBookKey;
+
+            @BeforeEach
+            public void init() {
+                token = UserApiFixture.loginAfterSignup(user);
+                BookApiFixture.createBook(token.getAccessToken());
+                lastAccessedBookKey = BookApiFixture.createBook(token.getAccessToken()).getBookKey();
+            }
+
+            @Test
+            @DisplayName("유저가 가장 최근에 접근한 가계부의 식별 키를 응답한다.")
+            void it_responses_bookKey() {
+
+                InvolveBookResponse response = RestAssured
+                        .given()
+                        .auth().oauth2(token.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/books/users/check")
+                        .then()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract().as(InvolveBookResponse.class);
+
+                assertThat(response)
+                        .hasFieldOrPropertyWithValue("bookKey", lastAccessedBookKey);
+
+            }
+        }
+
+        @Nested
+        @DisplayName("유저가 참여하는 가계부가 존재하지 않을 경우")
+        class Context_With_InvolveBookNotExists {
+
+            final User user = UserFixture.emailUser();
+
+            Token token;
+
+            @BeforeEach
+            public void init() {
+                token = UserApiFixture.loginAfterSignup(user);
+            }
+
+            @Test
+            @DisplayName("null을 응답한다.")
+            void it_responses_null() {
+
+                InvolveBookResponse response = RestAssured
+                        .given()
+                        .auth().oauth2(token.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/books/users/check")
+                        .then()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract().as(InvolveBookResponse.class);
+
+                assertThat(response)
+                        .hasFieldOrPropertyWithValue("bookKey", null);
+            }
+        }
+
+    }
 
     // TODO 가계부의 모든 유저들 조회
 }
