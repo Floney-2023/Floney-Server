@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
+import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.common.ErrorResponse;
@@ -100,7 +101,78 @@ public class BookAcceptanceTest {
 
     }
 
-    // TODO 내역 조회 시 유저 이미지 공개 여부 변경
+    @Nested
+    @DisplayName("유저 이미지 공개 여부를 변경할 때")
+    class Describe_ChangeSeeProfile {
+
+        @Nested
+        @DisplayName("가계부가 존재할 경우")
+        class Context_With_BookExists {
+
+            final User user = UserFixture.emailUser();
+
+            Token token;
+            String bookKey;
+
+            @BeforeEach
+            public void init() {
+                token = UserApiFixture.loginAfterSignup(user);
+                bookKey = BookApiFixture.createBook(token.getAccessToken()).getBookKey();
+            }
+
+            @Test
+            @DisplayName("성공한다.")
+            void it_succeeds() {
+                final SeeProfileRequest request =
+                        new SeeProfileRequest(bookKey, Boolean.FALSE);
+
+                RestAssured
+                        .given()
+                        .auth().oauth2(token.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body(request)
+                        .when().post("/books/info/seeProfile")
+                        .then()
+                        .statusCode(HttpStatus.OK.value());
+            }
+        }
+
+        @Nested
+        @DisplayName("가계부가 존재하지 않을 경우")
+        class Context_With_NoBook {
+
+            final User user = UserFixture.emailUser();
+
+            Token token;
+
+            @BeforeEach
+            public void init() {
+                token = UserApiFixture.loginAfterSignup(user);
+            }
+
+            @Test
+            @DisplayName("에러를 반환한다.")
+            void it_returns_error() {
+                final SeeProfileRequest request =
+                        new SeeProfileRequest("invalid-key", Boolean.FALSE);
+
+                final ErrorResponse response = RestAssured
+                        .given()
+                        .auth().oauth2(token.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body(request)
+                        .when().post("/books/info/seeProfile")
+                        .then()
+                        .statusCode(HttpStatus.NOT_FOUND.value())
+                        .extract().as(ErrorResponse.class);
+
+                assertThat(response)
+                        .hasFieldOrPropertyWithValue("code", "B001")
+                        .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
+            }
+        }
+
+    }
 
     // TODO 이월 내역 설정 변경
 
