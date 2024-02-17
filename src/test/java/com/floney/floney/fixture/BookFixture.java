@@ -23,83 +23,84 @@ public class BookFixture {
 
     public static CreateBookRequest createBookRequest() {
         return CreateBookRequest.builder()
-                .name(NAME)
-                .profileImg(URL)
-                .build();
+            .name(NAME)
+            .profileImg(URL)
+            .build();
     }
 
     public static Book createBookWith(String bookKey) {
         return Book.builder()
-                .name(NAME)
-                .profileImg(URL)
-                .bookKey(bookKey)
-                .owner(EMAIL)
-                .code(CODE)
-                .userCapacity(BookUserCapacity.DEFAULT.getValue())
-                .build();
+            .name(NAME)
+            .profileImg(URL)
+            .bookKey(bookKey)
+            .owner(EMAIL)
+            .code(CODE)
+            .userCapacity(BookUserCapacity.DEFAULT.getValue())
+            .build();
     }
 
     public static CodeJoinRequest codeJoinRequest() {
         return new CodeJoinRequest(CODE);
     }
 
+
     public static Book createBook() {
         return Book.builder()
-                .name(NAME)
-                .profileImg(URL)
-                .bookKey(BOOK_KEY)
-                .owner(EMAIL)
-                .code(CODE)
-                .userCapacity(BookUserCapacity.DEFAULT.getValue())
-                .build();
+            .name(NAME)
+            .profileImg(URL)
+            .bookKey(BOOK_KEY)
+            .owner(EMAIL)
+            .code(CODE)
+            .userCapacity(BookUserCapacity.DEFAULT.getValue())
+            .build();
     }
 
     public static Book createBookWithOwner(final String owner) {
         return Book.builder()
-                .name(NAME)
-                .profileImg(URL)
-                .bookKey(BOOK_KEY)
-                .owner(owner)
-                .code(CODE)
-                .userCapacity(BookUserCapacity.DEFAULT.getValue())
-                .build();
+            .name(NAME)
+            .profileImg(URL)
+            .bookKey(BOOK_KEY)
+            .owner(owner)
+            .code(CODE)
+            .userCapacity(BookUserCapacity.DEFAULT.getValue())
+            .build();
     }
 
     public static CreateBookResponse bookResponse() {
         return CreateBookResponse.builder()
-                .bookKey(BOOK_KEY)
-                .code(CODE)
-                .build();
+            .bookKey(BOOK_KEY)
+            .code(CODE)
+            .build();
     }
 
     public static MyBookInfo myBookInfo() {
         return MyBookInfo.builder()
-                .name(NAME)
-                .bookImg(URL)
-                .memberCount(1L)
-                .build();
+            .name(NAME)
+            .bookImg(URL)
+            .memberCount(1L)
+            .build();
     }
 
     public static BookUser createBookUser(User user, Book book) {
         return BookUser.builder()
-                .book(book)
-                .user(user)
-                .build();
+            .book(book)
+            .user(user)
+            .build();
     }
 
     public static OurBookUser createOurBookUser() {
         return OurBookUser.builder()
-                .name(NAME)
-                .profileImg(URL)
-                .email(EMAIL)
-                .build();
+            .name(NAME)
+            .profileImg(URL)
+            .email(EMAIL)
+            .build();
     }
 
     public static UpdateBookImgRequest updateBookImgRequest() {
         return UpdateBookImgRequest.builder()
-                .bookKey(BOOK_KEY)
-                .newUrl(UPDATE_URL)
-                .build();
+            .bookKey(BOOK_KEY)
+            .newUrl(UPDATE_URL)
+            .build();
     }
 
 }
