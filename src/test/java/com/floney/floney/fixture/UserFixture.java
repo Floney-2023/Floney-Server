@@ -1,46 +1,47 @@
 package com.floney.floney.fixture;
 
-import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.entity.User;
 
 import java.time.LocalDateTime;
 
-import static com.floney.floney.fixture.BookFixture.EMAIL;
+import static com.floney.floney.user.dto.constant.Provider.EMAIL;
+import static com.floney.floney.user.dto.constant.Provider.KAKAO;
 
 public class UserFixture {
 
+    public static final String DEFAULT_EMAIL = "floney@email.com";
+    public static final String DEFAULT_PASSWORD = "password";
+    public static final String DEFAULT_NICKNAME = "nickname";
+
     public static User emailUser() {
         return User.builder()
-            .nickname("floney")
-            .email(EMAIL)
-            .password("password")
-            .profileImg("user_default")
-            .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-            .provider(Provider.EMAIL)
+            .nickname(DEFAULT_NICKNAME)
+            .email(DEFAULT_EMAIL)
+            .password(DEFAULT_PASSWORD)
+            .lastAdTime(LocalDateTime.now())
+            .provider(EMAIL)
             .receiveMarketing(true)
             .build();
     }
 
     public static User emailUserWithEmail(final String email) {
         return User.builder()
-            .nickname("floney")
+            .nickname(DEFAULT_NICKNAME)
             .email(email)
-            .password("password")
-            .profileImg("user_default")
+            .password(DEFAULT_PASSWORD)
             .lastAdTime(LocalDateTime.now())
-            .provider(Provider.EMAIL)
+            .provider(EMAIL)
             .receiveMarketing(true)
             .build();
     }
 
     public static User kakaoUser() {
         return User.builder()
-            .nickname("floney")
-            .email("floney2@naver.com")
-            .password("password")
-            .profileImg("user_default")
-            .lastAdTime(LocalDateTime.of(2023, 4, 15, 12, 30, 45))
-            .provider(Provider.KAKAO)
+            .nickname(DEFAULT_NICKNAME)
+            .email("kakao@email.com")
+            .password(DEFAULT_PASSWORD)
+            .lastAdTime(LocalDateTime.now())
+            .provider(KAKAO)
             .receiveMarketing(false)
             .build();
     }

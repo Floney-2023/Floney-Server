@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.category;
 
+import com.floney.floney.common.exception.book.NotFoundParentCategoryException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public enum CategoryType {
         return Arrays.stream(CategoryType.values())
             .filter(categoryType -> categoryType.meaning.equals(meaning))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(() -> new NotFoundParentCategoryException(meaning));
     }
 
     public static CategoryType findLineByMeaning(final String meaning) {
@@ -33,7 +34,7 @@ public enum CategoryType {
             .filter(categoryType -> categoryType.meaning.equals(meaning))
             .filter(categoryType -> !CategoryType.ASSET.equals(categoryType))
             .findFirst()
-            .orElseThrow();
+            .orElseThrow(() -> new NotFoundParentCategoryException(meaning));
     }
 
     public static boolean isLine(final CategoryType categoryType) {

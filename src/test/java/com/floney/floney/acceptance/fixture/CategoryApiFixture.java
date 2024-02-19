@@ -1,28 +1,33 @@
 package com.floney.floney.acceptance.fixture;
 
-import com.floney.floney.book.dto.request.CreateCategoryRequest;
-import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class CategoryApiFixture {
+import static org.hamcrest.Matchers.is;
 
-    public static CreateCategoryResponse createSubCategory(final String accessToken, final String bookKey, final String lineCategoryName, final String subCategoryName) {
-        final CreateCategoryRequest request = CreateCategoryRequest.builder()
-            .bookKey(bookKey)
-            .parent(lineCategoryName)
-            .name(subCategoryName)
-            .build();
+public final class CategoryApiFixture {
 
-        return RestAssured
-            .given()
-            .auth().oauth2(accessToken)
+    private CategoryApiFixture() {
+    }
+
+    public static void createSubcategory(final String accessToken,
+                                         final String bookKey,
+                                         final String parentName,
+                                         final String name) {
+        RestAssured.given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
-            .when().post("/books/categories")
+            .auth().oauth2(accessToken)
+            .body("""
+                {
+                    "parent": "%s",
+                    "name": "%s"
+                }
+                """.formatted(parentName, name))
+            .when()
+            .post("/books/{key}/categories", bookKey)
             .then()
             .statusCode(HttpStatus.CREATED.value())
-            .extract().as(CreateCategoryResponse.class);
+            .body("name", is(name));
     }
 }

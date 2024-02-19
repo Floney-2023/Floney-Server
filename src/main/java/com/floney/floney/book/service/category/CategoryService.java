@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface CategoryService {
 
-    CreateCategoryResponse createUserCategory(CreateCategoryRequest request);
+    CreateCategoryResponse createSubcategory(String bookKey, CreateCategoryRequest request);
 
-    List<CategoryInfo> findAllBy(String root, String bookKey);
+    List<CategoryInfo> findAllSubcategoriesByCategory(String bookKey, String root);
 
-    void deleteCustomCategory(DeleteCategoryRequest request);
+    void deleteSubcategory(String bookKey, DeleteCategoryRequest request);
 
     void deleteAllBookLineCategory(long bookLineId);
 }

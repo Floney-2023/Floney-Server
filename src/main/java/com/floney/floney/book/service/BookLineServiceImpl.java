@@ -209,7 +209,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
-        return bookUserRepository.findBookUserByKey(currentUser, request.getBookKey())
+        return bookUserRepository.findBookUserByEmailAndBookKey(currentUser, request.getBookKey())
             .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 

@@ -68,22 +68,22 @@ class CategoryCustomRepositoryTest {
     }
 
     private Subcategory incomeSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, incomeLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubcategory(book, incomeLineCategory, name);
         return subcategoryRepository.save(subCategoryForIncome1);
     }
 
     private void outcomeSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, outcomeLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubcategory(book, outcomeLineCategory, name);
         subcategoryRepository.save(subCategoryForIncome1);
     }
 
     private Subcategory assetSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, assetLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubcategory(book, assetLineCategory, name);
         return subcategoryRepository.save(subCategoryForIncome1);
     }
 
     private void transferSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubCategory(book, transferLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubCategoryFixture.createSubcategory(book, transferLineCategory, name);
         subcategoryRepository.save(subCategoryForIncome1);
     }
 
@@ -99,7 +99,7 @@ class CategoryCustomRepositoryTest {
             @BeforeEach
             void init() {
                 incomeSubCategory(incomeSubCategoryName1);
-                Subcategory subCategoryForIncome2 = SubCategoryFixture.createSubCategory(book, incomeLineCategory, incomeSubCategoryName2);
+                Subcategory subCategoryForIncome2 = SubCategoryFixture.createSubcategory(book, incomeLineCategory, incomeSubCategoryName2);
                 subcategoryRepository.save(subCategoryForIncome2);
             }
 
@@ -124,7 +124,7 @@ class CategoryCustomRepositoryTest {
             @BeforeEach
             void save_sub_category() {
                 outcomeSubCategory(outcomeSubCategoryName1);
-                Subcategory subCategoryForOutcome2 = SubCategoryFixture.createSubCategory(book, outcomeLineCategory, outcomeSubCategoryName2);
+                Subcategory subCategoryForOutcome2 = SubCategoryFixture.createSubcategory(book, outcomeLineCategory, outcomeSubCategoryName2);
                 subcategoryRepository.save(subCategoryForOutcome2);
 
             }
@@ -149,8 +149,8 @@ class CategoryCustomRepositoryTest {
 
             @BeforeEach
             void save_sub_category() {
-                Subcategory subCategoryForAsset1 = SubCategoryFixture.createSubCategory(book, assetLineCategory, assetSubCategoryName1);
-                Subcategory subCategoryForAsset2 = SubCategoryFixture.createSubCategory(book, assetLineCategory, assetSubCategoryName2);
+                Subcategory subCategoryForAsset1 = SubCategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName1);
+                Subcategory subCategoryForAsset2 = SubCategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName2);
 
                 subcategoryRepository.save(subCategoryForAsset1);
                 subcategoryRepository.save(subCategoryForAsset2);
@@ -427,7 +427,7 @@ class CategoryCustomRepositoryTest {
 
             @BeforeEach
             void custom_category() {
-                Subcategory customCategory = SubCategoryFixture.createSubCategory(book, assetLineCategory, customCategoryName);
+                Subcategory customCategory = SubCategoryFixture.createSubcategory(book, assetLineCategory, customCategoryName);
                 subcategoryRepository.save(customCategory);
             }
 
@@ -470,7 +470,7 @@ class CategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("inactiveAllByBook 메서드에서")
+    @DisplayName("inactiveAllBy 메서드에서")
     class Describe_InactiveAllByBook {
         @Nested
         @DisplayName("가계부와 연결된 모든 자식 카테고리를 삭제하면")
@@ -486,8 +486,5 @@ class CategoryCustomRepositoryTest {
                 Assertions.assertThat(categoryRepository.findAllSubCategoryByLineCategory(assetLineCategory, book.getBookKey())).isEmpty();
             }
         }
-
-
     }
-
 }

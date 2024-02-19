@@ -28,7 +28,7 @@ public interface BookLineCustomRepository {
 
     List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(String bookKey, DateDuration dates);
 
-    void inactiveAllBy(String bookKey);
+    void inactiveAllBy(Book book);
 
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 

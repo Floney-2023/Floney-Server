@@ -1,6 +1,5 @@
 -- 기존 데이터를 새 테이블로 마이그레이션
 -- 기존 카테고리의 DefaultRoot
-begin;
 INSERT INTO `category`(name)
 VALUES ('INCOME');
 INSERT INTO `category`(name)
@@ -128,7 +127,6 @@ INSERT INTO `book_line_category`(book_line_id,
        AND old_assetsub.dtype = 'BookCategory'
        AND old_assetsub.parent_id = 4
        AND oblc_asset.status = 'ACTIVE');
-commit;
 
 -- 기존 테이블 삭제
 DROP TABLE `old_category`;

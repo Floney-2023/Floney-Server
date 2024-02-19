@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.fixture.BookFixture.EMAIL;
 
 @QueryDslTest
 public class UserRepositoryTest {
@@ -24,9 +23,9 @@ public class UserRepositoryTest {
         userRepository.save(UserFixture.emailUser());
 
         // when
-        User user = userRepository.findByEmailAndStatus(EMAIL, ACTIVE).orElseThrow();
+        User user = userRepository.findByEmailAndStatus(UserFixture.DEFAULT_EMAIL, ACTIVE).orElseThrow();
 
         // then
-        Assertions.assertThat(user.getEmail()).isEqualTo(EMAIL);
+        Assertions.assertThat(user.getEmail()).isEqualTo(UserFixture.DEFAULT_EMAIL);
     }
 }

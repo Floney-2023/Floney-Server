@@ -26,7 +26,7 @@ public class BudgetCustomRepositoryImpl implements BudgetCustomRepository {
 
     @Override
     @Transactional
-    public void inactiveAllByBook(final Book book) {
+    public void inactiveAllBy(final Book book) {
         jpaQueryFactory.update(budget)
             .set(budget.status, INACTIVE)
             .set(budget.updatedAt, LocalDateTime.now())

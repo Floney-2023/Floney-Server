@@ -6,7 +6,7 @@ import com.floney.floney.book.domain.entity.Book;
 
 public class SubCategoryFixture {
 
-    public static Subcategory createSubCategory(Book book, Category parent, String name) {
+    public static Subcategory createSubcategory(Book book, Category parent, String name) {
         return Subcategory.builder()
             .book(book)
             .parent(parent)
