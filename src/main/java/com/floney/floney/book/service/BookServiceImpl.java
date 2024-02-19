@@ -63,9 +63,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse addBook(User user, CreateBookRequest request) {
+    public CreateBookResponse createBook(final User user, final CreateBookRequest request) {
         validateJoinByBookCapacity(user);
-        return createBook(user, request);
+
+        final Book book = request.to(user.getEmail());
+        bookRepository.save(book);
+        saveDefaultBookKey(user, book);
+        saveDefaultCategories(book);
+
+        bookUserRepository.save(BookUser.of(user, book));
+        return CreateBookResponse.of(book);
     }
 
     @Override
@@ -331,17 +338,6 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.findAllByBookUser(bookUser)
             .forEach(BookLine::inactive);
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
-    }
-
-    private CreateBookResponse createBook(final User user, final CreateBookRequest request) {
-        final Book book = request.to(user.getEmail());
-        bookRepository.save(book);
-
-        saveDefaultBookKey(user, book);
-        saveDefaultCategories(book);
-
-        bookUserRepository.save(BookUser.of(user, book));
-        return CreateBookResponse.of(book);
     }
 
     private void saveDefaultCategories(final Book book) {

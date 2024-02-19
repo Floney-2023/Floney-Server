@@ -54,37 +54,37 @@ public class BookServiceTest {
         User testUser = UserFixture.emailUser();
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(CODE, ACTIVE))
-                .willReturn(Optional.ofNullable(testBook));
+            .willReturn(Optional.ofNullable(testBook));
 
         given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
-                .willReturn(Optional.empty());
+            .willReturn(Optional.empty());
 
         given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
         assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
-                .isEqualTo(bookResponse().getCode());
+            .isEqualTo(bookResponse().getCode());
     }
 
     @Test
     @DisplayName("참여한 가계부가 2개 이상이면 가계부를 만들 수 없다")
     void default_book_create_exception() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(2);
+            .willReturn(2);
 
-        assertThatThrownBy(() -> bookService.addBook(UserFixture.emailUser(), createBookRequest()))
-                .isInstanceOf(LimitRequestException.class);
+        assertThatThrownBy(() -> bookService.createBook(UserFixture.emailUser(), createBookRequest()))
+            .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
     @DisplayName("참여한 가계부가 2개 미만이면 가계부를 만든다")
     void default_book_create() {
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(1);
+            .willReturn(1);
         given(bookRepository.save(any(Book.class)))
-                .willReturn(BookFixture.createBook());
+            .willReturn(BookFixture.createBook());
 
-        Assertions.assertThat(bookService.addBook(UserFixture.emailUser(), createBookRequest()).getClass())
-                .isEqualTo(CreateBookResponse.class);
+        Assertions.assertThat(bookService.createBook(UserFixture.emailUser(), createBookRequest()).getClass())
+            .isEqualTo(CreateBookResponse.class);
     }
 
     @Test
@@ -92,16 +92,16 @@ public class BookServiceTest {
     void default_book_join_limitRequestException() {
         // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(BookCapacity.DEFAULT.getValue());
+            .willReturn(BookCapacity.DEFAULT.getValue());
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(Optional.ofNullable(createBook()));
+            .willReturn(Optional.ofNullable(createBook()));
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
 
         // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(LimitRequestException.class);
+            .isInstanceOf(LimitRequestException.class);
     }
 
     @Test
@@ -109,19 +109,19 @@ public class BookServiceTest {
     void default_book_join_maxMemberException() {
         // given
         given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(0);
+            .willReturn(0);
 
         given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(Optional.ofNullable(createBook()));
+            .willReturn(Optional.ofNullable(createBook()));
 
         given(bookUserRepository.countByBookExclusively(any(Book.class)))
-                .willReturn(BookUserCapacity.DEFAULT.getValue());
+            .willReturn(BookUserCapacity.DEFAULT.getValue());
 
         CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
 
         // when & then
         assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(MaxMemberException.class);
+            .isInstanceOf(MaxMemberException.class);
     }
 
     @Test

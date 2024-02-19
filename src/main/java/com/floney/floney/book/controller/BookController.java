@@ -29,7 +29,7 @@ public class BookController {
     @PostMapping
     public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.addBook(userDetails.getUser(), request), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(userDetails.getUser(), request), HttpStatus.CREATED);
     }
 
     /**
