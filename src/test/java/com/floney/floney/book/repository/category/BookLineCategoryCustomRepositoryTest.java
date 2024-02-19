@@ -28,6 +28,7 @@ import static com.floney.floney.book.domain.category.CategoryType.ASSET;
 import static com.floney.floney.book.domain.category.CategoryType.INCOME;
 
 @QueryDslTest
+@DisplayName("단위 테스트 : BookLineCategoryCustomRepository")
 class BookLineCategoryCustomRepositoryTest {
 
 
@@ -121,82 +122,78 @@ class BookLineCategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("inactiveAllByBookKey 메서드에서")
+    @DisplayName("inactiveAllByBookKey() 를 실행할 때")
     class Describe_InactiveAllByBookKey {
 
         @Nested
-        @DisplayName("하나의 가계부에 다수의 bookLineCategory 주어지고")
-        class bookLine {
-            @Nested
-            @DisplayName("가계부키로 모든 bookLineCategory를 비활성화 시키면")
-            class inactive {
-                @BeforeEach
-                void inactive_all() {
-                    bookLineCategoryRepository.inactiveAllByBookKey(book.getBookKey());
-                }
+        @DisplayName("가계부에 존재하는 모든 bookLineCategory를 비활성화 시키면")
+        class Context_With_InactiveAllBookLineCategory {
+            @BeforeEach
+            void init() {
+                bookLineCategoryRepository.inactiveAllByBookKey(book.getBookKey());
+            }
 
-                @Test
-                @DisplayName("가계부의 모든 bookLineCategory를 찾을 수 없다")
-                void assert_empty() {
-                    assertFindBookLineCategoryIsEmpty();
-                }
+            @Test
+            @DisplayName("가계부의 모든 bookLineCategory를 찾을 수 없다")
+            void it_assert_book_line_category_is_empty() {
+                assertFindBookLineCategoryIsEmpty();
             }
         }
     }
 
     @Nested
-    @DisplayName("inactiveAllByBookLineId 메서드에서")
+    @DisplayName("inactiveAllByBookLineId() 를 실행할 때")
     class Describe_InactiveAllByBookLineId {
         @Nested
         @DisplayName("가계부 내역 Id로 bookLineCategory를 비활성화 시키면")
-        class inactive {
+        class Context_With_InactiveAll {
             @BeforeEach
-            void inactive_all() {
+            void init() {
                 bookLineCategoryRepository.inactiveAllByBookLineId(bookLine1.getId());
                 bookLineCategoryRepository.inactiveAllByBookLineId(bookLine2.getId());
             }
 
             @Test
             @DisplayName("가계부 내역 Id로 bookLineCategory를 찾을 수 없다")
-            void assert_empty() {
+            void it_assert_book_line_category_empty() {
                 assertFindBookLineCategoryIsEmpty();
             }
         }
     }
 
     @Nested
-    @DisplayName("inactiveAllByBookUser 메서드에서")
+    @DisplayName("inactiveAllByBookUser()를 실행할 때")
     class Describe_InactiveAllByBookUser {
         @Nested
         @DisplayName("BookUser와 연결된 bookLineCategory를 모두 비활성화 시키면")
-        class inactive {
+        class Context_With_InactiveAllByUser {
             @BeforeEach
-            void inactive_all() {
+            void init() {
                 bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
             }
 
             @Test
             @DisplayName("bookLineCategory를 찾을 수 없다")
-            void assert_empty() {
+            void it_assert_book_line_category_empty() {
                 assertFindBookLineCategoryIsEmpty();
             }
         }
     }
 
     @Nested
-    @DisplayName("inactiveAllByBook 메서드에서")
+    @DisplayName("inactiveAllByBook()를 실행할 때")
     class Describe_InactiveAllByBook {
         @Nested
         @DisplayName("book과 연관된 bookLineCategory를 모두 비활성화 시키면")
         class inactive {
             @BeforeEach
-            void inactive_all() {
+            void init() {
                 bookLineCategoryRepository.inactiveAllByBook(book);
             }
 
             @Test
             @DisplayName("bookLineCategory를 찾을 수 없다")
-            void find_none() {
+            void it_assert_book_line_category_empty() {
                 assertFindBookLineCategoryIsEmpty();
             }
         }
