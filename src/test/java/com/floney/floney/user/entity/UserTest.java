@@ -2,10 +2,16 @@ package com.floney.floney.user.entity;
 
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.dto.constant.Provider;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+
+import static com.floney.floney.common.constant.Status.INACTIVE;
+import static com.floney.floney.user.entity.User.DELETE_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -202,5 +208,40 @@ class UserTest {
                     .isInstanceOf(RuntimeException.class);
             }
         }
+    }
+
+    @Nested
+    @DisplayName("singout()를 실행할 때")
+    class sign_out {
+        private User user;
+
+        @BeforeEach()
+        @DisplayName("user가 존재한다면")
+        void init() throws NoSuchFieldException, IllegalAccessException {
+            user = UserFixture.emailUser();
+            Field idField = user.getClass().getSuperclass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(user, 1L);
+        }
+
+        @Test
+        @DisplayName("개인정보가 마스킹 된다")
+        void sign_out() throws NoSuchFieldException, IllegalAccessException {
+            user.signout();
+            Assertions.assertThat(user.getEmail()).isEqualTo(DELETE_VALUE);
+            Assertions.assertThat(user.getPassword()).isEqualTo(DELETE_VALUE);
+            Assertions.assertThat(user.getNickname()).isEqualTo(DELETE_VALUE);
+            Assertions.assertThat(user.getProfileImg()).isEqualTo(null);
+            Assertions.assertThat(user.getProviderId()).isEqualTo(null);
+            Assertions.assertThat(user.getRecentBookKey()).isEqualTo(null);
+        }
+
+        @Test
+        @DisplayName("논리 삭제된다")
+        void inactive() throws NoSuchFieldException, IllegalAccessException {
+            user.signout();
+            Assertions.assertThat(user.getStatus()).isEqualTo(INACTIVE);
+        }
+
     }
 }
