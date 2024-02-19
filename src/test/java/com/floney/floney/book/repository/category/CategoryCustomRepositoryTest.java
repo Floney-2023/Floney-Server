@@ -31,6 +31,7 @@ import java.util.Optional;
 import static com.floney.floney.book.domain.category.CategoryType.*;
 
 @QueryDslTest
+@DisplayName("단위테스트 : CategoryCustomRepository")
 class CategoryCustomRepositoryTest {
 
     @Autowired
@@ -87,16 +88,16 @@ class CategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findAllSubCategoryByCategoryType 메서드에서")
+    @DisplayName("findAllSubCategoryByCategoryType()를 실행할 때")
     class Describe_FindAllSubCategoryType {
         @Nested
         @DisplayName("INCOME이 부모인 SubCategory가 주어진다면")
-        class income {
+        class Context_With_Income {
             private static final String incomeSubCategoryName1 = "급여";
             private static final String incomeSubCategoryName2 = "용돈";
 
             @BeforeEach
-            void save_income_sub_category() {
+            void init() {
                 incomeSubCategory(incomeSubCategoryName1);
                 Subcategory subCategoryForIncome2 = SubCategoryFixture.createSubCategory(book, incomeLineCategory, incomeSubCategoryName2);
                 subcategoryRepository.save(subCategoryForIncome2);
