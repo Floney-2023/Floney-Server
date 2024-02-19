@@ -58,6 +58,7 @@ public class BookLineServiceImpl implements BookLineService {
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
         final BookLine bookLine = request.to(bookUser, bookLineCategory);
+        bookLineCategory.bookLine(bookLine);
         bookLineRepository.save(bookLine);
 
         if (book.getCarryOverStatus()) {
@@ -152,7 +153,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
-        final String categoryName = request.getFlow();
+        final String categoryName = request.getFlow(); //LineType
         final Category lineCategory = findLineCategory(categoryName);
 
         final Subcategory lineSubcategory = findLineSubCategory(request.getLine(), lineCategory, book);
