@@ -212,35 +212,39 @@ class UserTest {
 
     @Nested
     @DisplayName("singout()를 실행할 때")
-    class sign_out {
+    class Describe_SignOut {
         private User user;
 
-        @BeforeEach()
-        @DisplayName("user가 존재한다면")
-        void init() throws NoSuchFieldException, IllegalAccessException {
-            user = UserFixture.emailUser();
-            Field idField = user.getClass().getSuperclass().getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(user, 1L);
-        }
+        @Nested()
+        @DisplayName("존재하는 user가 회원 탈퇴하면")
+        class Context_With_ExistUser {
+            @BeforeEach()
+            void init() throws NoSuchFieldException, IllegalAccessException {
+                user = UserFixture.emailUser();
+                Field idField = user.getClass().getSuperclass().getDeclaredField("id");
+                idField.setAccessible(true);
+                idField.set(user, 1L);
+                user.signout();
+            }
 
-        @Test
-        @DisplayName("개인정보가 마스킹 된다")
-        void sign_out() throws NoSuchFieldException, IllegalAccessException {
-            user.signout();
-            Assertions.assertThat(user.getEmail()).isEqualTo(DELETE_VALUE);
-            Assertions.assertThat(user.getPassword()).isEqualTo(DELETE_VALUE);
-            Assertions.assertThat(user.getNickname()).isEqualTo(DELETE_VALUE);
-            Assertions.assertThat(user.getProfileImg()).isEqualTo(null);
-            Assertions.assertThat(user.getProviderId()).isEqualTo(null);
-            Assertions.assertThat(user.getRecentBookKey()).isEqualTo(null);
-        }
+            @Test
+            @DisplayName("개인정보가 마스킹 된다")
+            void it_delete_info() throws NoSuchFieldException, IllegalAccessException {
 
-        @Test
-        @DisplayName("논리 삭제된다")
-        void inactive() throws NoSuchFieldException, IllegalAccessException {
-            user.signout();
-            Assertions.assertThat(user.getStatus()).isEqualTo(INACTIVE);
+                Assertions.assertThat(user.getEmail()).isEqualTo(DELETE_VALUE);
+                Assertions.assertThat(user.getPassword()).isEqualTo(DELETE_VALUE);
+                Assertions.assertThat(user.getNickname()).isEqualTo(DELETE_VALUE);
+                Assertions.assertThat(user.getProfileImg()).isEqualTo(null);
+                Assertions.assertThat(user.getProviderId()).isEqualTo(null);
+                Assertions.assertThat(user.getRecentBookKey()).isEqualTo(null);
+            }
+
+            @Test
+            @DisplayName("논리 삭제된다")
+            void it_make_user_inactive() throws NoSuchFieldException, IllegalAccessException {
+                user.signout();
+                Assertions.assertThat(user.getStatus()).isEqualTo(INACTIVE);
+            }
         }
 
     }

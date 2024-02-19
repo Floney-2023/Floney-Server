@@ -6,7 +6,6 @@ import com.floney.floney.acceptance.fixture.CategoryApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
 import com.floney.floney.book.domain.Currency;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
-import com.floney.floney.book.dto.process.DayLines;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -49,7 +48,6 @@ public class BookAcceptanceTest {
         class Context_With_ValidCreateBookRequest {
             final CreateBookRequest request = BookFixture.createBookRequest();
             final User user = UserFixture.emailUser();
-
             private String token;
 
             @BeforeEach
@@ -83,7 +81,6 @@ public class BookAcceptanceTest {
         class Context_With_MaximumJoin {
             final CreateBookRequest request = BookFixture.createBookRequest();
             final User user = UserFixture.emailUser();
-
             private String token;
 
             @BeforeEach
@@ -108,7 +105,6 @@ public class BookAcceptanceTest {
             }
         }
     }
-
 
     @Nested
     @DisplayName("joinWithCode()을 실행할 때")
@@ -207,7 +203,7 @@ public class BookAcceptanceTest {
     class Describe_ShowByMonth {
 
         @Nested
-        @DisplayName("해당 월에 가계부 내역이 작성된 경우")
+        @DisplayName("해당월에 가계부 내역이 작성된 경우")
         class Context_With_BookLineInMonth {
             final User user = UserFixture.emailUser();
             private String token;
@@ -251,7 +247,6 @@ public class BookAcceptanceTest {
             }
         }
     }
-
 
     @Nested
     @DisplayName("showByDays()을 실행할 때")
@@ -602,7 +597,7 @@ public class BookAcceptanceTest {
 
         @Nested
         @DisplayName("지출 내역이 존재하는 경우")
-        class Context_With_Existutcomes {
+        class Context_With_ExistOutcomes {
             private static final String outcomeLineCategory = "지출";
             private static final String subCategory = "식비";
             private static final String assetLineCategory = "자산";
@@ -633,7 +628,7 @@ public class BookAcceptanceTest {
             @Test
             @DisplayName("가계부의 모든 지출을 조회한다")
             public void it_returns_outcomes() {
-                List<DayLines> response = RestAssured
+                List response = RestAssured
                     .given()
                     .auth().oauth2(token)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -761,7 +756,6 @@ public class BookAcceptanceTest {
         class Context_With_ExistBook {
             final User user = UserFixture.emailUser();
             private String token;
-
             private String bookKey;
 
             @BeforeEach
@@ -795,7 +789,6 @@ public class BookAcceptanceTest {
         class Context_With_Exist_Book {
             final User user = UserFixture.emailUser();
             private String token;
-
             private String code;
 
             @BeforeEach
