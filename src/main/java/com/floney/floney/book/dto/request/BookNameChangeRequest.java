@@ -1,12 +1,11 @@
 package com.floney.floney.book.dto.request;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class BookNameChangeRequest {
     private String name;
     private String bookKey;

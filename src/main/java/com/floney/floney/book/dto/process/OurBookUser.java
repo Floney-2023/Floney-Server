@@ -3,18 +3,20 @@ package com.floney.floney.book.dto.process;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Getter
+@NoArgsConstructor
 public class OurBookUser {
 
     private static final String OWNER = "방장";
     private static final String MEMBER = "팀원";
 
-    private final String name;
-    private final String profileImg;
-    private final String email;
+    private String name;
+    private String profileImg;
+    private String email;
     private boolean isMe;
     private String role;
 
@@ -33,7 +35,6 @@ public class OurBookUser {
         this.email = email;
         this.role = role;
     }
-
 
     public void checkRole(String providerEmail) {
         if (Objects.equals(this.email, providerEmail)) {
