@@ -21,23 +21,23 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
     @Override
     @Transactional
-    public void inactiveAllByBook(Book book) {
+    public void inactiveAllBy(final Book book) {
         jpaQueryFactory.delete(asset)
-                .where(asset.book.eq(book))
-                .execute();
+            .where(asset.book.eq(book))
+            .execute();
     }
 
     @Override
     @Transactional
     public void subtractMoneyByDateAndBook(final double money, final LocalDate date, final Book book) {
         jpaQueryFactory.update(asset)
-                .set(asset.money, asset.money.subtract(money))
-                .set(asset.updatedAt, LocalDateTime.now())
-                .where(
-                        asset.book.eq(book),
-                        asset.date.eq(date),
-                        asset.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(asset.money, asset.money.subtract(money))
+            .set(asset.updatedAt, LocalDateTime.now())
+            .where(
+                asset.book.eq(book),
+                asset.date.eq(date),
+                asset.status.eq(ACTIVE)
+            )
+            .execute();
     }
 }

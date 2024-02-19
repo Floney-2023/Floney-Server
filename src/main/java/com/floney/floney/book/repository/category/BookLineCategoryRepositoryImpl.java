@@ -3,6 +3,7 @@ package com.floney.floney.book.repository.category;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.QBook;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
@@ -28,16 +28,21 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
 
     @Override
     @Transactional
-    public void inactiveAllByBookKey(final String bookKey) {
-        final JPQLQuery<BookLine> bookLineByBookKey = JPAExpressions.selectFrom(bookLine)
-            .innerJoin(bookLine.book, book)
-            .where(book.bookKey.eq(bookKey));
+    public void inactiveAllBy(final Book book) {
+        final JPQLQuery<BookLine> bookLineByBook = JPAExpressions.selectFrom(bookLine)
+            .innerJoin(bookLine.book, QBook.book)
+            .where(
+                QBook.book.eq(book)
+            )
+            .where(
+                bookLine.status.eq(ACTIVE)
+            );
 
         jpaQueryFactory.update(bookLineCategory)
             .set(bookLineCategory.status, INACTIVE)
             .set(bookLineCategory.updatedAt, LocalDateTime.now())
             .where(
-                bookLineCategory.bookLine.in(bookLineByBookKey),
+                bookLineCategory.bookLine.in(bookLineByBook),
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();
@@ -71,24 +76,6 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
             .set(bookLineCategory.updatedAt, LocalDateTime.now())
             .where(
                 bookLineCategory.bookLine.id.in(bookLineIdByBookUser),
-                bookLineCategory.status.eq(ACTIVE)
-            )
-            .execute();
-    }
-
-    @Override
-    @Transactional
-    public void inactiveAllByBook(final Book targetBook) {
-        final JPQLQuery<Long> bookLineIdByBook = JPAExpressions.select(bookLine.id)
-            .from(bookLine)
-            .leftJoin(bookLine.book, book)
-            .where(book.eq(targetBook));
-
-        jpaQueryFactory.update(bookLineCategory)
-            .set(bookLineCategory.status, INACTIVE)
-            .set(bookLineCategory.updatedAt, LocalDateTime.now())
-            .where(
-                bookLineCategory.bookLine.id.in(bookLineIdByBook),
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();

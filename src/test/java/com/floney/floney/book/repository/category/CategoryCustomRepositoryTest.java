@@ -469,7 +469,7 @@ class CategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("inactiveAllByBook 메서드에서")
+    @DisplayName("inactiveAllBy 메서드에서")
     class Describe_InactiveAllByBook {
         @Nested
         @DisplayName("가계부와 연결된 모든 자식 카테고리를 삭제하면")
@@ -485,8 +485,5 @@ class CategoryCustomRepositoryTest {
                 Assertions.assertThat(categoryRepository.findAllSubCategoryByLineCategory(assetLineCategory, book.getBookKey())).isEmpty();
             }
         }
-
-
     }
-
 }

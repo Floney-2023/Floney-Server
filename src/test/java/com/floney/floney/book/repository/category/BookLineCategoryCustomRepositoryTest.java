@@ -121,7 +121,7 @@ class BookLineCategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("inactiveAllByBookKey 메서드에서")
+    @DisplayName("inactiveAllBy 메서드에서")
     class Describe_InactiveAllByBookKey {
 
         @Nested
@@ -132,7 +132,7 @@ class BookLineCategoryCustomRepositoryTest {
             class inactive {
                 @BeforeEach
                 void inactive_all() {
-                    bookLineCategoryRepository.inactiveAllByBookKey(book.getBookKey());
+                    bookLineCategoryRepository.inactiveAllBy(book);
                 }
 
                 @Test
@@ -184,14 +184,14 @@ class BookLineCategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("inactiveAllByBook 메서드에서")
+    @DisplayName("inactiveAllBy 메서드에서")
     class Describe_InactiveAllByBook {
         @Nested
         @DisplayName("book과 연관된 bookLineCategory를 모두 비활성화 시키면")
         class inactive {
             @BeforeEach
             void inactive_all() {
-                bookLineCategoryRepository.inactiveAllByBook(book);
+                bookLineCategoryRepository.inactiveAllBy(book);
             }
 
             @Test

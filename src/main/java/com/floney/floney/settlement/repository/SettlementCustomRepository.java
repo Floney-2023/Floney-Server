@@ -1,8 +1,10 @@
 package com.floney.floney.settlement.repository;
 
+import com.floney.floney.book.domain.entity.Book;
+
 public interface SettlementCustomRepository {
 
-    void inactiveAllByBookKey(String bookKey);
+    void inactiveAllBy(Book book);
 
     void inactiveAllByBookId(long bookId);
 }

@@ -161,7 +161,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .execute();
 
         if (result == 0) {
-            logger.warn("inactiveAllByBook 쿼리에서 변경된 row가 없음 - 가계부: {}", book.getId());
+            logger.warn("inactiveAllBy 쿼리에서 변경된 row가 없음 - 가계부: {}", book.getId());
         }
     }
 }

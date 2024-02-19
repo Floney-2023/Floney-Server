@@ -5,11 +5,9 @@ import com.floney.floney.book.domain.entity.BookUser;
 
 public interface BookLineCategoryCustomRepository {
 
-    void inactiveAllByBookKey(String bookKey);
+    void inactiveAllBy(Book book);
 
     void inactiveAllByBookLineId(Long bookLineId);
 
     void inactiveAllByBookUser(BookUser bookUser);
-
-    void inactiveAllByBook(Book book);
 }

@@ -11,8 +11,6 @@ import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -172,16 +170,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public void inactiveAllBy(final String bookKey) {
-        final JPQLQuery<Book> bookByBookKey = JPAExpressions
-            .selectFrom(book)
-            .where(book.bookKey.eq(bookKey));
-
+    public void inactiveAllBy(final Book book) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
             .set(bookLine.updatedAt, LocalDateTime.now())
             .where(
-                bookLine.book.eq(bookByBookKey),
+                bookLine.book.eq(book),
                 bookLine.status.eq(ACTIVE)
             )
             .execute();

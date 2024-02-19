@@ -3,7 +3,6 @@ package com.floney.floney.book.service;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 
@@ -43,7 +42,7 @@ public interface BookService {
 
     CurrencyResponse changeCurrency(final ChangeCurrencyRequest request);
 
-    Book makeInitBook(final String bookKey);
+    void resetBook(final String bookKey);
 
     CurrencyResponse getCurrency(String bookKey);
 
