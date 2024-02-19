@@ -148,8 +148,6 @@ public class CategoryAcceptanceTest {
             void init() {
                 accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
                 bookKey = BookApiFixture.createBook(accessToken).getBookKey();
-                CategoryApiFixture.createSubcategory(accessToken, bookKey, parentName, "월급");
-                CategoryApiFixture.createSubcategory(accessToken, bookKey, parentName, "용돈");
             }
 
             @Test
@@ -162,39 +160,7 @@ public class CategoryAcceptanceTest {
                     .get("/books/{key}/categories", bookKey)
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", is(2))
-                    .body("[0].name", is("용돈"))
-                    .body("[1].name", is("월급"));
-            }
-        }
-
-        @Nested
-        @DisplayName("해당 부모의 자식 카테고리가 존재하지 않는 경우")
-        class Context_With_NoSubcategoriesByCategory {
-
-            final String parentName = "수입";
-
-            String accessToken;
-            String bookKey;
-
-            @BeforeEach
-            void init() {
-                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
-                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
-                CategoryApiFixture.createSubcategory(accessToken, bookKey, "이체", "월급");
-            }
-
-            @Test
-            @DisplayName("빈 목록을 반환한다.")
-            void it_returns_empty() {
-                RestAssured.given()
-                    .auth().oauth2(accessToken)
-                    .param("parent", parentName)
-                    .when()
-                    .get("/books/{key}/categories", bookKey)
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("size()", is(0));
+                    .body("size()", is(8));
             }
         }
 

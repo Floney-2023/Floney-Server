@@ -3,9 +3,10 @@ package com.floney.floney.book;
 import com.floney.floney.book.domain.BookCapacity;
 import com.floney.floney.book.domain.BookUserCapacity;
 import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.category.DefaultSubcategoryRepository;
+import com.floney.floney.book.repository.category.SubcategoryRepository;
 import com.floney.floney.book.service.BookServiceImpl;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.LimitRequestException;
@@ -23,12 +24,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.fixture.BookFixture.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -46,6 +47,12 @@ public class BookServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private DefaultSubcategoryRepository defaultSubcategoryRepository;
+
+    @Mock
+    private SubcategoryRepository subcategoryRepository;
 
     @Test
     @DisplayName("초대코드로 가계부에 가입한다")
@@ -82,9 +89,10 @@ public class BookServiceTest {
             .willReturn(1);
         given(bookRepository.save(any(Book.class)))
             .willReturn(BookFixture.createBook());
+        given(defaultSubcategoryRepository.findAllByStatus(ACTIVE))
+            .willReturn(List.of());
 
-        Assertions.assertThat(bookService.createBook(UserFixture.emailUser(), createBookRequest()).getClass())
-            .isEqualTo(CreateBookResponse.class);
+        assertThatNoException().isThrownBy(() -> bookService.createBook(UserFixture.emailUser(), createBookRequest()));
     }
 
     @Test
