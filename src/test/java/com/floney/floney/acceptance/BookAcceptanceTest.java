@@ -328,7 +328,6 @@ public class BookAcceptanceTest {
             public void it_change_line() {
                 final BookLineResponse response = RestAssured
                     .given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .auth().oauth2(token)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(request)
