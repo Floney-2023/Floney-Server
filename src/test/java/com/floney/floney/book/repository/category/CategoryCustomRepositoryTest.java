@@ -414,29 +414,6 @@ class CategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findCustomCategory 메서드에서")
-    class Describe_FindCustomCategory {
-
-        @Nested
-        @DisplayName("사용자가 추가한 커스텀 카테고리가 주어진다면")
-        class customCategory {
-            private static final String customCategoryName = "사용자가 추가한 카테고리";
-
-            @BeforeEach
-            void custom_category() {
-                Subcategory customCategory = SubCategoryFixture.createSubcategory(book, assetLineCategory, customCategoryName);
-                subcategoryRepository.save(customCategory);
-            }
-
-            @Test
-            @DisplayName("카테고리 이름으로 조회할 수 있다")
-            void find_custom_category() {
-                Assertions.assertThat(categoryRepository.findCustomCategory(assetLineCategory, book, customCategoryName)).isNotEmpty();
-            }
-        }
-    }
-
-    @Nested
     @DisplayName("findAllSubCategoryByLineCategory 메서드에서")
     class Describe_findAll {
         @Nested

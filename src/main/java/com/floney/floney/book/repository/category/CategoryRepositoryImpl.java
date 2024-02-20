@@ -106,26 +106,6 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .fetch();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Subcategory> findCustomCategory(final Category parent,
-                                                    final Book targetBook,
-                                                    final String name) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
-            .innerJoin(subcategory.parent, category)
-            .innerJoin(subcategory.book, book)
-            .where(
-                category.eq(parent),
-                book.eq(targetBook),
-                subcategory.name.eq(name)
-            )
-            .where(
-                subcategory.status.eq(ACTIVE),
-                book.status.eq(ACTIVE),
-                category.status.eq(ACTIVE)
-            )
-            .fetchOne());
-    }
 
     @Override
     @Transactional(readOnly = true)

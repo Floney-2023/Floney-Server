@@ -20,8 +20,6 @@ public interface CategoryCustomRepository {
 
     List<BookLine> findAllBookLineBySubCategory(Subcategory subCategory);
 
-    Optional<Subcategory> findCustomCategory(Category parent, Book targetBook, String name);
-
     List<Subcategory> findAllSubCategoryByLineCategory(Category parent, String bookKey);
 
     void inactiveAllByBook(Book book);
