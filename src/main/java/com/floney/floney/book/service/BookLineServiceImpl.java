@@ -58,7 +58,7 @@ public class BookLineServiceImpl implements BookLineService {
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
         final BookLine bookLine = request.to(bookUser, bookLineCategory);
-        bookLineCategory.bookLine(bookLine);
+
         bookLineRepository.save(bookLine);
 
         if (book.getCarryOverStatus()) {
