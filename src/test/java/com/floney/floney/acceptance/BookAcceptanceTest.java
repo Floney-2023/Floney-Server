@@ -9,6 +9,7 @@ import com.floney.floney.book.dto.request.CarryOverRequest;
 import com.floney.floney.book.dto.request.SeeProfileRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.dto.request.UpdateBudgetRequest;
+import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.InvolveBookResponse;
 import com.floney.floney.common.dto.Token;
 import com.floney.floney.common.exception.common.ErrorResponse;
@@ -368,7 +369,57 @@ public class BookAcceptanceTest {
 
     }
 
-    // TODO 가계부의 모든 유저들 조회
+    @Nested
+    @DisplayName("가계부의 모든 유저들을 조회할 때")
+    class Describe_FindUsersByBook {
+
+        @Nested
+        @DisplayName("가계부에 유저가 존재할 경우 ")
+        class Context_With_InvolveBookExists {
+
+            final User user = UserFixture.emailUserWithEmail("floney1@gmail.com");
+            final User user2 = UserFixture.emailUserWithEmail("floney2@gmail.com");
+            final User user3 = UserFixture.emailUserWithEmail("floney3@gmail.com");
+
+            Token token1;
+            Token token2;
+            Token token3;
+            CreateBookResponse createBookResponse;
+
+            @BeforeEach
+            public void init() {
+                token1 = UserApiFixture.loginAfterSignup(user);
+                token2 = UserApiFixture.loginAfterSignup(user2);
+                token3 = UserApiFixture.loginAfterSignup(user3);
+                createBookResponse = BookApiFixture.createBook(token1.getAccessToken());
+                BookApiFixture.involveBook(token2.getAccessToken(), createBookResponse.getCode());
+                BookApiFixture.involveBook(token3.getAccessToken(), createBookResponse.getCode());
+            }
+
+            @Test
+            @DisplayName("성공한다.")
+            void it_succeeds() {
+
+                java.util.List<?> responses = RestAssured
+                        .given()
+                        .log().all()
+                        .auth().oauth2(token1.getAccessToken())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .params("bookKey", createBookResponse.getBookKey())
+                        .when().get("/books/users")
+                        .then()
+                        .log().all()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract().as(java.util.List.class);
+
+                assertThat(responses)
+                        .extracting("email")
+                        .containsExactly("floney1@gmail.com", "floney2@gmail.com", "floney3@gmail.com");
+            }
+
+        }
+
+    }
 }
 
 
