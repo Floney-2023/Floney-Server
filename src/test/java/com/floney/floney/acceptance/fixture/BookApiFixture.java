@@ -69,8 +69,7 @@ public class BookApiFixture {
             .except(false)
             .build();
 
-        return RestAssured
-            .given()
+        return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(request)

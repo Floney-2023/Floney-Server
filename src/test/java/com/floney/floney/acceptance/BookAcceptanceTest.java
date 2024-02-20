@@ -317,6 +317,9 @@ public class BookAcceptanceTest {
                     .bookKey(bookKey)
                     .line(changeSubCategory)
                     .flow(incomeLineCategory)
+                    .lineDate(LocalDate.parse(date))
+                    .except(false)
+                    .asset(assetSubCategory)
                     .build();
             }
 
@@ -325,6 +328,7 @@ public class BookAcceptanceTest {
             public void it_change_line() {
                 final BookLineResponse response = RestAssured
                     .given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .auth().oauth2(token)
                     .body(request)
                     .when().post("/books/lines/change")
@@ -333,7 +337,6 @@ public class BookAcceptanceTest {
                     .extract().as(BookLineResponse.class);
 
                 assertThat(response.getMoney()).isEqualTo(2000.0);
-
             }
         }
     }
