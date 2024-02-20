@@ -17,7 +17,10 @@ import com.floney.floney.fixture.BookRequestDtoFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -283,12 +286,9 @@ public class BookAcceptanceTest {
         }
     }
 
-    //TODO : BookUser안의 user nickname이 null로 표기됨..
     @Nested
-    @Disabled
     @DisplayName("changeBookLine()을 실행할 때")
     class Describe_ChangeBookLine {
-
         @Nested
         @DisplayName("가계부 내역이 존재하는 경우")
         class Context_With_ExistBookLine {
@@ -448,9 +448,7 @@ public class BookAcceptanceTest {
         }
     }
 
-    // TODO : 통과 안하는 이유 - isMe가 me로 초기화되는 이유..?
     @Nested
-    @Disabled
     @DisplayName("getMyBookInfo()을 실행할 때")
     class Describe_GetMyBookInfo {
 

@@ -17,7 +17,7 @@ public class OurBookUser {
     private String name;
     private String profileImg;
     private String email;
-    private boolean isMe;
+    private boolean me;
     private String role;
 
     @QueryProjection
@@ -28,10 +28,10 @@ public class OurBookUser {
     }
 
     @Builder
-    public OurBookUser(String name, String profileImg, boolean isMe, String role, String email) {
+    public OurBookUser(String name, String profileImg, boolean me, String role, String email) {
         this.name = name;
         this.profileImg = profileImg;
-        this.isMe = isMe;
+        this.me = me;
         this.email = email;
         this.role = role;
     }
@@ -45,6 +45,6 @@ public class OurBookUser {
     }
 
     public void isMyAccount(String email) {
-        this.isMe = Objects.equals(this.email, email);
+        this.me = Objects.equals(this.email, email);
     }
 }

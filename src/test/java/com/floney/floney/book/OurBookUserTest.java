@@ -18,7 +18,7 @@ public class OurBookUserTest {
     }
 
     @Test
-    @DisplayName("내 계정을 isMe True로 표시한다")
+    @DisplayName("내 계정을 me의 True로 표시한다")
     void isMe() {
         OurBookUser owner = BookFixture.createOurBookUser();
         owner.isMyAccount(UserFixture.DEFAULT_EMAIL);
