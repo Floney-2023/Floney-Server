@@ -302,9 +302,6 @@ public class ErrorControllerAdvice {
         stringBuilder.append(exception).append('\n');
 
         for (final StackTraceElement info : exception.getStackTrace()) {
-            if (!info.getClassName().startsWith("com.floney")) { // 프로젝트 내에서 발생한 에러만 포함
-                continue;
-            }
             if ("invoke".equals(info.getMethodName())) { // 프록시 메서드 제외
                 continue;
             }
@@ -312,7 +309,7 @@ public class ErrorControllerAdvice {
                 continue;
             }
 
-            stringBuilder.append("\t- ").append(info).append('\n');
+            stringBuilder.append("- ").append(info).append('\n');
         }
 
         logger.error(stringBuilder.toString());
