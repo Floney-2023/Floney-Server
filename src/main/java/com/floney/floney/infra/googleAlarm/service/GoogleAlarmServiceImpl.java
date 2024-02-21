@@ -13,7 +13,7 @@ public class GoogleAlarmServiceImpl implements GoogleAlarmService {
     private final GoogleTokenProxy accessGoogleTokenProxy;
 
     private static void validateUserActive(final User user) {
-        if (user.isInactive()) {
+        if (!user.isActive()) {
             throw new RuntimeException();
         }
     }

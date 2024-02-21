@@ -350,7 +350,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private boolean canDeleteBookBy(final BookUser bookUser) {
-        return !bookUser.isInactive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
+        return bookUser.isActive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
     }
 
     private Map<Month, Double> getInitBudgetFrame() {
