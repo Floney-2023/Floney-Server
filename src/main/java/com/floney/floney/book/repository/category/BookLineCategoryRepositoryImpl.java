@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
@@ -25,10 +26,11 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
-    public void inactiveAllBy(final Book book) {
+    public void inactiveAllByBook(final Book book) {
         final JPQLQuery<BookLine> bookLineByBook = JPAExpressions.selectFrom(bookLine)
             .innerJoin(bookLine.book, QBook.book)
             .where(
@@ -46,6 +48,8 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override
@@ -59,6 +63,8 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override
@@ -79,5 +85,7 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
                 bookLineCategory.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }
