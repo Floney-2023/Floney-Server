@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -163,5 +165,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
         if (result == 0) {
             logger.warn("inactiveAllByBook 쿼리에서 변경된 row가 없음 - 가계부: {}", book.getId());
         }
+
+        entityManager.clear();
     }
 }
