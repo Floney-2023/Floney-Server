@@ -63,8 +63,8 @@ class BookLineCustomRepositoryTest {
     @DisplayName("findAllByDurationOrderByDateDesc()를 실행할 때")
     class Describe_FindAllByDurationOrderByDateDesc {
 
-        final Category lineCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category lineCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("특정 book에 bookLine이 존재하는 경우")
@@ -148,8 +148,8 @@ class BookLineCustomRepositoryTest {
     @DisplayName("allLinesByDay()를 실행할 때")
     class Describe_AllLinesByDay {
 
-        final Category lineCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category lineCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("특정 날짜에 bookLine이 존재하는 경우")
@@ -223,8 +223,8 @@ class BookLineCustomRepositoryTest {
     @DisplayName("totalMoneyByDateAndCategoryType()를 실행할 때")
     class Describe_TotalMoneyByDateAndCategoryType {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("특정 lineCategory를 가진 bookLine들이 해당 날짜에 존재하는 경우")
@@ -312,10 +312,10 @@ class BookLineCustomRepositoryTest {
     @DisplayName("findIncomeAndOutcomeByDurationPerDay()를 실행할 때")
     class Describe_FindIncomeAndOutcomeByDurationPerDay {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category outcomeCategory = categoryRepository.findLineCategory(OUTCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
-        final Category transferCategory = categoryRepository.findLineCategory(TRANSFER).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category outcomeCategory = categoryRepository.findByType(OUTCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
+        final Category transferCategory = categoryRepository.findByType(TRANSFER).orElseThrow();
 
         @Nested
         @DisplayName("특정 기간에 지출 또는 수입인 bookLine이 존재하는 경우")
@@ -446,10 +446,10 @@ class BookLineCustomRepositoryTest {
     @DisplayName("findAllOutcomes()를 실행할 때")
     class Describe_FindAllOutcomes {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category outcomeCategory = categoryRepository.findLineCategory(OUTCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
-        final Category transferCategory = categoryRepository.findLineCategory(TRANSFER).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category outcomeCategory = categoryRepository.findByType(OUTCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
+        final Category transferCategory = categoryRepository.findByType(TRANSFER).orElseThrow();
 
         @Nested
         @DisplayName("특정 기간에 유저들이 작성한 지출인 bookLine이 존재하는 경우")
@@ -569,9 +569,9 @@ class BookLineCustomRepositoryTest {
     @DisplayName("totalExpenseForBeforeMonth()를 실행할 때")
     class Describe_TotalExpenseForBeforeMonth {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category outcomeCategory = categoryRepository.findLineCategory(OUTCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category outcomeCategory = categoryRepository.findByType(OUTCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("이전 달에 지출 bookLine이 존재하는 경우")
@@ -683,8 +683,8 @@ class BookLineCustomRepositoryTest {
     @DisplayName("analyzeByLineSubcategory()를 실행할 때")
     class Describe_AnalyzeByLineSubcategory {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("기간 내 lineSubcategory 목록에 포함되는 bookLine이 존재하는 경우")
@@ -798,9 +798,9 @@ class BookLineCustomRepositoryTest {
     @DisplayName("totalOutcomeMoneyForBudget()를 실행할 때")
     class Describe_TotalOutcomeMoneyForBudget {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category outcomeCategory = categoryRepository.findLineCategory(OUTCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category outcomeCategory = categoryRepository.findByType(OUTCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("특정 기간에 지출 bookLine이 존재하는 경우")
@@ -938,10 +938,10 @@ class BookLineCustomRepositoryTest {
     @DisplayName("totalExpensesForAsset()를 실행할 때")
     class Describe_TotalExpensesForAsset {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category outcomeCategory = categoryRepository.findLineCategory(OUTCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
-        final Category transferCategory = categoryRepository.findLineCategory(TRANSFER).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category outcomeCategory = categoryRepository.findByType(OUTCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
+        final Category transferCategory = categoryRepository.findByType(TRANSFER).orElseThrow();
 
         @Nested
         @DisplayName("해당 달에 수입 또는 지출인 bookLine이 존재하는 경우")
@@ -1026,10 +1026,10 @@ class BookLineCustomRepositoryTest {
     @DisplayName("findAllByBookKeyOrderByDateDesc()를 실행할 때")
     class Describe_FindAllByBookKeyOrderByDateDesc {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category outcomeCategory = categoryRepository.findLineCategory(OUTCOME).orElseThrow();
-        final Category transferCategory = categoryRepository.findLineCategory(TRANSFER).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category outcomeCategory = categoryRepository.findByType(OUTCOME).orElseThrow();
+        final Category transferCategory = categoryRepository.findByType(TRANSFER).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("bookKey에 해당하는 bookLine이 존재하는 경우")
@@ -1076,8 +1076,8 @@ class BookLineCustomRepositoryTest {
     @DisplayName("totalMoneyByDurationAndCategoryType()를 실행할 때")
     class Describe_TotalMoneyByDurationAndCategoryType {
 
-        final Category incomeCategory = categoryRepository.findLineCategory(INCOME).orElseThrow();
-        final Category assetCategory = categoryRepository.findLineCategory(ASSET).orElseThrow();
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
         @Nested
         @DisplayName("특정 lineCategory를 가진 bookLine들이 해당 기간에 존재하는 경우")

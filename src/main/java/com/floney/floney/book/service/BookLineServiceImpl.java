@@ -185,20 +185,20 @@ public class BookLineServiceImpl implements BookLineService {
 
     private Category findLineCategory(final String categoryName) {
         final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
-        return categoryRepository.findLineCategory(categoryType)
+        return categoryRepository.findByType(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
     private Subcategory findLineSubCategory(final String lineSubCategoryName,
                                             final Category lineCategory,
                                             final Book book) {
-        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory.getName())
+        return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName())
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
     private Subcategory findAssetSubCategory(final Book book,
                                              final String assetSubCategoryName) {
-        return categoryRepository.findLineSubCategory(assetSubCategoryName, book, ASSET)
+        return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET)
             .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 

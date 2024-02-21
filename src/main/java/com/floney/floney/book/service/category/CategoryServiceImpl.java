@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryInfo> findAllSubcategoriesByCategory(final String bookKey, final String categoryName) {
         final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
-        return categoryRepository.findAllSubCategoryInfoByParent(categoryType, bookKey);
+        return categoryRepository.findSubcategoryInfos(categoryType, bookKey);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
         final Category category = findCategory(request.getParent());
         final Book book = findBook(bookKey);
 
-        final Subcategory subcategory = categoryRepository.findCustomCategory(category, book, request.getName())
+        final Subcategory subcategory = categoryRepository.findSubcategory(category, book, request.getName())
             .orElseThrow(() -> new NotFoundCategoryException((request.getName())));
 
         categoryRepository.findAllBookLineBySubCategory(subcategory)
@@ -79,14 +79,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     private Category findCategory(final String name) {
         CategoryType categoryType = CategoryType.findByMeaning(name);
-        return categoryRepository.findLineCategory(categoryType)
+        return categoryRepository.findByType(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
     private void validateDifferentSubcategory(final Book book,
                                               final Category parent,
                                               final String name) {
-        categoryRepository.findCustomCategory(parent, book, name)
+        categoryRepository.findSubcategory(parent, book, name)
             .ifPresent(subCategory -> {
                 throw new AlreadyExistException(subCategory.getName());
             });

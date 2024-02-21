@@ -12,17 +12,17 @@ import java.util.Optional;
 
 public interface CategoryCustomRepository {
 
-    List<CategoryInfo> findAllSubCategoryInfoByParent(CategoryType parent, String bookKey);
+    List<CategoryInfo> findSubcategoryInfos(CategoryType parent, String bookKey);
 
-    Optional<Category> findLineCategory(CategoryType categoryType);
+    Optional<Category> findByType(CategoryType categoryType);
 
-    Optional<Subcategory> findLineSubCategory(String name, Book book, CategoryType parent);
+    Optional<Subcategory> findSubcategory(String name, Book book, CategoryType parent);
 
     List<BookLine> findAllBookLineBySubCategory(Subcategory subCategory);
 
-    Optional<Subcategory> findCustomCategory(Category parent, Book targetBook, String name);
+    Optional<Subcategory> findSubcategory(Category parent, Book targetBook, String name);
 
-    List<Subcategory> findAllSubCategoryByLineCategory(Category parent, String bookKey);
+    List<Subcategory> findSubcategories(Category parent, String bookKey);
 
     void inactiveAllByBook(Book book);
 }

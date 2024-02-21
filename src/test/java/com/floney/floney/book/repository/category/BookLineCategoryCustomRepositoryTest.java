@@ -71,8 +71,8 @@ class BookLineCategoryCustomRepositoryTest {
         user = userRepository.save(UserFixture.emailUser());
         bookUser = bookUserRepository.save(BookUserFixture.createBookUser(book, user));
 
-        incomeLineCategory = categoryRepository.findLineCategory(INCOME).get();
-        assetLineCategory = categoryRepository.findLineCategory(ASSET).get();
+        incomeLineCategory = categoryRepository.findByType(INCOME).get();
+        assetLineCategory = categoryRepository.findByType(ASSET).get();
 
         subCategoryForLine = Subcategory.builder()
             .book(book)

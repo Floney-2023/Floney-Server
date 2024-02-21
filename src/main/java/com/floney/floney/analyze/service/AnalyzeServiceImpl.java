@@ -99,7 +99,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     private Category findCategory(final String name) {
         CategoryType categoryType = CategoryType.findByMeaning(name);
-        return categoryRepository.findLineCategory(categoryType)
+        return categoryRepository.findByType(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
@@ -115,7 +115,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
     private List<Subcategory> getSubCategoriesByParentAndBookKey(final Category parent,
                                                                  final String bookKey) {
-        return categoryRepository.findAllSubCategoryByLineCategory(parent, bookKey);
+        return categoryRepository.findSubcategories(parent, bookKey);
     }
 
     private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {

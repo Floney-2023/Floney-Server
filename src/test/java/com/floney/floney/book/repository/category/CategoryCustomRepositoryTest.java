@@ -61,10 +61,10 @@ class CategoryCustomRepositoryTest {
     @BeforeEach
     void init() {
         book = bookRepository.save(BookFixture.createBook());
-        incomeLineCategory = categoryRepository.findLineCategory(INCOME).get();
-        assetLineCategory = categoryRepository.findLineCategory(ASSET).get();
-        outcomeLineCategory = categoryRepository.findLineCategory(CategoryType.OUTCOME).get();
-        transferLineCategory = categoryRepository.findLineCategory(CategoryType.TRANSFER).get();
+        incomeLineCategory = categoryRepository.findByType(INCOME).get();
+        assetLineCategory = categoryRepository.findByType(ASSET).get();
+        outcomeLineCategory = categoryRepository.findByType(CategoryType.OUTCOME).get();
+        transferLineCategory = categoryRepository.findByType(CategoryType.TRANSFER).get();
     }
 
     private Subcategory incomeSubCategory(String name) {
@@ -106,7 +106,7 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("INCOME을 부모로 가지는 모든 자식 카테고리를 조회할 수 있다")
             void find_by_income() {
-                List<CategoryInfo> subCategories = categoryRepository.findAllSubCategoryInfoByParent(INCOME, book.getBookKey());
+                List<CategoryInfo> subCategories = categoryRepository.findSubcategoryInfos(INCOME, book.getBookKey());
 
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
@@ -132,7 +132,7 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("OUTCOME을 부모로 가지는 모든 자식 카테고리를 조회할 수 있다")
             void find_by_outcome() {
-                List<CategoryInfo> subCategories = categoryRepository.findAllSubCategoryInfoByParent(CategoryType.OUTCOME, book.getBookKey());
+                List<CategoryInfo> subCategories = categoryRepository.findSubcategoryInfos(CategoryType.OUTCOME, book.getBookKey());
 
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
@@ -159,7 +159,7 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("ASSET을 부모로 가지는 모든 자식 카테고리를 조회할 수 있다")
             void find_by_asset() {
-                List<CategoryInfo> subCategories = categoryRepository.findAllSubCategoryInfoByParent(ASSET, book.getBookKey());
+                List<CategoryInfo> subCategories = categoryRepository.findSubcategoryInfos(ASSET, book.getBookKey());
 
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
@@ -183,7 +183,7 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("TRANSFER를 부모로 가지는 모든 자식 카테고리를 조회할 수 있다")
             void find_by_transfer() {
-                List<CategoryInfo> subCategories = categoryRepository.findAllSubCategoryInfoByParent(CategoryType.TRANSFER, book.getBookKey());
+                List<CategoryInfo> subCategories = categoryRepository.findSubcategoryInfos(CategoryType.TRANSFER, book.getBookKey());
 
                 Assertions.assertThat(subCategories.size()).isEqualTo(2);
                 Assertions.assertThat(subCategories)
@@ -194,35 +194,35 @@ class CategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findLineCategory 메서드에서")
+    @DisplayName("findByType 메서드에서")
     class Describe_FindLineCategory {
         @Test
         @DisplayName("ASSET을 조회한다")
         void find_asset() {
-            Assertions.assertThat(categoryRepository.findLineCategory(ASSET)).isNotEmpty();
+            Assertions.assertThat(categoryRepository.findByType(ASSET)).isNotEmpty();
         }
 
         @Test
         @DisplayName("INCOME을 조회한다")
         void find_income() {
-            Assertions.assertThat(categoryRepository.findLineCategory(INCOME)).isNotEmpty();
+            Assertions.assertThat(categoryRepository.findByType(INCOME)).isNotEmpty();
         }
 
         @Test
         @DisplayName("TRANSFER을 조회한다")
         void find_transfer() {
-            Assertions.assertThat(categoryRepository.findLineCategory(CategoryType.TRANSFER)).isNotEmpty();
+            Assertions.assertThat(categoryRepository.findByType(CategoryType.TRANSFER)).isNotEmpty();
         }
 
         @Test
         @DisplayName("OUTCOME을 조회한다")
         void find_outcome() {
-            Assertions.assertThat(categoryRepository.findLineCategory(CategoryType.OUTCOME)).isNotEmpty();
+            Assertions.assertThat(categoryRepository.findByType(CategoryType.OUTCOME)).isNotEmpty();
         }
     }
 
     @Nested
-    @DisplayName("findLineSubCategory 메서드에서")
+    @DisplayName("findSubcategory 메서드에서")
     class Describe_FindLineSubCategory {
         @Nested
         @DisplayName("INCOME이 부모인 SubCategory가 주어지고")
@@ -237,22 +237,22 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("가계부, 카테고리가 모두 활성화 되어있다면, 이름으로 카테고리를 조회할 수 있다")
             void find_by() {
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, INCOME)).isNotEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, INCOME)).isNotEmpty();
             }
 
             @Test
             @DisplayName("가계부가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_book() {
                 book.inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, INCOME)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, INCOME)).isEmpty();
             }
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_by_parent() {
-                Optional<Category> parent = categoryRepository.findLineCategory(INCOME);
+                Optional<Category> parent = categoryRepository.findByType(INCOME);
                 parent.get().inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, INCOME)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, INCOME)).isEmpty();
             }
         }
 
@@ -269,22 +269,22 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("가계부, 카테고리가 모두 활성화 되어있다면, 이름으로 카테고리를 조회할 수 있다")
             void find_by() {
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, OUTCOME)).isNotEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, OUTCOME)).isNotEmpty();
             }
 
             @Test
             @DisplayName("가계부가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_book() {
                 book.inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, OUTCOME)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, OUTCOME)).isEmpty();
             }
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_by_parent() {
-                Optional<Category> parent = categoryRepository.findLineCategory(OUTCOME);
+                Optional<Category> parent = categoryRepository.findByType(OUTCOME);
                 parent.get().inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, OUTCOME)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, OUTCOME)).isEmpty();
             }
         }
 
@@ -301,22 +301,22 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("가계부, 카테고리가 모두 활성화 되어있다면, 이름으로 카테고리를 조회할 수 있다")
             void find_by() {
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, ASSET)).isNotEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, ASSET)).isNotEmpty();
             }
 
             @Test
             @DisplayName("가계부가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_book() {
                 book.inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, ASSET)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, ASSET)).isEmpty();
             }
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_by_parent() {
-                Optional<Category> parent = categoryRepository.findLineCategory(ASSET);
+                Optional<Category> parent = categoryRepository.findByType(ASSET);
                 parent.get().inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, ASSET)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, ASSET)).isEmpty();
             }
         }
 
@@ -333,22 +333,22 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("가계부, 카테고리가 모두 활성화 되어있다면, 이름으로 카테고리를 조회할 수 있다")
             void find_by() {
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, TRANSFER)).isNotEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, TRANSFER)).isNotEmpty();
             }
 
             @Test
             @DisplayName("가계부가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_book() {
                 book.inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, TRANSFER)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, TRANSFER)).isEmpty();
             }
 
             @Test
             @DisplayName("부모 카테고리가 비활성화 되었다면 , 카테고리를 조회할 수 없다")
             void inactive_by_parent() {
-                Optional<Category> parent = categoryRepository.findLineCategory(TRANSFER);
+                Optional<Category> parent = categoryRepository.findByType(TRANSFER);
                 parent.get().inactive();
-                Assertions.assertThat(categoryRepository.findLineSubCategory(categoryName, book, TRANSFER)).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(categoryName, book, TRANSFER)).isEmpty();
             }
         }
     }
@@ -378,8 +378,8 @@ class CategoryCustomRepositoryTest {
                 subCategoryForAsset = assetSubCategory(assetCategoryName);
 
                 // parent
-                incomeLineCategory = categoryRepository.findLineCategory(CategoryType.INCOME).get();
-                assetLineCategory = categoryRepository.findLineCategory(CategoryType.ASSET).get();
+                incomeLineCategory = categoryRepository.findByType(CategoryType.INCOME).get();
+                assetLineCategory = categoryRepository.findByType(CategoryType.ASSET).get();
 
                 BookLineCategory bookLineCategory = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
                 BookLineCategory bookLineCategory2 = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
@@ -417,7 +417,7 @@ class CategoryCustomRepositoryTest {
     }
 
     @Nested
-    @DisplayName("findCustomCategory 메서드에서")
+    @DisplayName("findSubcategory 메서드에서")
     class Describe_FindCustomCategory {
 
         @Nested
@@ -434,13 +434,13 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("카테고리 이름으로 조회할 수 있다")
             void find_custom_category() {
-                Assertions.assertThat(categoryRepository.findCustomCategory(assetLineCategory, book, customCategoryName)).isNotEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategory(assetLineCategory, book, customCategoryName)).isNotEmpty();
             }
         }
     }
 
     @Nested
-    @DisplayName("findAllSubCategoryByLineCategory 메서드에서")
+    @DisplayName("findSubcategories 메서드에서")
     class Describe_findAll {
         @Nested
         @DisplayName("가계부 내역이 주어진다면")
@@ -450,7 +450,7 @@ class CategoryCustomRepositoryTest {
 
             @BeforeEach
             void save_bookLine() {
-                assetLineCategory = categoryRepository.findLineCategory(CategoryType.ASSET).get();
+                assetLineCategory = categoryRepository.findByType(CategoryType.ASSET).get();
 
                 String assetSubCategoryName1 = "신용카드";
                 subCategoryForAsset1 = assetSubCategory(assetSubCategoryName1);
@@ -462,7 +462,7 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("부모 카테고리로 모든 자식 카테고리를 조회할 수 있다")
             void find_all() {
-                Assertions.assertThat(categoryRepository.findAllSubCategoryByLineCategory(assetLineCategory, book.getBookKey()))
+                Assertions.assertThat(categoryRepository.findSubcategories(assetLineCategory, book.getBookKey()))
                     .extracting(Subcategory::getName)
                     .containsExactlyInAnyOrder(subCategoryForAsset1.getName(), subCategoryForAsset2.getName());
             }
@@ -483,7 +483,7 @@ class CategoryCustomRepositoryTest {
             @Test
             @DisplayName("가계부의 카테고리가 조회되지 않는다")
             void find_none() {
-                Assertions.assertThat(categoryRepository.findAllSubCategoryByLineCategory(assetLineCategory, book.getBookKey())).isEmpty();
+                Assertions.assertThat(categoryRepository.findSubcategories(assetLineCategory, book.getBookKey())).isEmpty();
             }
         }
     }
