@@ -100,9 +100,6 @@ class BookLineCategoryCustomRepositoryTest {
             .categories(bookLineCategory2)
             .build();
 
-        bookLineCategory.bookLine(bookLine1);
-        bookLineCategory2.bookLine(bookLine2);
-
         bookLineRepository.save(bookLine1);
         bookLineRepository.save(bookLine2);
     }

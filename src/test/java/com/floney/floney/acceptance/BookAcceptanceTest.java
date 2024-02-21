@@ -328,8 +328,8 @@ public class BookAcceptanceTest {
             public void it_change_line() {
                 final BookLineResponse response = RestAssured
                     .given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .auth().oauth2(token)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(request)
                     .when().post("/books/lines/change")
                     .then()
@@ -574,7 +574,6 @@ public class BookAcceptanceTest {
         class Context_With_ExistOutcomes {
             private static final String outcomeLineCategory = "지출";
             private static final String subCategory = "식비";
-            private static final String assetLineCategory = "자산";
             private static final String assetSubCategory = "체크카드";
             final User user = UserFixture.emailUser();
             private String token;
