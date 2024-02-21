@@ -237,7 +237,7 @@ public class BookServiceImpl implements BookService {
         book.initBook();
 
         bookLineRepository.inactiveAllBy(book);
-        bookLineCategoryRepository.inactiveAllBy(book);
+        bookLineCategoryRepository.inactiveAllByBook(book);
         assetRepository.inactiveAllBy(book);
         settlementRepository.inactiveAllBy(book);
         carryOverRepository.inactiveAllBy(book);
@@ -326,7 +326,7 @@ public class BookServiceImpl implements BookService {
     private void inactiveAllBy(final Book book) {
         alarmRepository.inactiveAllByBook(book);
         bookLineRepository.inactiveAllByBook(book);
-        bookLineCategoryRepository.inactiveAllBy(book);
+        bookLineCategoryRepository.inactiveAllByBook(book);
         bookUserRepository.inactiveAllByBook(book);
         budgetRepository.inactiveAllBy(book);
         carryOverRepository.inactiveAllByBook(book);

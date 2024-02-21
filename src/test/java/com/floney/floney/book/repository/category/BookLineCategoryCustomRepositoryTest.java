@@ -15,7 +15,6 @@ import com.floney.floney.fixture.BookUserFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,14 +22,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.floney.floney.book.domain.category.CategoryType.ASSET;
 import static com.floney.floney.book.domain.category.CategoryType.INCOME;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QueryDslTest
-@DisplayName("단위 테스트 : BookLineCategoryCustomRepository")
+@DisplayName("단위 테스트: BookLineCategoryCustomRepository")
 class BookLineCategoryCustomRepositoryTest {
-
 
     @Autowired
     private BookRepository bookRepository;
@@ -54,33 +54,25 @@ class BookLineCategoryCustomRepositoryTest {
     private BookLineCategoryRepository bookLineCategoryRepository;
 
     private BookUser bookUser;
-    private User user;
     private Book book;
     private BookLine bookLine1;
-    private BookLine bookLine2;
-    private Category incomeLineCategory;
-    private Category assetLineCategory;
-    private BookLineCategory bookLineCategory;
-    private BookLineCategory bookLineCategory2;
-    private Subcategory subCategoryForLine;
-    private Subcategory subCategoryForAsset;
 
     @BeforeEach
     void init() {
         book = bookRepository.save(BookFixture.createBook());
-        user = userRepository.save(UserFixture.emailUser());
+        final User user = userRepository.save(UserFixture.emailUser());
         bookUser = bookUserRepository.save(BookUserFixture.createBookUser(book, user));
 
-        incomeLineCategory = categoryRepository.findByType(INCOME).get();
-        assetLineCategory = categoryRepository.findByType(ASSET).get();
+        final Category incomeLineCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetLineCategory = categoryRepository.findByType(ASSET).orElseThrow();
 
-        subCategoryForLine = Subcategory.builder()
+        final Subcategory subCategoryForLine = Subcategory.builder()
             .book(book)
             .parent(incomeLineCategory)
             .name("급여")
             .build();
 
-        subCategoryForAsset = Subcategory.builder()
+        final Subcategory subCategoryForAsset = Subcategory.builder()
             .book(book)
             .name("은행")
             .parent(assetLineCategory)
@@ -89,8 +81,8 @@ class BookLineCategoryCustomRepositoryTest {
         subcategoryRepository.save(subCategoryForLine);
         subcategoryRepository.save(subCategoryForAsset);
 
-        bookLineCategory = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
-        bookLineCategory2 = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
+        final BookLineCategory bookLineCategory = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
+        final BookLineCategory bookLineCategory2 = BookLineCategory.create(incomeLineCategory, subCategoryForLine, subCategoryForAsset);
 
         bookLine1 = BookLine.builder()
             .book(book)
@@ -100,7 +92,7 @@ class BookLineCategoryCustomRepositoryTest {
             .categories(bookLineCategory)
             .build();
 
-        bookLine2 = BookLine.builder()
+        final BookLine bookLine2 = BookLine.builder()
             .book(book)
             .lineDate(LocalDate.now())
             .writer(bookUser)
@@ -113,50 +105,50 @@ class BookLineCategoryCustomRepositoryTest {
 
         bookLineRepository.save(bookLine1);
         bookLineRepository.save(bookLine2);
-
-    }
-
-    private void assertFindBookLineCategoryIsEmpty() {
-        Assertions.assertThat(bookLineCategoryRepository.findById(bookLineCategory.getId()).isEmpty());
-        Assertions.assertThat(bookLineCategoryRepository.findById(bookLineCategory2.getId()).isEmpty());
     }
 
     @Nested
-    @DisplayName("inactiveAllByBook() 를 실행할 때")
+    @DisplayName("inactiveAllByBook()를 실행할 때")
     class Describe_InactiveAllByBook {
 
         @Nested
-        @DisplayName("가계부에 존재하는 모든 bookLineCategory를 비활성화 시키면")
-        class Context_With_InactiveAllBookLineCategory {
-            @BeforeEach
-            void init() {
-                bookLineCategoryRepository.inactiveAllBy(book);
-            }
+        @DisplayName("해당 Book에 bookLineCategory가 있으면")
+        class Context_With_BookLineCategoryByBook {
 
             @Test
-            @DisplayName("가계부의 모든 bookLineCategory를 찾을 수 없다")
-            void it_assert_book_line_category_is_empty() {
-                assertFindBookLineCategoryIsEmpty();
+            @DisplayName("모두 비활성화 한다.")
+            void it_inactivates_all() {
+                bookLineCategoryRepository.inactiveAllByBook(book);
+
+                final List<BookLineCategory> activeBookLineCategories = bookLineCategoryRepository.findAll()
+                    .stream()
+                    .filter(blc -> blc.getBookLine().getBook().equals(book) && blc.isActive())
+                    .toList();
+
+                assertThat(activeBookLineCategories).isEmpty();
             }
         }
     }
 
     @Nested
-    @DisplayName("inactiveAllByBookLineId() 를 실행할 때")
+    @DisplayName("inactiveAllByBookLineId()를 실행할 때")
     class Describe_InactiveAllByBookLineId {
+
         @Nested
-        @DisplayName("가계부 내역 Id로 bookLineCategory를 비활성화 시키면")
+        @DisplayName("해당 bookLineId를 가지는 bookLineCategory가 있으면")
         class Context_With_InactiveAll {
-            @BeforeEach
-            void init() {
-                bookLineCategoryRepository.inactiveAllByBookLineId(bookLine1.getId());
-                bookLineCategoryRepository.inactiveAllByBookLineId(bookLine2.getId());
-            }
 
             @Test
-            @DisplayName("가계부 내역 Id로 bookLineCategory를 찾을 수 없다")
-            void it_assert_book_line_category_empty() {
-                assertFindBookLineCategoryIsEmpty();
+            @DisplayName("모두 비활성화 한다.")
+            void it_inactivates_all() {
+                bookLineCategoryRepository.inactiveAllByBookLineId(bookLine1.getId());
+
+                final List<BookLineCategory> activeBookLineCategories = bookLineCategoryRepository.findAll()
+                    .stream()
+                    .filter(blc -> blc.getBookLine().getId().equals(bookLine1.getId()) && blc.isActive())
+                    .toList();
+
+                assertThat(activeBookLineCategories).isEmpty();
             }
         }
     }
@@ -164,37 +156,22 @@ class BookLineCategoryCustomRepositoryTest {
     @Nested
     @DisplayName("inactiveAllByBookUser()를 실행할 때")
     class Describe_InactiveAllByBookUser {
+
         @Nested
-        @DisplayName("BookUser와 연결된 bookLineCategory를 모두 비활성화 시키면")
+        @DisplayName("해당 bookUser를 가지는 bookLineCategory가 있으면")
         class Context_With_InactiveAllByUser {
-            @BeforeEach
-            void init() {
+
+            @Test
+            @DisplayName("모두 비활성화 한다.")
+            void it_inactivates_all() {
                 bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
-            }
 
-            @Test
-            @DisplayName("bookLineCategory를 찾을 수 없다")
-            void it_assert_book_line_category_empty() {
-                assertFindBookLineCategoryIsEmpty();
-            }
-        }
-    }
+                final List<BookLineCategory> activeBookLineCategories = bookLineCategoryRepository.findAll()
+                    .stream()
+                    .filter(blc -> blc.getBookLine().getWriter().equals(bookUser.getNickName()) && blc.isActive())
+                    .toList();
 
-    @Nested
-    @DisplayName("inactiveAllBy()를 실행할 때")
-    class Describe_InactiveAllBy {
-        @Nested
-        @DisplayName("book과 연관된 bookLineCategory를 모두 비활성화 시키면")
-        class inactive {
-            @BeforeEach
-            void init() {
-                bookLineCategoryRepository.inactiveAllBy(book);
-            }
-
-            @Test
-            @DisplayName("bookLineCategory를 찾을 수 없다")
-            void it_assert_book_line_category_empty() {
-                assertFindBookLineCategoryIsEmpty();
+                assertThat(activeBookLineCategories).isEmpty();
             }
         }
     }

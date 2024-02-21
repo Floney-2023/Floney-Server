@@ -79,8 +79,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public Optional<BookUser> findBookUserByEmailAndBookKey(final String userEmail,
                                                             final String bookKey) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.book, book)
-            .innerJoin(bookUser.user, user)
+            .innerJoin(bookUser.book, book).fetchJoin()
+            .innerJoin(bookUser.user, user).fetchJoin()
             .where(
                 user.email.eq(userEmail),
                 book.bookKey.eq(bookKey)
@@ -118,8 +118,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public Optional<BookUser> findBookUserByCode(final String userEmail,
                                                  final String bookCode) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.user, user)
-            .innerJoin(bookUser.book, book)
+            .innerJoin(bookUser.user, user).fetchJoin()
+            .innerJoin(bookUser.book, book).fetchJoin()
             .where(
                 book.code.eq(bookCode),
                 user.email.eq(userEmail)
@@ -192,7 +192,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Transactional(readOnly = true)
     public List<BookUser> findAllByUserId(final Long userId) {
         return jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.user, user)
+            .innerJoin(bookUser.user, user).fetchJoin()
             .where(
                 user.id.eq(userId)
             )
