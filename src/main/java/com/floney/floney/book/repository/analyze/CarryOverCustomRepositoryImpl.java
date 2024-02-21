@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
 import static com.floney.floney.book.domain.entity.QCarryOver.carryOver;
@@ -18,6 +19,7 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -30,6 +32,8 @@ public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository 
                 carryOver.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override
@@ -43,5 +47,7 @@ public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository 
                 carryOver.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }

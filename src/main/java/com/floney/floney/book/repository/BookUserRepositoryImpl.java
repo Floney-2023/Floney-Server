@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,7 @@ import static com.floney.floney.user.entity.QUser.user;
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -213,5 +215,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 bookUser.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }

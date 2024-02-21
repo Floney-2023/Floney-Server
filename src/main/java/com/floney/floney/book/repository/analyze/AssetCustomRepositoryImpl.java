@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -19,6 +20,7 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 public class AssetCustomRepositoryImpl implements AssetCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -31,6 +33,8 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
                 asset.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override
@@ -45,5 +49,7 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
                 asset.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }

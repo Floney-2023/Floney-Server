@@ -74,8 +74,10 @@ public class BookLineCategoryRepositoryImpl implements BookLineCategoryCustomRep
             JPAExpressions.select(bookLine.id)
                 .from(bookLine)
                 .innerJoin(bookLine.writer, bookUser)
-                .where(bookUser.eq(targetBookUser),
-                    bookLine.status.eq(ACTIVE));
+                .where(
+                    bookUser.eq(targetBookUser),
+                    bookLine.status.eq(ACTIVE)
+                );
 
         jpaQueryFactory.update(bookLineCategory)
             .set(bookLineCategory.status, INACTIVE)

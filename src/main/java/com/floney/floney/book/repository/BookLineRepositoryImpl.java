@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import static com.floney.floney.user.entity.QUser.user;
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -179,6 +181,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override
@@ -378,6 +382,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.book.eq(book),
                 bookLine.status.eq(ACTIVE)
             ).execute();
+
+        entityManager.clear();
     }
 
     @Override

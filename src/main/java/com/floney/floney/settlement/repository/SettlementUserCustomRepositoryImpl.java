@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -20,6 +21,7 @@ import static com.floney.floney.settlement.domain.entity.QSettlementUser.settlem
 public class SettlementUserCustomRepositoryImpl implements SettlementUserCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -37,5 +39,7 @@ public class SettlementUserCustomRepositoryImpl implements SettlementUserCustomR
                 settlementUser.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }
