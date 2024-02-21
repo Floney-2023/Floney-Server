@@ -351,6 +351,32 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<BookLine> findByIdWithCategoriesAndWriter(final Long id) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
+            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLine.writer, bookUser).fetchJoin()
+            .innerJoin(bookUser.user, user).fetchJoin()
+            .where(
+                bookLine.id.eq(id)
+            )
+            .where(
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubcategory.status.eq(ACTIVE),
+                bookLineCategory.bookLine.status.eq(ACTIVE),
+                bookLineCategory.bookLine.writer.status.eq(ACTIVE)
+            )
+            .fetchOne()
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<BookLine> findAllByBookKeyOrderByDateDesc(final String bookKey) {
         return jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book).fetchJoin()

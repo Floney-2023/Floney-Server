@@ -42,6 +42,8 @@ public interface BookLineCustomRepository {
 
     Optional<BookLine> findByIdWithCategories(Long id);
 
+    Optional<BookLine> findByIdWithCategoriesAndWriter(Long id);
+
     List<BookLine> findAllByBookKeyOrderByDateDesc(String bookKey);
 
     void inactiveAllByBook(Book book);

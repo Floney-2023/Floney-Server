@@ -118,7 +118,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse changeLine(final BookLineRequest request) {
-        final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
+        final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
