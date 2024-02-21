@@ -1,22 +1,20 @@
 package com.floney.floney.book.dto.process;
 
-import com.floney.floney.book.domain.constant.AssetType;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@EqualsAndHashCode
 public class TotalExpense {
 
+    private final CategoryType categoryType;
     private final double money;
-    private final AssetType assetType;
 
-    @QueryProjection
     @Builder
-    public TotalExpense(double money, String assetType) {
+    @QueryProjection
+    public TotalExpense(final CategoryType categoryType, final double money) {
         this.money = money;
-        this.assetType = AssetType.find(assetType);
+        this.categoryType = categoryType;
     }
 }

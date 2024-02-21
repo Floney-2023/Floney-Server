@@ -2,58 +2,40 @@ package com.floney.floney.fixture;
 
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.request.BookLineRequest;
 
 import java.time.LocalDate;
 
-import static com.floney.floney.fixture.BookFixture.BOOK_KEY;
-
 public class BookLineFixture {
 
-    public static final String OUTCOME = "지출";
-    public static final String INCOME = "수입";
+    public static final double DEFAULT_MONEY = 1000.0;
 
-    public static LocalDate DEFAULT_DATE = LocalDate.of(2023, 10, 22);
-
-    public static BookLineRequest outcomeRequest(final double money) {
-        return BookLineRequest.builder()
-                .bookKey(BOOK_KEY)
-                .flow(OUTCOME)
-                .asset("은행")
-                .line("식비")
-                .money(money)
-                .build();
-    }
-
-    public static BookLineRequest incomeRequest(final double money) {
-        return BookLineRequest.builder()
-                .bookKey(BOOK_KEY)
-                .flow(INCOME)
-                .asset("은행")
-                .line("월급")
-                .money(money)
-                .build();
-    }
-
-    public static BookLine bookLineWithMoney(final Book book,
-                                             final BookUser writer,
-                                             final double money) {
+    public static BookLine createWithDate(final Book book,
+                                          final BookUser bookUser,
+                                          final BookLineCategory categories,
+                                          final LocalDate lineDate) {
         return BookLine.builder()
-                .book(book)
-                .money(money)
-                .lineDate(DEFAULT_DATE)
-                .writer(writer)
-                .exceptStatus(Boolean.FALSE)
-                .build();
+            .book(book)
+            .writer(bookUser)
+            .categories(categories)
+            .lineDate(lineDate)
+            .exceptStatus(false)
+            .money(DEFAULT_MONEY)
+            .build();
     }
 
-    public static BookLineExpense incomeBookLineExpense() {
-        return BookLineExpense.builder()
-                .assetType(INCOME)
-                .date(DEFAULT_DATE)
-                .money(1000.0)
-                .build();
+    public static BookLine createWithDateNotBudget(final Book book,
+                                                   final BookUser bookUser,
+                                                   final BookLineCategory categories,
+                                                   final LocalDate lineDate) {
+        return BookLine.builder()
+            .book(book)
+            .writer(bookUser)
+            .categories(categories)
+            .lineDate(lineDate)
+            .exceptStatus(true)
+            .money(DEFAULT_MONEY)
+            .build();
     }
 }

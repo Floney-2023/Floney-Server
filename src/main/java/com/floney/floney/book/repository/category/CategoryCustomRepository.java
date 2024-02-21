@@ -1,38 +1,28 @@
 package com.floney.floney.book.repository.category;
 
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.entity.Subcategory;
+import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.CategoryInfo;
-import com.floney.floney.book.dto.request.DeleteCategoryRequest;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CategoryCustomRepository {
 
-    List<CategoryInfo> findAllCategory(String name, String bookKey);
+    List<CategoryInfo> findSubcategoryInfos(CategoryType parent, String bookKey);
 
-    Optional<Category> findFlowCategory(String name);
+    Optional<Category> findByType(CategoryType categoryType);
 
-    Optional<Category> findAssetCategory(String name, String bookKey);
+    Optional<Subcategory> findSubcategory(String name, Book book, CategoryType parent);
 
-    Optional<Category> findLineCategory(String name, String bookKey, String parent);
+    List<BookLine> findAllBookLineBySubCategory(Subcategory subCategory);
 
-    List<BookLine> findAllBookLineByCategory(Category category);
+    Optional<Subcategory> findSubcategory(Category parent, Book targetBook, String name);
 
-    Optional<Category> findCustomTarget(Category targetRoot, String bookKey, String target);
-
-    void inactiveCustomCategory(DeleteCategoryRequest request);
-
-    List<BookCategory> findAllCustomCategory(Book book);
-
-    List<Category> findAllDefaultChildCategoryByRoot(Category root);
-
-    List<BookCategory> findAllCustomChildCategoryByRootAndRoot(Category root, String bookKey);
-
-    Optional<Category> findParentCategory(String parentName);
+    List<Subcategory> findSubcategories(Category parent, String bookKey);
 
     void inactiveAllByBook(Book book);
 }

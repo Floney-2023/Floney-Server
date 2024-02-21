@@ -11,8 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 
-import static com.floney.floney.book.domain.constant.AssetType.INCOME;
-import static com.floney.floney.book.domain.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
 
 @Entity
 @Getter
@@ -30,8 +30,10 @@ public class Asset extends BaseEntity {
 
     private LocalDate date;
 
-    public static Asset of(BookLineRequest request, Book book, LocalDate date) {
-        if (OUTCOME.getKind().equals(request.getFlow())) {
+    public static Asset of(final BookLineRequest request,
+                           final Book book,
+                           final LocalDate date) {
+        if (OUTCOME.getMeaning().equals(request.getFlow())) {
             return Asset.builder()
                 .money(-1 * request.getMoney())
                 .book(book)
@@ -46,11 +48,11 @@ public class Asset extends BaseEntity {
     }
 
     public void add(final double money, final String flow) {
-        if (INCOME.getKind().equals(flow)) {
+        if (INCOME.getMeaning().equals(flow)) {
             this.money += money;
             return;
         }
-        if (OUTCOME.getKind().equals(flow)) {
+        if (OUTCOME.getMeaning().equals(flow)) {
             this.money -= money;
             return;
         }

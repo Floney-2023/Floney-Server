@@ -1,6 +1,6 @@
 package com.floney.floney.book.dto.request;
 
-import com.floney.floney.book.domain.constant.ExcelDuration;
+import com.floney.floney.book.domain.ExcelDuration;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

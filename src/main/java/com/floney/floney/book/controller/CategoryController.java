@@ -1,52 +1,60 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
+import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.service.category.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequiredArgsConstructor
 public class CategoryController {
+
     private final CategoryService categoryService;
 
     /**
-     * 커스텀 카테고리 생성
-     *
-     * @return CreateCategoryResponse 생성된 커스텀 카테고리 정보
-     * @body CreateCategoryRequest 커스텀 카테고리 생성용 기본 정보
-     */
-    @PostMapping("/books/categories")
-    public ResponseEntity<?> crateCategory(@RequestBody CreateCategoryRequest request) {
-        return new ResponseEntity<>(categoryService.createUserCategory(request), HttpStatus.CREATED);
-    }
-
-    /**
-     * 카테고리 조회하기
+     * 카테고리 생성
      *
      * @param bookKey 가계부 식별키
-     * @param root    부모 카테고리
-     * @return List<CategoryInfo> 부모와 연관된 모든 자식 카테고리
+     * @return CreateCategoryResponse 생성된 카테고리 정보
+     * @body CreateCategoryRequest 생성된 카테고리 정보
      */
-    @GetMapping("/books/categories")
-    public ResponseEntity<?> findAllBy(@RequestParam String bookKey,
-                                       @RequestParam String root) {
-        return new ResponseEntity<>(categoryService.findAllBy(root, bookKey), HttpStatus.OK);
+    @PostMapping("/books/{key}/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CreateCategoryResponse createSubcategory(@PathVariable("key") final String bookKey,
+                                                    @RequestBody final CreateCategoryRequest request) {
+        return categoryService.createSubcategory(bookKey, request);
     }
 
     /**
-     * 커스텀 카테고리 삭제하기
+     * 카테고리 조회
      *
-     * @body DeleteCategoryRequest 삭제할 카테고리 정보
+     * @param bookKey 가계부 식별키
+     * @param parent  부모 카테고리
+     * @return List<CategoryInfo> 부모와 연관된 모든 자식 카테고리
      */
-    @DeleteMapping("/books/categories")
-    public ResponseEntity<?> deleteCategory(@RequestBody DeleteCategoryRequest request) {
-        categoryService.deleteCustomCategory(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/books/{key}/categories")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryInfo> findAllSubcategoriesByCategory(@PathVariable("key") final String bookKey,
+                                                             @RequestParam final String parent) {
+        return categoryService.findAllSubcategoriesByCategory(bookKey, parent);
     }
 
+    /**
+     * 카테고리 삭제
+     *
+     * @param bookKey 가계부 식별키
+     * @body DeleteCategoryRequest 삭제할 카테고리 정보
+     */
+    @DeleteMapping("/books/{key}/categories")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteSubcategory(@PathVariable("key") final String bookKey,
+                                  @RequestBody final DeleteCategoryRequest request) {
+        categoryService.deleteSubcategory(bookKey, request);
+    }
 }

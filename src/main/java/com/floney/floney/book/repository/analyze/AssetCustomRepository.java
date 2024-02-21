@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public interface AssetCustomRepository {
 
-    void inactiveAllByBook(Book book);
+    void inactiveAllBy(Book book);
 
     void subtractMoneyByDateAndBook(double money, LocalDate date, Book book);
 }

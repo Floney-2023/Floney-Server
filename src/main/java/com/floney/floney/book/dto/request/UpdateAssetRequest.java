@@ -11,9 +11,9 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UpdateAssetRequest {
     private String bookKey;
-    private Long asset;
+    private double asset;
 
-    public UpdateAssetRequest(String bookKey, Long asset, LocalDate date) {
+    public UpdateAssetRequest(String bookKey, Double asset, LocalDate date) {
         this.asset = asset;
         this.bookKey = bookKey;
     }

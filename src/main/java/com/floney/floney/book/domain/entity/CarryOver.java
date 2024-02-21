@@ -1,6 +1,5 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.constant.AssetType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
@@ -15,9 +14,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.util.Objects;
 
-import static com.floney.floney.book.domain.constant.AssetType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
 
 @Entity
 @Getter
@@ -35,40 +34,37 @@ public class CarryOver extends BaseEntity {
 
     @Builder
     @QueryProjection
-    private CarryOver(double money, Book book, LocalDate date) {
+    public CarryOver(double money, Book book, LocalDate date) {
         this.money = money;
         this.book = book;
         this.date = date;
     }
 
-    public static CarryOver of(BookLineRequest request, Book book, LocalDate date) {
-        if (Objects.equals(request.getFlow(), OUTCOME.getKind())) {
-            return CarryOver
-                .builder()
+    public static CarryOver of(final BookLineRequest request,
+                               final Book book,
+                               final LocalDate date) {
+        if (OUTCOME.getMeaning().equals(request.getFlow())) {
+            return CarryOver.builder()
                 .money(-1 * request.getMoney())
                 .book(book)
                 .date(date)
                 .build();
-        } else {
-            return CarryOver
-                .builder()
-                .money(request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
         }
-
+        return CarryOver.builder()
+            .money(request.getMoney())
+            .book(book)
+            .date(date)
+            .build();
     }
 
     public static CarryOver init() {
-        return CarryOver
-            .builder()
+        return CarryOver.builder()
             .money(0L)
             .build();
     }
 
-    public void update(double updateMoney, String flow) {
-        if (Objects.equals(flow, AssetType.INCOME.getKind())) {
+    public void update(final double updateMoney, final String lineCategoryName) {
+        if (INCOME.getMeaning().equals(lineCategoryName)) {
             money += updateMoney;
         } else {
             money -= updateMoney;
@@ -76,12 +72,11 @@ public class CarryOver extends BaseEntity {
     }
 
     // 내역을 삭제하는 경우, 이월된 값을 되돌리기
-    public void delete(double updateMoney, BookLineCategory flow) {
-        if (Objects.equals(flow.getName(), AssetType.INCOME.getKind())) {
+    public void delete(final double updateMoney, final BookLineCategory bookLineCategory) {
+        if (!bookLineCategory.isIncomeOrOutcome()) return;
+        if (bookLineCategory.isIncome()) {
             money -= updateMoney;
-        } else if (Objects.equals(flow.getName(), AssetType.OUTCOME.getKind())) {
-            money += updateMoney;
         }
+        money += updateMoney;
     }
-
 }

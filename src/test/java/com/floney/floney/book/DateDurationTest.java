@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static com.floney.floney.book.domain.constant.ExcelDuration.*;
+import static com.floney.floney.book.domain.ExcelDuration.*;
 import static com.floney.floney.common.domain.vo.DateDuration.currentToAfterMonth;
 import static com.floney.floney.common.domain.vo.DateDuration.durationByExcelDuration;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

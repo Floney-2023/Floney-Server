@@ -1,11 +1,11 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.alarm.repository.AlarmRepository;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.domain.entity.category.BookCategory;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
@@ -19,6 +19,8 @@ import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
+import com.floney.floney.book.repository.category.DefaultSubcategoryRepository;
+import com.floney.floney.book.repository.category.SubcategoryRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
@@ -50,6 +52,8 @@ public class BookServiceImpl implements BookService {
     private final BookLineRepository bookLineRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final SubcategoryRepository subcategoryRepository;
+    private final DefaultSubcategoryRepository defaultSubcategoryRepository;
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final BudgetRepository budgetRepository;
     private final SettlementRepository settlementRepository;
@@ -59,9 +63,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse addBook(User user, CreateBookRequest request) {
+    public CreateBookResponse createBook(final User user, final CreateBookRequest request) {
         validateJoinByBookCapacity(user);
-        return createBook(user, request);
+
+        final Book book = request.to(user.getEmail());
+        bookRepository.save(book);
+        saveDefaultBookKey(user, book);
+        saveDefaultCategories(book);
+
+        bookUserRepository.save(BookUser.of(user, book));
+        return CreateBookResponse.of(book);
     }
 
     @Override
@@ -186,11 +197,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CurrencyResponse changeCurrency(ChangeCurrencyRequest request) {
-        Book book = findBook(request.getBookKey());
+    public CurrencyResponse changeCurrency(final ChangeCurrencyRequest request) {
+        final Book book = findBook(request.getBookKey());
+        resetBookExceptCategory(book);
         book.changeCurrency(request.getRequestCurrency());
-        Book savedBook = makeInitBook(request.getBookKey());
-        return CurrencyResponse.of(savedBook);
+        return CurrencyResponse.of(book);
     }
 
     @Override
@@ -215,27 +226,22 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book makeInitBook(String bookKey) {
-        Book book = findBook(bookKey);
+    public void resetBook(final String bookKey) {
+        final Book book = findBook(bookKey);
+        resetBookExceptCategory(book);
+        categoryRepository.inactiveAllByBook(book);
+        saveDefaultCategories(book);
+    }
+
+    private void resetBookExceptCategory(final Book book) {
         book.initBook();
-        bookLineCategoryRepository.inactiveAllByBookKey(bookKey);
 
-        categoryRepository.findAllCustomCategory(book)
-            .stream()
-            .map(BookCategory::delete)
-            .forEach(categoryRepository::delete);
-        assetRepository.inactiveAllByBook(book);
-        settlementRepository.inactiveAllByBookKey(bookKey);
-        bookLineRepository.inactiveAllBy(bookKey);
-        carryOverRepository.inactiveAllByBookKey(bookKey);
-
-        List<Budget> initBudgets = budgetRepository.findAllByBook(book)
-            .stream()
-            .map(Budget::initMoney)
-            .toList();
-        budgetRepository.saveAll(initBudgets);
-
-        return bookRepository.save(book);
+        bookLineRepository.inactiveAllBy(book);
+        bookLineCategoryRepository.inactiveAllByBook(book);
+        assetRepository.inactiveAllBy(book);
+        settlementRepository.inactiveAllBy(book);
+        carryOverRepository.inactiveAllBy(book);
+        budgetRepository.inactiveAllBy(book);
     }
 
     @Override
@@ -270,7 +276,7 @@ public class BookServiceImpl implements BookService {
         LocalDate date = LocalDate.parse(firstDate);
         Map<Month, Double> monthlyMap = getInitBudgetFrame();
 
-        List<BudgetYearResponse> savedBudget = bookRepository.findBudgetByYear(bookKey, DateDuration.firstAndEndDayOfYear(date));
+        List<BudgetYearResponse> savedBudget = budgetRepository.findBudgetByYear(bookKey, DateDuration.firstAndEndDayOfYear(date));
 
         for (BudgetYearResponse budget : savedBudget) {
             Month month = budget.getDate().getMonth();
@@ -322,7 +328,7 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.inactiveAllByBook(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
         bookUserRepository.inactiveAllByBook(book);
-        budgetRepository.inactiveAllByBook(book);
+        budgetRepository.inactiveAllBy(book);
         carryOverRepository.inactiveAllByBook(book);
         categoryRepository.inactiveAllByBook(book);
     }
@@ -334,17 +340,17 @@ public class BookServiceImpl implements BookService {
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
     }
 
-    private CreateBookResponse createBook(User user, CreateBookRequest request) {
-        Book newBook = request.to(user.getEmail());
-        Book savedBook = bookRepository.save(newBook);
-        saveDefaultBookKey(user, savedBook);
+    private void saveDefaultCategories(final Book book) {
+        final List<Subcategory> subcategories = defaultSubcategoryRepository.findAllByStatus(ACTIVE)
+            .stream()
+            .map(defaultSubcategory -> Subcategory.of(defaultSubcategory, book))
+            .toList();
 
-        bookUserRepository.save(BookUser.of(user, savedBook));
-        return CreateBookResponse.of(savedBook);
+        subcategoryRepository.saveAll(subcategories);
     }
 
     private boolean canDeleteBookBy(final BookUser bookUser) {
-        return !bookUser.isInactive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
+        return bookUser.isActive() && bookUserRepository.countByBookExclusively(bookUser.getBook()) == ONLY_OWNER_COUNT;
     }
 
     private Map<Month, Double> getInitBudgetFrame() {
@@ -377,7 +383,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private BookUser findBookUserByKey(String userEmail, String bookKey) {
-        return bookUserRepository.findBookUserByKey(userEmail, bookKey)
+        return bookUserRepository.findBookUserByEmailAndBookKey(userEmail, bookKey)
             .orElseThrow(() -> new NotFoundBookUserException(bookKey, userEmail));
     }
 

@@ -1,7 +1,5 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.constant.AssetType;
-import com.floney.floney.book.domain.constant.CategoryEnum;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
@@ -16,8 +14,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.EnumMap;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -32,9 +28,8 @@ public class BookLine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
-    @MapKeyEnumerated(EnumType.STRING)
-    private final Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
+    @OneToOne(mappedBy = "bookLine", cascade = CascadeType.ALL)
+    private BookLineCategory categories;
 
     @Column(nullable = false)
     private Double money;
@@ -49,21 +44,22 @@ public class BookLine extends BaseEntity {
     private Boolean exceptStatus;
 
     @Builder
-    private BookLine(BookUser writer, Book book, Double money, LocalDate lineDate, String description, Boolean exceptStatus) {
+    private BookLine(final BookUser writer,
+                     final Book book,
+                     final BookLineCategory categories,
+                     final Double money,
+                     final LocalDate lineDate,
+                     final String description,
+                     final Boolean exceptStatus) {
+        categories.setBookLine(this);
+
         this.writer = writer;
         this.book = book;
+        this.categories = categories;
         this.money = money;
         this.lineDate = lineDate;
         this.description = description;
         this.exceptStatus = exceptStatus;
-    }
-
-    public void add(CategoryEnum flow, BookLineCategory category) {
-        this.bookLineCategories.put(flow, category);
-    }
-
-    public String getTargetCategory(CategoryEnum key) {
-        return this.bookLineCategories.get(key).getName();
     }
 
     public void update(BookLineRequest request) {
@@ -83,6 +79,6 @@ public class BookLine extends BaseEntity {
     }
 
     public boolean includedInAsset() {
-        return !AssetType.BANK.getKind().equals(bookLineCategories.get(CategoryEnum.FLOW).getName());
+        return categories.isIncomeOrOutcome();
     }
 }

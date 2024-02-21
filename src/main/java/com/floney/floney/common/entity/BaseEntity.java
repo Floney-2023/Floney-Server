@@ -46,8 +46,8 @@ public abstract class BaseEntity {
     public void inactive() {
         this.status = Status.INACTIVE;
     }
-
-    public boolean isInactive() {
-        return this.status == Status.INACTIVE;
+    
+    public boolean isActive() {
+        return status == Status.ACTIVE;
     }
 }

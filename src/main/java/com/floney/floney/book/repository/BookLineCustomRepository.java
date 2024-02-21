@@ -1,16 +1,14 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
-import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.domain.entity.Category;
 import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.DayLine;
-import com.floney.floney.book.dto.process.DayLineByDayView;
+import com.floney.floney.book.dto.process.BookLineWithWriterView;
 import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
@@ -22,33 +20,35 @@ import java.util.Optional;
 
 public interface BookLineCustomRepository {
 
-    Map<String, Double> totalExpenseByMonth(String bookKey, DateDuration dates);
+    List<BookLine> findAllByDurationOrderByDateDesc(String bookKey, DateDuration duration);
 
-    List<BookLine> findAllBookLineByDurationOrderByDateDesc(String bookKey, DateDuration duration);
+    List<BookLineWithWriterView> allLinesByDay(LocalDate date, String bookKey);
 
-    List<DayLineByDayView> allLinesByDay(LocalDate date, String bookKey);
+    TotalExpense totalMoneyByDateAndCategoryType(String bookKey, LocalDate date, final CategoryType categoryType);
 
-    List<TotalExpense> totalExpenseByDay(LocalDate date, String bookKey);
+    List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(String bookKey, DateDuration dates);
 
-    List<BookLineExpense> dayIncomeAndOutcome(String bookKey, DateDuration dates);
+    void inactiveAllBy(Book book);
 
-    void inactiveAllBy(String bookKey);
+    List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 
-    List<DayLine> getAllLines(AllOutcomesRequest request);
+    double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
 
-    Double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
+    List<AnalyzeResponseByCategory> analyzeByLineSubcategory(List<Subcategory> childCategories, DateDuration duration, String bookKey);
 
-    List<AnalyzeResponseByCategory> analyzeByCategory(List<Category> childCategories, DateDuration duration, String bookKey);
+    double totalOutcomeMoneyForBudget(Book targetBook, DateDuration duration);
 
-    Double totalOutcomeMoneyForBudget(AnalyzeRequestByBudget request, DateDuration duration);
-
-    Map<String, Double> totalExpensesForAsset(AnalyzeRequestByAsset request);
+    Map<String, Double> totalExpensesForAsset(Book book, final LocalDate date);
 
     Optional<BookLine> findByIdWithCategories(Long id);
 
-    List<BookLine> findAllByBookOrderByDateDesc(String bookKey);
+    Optional<BookLine> findByIdWithCategoriesAndWriter(Long id);
+
+    List<BookLine> findAllByBookKeyOrderByDateDesc(String bookKey);
 
     void inactiveAllByBook(Book book);
 
     List<BookLine> findAllByBookUser(BookUser bookUser);
+
+    double totalMoneyByDurationAndCategoryType(String bookKey, DateDuration duration, CategoryType categoryType);
 }

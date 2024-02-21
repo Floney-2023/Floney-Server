@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
 import static com.floney.floney.book.domain.entity.QAlarm.alarm;
@@ -19,30 +20,35 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 public class AlarmCustomRepositoryImpl implements AlarmCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
     public void inactiveAllByBookUser(final BookUser bookUser) {
         jpaQueryFactory.update(alarm)
-                .set(alarm.status, INACTIVE)
-                .set(alarm.updatedAt, LocalDateTime.now())
-                .where(
-                        alarm.bookUser.eq(bookUser),
-                        alarm.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(alarm.status, INACTIVE)
+            .set(alarm.updatedAt, LocalDateTime.now())
+            .where(
+                alarm.bookUser.eq(bookUser),
+                alarm.status.eq(ACTIVE)
+            )
+            .execute();
+
+        entityManager.clear();
     }
 
     @Override
     @Transactional
     public void inactiveAllByBook(final Book book) {
         jpaQueryFactory.update(alarm)
-                .set(alarm.status, INACTIVE)
-                .set(alarm.updatedAt, LocalDateTime.now())
-                .where(
-                        alarm.book.eq(book),
-                        alarm.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(alarm.status, INACTIVE)
+            .set(alarm.updatedAt, LocalDateTime.now())
+            .where(
+                alarm.book.eq(book),
+                alarm.status.eq(ACTIVE)
+            )
+            .execute();
+
+        entityManager.clear();
     }
 }

@@ -43,6 +43,7 @@ public enum ErrorType {
     FAIL_TO_CREATE_EXCEL("B009", "엑셀 파일을 생성하는 중 오류가 발생했습니다"),
     NOT_FOUND_ALARM("B010", "알람 내역을 찾을 수 없습니다"),
     ALREADY_EXIST("B011", "이미 존재하는 데이터입니다"),
+    CANNOT_ANALYZE("B012", "분석이 불가능한 카테고리입니다"),
 
     LIMIT("S002", "제공하지 않는 서비스입니다"),
 
@@ -53,7 +54,8 @@ public enum ErrorType {
 
     SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다"),
     REQUEST_BODY_ERROR("1", "요청 body의 내용이 올바르지 않습니다"),
-    REQUEST_PARAMETER_ERROR("2", "요청 parameter가 올바르지 않습니다");
+    REQUEST_PARAMETER_ERROR("2", "요청 parameter가 올바르지 않습니다"),
+    ;
 
     private final String code;
     private final String message;
