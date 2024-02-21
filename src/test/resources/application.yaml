@@ -4,6 +4,7 @@ spring:
     username: sa
     password:
     url: jdbc:h2:mem:test;MODE=MySQL;NON_KEYWORDS=USER
+
   jpa:
     generate-ddl: true
     hibernate:
@@ -12,20 +13,25 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+
   sql:
     init:
       mode: never
+
   redis:
     host: localhost
     port: 6379
+
   h2:
     console:
       enabled: true
+
   mail:
     username: test@test.com
     port: 0
     host: host
     password: password
+
   flyway:
     baseline-on-migrate: true
 
@@ -39,4 +45,4 @@ server:
 
 logging:
   level:
-    root: debug
+    sql: debug
