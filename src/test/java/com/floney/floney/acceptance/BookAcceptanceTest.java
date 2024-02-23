@@ -377,9 +377,12 @@ public class BookAcceptanceTest {
         @DisplayName("가계부에 유저가 존재할 경우 ")
         class Context_With_InvolveBookExists {
 
-            final User user = UserFixture.emailUserWithEmail("floney1@gmail.com");
-            final User user2 = UserFixture.emailUserWithEmail("floney2@gmail.com");
-            final User user3 = UserFixture.emailUserWithEmail("floney3@gmail.com");
+            final String mail1 = "floney1@gmail.com";
+            final String mail2 = "floney2@gmail.com";
+            final String mail3 = "floney3@gmail.com";
+            final User user1 = UserFixture.emailUserWithEmail(mail1);
+            final User user2 = UserFixture.emailUserWithEmail(mail2);
+            final User user3 = UserFixture.emailUserWithEmail(mail3);
 
             Token token1;
             Token token2;
@@ -388,7 +391,7 @@ public class BookAcceptanceTest {
 
             @BeforeEach
             public void init() {
-                token1 = UserApiFixture.loginAfterSignup(user);
+                token1 = UserApiFixture.loginAfterSignup(user1);
                 token2 = UserApiFixture.loginAfterSignup(user2);
                 token3 = UserApiFixture.loginAfterSignup(user3);
                 createBookResponse = BookApiFixture.createBook(token1.getAccessToken());
@@ -414,7 +417,7 @@ public class BookAcceptanceTest {
 
                 assertThat(responses)
                         .extracting("email")
-                        .containsExactly("floney1@gmail.com", "floney2@gmail.com", "floney3@gmail.com");
+                        .containsExactly(mail1, mail2, mail3);
             }
 
         }
