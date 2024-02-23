@@ -36,4 +36,12 @@ public class Subcategory extends BaseEntity {
             .name(name)
             .build();
     }
+
+    public static Subcategory of(final DefaultSubcategory defaultSubcategory, final Book book) {
+        return Subcategory.builder()
+            .parent(defaultSubcategory.getParent())
+            .book(book)
+            .name(defaultSubcategory.getName())
+            .build();
+    }
 }

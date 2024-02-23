@@ -26,10 +26,10 @@ public class BookController {
      * @return CreateBookResponse 생성된 가게부 정보
      * @body CreateBootRequest 가계부 생성 요청용 기본 정보
      */
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.addBook(userDetails.getUser(), request), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(userDetails.getUser(), request), HttpStatus.CREATED);
     }
 
     /**
@@ -179,7 +179,7 @@ public class BookController {
      */
     @DeleteMapping("/info/delete/all")
     public ResponseEntity<?> deleteAll(String bookKey) {
-        bookService.makeInitBook(bookKey);
+        bookService.resetBook(bookKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

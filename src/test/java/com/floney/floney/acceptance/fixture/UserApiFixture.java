@@ -9,7 +9,10 @@ import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class UserApiFixture {
+public final class UserApiFixture {
+
+    private UserApiFixture() {
+    }
 
     public static Token loginAfterSignup(final User user) {
         final SignupRequest request = SignupRequest.builder()

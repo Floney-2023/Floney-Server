@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,7 @@ import static com.floney.floney.user.entity.QUser.user;
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -79,8 +81,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public Optional<BookUser> findBookUserByEmailAndBookKey(final String userEmail,
                                                             final String bookKey) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.book, book)
-            .innerJoin(bookUser.user, user)
+            .innerJoin(bookUser.book, book).fetchJoin()
+            .innerJoin(bookUser.user, user).fetchJoin()
             .where(
                 user.email.eq(userEmail),
                 book.bookKey.eq(bookKey)
@@ -118,8 +120,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     public Optional<BookUser> findBookUserByCode(final String userEmail,
                                                  final String bookCode) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.user, user)
-            .innerJoin(bookUser.book, book)
+            .innerJoin(bookUser.user, user).fetchJoin()
+            .innerJoin(bookUser.book, book).fetchJoin()
             .where(
                 book.code.eq(bookCode),
                 user.email.eq(userEmail)
@@ -138,8 +140,8 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
         return jpaQueryFactory.select(
                 new QMyBookInfo(
                     book.bookImg,
-                    book.name,
                     book.bookKey,
+                    book.name,
                     bookUser.count()
                 ))
             .from(bookUser)
@@ -192,7 +194,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Transactional(readOnly = true)
     public List<BookUser> findAllByUserId(final Long userId) {
         return jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.user, user)
+            .innerJoin(bookUser.user, user).fetchJoin()
             .where(
                 user.id.eq(userId)
             )
@@ -213,5 +215,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 bookUser.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }

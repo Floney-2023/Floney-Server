@@ -14,11 +14,11 @@ public interface AssetRepository extends JpaRepository<Asset, Long>, AssetCustom
 
     List<Asset> findByDateBetweenAndBookAndStatus(LocalDate startDate, LocalDate endDate, Book book, Status status);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(
-            value = "insert into asset (date, money, book_id) values (:date, :money, :book) " +
-                    "on duplicate key update money = money + :money, updated_at = now()",
-            nativeQuery = true
+        value = "insert into asset (date, money, book_id) values (:date, :money, :book) " +
+            "on duplicate key update money = money + :money, updated_at = now()",
+        nativeQuery = true
     )
     void upsertMoneyByDateAndBook(LocalDate date, Book book, double money);
 }

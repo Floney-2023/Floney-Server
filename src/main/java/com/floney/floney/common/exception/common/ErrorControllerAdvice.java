@@ -243,6 +243,13 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(NotFoundParentCategoryException.class)
+    protected ResponseEntity<ErrorResponse> notFoundParentCategoryException(NotFoundParentCategoryException exception) {
+        logger.warn("[{}] {}", exception.getCategoryName(), exception.getErrorType().getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // SETTLEMENT
     @ExceptionHandler(SettlementNotFoundException.class)
     protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {
@@ -295,9 +302,6 @@ public class ErrorControllerAdvice {
         stringBuilder.append(exception).append('\n');
 
         for (final StackTraceElement info : exception.getStackTrace()) {
-            if (!info.getClassName().startsWith("com.floney")) { // 프로젝트 내에서 발생한 에러만 포함
-                continue;
-            }
             if ("invoke".equals(info.getMethodName())) { // 프록시 메서드 제외
                 continue;
             }
@@ -305,7 +309,7 @@ public class ErrorControllerAdvice {
                 continue;
             }
 
-            stringBuilder.append("\t- ").append(info).append('\n');
+            stringBuilder.append("- ").append(info).append('\n');
         }
 
         logger.error(stringBuilder.toString());

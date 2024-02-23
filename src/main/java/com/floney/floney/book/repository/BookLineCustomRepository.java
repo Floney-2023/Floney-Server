@@ -28,7 +28,7 @@ public interface BookLineCustomRepository {
 
     List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(String bookKey, DateDuration dates);
 
-    void inactiveAllBy(String bookKey);
+    void inactiveAllBy(Book book);
 
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 
@@ -41,6 +41,8 @@ public interface BookLineCustomRepository {
     Map<String, Double> totalExpensesForAsset(Book book, final LocalDate date);
 
     Optional<BookLine> findByIdWithCategories(Long id);
+
+    Optional<BookLine> findByIdWithCategoriesAndWriter(Long id);
 
     List<BookLine> findAllByBookKeyOrderByDateDesc(String bookKey);
 

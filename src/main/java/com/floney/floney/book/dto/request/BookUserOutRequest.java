@@ -1,12 +1,11 @@
 package com.floney.floney.book.dto.request;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class BookUserOutRequest {
-    private String bookKey;
+    public String bookKey;
 }

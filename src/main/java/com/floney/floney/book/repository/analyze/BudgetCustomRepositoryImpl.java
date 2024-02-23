@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,10 +24,11 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 public class BudgetCustomRepositoryImpl implements BudgetCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
-    public void inactiveAllByBook(final Book book) {
+    public void inactiveAllBy(final Book book) {
         jpaQueryFactory.update(budget)
             .set(budget.status, INACTIVE)
             .set(budget.updatedAt, LocalDateTime.now())
@@ -35,6 +37,8 @@ public class BudgetCustomRepositoryImpl implements BudgetCustomRepository {
                 budget.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override

@@ -11,13 +11,12 @@ import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -43,6 +42,7 @@ import static com.floney.floney.user.entity.QUser.user;
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -172,19 +172,17 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public void inactiveAllBy(final String bookKey) {
-        final JPQLQuery<Book> bookByBookKey = JPAExpressions
-            .selectFrom(book)
-            .where(book.bookKey.eq(bookKey));
-
+    public void inactiveAllBy(final Book book) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
             .set(bookLine.updatedAt, LocalDateTime.now())
             .where(
-                bookLine.book.eq(bookByBookKey),
+                bookLine.book.eq(book),
                 bookLine.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 
     @Override
@@ -353,6 +351,32 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<BookLine> findByIdWithCategoriesAndWriter(final Long id) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
+            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
+            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
+            .innerJoin(bookLine.writer, bookUser).fetchJoin()
+            .innerJoin(bookUser.user, user).fetchJoin()
+            .where(
+                bookLine.id.eq(id)
+            )
+            .where(
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                bookLineCategory.assetSubcategory.status.eq(ACTIVE),
+                bookLineCategory.bookLine.status.eq(ACTIVE),
+                bookLineCategory.bookLine.writer.status.eq(ACTIVE)
+            )
+            .fetchOne()
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<BookLine> findAllByBookKeyOrderByDateDesc(final String bookKey) {
         return jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book).fetchJoin()
@@ -384,6 +408,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.book.eq(book),
                 bookLine.status.eq(ACTIVE)
             ).execute();
+
+        entityManager.clear();
     }
 
     @Override

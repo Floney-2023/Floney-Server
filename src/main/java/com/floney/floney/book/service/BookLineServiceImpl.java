@@ -58,6 +58,7 @@ public class BookLineServiceImpl implements BookLineService {
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
         final BookLine bookLine = request.to(bookUser, bookLineCategory);
+
         bookLineRepository.save(bookLine);
 
         if (book.getCarryOverStatus()) {
@@ -117,7 +118,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse changeLine(final BookLineRequest request) {
-        final BookLine bookLine = bookLineRepository.findByIdWithCategories(request.getLineId())
+        final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
@@ -152,7 +153,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
-        final String categoryName = request.getFlow();
+        final String categoryName = request.getFlow(); //LineType
         final Category lineCategory = findLineCategory(categoryName);
 
         final Subcategory lineSubcategory = findLineSubCategory(request.getLine(), lineCategory, book);
@@ -184,20 +185,20 @@ public class BookLineServiceImpl implements BookLineService {
 
     private Category findLineCategory(final String categoryName) {
         final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
-        return categoryRepository.findLineCategory(categoryType)
+        return categoryRepository.findByType(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
     private Subcategory findLineSubCategory(final String lineSubCategoryName,
                                             final Category lineCategory,
                                             final Book book) {
-        return categoryRepository.findLineSubCategory(lineSubCategoryName, book, lineCategory.getName())
+        return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName())
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
     private Subcategory findAssetSubCategory(final Book book,
                                              final String assetSubCategoryName) {
-        return categoryRepository.findLineSubCategory(assetSubCategoryName, book, ASSET)
+        return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET)
             .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 

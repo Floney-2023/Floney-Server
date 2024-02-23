@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,10 +36,11 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllSubCategoryInfoByParent(final CategoryType parent, final String bookKey) {
+    public List<CategoryInfo> findSubcategoryInfos(final CategoryType parent, final String bookKey) {
         return jpaQueryFactory.select(
                 new QCategoryInfo(constant(true), subcategory.name)
             )
@@ -58,7 +60,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Category> findLineCategory(CategoryType categoryType) {
+    public Optional<Category> findByType(CategoryType categoryType) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(category)
             .where(
                 category.name.eq(categoryType)
@@ -71,9 +73,9 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Subcategory> findLineSubCategory(final String name,
-                                                     final Book targetBook,
-                                                     final CategoryType parentName) {
+    public Optional<Subcategory> findSubcategory(final String name,
+                                                 final Book targetBook,
+                                                 final CategoryType parentName) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
@@ -108,9 +110,9 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Subcategory> findCustomCategory(final Category parent,
-                                                    final Book targetBook,
-                                                    final String name) {
+    public Optional<Subcategory> findSubcategory(final Category parent,
+                                                 final Book targetBook,
+                                                 final String name) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
@@ -129,8 +131,8 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Subcategory> findAllSubCategoryByLineCategory(final Category parent,
-                                                              final String bookKey) {
+    public List<Subcategory> findSubcategories(final Category parent,
+                                               final String bookKey) {
         return jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
@@ -163,5 +165,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
         if (result == 0) {
             logger.warn("inactiveAllByBook 쿼리에서 변경된 row가 없음 - 가계부: {}", book.getId());
         }
+
+        entityManager.clear();
     }
 }
