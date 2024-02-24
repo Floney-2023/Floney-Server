@@ -65,7 +65,6 @@ public class RepeatBookLine extends BaseEntity {
         List<BookLine> bookLines = new ArrayList<>();
 
         switch (repeatDuration) {
-
             case EVERYDAY -> {
                 getEveryDay(bookLines);
             }
@@ -76,7 +75,7 @@ public class RepeatBookLine extends BaseEntity {
                 getEveryMonth(bookLines);
             }
             case WEEKDAY -> {
-                getWeekDay(bookLines);
+                getEveryWeekDay(bookLines);
             }
             case WEEKEND -> {
                 getEveryWeekend(bookLines);
@@ -87,20 +86,20 @@ public class RepeatBookLine extends BaseEntity {
 
     private void getEveryDay(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusDays(1);
-        LocalDate endDate = startDate.plusYears(REPEAT_YEAR);
+        LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
+
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            BookLine bookLine = BookLine.of(date, this);
+            BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
-
     }
 
     private void getEveryMonth(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusMonths(1);
-        LocalDate endDate = startDate.plusYears(REPEAT_YEAR);
+        LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusMonths(1)) {
-            BookLine bookLine = BookLine.of(date, this);
+            BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
     }
@@ -108,33 +107,32 @@ public class RepeatBookLine extends BaseEntity {
 
     private void getEveryWeek(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusWeeks(1);
-        LocalDate endDate = startDate.plusYears(REPEAT_YEAR);
+        LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusWeeks(1)) {
-            BookLine bookLine = BookLine.of(date, this);
+            BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
-
     }
 
     private void getEveryWeekend(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusDays(1);
-        LocalDate endDate = startDate.plusYears(REPEAT_YEAR);
+        LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
+
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            // 주중인지 확인
-            if (!isWeekDay(date)) {
-                bookLines.add(BookLine.of(date, this));
+            if (isWeekend(date)) {
+                bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }
         }
     }
 
-    private void getWeekDay(List<BookLine> bookLines) {
+    private void getEveryWeekDay(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusDays(1);
-        LocalDate endDate = startDate.plusYears(REPEAT_YEAR);
+        LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
+
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
-            // 주중인지 확인
             if (isWeekDay(date)) {
-                bookLines.add(BookLine.of(date, this));
+                bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }
         }
     }
@@ -142,6 +140,11 @@ public class RepeatBookLine extends BaseEntity {
     private boolean isWeekDay(LocalDate date) {
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
 
