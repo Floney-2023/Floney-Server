@@ -55,7 +55,7 @@ public class ExcelServiceImpl implements ExcelService {
 
             int cellIdx = 0;
             final Cell writerCell = row.createCell(cellIdx++);
-            writerCell.setCellValue(bookLine.getWriter());
+            writerCell.setCellValue(bookLine.getWriterNickName());
             writerCell.setCellStyle(cellStyle);
 
             final Cell dateCell = row.createCell(cellIdx++);
@@ -102,7 +102,7 @@ public class ExcelServiceImpl implements ExcelService {
         int maxLengthOfDescription = 15;
 
         for (final BookLine bookLine : bookLines) {
-            maxLengthOfWriter = Math.max(maxLengthOfWriter, bookLine.getWriter().length());
+            maxLengthOfWriter = Math.max(maxLengthOfWriter, bookLine.getWriterNickName().length());
             maxLengthOfMoney = Math.max(maxLengthOfMoney, String.valueOf(bookLine.getMoney()).length());
             maxLengthOfDescription = Math.max(maxLengthOfDescription, bookLine.getDescription().length());
         }

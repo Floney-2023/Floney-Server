@@ -62,6 +62,18 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = exceptStatus;
     }
 
+    public static BookLine createByRepeatBookLine(LocalDate date, RepeatBookLine repeatBookLine) {
+        return BookLine.builder()
+            .categories(repeatBookLine.getCategories())
+            .book(repeatBookLine.getBook())
+            .description(repeatBookLine.getDescription())
+            .lineDate(date)
+            .money(repeatBookLine.getMoney())
+            .exceptStatus(repeatBookLine.getExceptStatus())
+            .writer(repeatBookLine.getWriter())
+            .build();
+    }
+
     public void update(BookLineRequest request) {
         this.money = request.getMoney();
         this.lineDate = request.getLineDate();
@@ -69,7 +81,7 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = request.getExcept();
     }
 
-    public String getWriter() {
+    public String getWriterNickName() {
         return this.writer.getNickName();
     }
 
@@ -81,4 +93,6 @@ public class BookLine extends BaseEntity {
     public boolean includedInAsset() {
         return categories.isIncomeOrOutcome();
     }
+
+
 }

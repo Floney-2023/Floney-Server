@@ -29,7 +29,7 @@ public class BookLineResponse {
             .lineDate(bookLine.getLineDate())
             .description(bookLine.getDescription())
             .except(bookLine.getExceptStatus())
-            .nickname(bookLine.getWriter())
+            .nickname(bookLine.getWriterNickName())
             .build();
     }
 }
