@@ -1,7 +1,7 @@
 package com.floney.floney.book.domain;
 
 public enum RepeatDuration {
-
+    NONE("없음"),
     EVERYDAY("매일"),
     WEEK("매주"),
     MONTH("매달"),

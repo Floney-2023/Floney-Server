@@ -4,6 +4,7 @@ import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
 import com.floney.floney.book.domain.Currency;
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
@@ -320,6 +321,7 @@ public class BookAcceptanceTest {
                     .lineDate(LocalDate.parse(date))
                     .except(false)
                     .asset(assetSubCategory)
+                    .repeatDuration(RepeatDuration.NONE)
                     .build();
             }
 

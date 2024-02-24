@@ -1,5 +1,6 @@
 package com.floney.floney.acceptance.fixture;
 
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.request.CodeJoinRequest;
 import com.floney.floney.book.dto.request.CreateBookRequest;
@@ -67,6 +68,7 @@ public class BookApiFixture {
             .lineDate(localDate)
             .description("예시")
             .except(false)
+            .repeatDuration(RepeatDuration.NONE)
             .build();
 
         return RestAssured.given()

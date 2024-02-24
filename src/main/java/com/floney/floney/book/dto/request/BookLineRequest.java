@@ -1,5 +1,6 @@
 package com.floney.floney.book.dto.request;
 
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookUser;
@@ -23,6 +24,7 @@ public class BookLineRequest {
     private LocalDate lineDate;
     private String description;
     private Boolean except;
+    private RepeatDuration repeatDuration;
 
     public BookLine to(final BookUser bookUser, final BookLineCategory bookLineCategory) {
         return BookLine.builder()
