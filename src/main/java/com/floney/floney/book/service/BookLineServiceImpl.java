@@ -2,13 +2,11 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.domain.entity.BookLineCategory;
-import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.BookLineWithWriterView;
@@ -21,6 +19,7 @@ import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.RepeatBookLineRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -51,6 +50,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final CarryOverService carryOverFactory;
     private final AssetService assetService;
     private final CategoryCustomRepository categoryRepository;
+    private final RepeatBookLineRepository repeatBookLineRepository;
 
     @Override
     public BookLineResponse createBookLine(final String email, final BookLineRequest request) {
@@ -66,6 +66,11 @@ public class BookLineServiceImpl implements BookLineService {
         }
         if (bookLine.includedInAsset()) {
             assetService.addAssetOf(request, book);
+        }
+
+        // 반복 내역 설정
+        if (request.getRepeatDuration() != RepeatDuration.NONE) {
+            repeatBookLine(bookLine, book, request.getRepeatDuration());
         }
 
         return BookLineResponse.from(bookLine);
@@ -150,6 +155,18 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
+    }
+
+    private void repeatBookLine(BookLine bookLine, Book book, RepeatDuration repeatDuration) {
+        // 1. 반복 내역 객체 생성
+        RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, repeatDuration);
+
+        // 2. 주기에 따른 가계부 내역 생성
+        List<BookLine> bookLines = repeatBookLine.bookLinesBy(repeatDuration);
+
+        // 3.  저장
+        repeatBookLineRepository.save(repeatBookLine);
+        bookLineRepository.saveAll(bookLines);
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
