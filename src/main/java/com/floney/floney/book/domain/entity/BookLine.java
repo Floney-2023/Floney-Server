@@ -63,8 +63,10 @@ public class BookLine extends BaseEntity {
     }
 
     public static BookLine createByRepeatBookLine(LocalDate date, RepeatBookLine repeatBookLine) {
+        BookLineCategory bookLineCategory = BookLineCategory.create(repeatBookLine.getLineCategory(), repeatBookLine.getLineSubcategory(), repeatBookLine.getAssetSubcategory());
+
         return BookLine.builder()
-            .categories(repeatBookLine.getCategories())
+            .categories(bookLineCategory)
             .book(repeatBookLine.getBook())
             .description(repeatBookLine.getDescription())
             .lineDate(date)

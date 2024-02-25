@@ -11,7 +11,13 @@ CREATE TABLE IF NOT EXISTS `repeat_book_line`
     `book_id`       bigint       NOT NULL,
     `writer_id`     bigint       NOT NULL,
     `repeat_duration` varchar(20) NOT NULL,
+    `line_category_id`     bigint  NOT NULL,
+    `line_subcategory_id`  bigint  NOT NULL,
+    `asset_subcategory_id` bigint  NOT NULL,
     PRIMARY KEY (`id`),
     KEY `fk_idx_book_in_repeat_book_line` (`book_id`),
-    KEY `fk_idx_user_in_repeat_book_line` (`writer_id`)
+    KEY `fk_idx_user_in_repeat_book_line` (`writer_id`),
+    KEY `fk_line_category_in_repeat_line` (`line_category_id`),
+    KEY `fk_line_subcategory_in_repeat_line` (`line_subcategory_id`),
+    KEY `fk_asset_subcategory_in_repeat_line` (`asset_subcategory_id`)
 );

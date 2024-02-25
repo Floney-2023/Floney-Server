@@ -1,6 +1,8 @@
 package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.domain.RepeatDuration;
+import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -23,7 +25,6 @@ public class RepeatBookLine extends BaseEntity {
 
     public static final int REPEAT_YEAR = 5;
 
-
     @Enumerated(value = EnumType.STRING)
     private RepeatDuration repeatDuration;
 
@@ -33,8 +34,14 @@ public class RepeatBookLine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToOne(mappedBy = "bookLine", cascade = CascadeType.ALL)
-    private BookLineCategory categories;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Category lineCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Subcategory lineSubcategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Subcategory assetSubcategory;
 
     @Column(nullable = false)
     private Double money;
@@ -49,19 +56,23 @@ public class RepeatBookLine extends BaseEntity {
     private Boolean exceptStatus;
 
     public static RepeatBookLine of(BookLine bookLine, Book book, RepeatDuration repeatDuration) {
+        BookLineCategory bookLineCategory = bookLine.getCategories();
+
         return RepeatBookLine.builder()
             .money(bookLine.getMoney())
             .book(book)
             .writer(bookLine.getWriter())
             .description(bookLine.getDescription())
-            .categories(bookLine.getCategories())
+            .lineCategory(bookLineCategory.getLineCategory())
+            .assetSubcategory(bookLineCategory.getAssetSubcategory())
+            .lineSubcategory(bookLineCategory.getLineSubcategory())
             .lineDate(bookLine.getLineDate())
             .repeatDuration(repeatDuration)
             .exceptStatus(bookLine.getExceptStatus())
             .build();
     }
 
-    public List<BookLine> bookLinesByRepeat(RepeatDuration repeatDuration) {
+    public List<BookLine> bookLinesBy(RepeatDuration repeatDuration) {
         List<BookLine> bookLines = new ArrayList<>();
 
         switch (repeatDuration) {

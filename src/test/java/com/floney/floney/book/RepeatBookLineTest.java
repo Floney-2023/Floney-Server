@@ -29,7 +29,9 @@ public class RepeatBookLineTest {
         assertThat(bookLines.get(0).getBook()).isEqualTo(repeatBookLine.getBook());
         assertThat(bookLines.get(0).getMoney()).isEqualTo(repeatBookLine.getMoney());
         assertThat(bookLines.get(0).getWriter()).isEqualTo(repeatBookLine.getWriter());
-        assertThat(bookLines.get(0).getCategories()).isEqualTo(repeatBookLine.getCategories());
+        assertThat(bookLines.get(0).getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory());
+        assertThat(bookLines.get(0).getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory());
+        assertThat(bookLines.get(0).getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory());
         assertThat(bookLines.get(0).getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus());
     }
 
@@ -80,7 +82,9 @@ public class RepeatBookLineTest {
                 assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook());
                 assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney());
                 assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter());
-                assertThat(repeatBookLine.getCategories()).isEqualTo(bookLine.getCategories());
+                assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory());
+                assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory());
+                assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory());
                 assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription());
                 assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus());
 
@@ -120,7 +124,7 @@ public class RepeatBookLineTest {
             @Test
             @DisplayName("매일 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesByRepeat(RepeatDuration.EVERYDAY);
+                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.EVERYDAY);
 
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
@@ -140,7 +144,7 @@ public class RepeatBookLineTest {
             @Test
             @DisplayName("매주 같은 요일에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesByRepeat(RepeatDuration.WEEK);
+                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEK);
 
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
@@ -160,7 +164,7 @@ public class RepeatBookLineTest {
             @Test
             @DisplayName("매달 같은 일자에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesByRepeat(RepeatDuration.MONTH);
+                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.MONTH);
 
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.get(0).getLineDate()).isEqualTo(lineDate.plusMonths(1));
@@ -174,7 +178,7 @@ public class RepeatBookLineTest {
             @Test
             @DisplayName("주중 일자에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesByRepeat(RepeatDuration.WEEKDAY);
+                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKDAY);
 
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
                 long weekdayCount = 0;
@@ -198,7 +202,7 @@ public class RepeatBookLineTest {
             @Test
             @DisplayName("주말 일자에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesByRepeat(RepeatDuration.WEEKEND);
+                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKEND);
 
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
