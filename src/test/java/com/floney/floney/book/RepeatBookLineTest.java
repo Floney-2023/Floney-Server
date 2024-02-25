@@ -71,7 +71,9 @@ public class RepeatBookLineTest {
                     .hasFieldOrProperty("writer")
                     .hasFieldOrProperty("book")
                     .hasFieldOrProperty("description")
-                    .hasFieldOrProperty("categories")
+                    .hasFieldOrProperty("lineCategory")
+                    .hasFieldOrProperty("lineSubcategory")
+                    .hasFieldOrProperty("assetSubcategory")
                     .hasFieldOrProperty("lineDate");
             }
 
