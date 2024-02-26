@@ -18,7 +18,6 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -28,16 +27,9 @@ public class ErrorControllerAdvice {
 
     // USER
     @ExceptionHandler(UserFoundException.class)
-    protected ResponseEntity<Map<String, Object>> foundUser(UserFoundException exception) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("code", exception.getErrorType().getCode());
-        body.put("message", exception.getErrorType().getMessage());
-        body.put("provider", exception.getProvider());
-
-        logger.warn("이미 존재하는 유저: [{}]", exception.getEmail());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(body);
+    protected ResponseEntity<ErrorResponse> foundUser(UserFoundException exception) {
+        logger.warn(exception.getLog());
+        return generateResponse(exception, Map.of("provider", exception.getProvider()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -314,5 +306,11 @@ public class ErrorControllerAdvice {
 
         logger.error(stringBuilder.toString());
     }
+
+    private ResponseEntity<ErrorResponse> generateResponse(CustomException exception, Map<String, Object> attributes) {
+        ErrorResponse response = ErrorResponse.of(exception.getErrorType(), attributes);
+        return ResponseEntity.status(exception.getHttpStatus()).body(response);
+    }
+
 }
 

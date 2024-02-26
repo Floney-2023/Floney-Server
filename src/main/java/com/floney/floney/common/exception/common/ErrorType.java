@@ -3,13 +3,14 @@ package com.floney.floney.common.exception.common;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ErrorType {
 
-    USER_FOUND("U001", "이미 존재하는 유저입니다"),
+    USER_FOUND("U001", HttpStatus.BAD_REQUEST, "이미 존재하는 유저입니다"),
     NOT_AUTHENTICATED("U002", "로그인이 필요합니다"),
     INVALID_MAIL_ADDRESS("U003", "메일 주소가 올바르지 않습니다"),
     FAIL_TO_SEND_MAIL("U004", "메일 서버에 오류가 발생했습니다"),
@@ -58,6 +59,13 @@ public enum ErrorType {
     ;
 
     private final String code;
+    private final HttpStatus httpStatus;
     private final String message;
+
+    ErrorType(String code, String message) {
+        this.code = code;
+        this.httpStatus = HttpStatus.BAD_REQUEST;
+        this.message = message;
+    }
 }
 

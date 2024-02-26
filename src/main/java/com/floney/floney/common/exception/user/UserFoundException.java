@@ -1,19 +1,22 @@
 package com.floney.floney.common.exception.user;
 
+import com.floney.floney.common.exception.common.CustomException;
 import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.user.dto.constant.Provider;
 import lombok.Getter;
 
 @Getter
-public class UserFoundException extends RuntimeException {
+public class UserFoundException extends CustomException {
 
-    private final ErrorType errorType;
-    private final String email;
-    private final Provider provider;
+    private static final String LOG_PATTERN = "이미 존재하는 유저: [%s]";
+    private final String provider;
 
     public UserFoundException(String email, Provider provider) {
-        this.errorType = ErrorType.USER_FOUND;
-        this.email = email;
-        this.provider = provider;
+        super(ErrorType.USER_FOUND, LOG_PATTERN, email);
+        this.provider = String.valueOf(provider);
+    }
+
+    public String getProvider() {
+        return provider;
     }
 }
