@@ -21,3 +21,7 @@ CREATE TABLE IF NOT EXISTS `repeat_book_line`
     KEY `fk_line_subcategory_in_repeat_line` (`line_subcategory_id`),
     KEY `fk_asset_subcategory_in_repeat_line` (`asset_subcategory_id`)
 );
+
+ALTER TABLE `book_line` ADD COLUMN `repeat_book_line_id` bigint;
+ALTER TABLE `book_line` ADD INDEX repeat_book_line(`repeat_book_line_id`)
+

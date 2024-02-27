@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
@@ -43,6 +44,9 @@ public class BookLine extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private RepeatBookLine repeatBookLine;
+
     @Builder
     private BookLine(final BookUser writer,
                      final Book book,
@@ -50,7 +54,8 @@ public class BookLine extends BaseEntity {
                      final Double money,
                      final LocalDate lineDate,
                      final String description,
-                     final Boolean exceptStatus) {
+                     final Boolean exceptStatus, final RepeatBookLine repeatBookLine) {
+
         categories.setBookLine(this);
 
         this.writer = writer;
@@ -60,6 +65,7 @@ public class BookLine extends BaseEntity {
         this.lineDate = lineDate;
         this.description = description;
         this.exceptStatus = exceptStatus;
+        this.repeatBookLine = repeatBookLine;
     }
 
     public static BookLine createByRepeatBookLine(LocalDate date, RepeatBookLine repeatBookLine) {
@@ -73,6 +79,7 @@ public class BookLine extends BaseEntity {
             .money(repeatBookLine.getMoney())
             .exceptStatus(repeatBookLine.getExceptStatus())
             .writer(repeatBookLine.getWriter())
+            .repeatBookLine(repeatBookLine)
             .build();
     }
 
@@ -83,8 +90,19 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = request.getExcept();
     }
 
+    public RepeatDuration getRepeatDuration() {
+        if (this.repeatBookLine != null) {
+            return this.repeatBookLine.getRepeatDuration();
+        }
+        return RepeatDuration.NONE;
+    }
+
     public String getWriterNickName() {
         return this.writer.getNickName();
+    }
+
+    public void repeatBookLine(RepeatBookLine repeatBookLine) {
+        this.repeatBookLine = repeatBookLine;
     }
 
     public void inactive() {

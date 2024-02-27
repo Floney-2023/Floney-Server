@@ -1,5 +1,6 @@
 package com.floney.floney.book.dto.response;
 
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.entity.BookLine;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class BookLineResponse {
     private final String description;
     private final Boolean except;
     private final String nickname;
+    private final RepeatDuration repeatDuration;
 
     public static BookLineResponse from(final BookLine bookLine) {
         return BookLineResponse.builder()
@@ -30,6 +32,7 @@ public class BookLineResponse {
             .description(bookLine.getDescription())
             .except(bookLine.getExceptStatus())
             .nickname(bookLine.getWriterNickName())
+            .repeatDuration(bookLine.getRepeatDuration())
             .build();
     }
 }

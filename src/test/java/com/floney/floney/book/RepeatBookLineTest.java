@@ -199,7 +199,7 @@ public class RepeatBookLineTest {
                         weekendCount++;
                     }
                 }
-                
+
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.size()).isEqualTo(weekendCount);
             }

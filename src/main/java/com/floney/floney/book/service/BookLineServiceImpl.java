@@ -59,6 +59,11 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLineCategory bookLineCategory = findCategories(request, book);
         final BookLine bookLine = request.to(bookUser, bookLineCategory);
 
+        // 반복 내역 설정
+        if (request.getRepeatDuration() != RepeatDuration.NONE) {
+            repeatBookLine(bookLine, book, request.getRepeatDuration());
+        }
+
         bookLineRepository.save(bookLine);
 
         if (book.getCarryOverStatus()) {
@@ -66,11 +71,6 @@ public class BookLineServiceImpl implements BookLineService {
         }
         if (bookLine.includedInAsset()) {
             assetService.addAssetOf(request, book);
-        }
-
-        // 반복 내역 설정
-        if (request.getRepeatDuration() != RepeatDuration.NONE) {
-            repeatBookLine(bookLine, book, request.getRepeatDuration());
         }
 
         return BookLineResponse.from(bookLine);
@@ -162,6 +162,7 @@ public class BookLineServiceImpl implements BookLineService {
         RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, repeatDuration);
 
         // 2. 주기에 따른 가계부 내역 생성
+        bookLine.repeatBookLine(repeatBookLine);
         List<BookLine> bookLines = repeatBookLine.bookLinesBy(repeatDuration);
 
         // 3.  저장
