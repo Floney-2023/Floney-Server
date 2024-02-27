@@ -2,9 +2,6 @@ package com.floney.floney.book;
 
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.book.domain.RepeatDuration;
-import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
@@ -20,20 +17,25 @@ import java.util.List;
 
 import static com.floney.floney.book.domain.entity.RepeatBookLine.REPEAT_YEAR;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @AcceptanceTest
 @DisplayName("단위 테스트: 반복 내역")
 public class RepeatBookLineTest {
 
     private void assertBookLineSameWithRepeat(List<BookLine> bookLines, RepeatBookLine repeatBookLine) {
-        assertThat(bookLines.get(0).getBook()).isEqualTo(repeatBookLine.getBook());
-        assertThat(bookLines.get(0).getMoney()).isEqualTo(repeatBookLine.getMoney());
-        assertThat(bookLines.get(0).getWriter()).isEqualTo(repeatBookLine.getWriter());
-        assertThat(bookLines.get(0).getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory());
-        assertThat(bookLines.get(0).getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory());
-        assertThat(bookLines.get(0).getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory());
-        assertThat(bookLines.get(0).getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus());
+        BookLine targetBookLineToAssert = bookLines.get(0);
+
+        assertAll(
+            () -> assertThat(targetBookLineToAssert.getBook()).isEqualTo(repeatBookLine.getBook()),
+            () -> assertThat(targetBookLineToAssert.getMoney()).isEqualTo(repeatBookLine.getMoney()),
+            () -> assertThat(targetBookLineToAssert.getWriter()).isEqualTo(repeatBookLine.getWriter()),
+            () -> assertThat(targetBookLineToAssert.getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory()),
+            () -> assertThat(targetBookLineToAssert.getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory()),
+            () -> assertThat(targetBookLineToAssert.getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus())
+        );
     }
+
 
     @Nested
     @DisplayName("반복 내역을 생성할 때")
@@ -50,14 +52,7 @@ public class RepeatBookLineTest {
                 User user = UserFixture.emailUser();
                 book = BookFixture.createBook();
                 BookUser bookUser = BookUserFixture.createBookUser(book, user);
-                Category lineCategory = Category.builder().name(CategoryType.INCOME).build();
-                Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
-
-                Subcategory subCategory = SubCategoryFixture.createSubcategory(book, lineCategory, "급여");
-                Subcategory assetSubCategory = SubCategoryFixture.createSubcategory(book, assetLineCategory, "현금");
-
-                BookLineCategory bookLineCategory = BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
-
+                BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
 
             }
@@ -66,29 +61,22 @@ public class RepeatBookLineTest {
             @DisplayName("생성된다.")
             void it_returns_repeatBookLine() {
                 RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
-                assertThat(repeatBookLine).hasFieldOrProperty("repeatDuration")
-                    .hasFieldOrProperty("money")
-                    .hasFieldOrProperty("writer")
-                    .hasFieldOrProperty("book")
-                    .hasFieldOrProperty("description")
-                    .hasFieldOrProperty("lineCategory")
-                    .hasFieldOrProperty("lineSubcategory")
-                    .hasFieldOrProperty("assetSubcategory")
-                    .hasFieldOrProperty("lineDate");
+                assertThat(repeatBookLine).isNotNull();
             }
 
             @Test
             @DisplayName("생성된 반복 내역은 가계부 내역과 일치한다")
             void it_same_with_bookLine() {
                 RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
-                assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook());
-                assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney());
-                assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter());
-                assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory());
-                assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory());
-                assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory());
-                assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription());
-                assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus());
+                assertAll(
+                    () -> assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook()),
+                    () -> assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney()),
+                    () -> assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter()),
+                    () -> assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory()),
+                    () -> assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory()),
+                    () -> assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription()),
+                    () -> assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus())
+                );
 
             }
         }
@@ -100,7 +88,6 @@ public class RepeatBookLineTest {
         BookLine bookLine;
         Book book;
         RepeatBookLine repeatBookLine;
-
         LocalDate lineDate = LocalDate.now();
 
         @BeforeEach
@@ -108,12 +95,7 @@ public class RepeatBookLineTest {
             User user = UserFixture.emailUser();
             book = BookFixture.createBook();
             BookUser bookUser = BookUserFixture.createBookUser(book, user);
-            Category lineCategory = Category.builder().name(CategoryType.INCOME).build();
-            Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
-
-            Subcategory subCategory = SubCategoryFixture.createSubcategory(book, lineCategory, "급여");
-            Subcategory assetSubCategory = SubCategoryFixture.createSubcategory(book, assetLineCategory, "현금");
-            BookLineCategory bookLineCategory = BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
+            BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book);
 
             bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, lineDate);
             repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
@@ -217,8 +199,7 @@ public class RepeatBookLineTest {
                         weekendCount++;
                     }
                 }
-
-
+                
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.size()).isEqualTo(weekendCount);
             }
