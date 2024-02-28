@@ -90,45 +90,53 @@ INSERT IGNORE INTO `subcategory`(parent_id, book_id, name, created_at) (SELECT p
                                                                         WHERE dtype = 'BookCategory'
                                                                           AND status = 'ACTIVE');
 
--- 기존 BookLineCategory
-INSERT INTO `book_line_category`(book_line_id,
-                                 line_category_id,
-                                 line_subcategory_id,
-                                 asset_subcategory_id,
-                                 created_at)
-    (SELECT oblc.book_line_id,
-            linesub.parent_id,
-            linesub.id,
-            assetsub.id,
-            oblc.created_at
+-- BookLineCategory
+insert into `book_line_category` (book_line_id,
+                                  line_category_id,
+                                  line_subcategory_id,
+                                  asset_subcategory_id,
+                                  created_at) (select bl.id,
+                                                      line_sub.parent_id,
+                                                      line_sub.id,
+                                                      asset_sub.id,
+                                                      line_sub_blc.created_at
 
-     FROM `subcategory` linesub
-              INNER JOIN `old_category` old_linesub
-                         ON old_linesub.name = linesub.name
-                             AND
-                            old_linesub.book_id = linesub.book_id
-                             AND
-                            old_linesub.parent_id = linesub.parent_id
-              INNER JOIN `old_book_line_category` oblc
-                         ON oblc.category_id = old_linesub.id
-              INNER JOIN `old_book_line_category` oblc_asset
-                         ON oblc_asset.book_line_id = oblc.book_line_id
-              INNER JOIN `old_category` old_assetsub
-                         ON old_assetsub.id = oblc_asset.category_id
-              INNER JOIN `subcategory` assetsub
-                         ON assetsub.name = old_assetsub.name
-                             AND
-                            assetsub.book_id = old_assetsub.book_id
-                             AND assetsub.parent_id =
-                                 old_assetsub.parent_id
-     WHERE old_linesub.status = 'ACTIVE'
-       AND old_linesub.dtype = 'BookCategory'
-       AND old_linesub.parent_id < 4
-       AND oblc.status = 'ACTIVE'
-       AND old_assetsub.status = 'ACTIVE'
-       AND old_assetsub.dtype = 'BookCategory'
-       AND old_assetsub.parent_id = 4
-       AND oblc_asset.status = 'ACTIVE');
+                                               from old_book_line_category line_blc
+                                                        inner join old_book_line_category line_sub_blc
+                                                                   on line_sub_blc.book_line_id = line_blc.book_line_id
+                                                        inner join old_book_line_category asset_sub_blc
+                                                                   on asset_sub_blc.book_line_id = line_sub_blc.book_line_id
+
+                                                        inner join book_line bl
+                                                                   on bl.id = line_blc.book_line_id
+
+                                                        inner join old_category old_line_sub
+                                                                   on old_line_sub.id = line_sub_blc.category_id
+                                                        inner join old_category old_asset_sub
+                                                                   on old_asset_sub.id = asset_sub_blc.category_id
+
+                                                        inner join subcategory line_sub
+                                                                   on line_sub.name = line_sub_blc.name
+                                                                       and line_sub.parent_id = line_blc.category_id
+                                                                       and line_sub.book_id = bl.book_id
+                                                        inner join subcategory asset_sub
+                                                                   on asset_sub.name = asset_sub_blc.name
+                                                                       and asset_sub.parent_id = 4
+                                                                       and asset_sub.book_id = bl.book_id
+
+                                               where line_blc.book_line_categories_key = 'FLOW'
+                                                 and line_sub_blc.book_line_categories_key = 'FLOW_LINE'
+                                                 and asset_sub_blc.book_line_categories_key = 'ASSET'
+
+                                                 and line_blc.status = 'ACTIVE'
+                                                 and line_sub_blc.status = 'ACTIVE'
+                                                 and asset_sub_blc.status = 'ACTIVE'
+                                                 and bl.status = 'ACTIVE'
+                                                 and old_line_sub.status = 'ACTIVE'
+                                                 and old_asset_sub.status = 'ACTIVE'
+                                                 and line_sub.status = 'ACTIVE'
+                                                 and asset_sub.status = 'ACTIVE');
+
 
 -- 기존 테이블 삭제
 DROP TABLE `old_category`;
