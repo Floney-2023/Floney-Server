@@ -95,47 +95,54 @@ insert into `book_line_category` (book_line_id,
                                   line_category_id,
                                   line_subcategory_id,
                                   asset_subcategory_id,
-                                  created_at) (select bl.id,
-                                                      line_sub.parent_id,
-                                                      line_sub.id,
-                                                      asset_sub.id,
-                                                      line_sub_blc.created_at
+                                  created_at)
+    (select bl.id,
+            line_sub.parent_id,
+            line_sub.id,
+            asset_sub.id,
+            old_line_sub_blc.created_at
 
-                                               from old_book_line_category line_blc
-                                                        inner join old_book_line_category line_sub_blc
-                                                                   on line_sub_blc.book_line_id = line_blc.book_line_id
-                                                        inner join old_book_line_category asset_sub_blc
-                                                                   on asset_sub_blc.book_line_id = line_sub_blc.book_line_id
+     from old_book_line_category old_line_blc
 
-                                                        inner join book_line bl
-                                                                   on bl.id = line_blc.book_line_id
+              -- 3개의 행으로 나뉜 기존 book_line_category를 하나의 행으로 JOIN
+              inner join old_book_line_category old_line_sub_blc
+                         on old_line_sub_blc.book_line_id = old_line_blc.book_line_id
+              inner join old_book_line_category old_asset_sub_blc
+                         on old_asset_sub_blc.book_line_id = old_line_sub_blc.book_line_id
 
-                                                        inner join old_category old_line_sub
-                                                                   on old_line_sub.id = line_sub_blc.category_id
-                                                        inner join old_category old_asset_sub
-                                                                   on old_asset_sub.id = asset_sub_blc.category_id
+         -- book의 id를 찾기 위한 JOIN
+              inner join book_line bl
+                         on bl.id = old_line_blc.book_line_id
 
-                                                        inner join subcategory line_sub
-                                                                   on line_sub.name = line_sub_blc.name
-                                                                       and line_sub.parent_id = line_blc.category_id
-                                                                       and line_sub.book_id = bl.book_id
-                                                        inner join subcategory asset_sub
-                                                                   on asset_sub.name = asset_sub_blc.name
-                                                                       and asset_sub.parent_id = 4
-                                                                       and asset_sub.book_id = bl.book_id
+         -- 기존 category의 id를 찾기 위한 JOIN
+              inner join old_category old_line_sub
+                         on old_line_sub.id = old_line_sub_blc.category_id
+              inner join old_category old_asset_sub
+                         on old_asset_sub.id = old_asset_sub_blc.category_id
 
-                                               where line_blc.book_line_categories_key = 'FLOW'
-                                                 and line_sub_blc.book_line_categories_key = 'FLOW_LINE'
-                                                 and asset_sub_blc.book_line_categories_key = 'ASSET'
+         -- (이름, 속한 가계부, 부모 카테고리)를 바탕으로 새로운 category의 id 를 찾기 위한 JOIN
+              inner join subcategory line_sub
+                         on line_sub.name = old_line_sub_blc.name
+                             and line_sub.parent_id = old_line_blc.category_id
+                             and line_sub.book_id = bl.book_id
+              inner join subcategory asset_sub
+                         on asset_sub.name = old_asset_sub_blc.name
+                             and asset_sub.parent_id = 4
+                             and asset_sub.book_id = bl.book_id
 
-                                                 and line_blc.status = 'ACTIVE'
-                                                 and line_sub_blc.status = 'ACTIVE'
-                                                 and asset_sub_blc.status = 'ACTIVE'
-                                                 and bl.status = 'ACTIVE'
-                                                 and old_line_sub.status = 'ACTIVE'
-                                                 and old_asset_sub.status = 'ACTIVE'
-                                                 and line_sub.status = 'ACTIVE'
-                                                 and asset_sub.status = 'ACTIVE');
+          -- 3개의 행으로 나뉜 기존 book_line_category를 하나의 행으로 JOIN 하는 조건
+     where old_line_blc.book_line_categories_key = 'FLOW'
+       and old_line_sub_blc.book_line_categories_key = 'FLOW_LINE'
+       and old_asset_sub_blc.book_line_categories_key = 'ASSET'
+
+       and old_line_blc.status = 'ACTIVE'
+       and old_line_sub_blc.status = 'ACTIVE'
+       and old_asset_sub_blc.status = 'ACTIVE'
+       and bl.status = 'ACTIVE'
+       and old_line_sub.status = 'ACTIVE'
+       and old_asset_sub.status = 'ACTIVE'
+       and line_sub.status = 'ACTIVE'
+       and asset_sub.status = 'ACTIVE');
 
 
 -- 기존 테이블 삭제
