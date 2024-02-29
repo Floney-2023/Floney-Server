@@ -2,6 +2,7 @@ package com.floney.floney.common.exception.user;
 
 import com.floney.floney.common.exception.common.FloneyException;
 import com.floney.floney.common.exception.common.ErrorType;
+import com.floney.floney.common.exception.common.LogType;
 import com.floney.floney.user.dto.constant.Provider;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ public class UserFoundException extends FloneyException {
     private final String provider;
 
     public UserFoundException(String email, Provider provider) {
-        super(ErrorType.USER_FOUND, LOG_PATTERN, email);
+        super(ErrorType.USER_FOUND, LogType.USER_FOUND, email);
         this.provider = String.valueOf(provider);
     }
 

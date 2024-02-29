@@ -5,24 +5,21 @@ import org.springframework.http.HttpStatus;
 public abstract class FloneyException extends RuntimeException {
 
     private final ErrorType errorType;
-    private CustomLog log;
+    private final LogType logType;
+    private final String logMessage;
 
-    protected FloneyException(ErrorType errorType, String logPattern, String... logAttributes) {
-        super(errorType.getMessage());
-        String logMessage = String.format(logPattern, (Object[]) logAttributes);
-        this.errorType = errorType;
-        this.log = CustomLog.of(errorType.getLogLevel(), logMessage);
-
-    }
-
-    protected FloneyException(ErrorType errorType) {
+    protected FloneyException(ErrorType errorType, LogType logType, String... logAttributes) {
         super(errorType.getMessage());
         this.errorType = errorType;
+        this.logType = logType;
+        this.logMessage = logType.generateLog(logAttributes);
     }
 
-    protected FloneyException(String message, ErrorType errorType) {
+    protected FloneyException(String message, ErrorType errorType, LogType logType, String... logAttributes) {
         super(message);
         this.errorType = errorType;
+        this.logType = logType;
+        this.logMessage = logType.generateLog(logAttributes);
     }
 
     public String getCode() {
@@ -38,10 +35,10 @@ public abstract class FloneyException extends RuntimeException {
     }
 
     public CustomLogLevel getLogLevel() {
-        return this.errorType.getLogLevel();
+        return this.logType.getLevel();
     }
 
     public String getLogMessage() {
-        return this.log.getMessage();
+        return this.logMessage;
     }
 }
