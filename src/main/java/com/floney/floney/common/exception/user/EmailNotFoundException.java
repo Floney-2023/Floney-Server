@@ -8,8 +8,6 @@ import lombok.Getter;
 @Getter
 public class EmailNotFoundException extends FloneyException {
 
-    private static final String LOG_PATTERN = "이메일(%s) 찾기 실패";
-
     public EmailNotFoundException(final String email) {
         super(ErrorType.EMAIL_NOT_FOUND, LogType.EMAIL_NOT_FOUND, email);
     }

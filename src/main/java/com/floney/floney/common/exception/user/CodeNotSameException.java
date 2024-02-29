@@ -8,8 +8,6 @@ import lombok.Getter;
 @Getter
 public class CodeNotSameException extends FloneyException {
 
-    private static final String LOG_PATTERN = "일치하지 않는 이메일 인증 코드: [%s], [%s]";
-
     public CodeNotSameException(final String code, final String anotherCode) {
         super(ErrorType.INVALID_CODE, LogType.INVALID_CODE, code, anotherCode);
     }

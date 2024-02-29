@@ -8,8 +8,6 @@ import lombok.Getter;
 @Getter
 public class UserNotFoundException extends FloneyException {
 
-    private static final String LOG_PATTERN = "저장되지 않은 유저 정보: [%s]";
-
     public UserNotFoundException(String username) {
         super(ErrorType.USER_NOT_FOUND, LogType.USER_NOT_FOUND, username);
     }

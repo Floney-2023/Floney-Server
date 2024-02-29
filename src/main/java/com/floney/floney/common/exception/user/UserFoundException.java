@@ -9,7 +9,6 @@ import lombok.Getter;
 @Getter
 public class UserFoundException extends FloneyException {
 
-    private static final String LOG_PATTERN = "이미 존재하는 유저: [%s]";
     private final String provider;
 
     public UserFoundException(String email, Provider provider) {

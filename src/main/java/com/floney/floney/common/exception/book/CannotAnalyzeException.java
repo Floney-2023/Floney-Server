@@ -9,8 +9,6 @@ import lombok.Getter;
 @Getter
 public class CannotAnalyzeException extends FloneyException {
 
-    private static final String LOG_PATTERN = "분석이 불가능한 카테고리: %s";
-
     public CannotAnalyzeException(final CategoryType categoryType) {
         super(ErrorType.CANNOT_ANALYZE, LogType.CANNOT_ANALYZE, categoryType.toString());
     }
