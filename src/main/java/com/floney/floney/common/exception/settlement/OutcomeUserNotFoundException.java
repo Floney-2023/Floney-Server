@@ -1,14 +1,14 @@
 package com.floney.floney.common.exception.settlement;
 
 import com.floney.floney.common.exception.common.ErrorType;
+import com.floney.floney.common.exception.common.FloneyException;
+import com.floney.floney.common.exception.common.LogType;
 import lombok.Getter;
 
 @Getter
-public class OutcomeUserNotFoundException extends RuntimeException {
-    // TODO FloneyException 상속
-    private final ErrorType errorType;
+public class OutcomeUserNotFoundException extends FloneyException {
 
     public OutcomeUserNotFoundException() {
-        this.errorType = ErrorType.NOT_FOUND_OUTCOME_USER;
+        super(ErrorType.NOT_FOUND_OUTCOME_USER, LogType.NOT_FOUND_OUTCOME_USER);
     }
 }

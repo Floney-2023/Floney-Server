@@ -1,7 +1,6 @@
 package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.book.*;
-import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
 import com.floney.floney.common.exception.user.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -114,12 +113,6 @@ public class ErrorControllerAdvice {
     }
 
     // SETTLEMENT
-    @ExceptionHandler(OutcomeUserNotFoundException.class)
-    protected ResponseEntity<ErrorResponse> outcomeUserNotFoundException(OutcomeUserNotFoundException exception) {
-        logger.warn("Request Body에서 지출 내역의 유저가 유저 목록에 존재하지 않음");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
 
     // OTHER
     @ExceptionHandler(MethodArgumentNotValidException.class)
