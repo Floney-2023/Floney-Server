@@ -302,7 +302,7 @@ public class BookServiceImpl implements BookService {
         final RepeatBookLine repeatBookLine = repeatBookLineRepository.findById(repeatLineId)
             .orElseThrow(NotFoundRepeatBookLineException::new);
 
-        bookLineRepository.deleteAllByRepeatBookLine(repeatLineId);
+        bookLineRepository.inactiveAllByRepeatBookLine(repeatLineId);
         repeatBookLine.inactive();
     }
 

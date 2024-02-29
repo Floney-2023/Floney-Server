@@ -155,6 +155,15 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
+        bookLineRepository.save(savedBookLine);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllAfterBookLineByRepeat(final long bookLineId) {
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
+            .orElseThrow(NotFoundBookLineException::new);
+        bookLineRepository.inactiveByAllByAfter(savedBookLine.getLineDate());
     }
 
     private void repeatBookLine(BookLine bookLine, Book book, RepeatDuration repeatDuration) {

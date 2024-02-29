@@ -24,13 +24,15 @@ public interface BookLineCustomRepository {
 
     List<BookLineWithWriterView> allLinesByDay(LocalDate date, String bookKey);
 
-    void deleteAllByRepeatBookLine(long repeatBookLineId);
+    void inactiveAllByRepeatBookLine(long repeatBookLineId);
 
     TotalExpense totalMoneyByDateAndCategoryType(String bookKey, LocalDate date, final CategoryType categoryType);
 
     List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(String bookKey, DateDuration dates);
 
     void inactiveAllBy(Book book);
+
+    void inactiveByAllByAfter(LocalDate localDate);
 
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 

@@ -265,14 +265,26 @@ public class BookController {
     }
 
     /**
-     * 가계부 내역 삭제
-     * 반복 내역 삭제 시, 이 내역만 삭제 옵션에 해당함.
+     * 가계부 내역 단건 삭제
+     * 반복 내역 삭제 시, [이 내역만 삭제] 옵션에 해당함.
      *
      * @param bookLineKey 가계부 내역 PK
      */
     @DeleteMapping("/lines/delete")
     public ResponseEntity<?> deleteBookLine(@RequestParam Long bookLineKey) {
         bookLineService.deleteLine(bookLineKey);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 가계부 내역 삭제
+     * 반복 내역 삭제 시, [이후 내역 삭제] 옵션에 해당함.
+     *
+     * @param bookLineKey 가계부 내역 PK
+     */
+    @DeleteMapping("/lines/delete/all")
+    public ResponseEntity<?> deleteAllBookLineByRepeat(@RequestParam Long bookLineKey) {
+        bookLineService.deleteAllAfterBookLineByRepeat(bookLineKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -286,6 +298,7 @@ public class BookController {
         bookService.deleteRepeatLine(repeatLineId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     /**
      * 가계부 화폐정보 조회

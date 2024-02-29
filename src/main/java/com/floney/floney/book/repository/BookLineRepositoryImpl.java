@@ -112,9 +112,12 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public void deleteAllByRepeatBookLine(final long repeatBookLineId) {
-        jpaQueryFactory.update(bookLine).set(bookLine.status, INACTIVE)
-            .where(bookLine.repeatBookLine.id.eq(repeatBookLineId), bookLine.status.eq(ACTIVE))
+    public void inactiveAllByRepeatBookLine(final long repeatBookLineId) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
+            .where(bookLine.repeatBookLine.id.eq(repeatBookLineId),
+                bookLine.status.eq(ACTIVE))
             .execute();
     }
 
@@ -190,6 +193,18 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .execute();
 
         entityManager.clear();
+    }
+
+    @Override
+    public void inactiveByAllByAfter(final LocalDate localDate) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
+            .where(
+                bookLine.lineDate.after(localDate)
+                    .or(bookLine.lineDate.eq(localDate)),
+                bookLine.status.eq(ACTIVE))
+            .execute();
     }
 
     @Override
