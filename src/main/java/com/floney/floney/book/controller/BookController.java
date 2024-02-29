@@ -1,5 +1,6 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
@@ -297,6 +298,16 @@ public class BookController {
     public ResponseEntity<?> deleteRepeatLine(@RequestParam long repeatLineId) {
         bookService.deleteRepeatLine(repeatLineId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 반복 내역 조회
+     *
+     * @param bookKey 가계부 키
+     */
+    @GetMapping("/repeat")
+    public ResponseEntity<?> getAllRepeatBookLine(@RequestParam String bookKey, @RequestParam CategoryType categoryType) {
+        return new ResponseEntity<>(bookService.getAllRepeatBookLine(bookKey, categoryType), HttpStatus.OK);
     }
 
 

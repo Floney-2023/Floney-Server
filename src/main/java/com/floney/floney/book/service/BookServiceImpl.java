@@ -1,6 +1,8 @@
 package com.floney.floney.book.service;
 
 import com.floney.floney.alarm.repository.AlarmRepository;
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.dto.process.MyBookInfo;
@@ -33,6 +35,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -304,6 +307,19 @@ public class BookServiceImpl implements BookService {
 
         bookLineRepository.inactiveAllByRepeatBookLine(repeatLineId);
         repeatBookLine.inactive();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RepeatBookLineResponse> getAllRepeatBookLine(final String bookKey, final CategoryType categoryType) {
+        Book book = findBook(bookKey);
+
+        Category lineCategory = categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
+
+        return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory).stream()
+            .map(RepeatBookLineResponse::new)
+            .collect(Collectors.toList());
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
