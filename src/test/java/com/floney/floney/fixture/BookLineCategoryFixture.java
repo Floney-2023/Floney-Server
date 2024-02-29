@@ -7,12 +7,12 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 
 public class BookLineCategoryFixture {
-    public static BookLineCategory incomeBookLineCategory(Book book) {
+    public static BookLineCategory incomeBookLineCategory(Book book, String lineSubCategoryName, String assetSubCategoryName) {
         Category lineCategory = Category.builder().name(CategoryType.INCOME).build();
         Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
 
-        Subcategory subCategory = SubCategoryFixture.createSubcategory(book, lineCategory, "급여");
-        Subcategory assetSubCategory = SubCategoryFixture.createSubcategory(book, assetLineCategory, "현금");
+        Subcategory subCategory = CategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        Subcategory assetSubCategory = CategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
         return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
     }
 }

@@ -52,7 +52,7 @@ public class RepeatBookLineTest {
                 User user = UserFixture.emailUser();
                 book = BookFixture.createBook();
                 BookUser bookUser = BookUserFixture.createBookUser(book, user);
-                BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book);
+                BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, "급여", "현금");
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
 
             }
@@ -95,7 +95,7 @@ public class RepeatBookLineTest {
             User user = UserFixture.emailUser();
             book = BookFixture.createBook();
             BookUser bookUser = BookUserFixture.createBookUser(book, user);
-            BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book);
+            BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, "급여", "은행");
 
             bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, lineDate);
             repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
