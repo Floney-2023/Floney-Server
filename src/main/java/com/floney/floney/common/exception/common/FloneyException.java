@@ -8,14 +8,14 @@ public abstract class FloneyException extends RuntimeException {
     private final LogType logType;
     private final String logMessage;
 
-    protected FloneyException(ErrorType errorType, LogType logType, String... logAttributes) {
+    protected FloneyException(final ErrorType errorType, final LogType logType, final String... logAttributes) {
         super(errorType.getMessage());
         this.errorType = errorType;
         this.logType = logType;
         this.logMessage = logType.generateLog(logAttributes);
     }
 
-    protected FloneyException(String message, ErrorType errorType, LogType logType, String... logAttributes) {
+    protected FloneyException(final String message, final ErrorType errorType, final LogType logType, final String... logAttributes) {
         super(message);
         this.errorType = errorType;
         this.logType = logType;

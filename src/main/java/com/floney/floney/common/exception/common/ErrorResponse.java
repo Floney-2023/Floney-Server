@@ -27,21 +27,21 @@ public class ErrorResponse {
         this.attributes = new HashMap<>();
     }
 
-    private ErrorResponse(ErrorType errorType, Map<String, Object> attributes) {
+    private ErrorResponse(final ErrorType errorType, final Map<String, Object> attributes) {
         this.message = errorType.getMessage();
         this.code = errorType.getCode();
         this.attributes = attributes;
     }
 
-    public static ErrorResponse of(ErrorType errorType) {
+    public static ErrorResponse of(final ErrorType errorType) {
         return new ErrorResponse(errorType);
     }
 
-    public static ErrorResponse of(ErrorType errorType, String customMessage) {
+    public static ErrorResponse of(final ErrorType errorType, final String customMessage) {
         return new ErrorResponse(customMessage, errorType.getCode());
     }
 
-    public static ErrorResponse of(ErrorType errorType, Map<String, Object> attributes) {
+    public static ErrorResponse of(final ErrorType errorType, final Map<String, Object> attributes) {
         return new ErrorResponse(errorType, attributes);
     }
 

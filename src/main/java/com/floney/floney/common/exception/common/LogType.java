@@ -1,7 +1,6 @@
 package com.floney.floney.common.exception.common;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum LogType {
@@ -47,7 +46,7 @@ public enum LogType {
     private final CustomLogLevel level;
     private final String pattern;
 
-    public String generateLog(String... attributes) {
+    public String generateLog(final String... attributes) {
         if (CustomLogLevel.NONE.equals(this.level)) {
             return null;
         }
