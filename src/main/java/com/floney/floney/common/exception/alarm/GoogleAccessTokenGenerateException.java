@@ -1,14 +1,13 @@
 package com.floney.floney.common.exception.alarm;
 
 import com.floney.floney.common.exception.common.ErrorType;
+import com.floney.floney.common.exception.common.FloneyException;
 import lombok.Getter;
 
 @Getter
-public class GoogleAccessTokenGenerateException extends RuntimeException {
-
-    private final ErrorType errorType;
+public class GoogleAccessTokenGenerateException extends FloneyException {
 
     public GoogleAccessTokenGenerateException() {
-        this.errorType = ErrorType.FAIL_TO_GENERATE_TOKEN;
+        super(ErrorType.FAIL_TO_GENERATE_TOKEN);
     }
 }

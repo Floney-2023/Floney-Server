@@ -1,12 +1,12 @@
 package com.floney.floney.common.exception.user;
 
-import com.floney.floney.common.exception.common.CustomException;
+import com.floney.floney.common.exception.common.FloneyException;
 import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.user.dto.constant.Provider;
 import lombok.Getter;
 
 @Getter
-public class UserFoundException extends CustomException {
+public class UserFoundException extends FloneyException {
 
     private static final String LOG_PATTERN = "이미 존재하는 유저: [%s]";
     private final String provider;
