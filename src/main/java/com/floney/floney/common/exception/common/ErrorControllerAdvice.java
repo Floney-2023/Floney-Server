@@ -190,6 +190,13 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(NotFoundRepeatBookLineException.class)
+    protected ResponseEntity<ErrorResponse> notFoundRepeatLine(NotFoundRepeatBookLineException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+
     @ExceptionHandler(ExcelMakingException.class)
     protected ResponseEntity<ErrorResponse> excelError(ExcelMakingException exception) {
         logger.error("엑셀 오류 발생 [ERROR_MSG] : {} \n [ERROR_STACK] : {} \n ", exception.getMessage(), exception.getStackTrace());

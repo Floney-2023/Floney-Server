@@ -112,6 +112,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
+    public void deleteAllByRepeatBookLine(final long repeatBookLineId) {
+        jpaQueryFactory.update(bookLine).set(bookLine.status, INACTIVE)
+            .where(bookLine.repeatBookLine.id.eq(repeatBookLineId), bookLine.status.eq(ACTIVE))
+            .execute();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public TotalExpense totalMoneyByDateAndCategoryType(final String bookKey,
                                                         final LocalDate date,

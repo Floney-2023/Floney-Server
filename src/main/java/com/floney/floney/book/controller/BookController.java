@@ -266,12 +266,24 @@ public class BookController {
 
     /**
      * 가계부 내역 삭제
+     * 반복 내역 삭제 시, 이 내역만 삭제 옵션에 해당함.
      *
      * @param bookLineKey 가계부 내역 PK
      */
     @DeleteMapping("/lines/delete")
     public ResponseEntity<?> deleteBookLine(@RequestParam Long bookLineKey) {
         bookLineService.deleteLine(bookLineKey);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 반복 내역 삭제
+     *
+     * @param repeatLineId 가계부 내역 PK
+     */
+    @DeleteMapping("/repeat")
+    public ResponseEntity<?> deleteRepeatLine(@RequestParam long repeatLineId) {
+        bookService.deleteRepeatLine(repeatLineId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

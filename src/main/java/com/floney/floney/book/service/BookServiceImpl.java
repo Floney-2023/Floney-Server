@@ -2,10 +2,7 @@ package com.floney.floney.book.service;
 
 import com.floney.floney.alarm.repository.AlarmRepository;
 import com.floney.floney.book.domain.category.entity.Subcategory;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.domain.entity.Budget;
+import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.dto.process.MyBookInfo;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
@@ -14,6 +11,7 @@ import com.floney.floney.book.dto.response.*;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.RepeatBookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
@@ -60,6 +58,7 @@ public class BookServiceImpl implements BookService {
     private final CarryOverRepository carryOverRepository;
     private final AlarmRepository alarmRepository;
     private final AssetRepository assetRepository;
+    private final RepeatBookLineRepository repeatBookLineRepository;
 
     @Override
     @Transactional
@@ -295,6 +294,16 @@ public class BookServiceImpl implements BookService {
             inactiveAllBy(bookUser);
             bookUser.inactive();
         });
+    }
+
+    @Override
+    @Transactional
+    public void deleteRepeatLine(final long repeatLineId) {
+        final RepeatBookLine repeatBookLine = repeatBookLineRepository.findById(repeatLineId)
+            .orElseThrow(NotFoundRepeatBookLineException::new);
+
+        bookLineRepository.deleteAllByRepeatBookLine(repeatLineId);
+        repeatBookLine.inactive();
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
