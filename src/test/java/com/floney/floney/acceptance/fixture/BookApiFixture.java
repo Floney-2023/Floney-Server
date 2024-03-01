@@ -80,4 +80,40 @@ public class BookApiFixture {
             .statusCode(HttpStatus.CREATED.value())
             .extract().as(BookLineResponse.class);
     }
+
+    public static BookLineResponse createBookLineWith(final String accessToken, final String bookKey, String lineCategory, String subCategory, String assetSubCategory, LocalDate localDate, RepeatDuration repeatDuration) {
+        final BookLineRequest request = BookLineRequest.builder()
+            .money(1000)
+            .line(subCategory)
+            .bookKey(bookKey)
+            .flow(lineCategory)
+            .asset(assetSubCategory)
+            .lineDate(localDate)
+            .description("예시")
+            .except(false)
+            .repeatDuration(repeatDuration)
+            .build();
+
+        return RestAssured.given()
+            .auth().oauth2(accessToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(request)
+            .when().post("/books/lines")
+            .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .extract().as(BookLineResponse.class);
+    }
+
+    public static TotalDayLinesResponse findBookLine(String accessToken, String bookKey, LocalDate lineDate) {
+        return RestAssured
+            .given()
+            .auth().oauth2(accessToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .param("bookKey", bookKey)
+            .param("date", lineDate.toString())
+            .when().get("/books/days")
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract().as(TotalDayLinesResponse.class);
+    }
 }
