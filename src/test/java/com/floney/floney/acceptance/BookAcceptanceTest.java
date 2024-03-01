@@ -1290,7 +1290,7 @@ public class BookAcceptanceTest {
                     .auth().oauth2(accessToken)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .params("bookLineKey", lineId)
-                    .when().delete("/books/lines/delete/all")
+                    .when().delete("/books/lines/all")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract();
@@ -1314,7 +1314,7 @@ public class BookAcceptanceTest {
                     .auth().oauth2(accessToken)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .params("bookLineKey", lineId)
-                    .when().delete("/books/lines/delete/all")
+                    .when().delete("/books/lines/all")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .extract().as(ErrorResponse.class);

@@ -283,7 +283,7 @@ public class BookController {
      *
      * @param bookLineKey 가계부 내역 PK
      */
-    @DeleteMapping("/lines/delete/all")
+    @DeleteMapping("/lines/all")
     public ResponseEntity<?> deleteAllBookLineByRepeat(@RequestParam Long bookLineKey) {
         bookLineService.deleteAllAfterBookLineByRepeat(bookLineKey);
         return new ResponseEntity<>(HttpStatus.OK);
