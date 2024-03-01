@@ -61,7 +61,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         // 반복 내역 설정
         if (request.getRepeatDuration() != RepeatDuration.NONE) {
-            repeatBookLine(bookLine, book, request.getRepeatDuration());
+            repeatBookLine(bookLine, request.getRepeatDuration());
         }
 
         bookLineRepository.save(bookLine);
@@ -166,9 +166,9 @@ public class BookLineServiceImpl implements BookLineService {
         bookLineRepository.inactiveByAllByAfter(savedBookLine.getLineDate());
     }
 
-    private void repeatBookLine(BookLine bookLine, Book book, RepeatDuration repeatDuration) {
+    private void repeatBookLine(BookLine bookLine, RepeatDuration repeatDuration) {
         // 1. 반복 내역 객체 생성
-        RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, repeatDuration);
+        RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, repeatDuration);
 
         // 2. 주기에 따른 가계부 내역 생성
         bookLine.repeatBookLine(repeatBookLine);

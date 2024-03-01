@@ -55,12 +55,12 @@ public class RepeatBookLine extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
 
-    public static RepeatBookLine of(BookLine bookLine, Book book, RepeatDuration repeatDuration) {
+    public static RepeatBookLine of(BookLine bookLine, RepeatDuration repeatDuration) {
         BookLineCategory bookLineCategory = bookLine.getCategories();
 
         return RepeatBookLine.builder()
             .money(bookLine.getMoney())
-            .book(book)
+            .book(bookLine.getBook())
             .writer(bookLine.getWriter())
             .description(bookLine.getDescription())
             .lineCategory(bookLineCategory.getLineCategory())
