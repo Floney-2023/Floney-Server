@@ -154,7 +154,10 @@ public class BookLineServiceImpl implements BookLineService {
     public void deleteAllAfterBookLineByRepeat(final long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
-        bookLineRepository.inactiveAllByAfter(savedBookLine.getLineDate());
+
+        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
+        bookLines.add(savedBookLine);
+        bookLines.forEach(BookLine::inactive);
     }
 
     private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
@@ -190,7 +193,7 @@ public class BookLineServiceImpl implements BookLineService {
         bookLineRepository.saveAll(bookLines);
 
         boolean carryOverStatus = book.getCarryOverStatus();
-        
+
         // 4. 모든 가계부 내역 자산, 이월 처리
         bookLines.forEach(line -> {
             if (carryOverStatus) {

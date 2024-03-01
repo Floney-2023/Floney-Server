@@ -8,6 +8,7 @@ import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
@@ -197,15 +198,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public void inactiveAllByAfter(final LocalDate localDate) {
-        jpaQueryFactory.update(bookLine)
-            .set(bookLine.status, INACTIVE)
-            .set(bookLine.updatedAt, LocalDateTime.now())
+    public List<BookLine> findAllRepeatBookLineByAfter(final LocalDate localDate, final RepeatBookLine repeatBookLine) {
+        return jpaQueryFactory.selectFrom(bookLine)
             .where(
-                bookLine.lineDate.after(localDate)
-                    .or(bookLine.lineDate.eq(localDate)),
+                bookLine.lineDate.after(localDate),
+                bookLine.repeatBookLine.eq(repeatBookLine),
                 bookLine.status.eq(ACTIVE))
-            .execute();
+            .fetch();
     }
 
     @Override
