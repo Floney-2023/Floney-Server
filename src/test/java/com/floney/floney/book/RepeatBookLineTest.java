@@ -60,14 +60,14 @@ public class RepeatBookLineTest {
             @Test
             @DisplayName("생성된다.")
             void it_returns_repeatBookLine() {
-                RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
+                RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, RepeatDuration.WEEKEND);
                 assertThat(repeatBookLine).isNotNull();
             }
 
             @Test
             @DisplayName("생성된 반복 내역은 가계부 내역과 일치한다")
             void it_same_with_bookLine() {
-                RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
+                RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, RepeatDuration.WEEKEND);
                 assertAll(
                     () -> assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook()),
                     () -> assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney()),
@@ -98,7 +98,7 @@ public class RepeatBookLineTest {
             BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, "급여", "은행");
 
             bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, lineDate);
-            repeatBookLine = RepeatBookLine.of(bookLine, book, RepeatDuration.WEEKEND);
+            repeatBookLine = RepeatBookLine.of(bookLine, RepeatDuration.WEEKEND);
         }
 
         @Nested
