@@ -40,43 +40,22 @@ public class CarryOver extends BaseEntity {
         this.date = date;
     }
 
-    public static CarryOver of(final BookLineRequest request,
-                               final Book book,
-                               final LocalDate date) {
+    public static CarryOver of(final BookLineRequest request, final Book book, final LocalDate date) {
         if (OUTCOME.getMeaning().equals(request.getFlow())) {
-            return CarryOver.builder()
-                .money(-1 * request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
+            return CarryOver.builder().money(-1 * request.getMoney()).book(book).date(date).build();
         }
-        return CarryOver.builder()
-            .money(request.getMoney())
-            .book(book)
-            .date(date)
-            .build();
+        return CarryOver.builder().money(request.getMoney()).book(book).date(date).build();
     }
 
-    public static CarryOver of(final BookLine bookLine,
-                               final LocalDate date) {
+    public static CarryOver of(final BookLine bookLine, final LocalDate date) {
         if (OUTCOME.getMeaning().equals(bookLine.getCategories().getLineCategory())) {
-            return CarryOver.builder()
-                .money(-1 * bookLine.getMoney())
-                .book(bookLine.getBook())
-                .date(date)
-                .build();
+            return CarryOver.builder().money(-1 * bookLine.getMoney()).book(bookLine.getBook()).date(date).build();
         }
-        return CarryOver.builder()
-            .money(bookLine.getMoney())
-            .book(bookLine.getBook())
-            .date(date)
-            .build();
+        return CarryOver.builder().money(bookLine.getMoney()).book(bookLine.getBook()).date(date).build();
     }
 
     public static CarryOver init() {
-        return CarryOver.builder()
-            .money(0L)
-            .build();
+        return CarryOver.builder().money(0L).build();
     }
 
     public void update(final double updateMoney, final String lineCategoryName) {
@@ -92,7 +71,8 @@ public class CarryOver extends BaseEntity {
         if (!bookLineCategory.isIncomeOrOutcome()) return;
         if (bookLineCategory.isIncome()) {
             money -= updateMoney;
+        } else {
+            money += updateMoney;
         }
-        money += updateMoney;
     }
 }

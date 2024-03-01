@@ -102,21 +102,6 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
-    private void addAssetOf(final BookLineRequest request, final Book book) {
-        // 이체 내역일 경우 자산 포함 X
-        // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (TRANSFER.getMeaning().equals(request.getFlow())) {
-            return;
-        }
-
-        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(request.getLineDate());
-
-        for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
-            final LocalDate currentMonth = startMonth.plusMonths(month);
-            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
-        }
-    }
-
     private double getMoney(final BookLineRequest request) {
         if (OUTCOME.getMeaning().equals(request.getFlow())) {
             return (-1) * request.getMoney();
