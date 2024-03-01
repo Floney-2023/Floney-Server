@@ -198,10 +198,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public List<BookLine> findAllRepeatBookLineByAfter(final LocalDate localDate, final RepeatBookLine repeatBookLine) {
+    public List<BookLine> findAllRepeatBookLineByEqualOrAfter(final LocalDate localDate, final RepeatBookLine repeatBookLine) {
         return jpaQueryFactory.selectFrom(bookLine)
             .where(
-                bookLine.lineDate.after(localDate),
+                bookLine.lineDate.after(localDate).or(bookLine.lineDate.eq(localDate)),
                 bookLine.repeatBookLine.eq(repeatBookLine),
                 bookLine.status.eq(ACTIVE))
             .fetch();

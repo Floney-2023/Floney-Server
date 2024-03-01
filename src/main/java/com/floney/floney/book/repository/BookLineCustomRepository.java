@@ -33,7 +33,7 @@ public interface BookLineCustomRepository {
 
     void inactiveAllBy(Book book);
 
-    List<BookLine> findAllRepeatBookLineByAfter(LocalDate localDate, RepeatBookLine repeatBookLine);
+    List<BookLine> findAllRepeatBookLineByEqualOrAfter(LocalDate localDate, RepeatBookLine repeatBookLine);
 
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 

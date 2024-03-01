@@ -305,8 +305,14 @@ public class BookServiceImpl implements BookService {
         final RepeatBookLine repeatBookLine = repeatBookLineRepository.findByIdAndStatus(repeatLineId, ACTIVE)
             .orElseThrow(NotFoundRepeatBookLineException::new);
 
-        bookLineRepository.inactiveAllByRepeatBookLine(repeatLineId);
         repeatBookLine.inactive();
+
+        //TODO : 이벤트 처리
+        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(repeatBookLine.getLineDate(), repeatBookLine);
+        bookLines.forEach((line) -> {
+            line.inactive();
+            bookLineRepository.save(line);
+        });
     }
 
     @Override

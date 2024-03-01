@@ -141,8 +141,8 @@ public class BookLineServiceImpl implements BookLineService {
             throw new NotFoundBookLineException();
         }
 
-        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
-        bookLines.add(savedBookLine);
+        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
+
         bookLines.forEach((line) -> {
             line.inactive();
             bookLineRepository.save(line);
