@@ -302,7 +302,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteRepeatLine(final long repeatLineId) {
-        final RepeatBookLine repeatBookLine = repeatBookLineRepository.findById(repeatLineId)
+        final RepeatBookLine repeatBookLine = repeatBookLineRepository.findByIdAndStatus(repeatLineId, ACTIVE)
             .orElseThrow(NotFoundRepeatBookLineException::new);
 
         bookLineRepository.inactiveAllByRepeatBookLine(repeatLineId);
