@@ -59,21 +59,12 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLineCategory bookLineCategory = findCategories(request, book);
         final BookLine bookLine = request.to(bookUser, bookLineCategory);
 
-        // 반복 내역 설정
+        // 반복 내역인 경우
         if (request.getRepeatDuration() != RepeatDuration.NONE) {
-            repeatBookLine(bookLine, request.getRepeatDuration());
+            return createBookLineByRepeat(bookLine, request.getRepeatDuration());
+        } else {
+            return createBookLineByNotRepeat(bookLine);
         }
-
-        bookLineRepository.save(bookLine);
-
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.createCarryOverByAddBookLine(request, book);
-        }
-        if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(request, book);
-        }
-
-        return BookLineResponse.from(bookLine);
     }
 
     @Override
@@ -141,7 +132,7 @@ public class BookLineServiceImpl implements BookLineService {
             carryOverFactory.updateCarryOver(request, bookLine);
         }
         if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(request, book);
+            assetService.addAssetOf(bookLine);
         }
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
@@ -163,20 +154,54 @@ public class BookLineServiceImpl implements BookLineService {
     public void deleteAllAfterBookLineByRepeat(final long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
-        bookLineRepository.inactiveByAllByAfter(savedBookLine.getLineDate());
+        bookLineRepository.inactiveAllByAfter(savedBookLine.getLineDate());
     }
 
-    private void repeatBookLine(BookLine bookLine, RepeatDuration repeatDuration) {
-        // 1. 반복 내역 객체 생성
-        RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, repeatDuration);
+    private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
+        Book book = bookLine.getBook();
+        bookLineRepository.save(bookLine);
 
-        // 2. 주기에 따른 가계부 내역 생성
+        if (book.getCarryOverStatus()) {
+            carryOverFactory.createCarryOverByAddBookLine(bookLine);
+        }
+        if (bookLine.includedInAsset()) {
+            assetService.addAssetOf(bookLine);
+        }
+
+        return BookLineResponse.from(bookLine);
+    }
+
+    // TODO : 성능 개선
+    private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
+        Book book = bookLine.getBook();
+
+        // 1. 반복 내역 객체 생성
+        RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, requestRepeatDuration);
+
+        // 2. 가계부 내역 - 반복 내역 매핑
         bookLine.repeatBookLine(repeatBookLine);
-        List<BookLine> bookLines = repeatBookLine.bookLinesBy(repeatDuration);
+
+        // 3. 반복 내역 생성
+        List<BookLine> bookLines = repeatBookLine.bookLinesBy(requestRepeatDuration);
+        bookLines.add(bookLine);
 
         // 3.  저장
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
+
+        boolean carryOverStatus = book.getCarryOverStatus();
+        
+        // 4. 모든 가계부 내역 자산, 이월 처리
+        bookLines.forEach(line -> {
+            if (carryOverStatus) {
+                carryOverFactory.createCarryOverByAddBookLine(line);
+            }
+            if (line.includedInAsset()) {
+                assetService.addAssetOf(line);
+            }
+        });
+
+        return BookLineResponse.from(bookLine);
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {

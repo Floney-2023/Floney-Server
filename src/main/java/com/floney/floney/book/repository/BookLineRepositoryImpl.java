@@ -197,7 +197,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public void inactiveByAllByAfter(final LocalDate localDate) {
+    public void inactiveAllByAfter(final LocalDate localDate) {
         jpaQueryFactory.update(bookLine)
             .set(bookLine.status, INACTIVE)
             .set(bookLine.updatedAt, LocalDateTime.now())

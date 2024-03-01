@@ -57,6 +57,22 @@ public class CarryOver extends BaseEntity {
             .build();
     }
 
+    public static CarryOver of(final BookLine bookLine,
+                               final LocalDate date) {
+        if (OUTCOME.getMeaning().equals(bookLine.getCategories().getLineCategory())) {
+            return CarryOver.builder()
+                .money(-1 * bookLine.getMoney())
+                .book(bookLine.getBook())
+                .date(date)
+                .build();
+        }
+        return CarryOver.builder()
+            .money(bookLine.getMoney())
+            .book(bookLine.getBook())
+            .date(date)
+            .build();
+    }
+
     public static CarryOver init() {
         return CarryOver.builder()
             .money(0L)

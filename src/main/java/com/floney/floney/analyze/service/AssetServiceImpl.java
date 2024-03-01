@@ -1,5 +1,6 @@
 package com.floney.floney.analyze.service;
 
+import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
@@ -66,18 +67,21 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional
-    public void addAssetOf(final BookLineRequest request, final Book book) {
+    public void addAssetOf(final BookLine bookLine) {
+
+        Category lineCategory = bookLine.getCategories().getLineCategory();
+
         // 이체 내역일 경우 자산 포함 X
         // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (TRANSFER.getMeaning().equals(request.getFlow())) {
+        if (TRANSFER.getMeaning().equals(lineCategory.toString())) {
             return;
         }
 
-        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(request.getLineDate());
+        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
         for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
-            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
+            assetRepository.upsertMoneyByDateAndBook(currentMonth, bookLine.getBook(), getMoney(bookLine));
         }
     }
 
@@ -95,6 +99,21 @@ public class AssetServiceImpl implements AssetService {
         for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.subtractMoneyByDateAndBook(getMoney(bookLine), currentMonth, bookLine.getBook());
+        }
+    }
+
+    private void addAssetOf(final BookLineRequest request, final Book book) {
+        // 이체 내역일 경우 자산 포함 X
+        // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
+        if (TRANSFER.getMeaning().equals(request.getFlow())) {
+            return;
+        }
+
+        final LocalDate startMonth = DateUtil.getFirstDayOfMonth(request.getLineDate());
+
+        for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
+            final LocalDate currentMonth = startMonth.plusMonths(month);
+            assetRepository.upsertMoneyByDateAndBook(currentMonth, book, getMoney(request));
         }
     }
 

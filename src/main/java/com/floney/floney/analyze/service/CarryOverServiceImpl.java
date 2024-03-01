@@ -1,5 +1,6 @@
 package com.floney.floney.analyze.service;
 
+import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.CarryOver;
@@ -37,6 +38,7 @@ public class CarryOverServiceImpl implements CarryOverService {
     public CarryOverInfo getCarryOverInfo(final Book book, final String date) {
         final boolean carryOverStatus = book.getCarryOverStatus();
         final LocalDate localDate = LocalDate.parse(date);
+
         // 1일일 경우, 이월 내역 포함하여 전송
         if (carryOverStatus && DateUtil.isFirstDay(date)) {
             final Optional<CarryOver> carryOverOptional = findCarryOver(localDate, book);
@@ -51,27 +53,29 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Override
     public void updateCarryOver(BookLineRequest request, BookLine savedBookLine) {
         deleteCarryOver(savedBookLine.getId());
-        createCarryOverByAddBookLine(request, savedBookLine.getBook());
+        createCarryOverByAddBookLine(savedBookLine);
     }
 
     @Override
-    public void createCarryOverByAddBookLine(BookLineRequest request, Book book) {
-        LocalDate targetDate = DateUtil.getFirstDayOfMonth(request.getLineDate());
+    public void createCarryOverByAddBookLine(BookLine bookLine) {
+        Book book = bookLine.getBook();
+        LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
 
         // 다음달부터 생성
         targetDate = getNextMonth(targetDate);
 
+        Category lineCategory = bookLine.getCategories().getLineCategory();
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
 
-            if (savedCarryOver.isEmpty() && TRANSFER.getMeaning().equals(request.getFlow())) {
-                CarryOver newCarryOver = CarryOver.of(request, book, targetDate);
+            if (savedCarryOver.isEmpty() && TRANSFER.getMeaning().equals(lineCategory.toString())) {
+                CarryOver newCarryOver = CarryOver.of(bookLine, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
                 savedCarryOver.ifPresent(carryOver -> {
-                    carryOver.update(request.getMoney(), request.getFlow());
+                    carryOver.update(bookLine.getMoney(), lineCategory.toString());
                     carryOvers.add(carryOver);
                 });
             }
@@ -80,6 +84,7 @@ public class CarryOverServiceImpl implements CarryOverService {
 
         carryOverRepository.saveAll(carryOvers);
     }
+
 
     @Override
     public void deleteCarryOver(final Long bookLineId) {

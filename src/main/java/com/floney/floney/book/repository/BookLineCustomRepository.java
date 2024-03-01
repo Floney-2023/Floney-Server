@@ -32,7 +32,7 @@ public interface BookLineCustomRepository {
 
     void inactiveAllBy(Book book);
 
-    void inactiveByAllByAfter(LocalDate localDate);
+    void inactiveAllByAfter(LocalDate localDate);
 
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 
