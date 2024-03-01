@@ -1371,7 +1371,7 @@ public class BookAcceptanceTest {
         class Context_With_NotExistRepeatLineId {
             final User user = UserFixture.emailUser();
             String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
-            long repeatBookLineId = 1L;
+            long repeatBookLineId = 10L;
 
             @Test
             @DisplayName("실패한다")
