@@ -114,5 +114,7 @@ public class BookLine extends BaseEntity {
         return categories.isIncomeOrOutcome();
     }
 
-
+    public boolean isNotRepeat() {
+        return this.repeatBookLine == null;
+    }
 }
