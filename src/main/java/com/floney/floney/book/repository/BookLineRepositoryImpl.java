@@ -84,7 +84,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLineCategory.assetSubcategory.name,
                     user.email,
                     user.nickname,
-                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg)
+                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
+                    bookLine.repeatBookLine.id
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -222,7 +223,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLineCategory.assetSubcategory.name,
                     user.email,
                     user.nickname,
-                    user.profileImg
+                    user.profileImg,
+                    bookLine.repeatBookLine.id
                 )
             )
             .from(bookLine)
