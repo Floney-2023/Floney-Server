@@ -70,7 +70,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
 
-            if (savedCarryOver.isEmpty() && TRANSFER.getMeaning().equals(lineCategory.toString())) {
+            if (savedCarryOver.isEmpty() && !TRANSFER.getMeaning().equals(lineCategory.toString())) {
                 CarryOver newCarryOver = CarryOver.of(bookLine, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
