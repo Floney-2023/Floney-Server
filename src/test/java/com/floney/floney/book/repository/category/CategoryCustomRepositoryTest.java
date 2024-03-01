@@ -13,7 +13,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.config.QueryDslTest;
 import com.floney.floney.fixture.BookFixture;
-import com.floney.floney.fixture.CategoryFixture;
+import com.floney.floney.fixture.SubcategoryFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -68,22 +68,22 @@ class CategoryCustomRepositoryTest {
     }
 
     private Subcategory incomeSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = CategoryFixture.createSubcategory(book, incomeLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubcategoryFixture.createSubcategory(book, incomeLineCategory, name);
         return subcategoryRepository.save(subCategoryForIncome1);
     }
 
     private void outcomeSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = CategoryFixture.createSubcategory(book, outcomeLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubcategoryFixture.createSubcategory(book, outcomeLineCategory, name);
         subcategoryRepository.save(subCategoryForIncome1);
     }
 
     private Subcategory assetSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = CategoryFixture.createSubcategory(book, assetLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubcategoryFixture.createSubcategory(book, assetLineCategory, name);
         return subcategoryRepository.save(subCategoryForIncome1);
     }
 
     private void transferSubCategory(String name) {
-        Subcategory subCategoryForIncome1 = CategoryFixture.createSubcategory(book, transferLineCategory, name);
+        Subcategory subCategoryForIncome1 = SubcategoryFixture.createSubcategory(book, transferLineCategory, name);
         subcategoryRepository.save(subCategoryForIncome1);
     }
 
@@ -101,7 +101,7 @@ class CategoryCustomRepositoryTest {
             @BeforeEach
             void init() {
                 incomeSubCategory(incomeSubCategoryName1);
-                Subcategory subCategoryForIncome2 = CategoryFixture.createSubcategory(book, incomeLineCategory, incomeSubCategoryName2);
+                Subcategory subCategoryForIncome2 = SubcategoryFixture.createSubcategory(book, incomeLineCategory, incomeSubCategoryName2);
                 subcategoryRepository.save(subCategoryForIncome2);
             }
 
@@ -127,7 +127,7 @@ class CategoryCustomRepositoryTest {
             @BeforeEach
             void save_sub_category() {
                 outcomeSubCategory(outcomeSubCategoryName1);
-                Subcategory subCategoryForOutcome2 = CategoryFixture.createSubcategory(book, outcomeLineCategory, outcomeSubCategoryName2);
+                Subcategory subCategoryForOutcome2 = SubcategoryFixture.createSubcategory(book, outcomeLineCategory, outcomeSubCategoryName2);
                 subcategoryRepository.save(subCategoryForOutcome2);
 
             }
@@ -153,8 +153,8 @@ class CategoryCustomRepositoryTest {
 
             @BeforeEach
             void save_sub_category() {
-                Subcategory subCategoryForAsset1 = CategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName1);
-                Subcategory subCategoryForAsset2 = CategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName2);
+                Subcategory subCategoryForAsset1 = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName1);
+                Subcategory subCategoryForAsset2 = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName2);
 
                 subcategoryRepository.save(subCategoryForAsset1);
                 subcategoryRepository.save(subCategoryForAsset2);
@@ -438,7 +438,7 @@ class CategoryCustomRepositoryTest {
 
             @BeforeEach
             void custom_category() {
-                Subcategory customCategory = CategoryFixture.createSubcategory(book, assetLineCategory, customCategoryName);
+                Subcategory customCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, customCategoryName);
                 subcategoryRepository.save(customCategory);
             }
 

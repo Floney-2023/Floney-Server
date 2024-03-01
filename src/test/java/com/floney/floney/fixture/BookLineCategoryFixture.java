@@ -11,8 +11,8 @@ public class BookLineCategoryFixture {
         Category lineCategory = Category.builder().name(CategoryType.INCOME).build();
         Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
 
-        Subcategory subCategory = CategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
-        Subcategory assetSubCategory = CategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
+        Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
         return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
     }
 }
