@@ -112,7 +112,7 @@ public class RepeatBookLineTest {
 
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
-                long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+                long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.size()).isEqualTo(daysBetween);
@@ -132,7 +132,7 @@ public class RepeatBookLineTest {
 
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
-                long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+                long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.size()).isEqualTo(daysBetween / 7);
@@ -167,7 +167,7 @@ public class RepeatBookLineTest {
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
                 long weekdayCount = 0;
 
-                for (LocalDate date = lineDate.plusDays(1); date.isBefore(endDate); date = date.plusDays(1)) {
+                for (LocalDate date = lineDate.plusDays(1); date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
                     if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                         weekdayCount++;
                     }

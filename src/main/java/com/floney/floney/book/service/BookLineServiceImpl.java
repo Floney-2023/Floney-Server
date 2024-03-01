@@ -73,12 +73,7 @@ public class BookLineServiceImpl implements BookLineService {
         final Book book = findBook(bookKey);
         final DateDuration dates = DateDuration.startAndEndOfMonth(date);
 
-        return MonthLinesResponse.of(
-            date,
-            daysExpense(bookKey, dates),
-            totalExpense(bookKey, dates),
-            carryOverFactory.getCarryOverInfo(book, date)
-        );
+        return MonthLinesResponse.of(date, daysExpense(bookKey, dates), totalExpense(bookKey, dates), carryOverFactory.getCarryOverInfo(book, date));
     }
 
     @Override
@@ -89,33 +84,21 @@ public class BookLineServiceImpl implements BookLineService {
 
         final List<BookLineWithWriterView> bookLinesOfDay = bookLineRepository.allLinesByDay(day, bookKey);
 
-        final List<TotalExpense> totalExpensesOfDay = List.of(
-            bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME),
-            bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME)
-        );
+        final List<TotalExpense> totalExpensesOfDay = List.of(bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME), bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME));
 
-        return TotalDayLinesResponse.of(
-            bookLinesOfDay,
-            totalExpensesOfDay,
-            book.getSeeProfile(),
-            carryOverFactory.getCarryOverInfo(book, date)
-        );
+        return TotalDayLinesResponse.of(bookLinesOfDay, totalExpensesOfDay, book.getSeeProfile(), carryOverFactory.getCarryOverInfo(book, date));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<DayLines> allOutcomes(final AllOutcomesRequest allOutcomesRequest) {
-        return bookLineRepository.findAllOutcomes(allOutcomesRequest)
-            .stream()
-            .map(DayLines::from)
-            .toList();
+        return bookLineRepository.findAllOutcomes(allOutcomesRequest).stream().map(DayLines::from).toList();
     }
 
     @Override
     @Transactional
     public BookLineResponse changeLine(final BookLineRequest request) {
-        final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId())
-            .orElseThrow(NotFoundBookLineException::new);
+        final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId()).orElseThrow(NotFoundBookLineException::new);
         final Book book = findBook(request.getBookKey());
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
@@ -143,8 +126,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public void deleteLine(final Long bookLineId) {
-        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
-            .orElseThrow(NotFoundBookLineException::new);
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE).orElseThrow(NotFoundBookLineException::new);
         savedBookLine.inactive();
         bookLineRepository.save(savedBookLine);
     }
@@ -152,8 +134,7 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public void deleteAllAfterBookLineByRepeat(final long bookLineId) {
-        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
-            .orElseThrow(NotFoundBookLineException::new);
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE).orElseThrow(NotFoundBookLineException::new);
 
         //TODO : 더 어울리는 예외 처리
         if (savedBookLine.isNotRepeat()) {
@@ -162,7 +143,10 @@ public class BookLineServiceImpl implements BookLineService {
 
         List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
         bookLines.add(savedBookLine);
-        bookLines.forEach(BookLine::inactive);
+        bookLines.forEach((line) -> {
+            line.inactive();
+            bookLineRepository.save(line);
+        });
     }
 
     private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
@@ -221,22 +205,18 @@ public class BookLineServiceImpl implements BookLineService {
         return BookLineCategory.create(lineCategory, lineSubcategory, assetSubcategory);
     }
 
-    private void updateCategory(final BookLineCategory bookLineCategory,
-                                final String lineSubCategoryName,
-                                final String assetSubCategoryName) {
+    private void updateCategory(final BookLineCategory bookLineCategory, final String lineSubCategoryName, final String assetSubCategoryName) {
         updateLineSubCategory(bookLineCategory, lineSubCategoryName);
         updateAssetSubCategory(bookLineCategory, assetSubCategoryName);
     }
 
-    private void updateAssetSubCategory(final BookLineCategory bookLineCategory,
-                                        final String assetSubCategoryName) {
+    private void updateAssetSubCategory(final BookLineCategory bookLineCategory, final String assetSubCategoryName) {
         final Book book = bookLineCategory.getBookLine().getBook();
         final Subcategory assetSubcategory = findAssetSubCategory(book, assetSubCategoryName);
         bookLineCategory.updateAssetSubCategory(assetSubcategory);
     }
 
-    private void updateLineSubCategory(final BookLineCategory bookLineCategory,
-                                       final String lineSubCategoryName) {
+    private void updateLineSubCategory(final BookLineCategory bookLineCategory, final String lineSubCategoryName) {
         final Book book = bookLineCategory.getBookLine().getBook();
         final Category lineCategory = bookLineCategory.getLineCategory();
         final Subcategory lineSubcategory = findLineSubCategory(lineSubCategoryName, lineCategory, book);
@@ -245,21 +225,15 @@ public class BookLineServiceImpl implements BookLineService {
 
     private Category findLineCategory(final String categoryName) {
         final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
-        return categoryRepository.findByType(categoryType)
-            .orElseThrow(() -> new NotFoundCategoryException(categoryName));
+        return categoryRepository.findByType(categoryType).orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
-    private Subcategory findLineSubCategory(final String lineSubCategoryName,
-                                            final Category lineCategory,
-                                            final Book book) {
-        return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName())
-            .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
+    private Subcategory findLineSubCategory(final String lineSubCategoryName, final Category lineCategory, final Book book) {
+        return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName()).orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
-    private Subcategory findAssetSubCategory(final Book book,
-                                             final String assetSubCategoryName) {
-        return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET)
-            .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
+    private Subcategory findAssetSubCategory(final Book book, final String assetSubCategoryName) {
+        return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET).orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 
     private void validateBookLineIncludedInBook(final Book bookOfBookLine, final Book book) {
@@ -269,13 +243,11 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
-        return bookUserRepository.findBookUserByEmailAndBookKey(currentUser, request.getBookKey())
-            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
+        return bookUserRepository.findBookUserByEmailAndBookKey(currentUser, request.getBookKey()).orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
-            .orElseThrow(() -> new NotFoundBookException(bookKey));
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(final String bookKey, final DateDuration dates) {
@@ -286,9 +258,6 @@ public class BookLineServiceImpl implements BookLineService {
         final double income = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, INCOME);
         final double outcome = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, OUTCOME);
         // TODO: Map 대신 새로운 객체 생성
-        return Map.of(
-            INCOME.getMeaning(), income,
-            OUTCOME.getMeaning(), outcome
-        );
+        return Map.of(INCOME.getMeaning(), income, OUTCOME.getMeaning(), outcome);
     }
 }

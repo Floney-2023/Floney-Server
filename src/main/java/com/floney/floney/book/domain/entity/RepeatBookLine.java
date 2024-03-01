@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RepeatBookLine extends BaseEntity {
 
-    public static final int REPEAT_YEAR = 5;
+    public static final int REPEAT_YEAR = 3;
 
     @Enumerated(value = EnumType.STRING)
     private RepeatDuration repeatDuration;
@@ -96,10 +96,11 @@ public class RepeatBookLine extends BaseEntity {
     }
 
     private void getEveryDay(List<BookLine> bookLines) {
+        //현재 날짜의 다음 날부터 반복 내역
         LocalDate startDate = this.getLineDate().plusDays(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
             BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
@@ -109,7 +110,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusMonths(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusMonths(1)) {
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusMonths(1)) {
             BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
@@ -118,9 +119,11 @@ public class RepeatBookLine extends BaseEntity {
 
     private void getEveryWeek(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusWeeks(1);
+
+        // 오늘 날짜를 포함하여 5년치를 생성.
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusWeeks(1)) {
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusWeeks(1)) {
             BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
@@ -130,7 +133,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusDays(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
             if (isWeekend(date)) {
                 bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }
@@ -141,7 +144,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusDays(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
             if (isWeekDay(date)) {
                 bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }
