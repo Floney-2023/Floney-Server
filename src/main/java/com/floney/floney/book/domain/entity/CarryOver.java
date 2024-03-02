@@ -44,21 +44,39 @@ public class CarryOver extends BaseEntity {
 
     public static CarryOver of(final BookLineRequest request, final Book book, final LocalDate date) {
         if (OUTCOME.getMeaning().equals(request.getFlow())) {
-            return CarryOver.builder().money(-1 * request.getMoney()).book(book).date(date).build();
+            return CarryOver.builder()
+                .money(-1 * request.getMoney())
+                .book(book)
+                .date(date)
+                .build();
         }
-        return CarryOver.builder().money(request.getMoney()).book(book).date(date).build();
+        return CarryOver.builder()
+            .money(request.getMoney())
+            .book(book)
+            .date(date)
+            .build();
     }
 
     public static CarryOver of(final BookLine bookLine, final LocalDate date) {
         Category category = bookLine.getCategories().getLineCategory();
         if (OUTCOME.equals(category.getName())) {
-            return CarryOver.builder().money(-1 * bookLine.getMoney()).book(bookLine.getBook()).date(date).build();
+            return CarryOver.builder()
+                .money(-1 * bookLine.getMoney())
+                .book(bookLine.getBook())
+                .date(date)
+                .build();
         }
-        return CarryOver.builder().money(bookLine.getMoney()).book(bookLine.getBook()).date(date).build();
+        return CarryOver.builder()
+            .money(bookLine.getMoney())
+            .book(bookLine.getBook())
+            .date(date)
+            .build();
     }
 
     public static CarryOver init() {
-        return CarryOver.builder().money(0L).build();
+        return CarryOver.builder()
+            .money(0L)
+            .build();
     }
 
     public void update(final double updateMoney, final CategoryType categoryType) {
