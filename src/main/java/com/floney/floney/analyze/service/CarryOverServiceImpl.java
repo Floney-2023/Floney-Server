@@ -72,12 +72,12 @@ public class CarryOverServiceImpl implements CarryOverService {
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
 
             // 이체일 경우 이월 생성 X
-            if (savedCarryOver.isEmpty() && !TRANSFER.getMeaning().equals(lineCategory.getCategoryMeaning())) {
+            if (savedCarryOver.isEmpty() && !TRANSFER.equals(lineCategory.getName())) {
                 CarryOver newCarryOver = CarryOver.of(bookLine, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
                 savedCarryOver.ifPresent(carryOver -> {
-                    carryOver.update(bookLine.getMoney(), lineCategory.getCategoryMeaning());
+                    carryOver.update(bookLine.getMoney(), lineCategory.getName());
                     carryOvers.add(carryOver);
                 });
             }

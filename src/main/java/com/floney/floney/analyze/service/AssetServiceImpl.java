@@ -28,7 +28,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 public class AssetServiceImpl implements AssetService {
 
     private static final int SHOW_ASSET_DURATION = 5;
-    private static final int SAVE_ASSET_DURATION = 60;
+    public static final int SAVE_ASSET_DURATION = 60;
     private static final int ONE_MONTH = 1;
 
     private final AssetRepository assetRepository;
@@ -71,7 +71,7 @@ public class AssetServiceImpl implements AssetService {
 
         // 이체 내역일 경우 자산 포함 X
         // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (TRANSFER.getMeaning().equals(lineCategory.getCategoryMeaning())) {
+        if (TRANSFER.equals(lineCategory.getName())) {
             return;
         }
 

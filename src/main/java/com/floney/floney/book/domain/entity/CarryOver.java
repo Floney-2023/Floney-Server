@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
@@ -50,11 +51,9 @@ public class CarryOver extends BaseEntity {
 
     public static CarryOver of(final BookLine bookLine, final LocalDate date) {
         Category category = bookLine.getCategories().getLineCategory();
-
-        if (OUTCOME.getMeaning().equals(category.getCategoryMeaning())) {
+        if (OUTCOME.equals(category.getName())) {
             return CarryOver.builder().money(-1 * bookLine.getMoney()).book(bookLine.getBook()).date(date).build();
         }
-
         return CarryOver.builder().money(bookLine.getMoney()).book(bookLine.getBook()).date(date).build();
     }
 
@@ -62,8 +61,8 @@ public class CarryOver extends BaseEntity {
         return CarryOver.builder().money(0L).build();
     }
 
-    public void update(final double updateMoney, final String lineCategoryName) {
-        if (INCOME.getMeaning().equals(lineCategoryName)) {
+    public void update(final double updateMoney, final CategoryType categoryType) {
+        if (INCOME.equals(categoryType)) {
             money += updateMoney;
         } else {
             money -= updateMoney;
