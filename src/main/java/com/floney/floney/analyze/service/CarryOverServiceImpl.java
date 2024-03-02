@@ -53,11 +53,11 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Override
     public void updateCarryOver(BookLineRequest request, BookLine savedBookLine) {
         deleteCarryOver(savedBookLine.getId());
-        createCarryOverByAddBookLine(savedBookLine);
+        createCarryOver(savedBookLine);
     }
 
     @Override
-    public void createCarryOverByAddBookLine(BookLine bookLine) {
+    public void createCarryOver(BookLine bookLine) {
         Book book = bookLine.getBook();
         LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
@@ -66,16 +66,18 @@ public class CarryOverServiceImpl implements CarryOverService {
         targetDate = getNextMonth(targetDate);
 
         Category lineCategory = bookLine.getCategories().getLineCategory();
+
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
 
-            if (savedCarryOver.isEmpty() && !TRANSFER.getMeaning().equals(lineCategory.toString())) {
+            // 이체일 경우 이월 생성 X
+            if (savedCarryOver.isEmpty() && !TRANSFER.getMeaning().equals(lineCategory.getCategoryMeaning())) {
                 CarryOver newCarryOver = CarryOver.of(bookLine, targetDate);
                 carryOvers.add(newCarryOver);
             } else {
                 savedCarryOver.ifPresent(carryOver -> {
-                    carryOver.update(bookLine.getMoney(), lineCategory.getName().getMeaning());
+                    carryOver.update(bookLine.getMoney(), lineCategory.getCategoryMeaning());
                     carryOvers.add(carryOver);
                 });
             }

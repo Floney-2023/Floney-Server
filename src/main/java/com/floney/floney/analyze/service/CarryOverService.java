@@ -10,7 +10,7 @@ public interface CarryOverService {
 
     void updateCarryOver(BookLineRequest request, BookLine savedBookLine);
 
-    void createCarryOverByAddBookLine(BookLine bookLine);
+    void createCarryOver(BookLine bookLine);
 
     void deleteCarryOver(Long savedBookLineId);
 }
