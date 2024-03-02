@@ -61,21 +61,31 @@ public class CarryOverServiceImpl implements CarryOverService {
         Book book = bookLine.getBook();
         LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
         List<CarryOver> carryOvers = new ArrayList<>();
-
-        // 다음달부터 생성
-        targetDate = getNextMonth(targetDate);
-
         Category lineCategory = bookLine.getCategories().getLineCategory();
+
+        // 카테고리가 이월인 경우 생성 X
+        if (TRANSFER.equals(lineCategory.getName())) {
+            return;
+        }
+
+        // 현 날짜의 다음달부터 생성
+        targetDate = getNextMonth(targetDate);
 
         // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
+
+            // 이월 날짜에 해당하는 이월 내역 DB에서 가져오기
+            // TODO : 성능 개선 - 1번의 쿼리로 5년치 내역을 가져온 뒤, 날짜를 Key로 중복 체크
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
 
-            // 이체일 경우 이월 생성 X
-            if (savedCarryOver.isEmpty() && !TRANSFER.equals(lineCategory.getName())) {
+            // DB에 이월 내역이 존재하지 않으면 생성
+            if (savedCarryOver.isEmpty()) {
                 CarryOver newCarryOver = CarryOver.of(bookLine, targetDate);
                 carryOvers.add(newCarryOver);
-            } else {
+            }
+
+            // DB에 존재 시, 업데이트
+            else {
                 savedCarryOver.ifPresent(carryOver -> {
                     carryOver.update(bookLine.getMoney(), lineCategory.getName());
                     carryOvers.add(carryOver);
