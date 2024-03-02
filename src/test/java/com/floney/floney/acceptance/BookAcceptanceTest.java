@@ -1400,13 +1400,13 @@ public class BookAcceptanceTest {
     class Describe_GetAllRepeatBookLine {
 
         @Nested
+        @DisplayName("카테고리와 반복 내역이 존재하는 경우")
         class Context_With_RepeatLine {
             final User user = UserFixture.emailUser();
             String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
             String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
 
             @BeforeEach
-            @DisplayName("카테고리와 반복 내역이 존재하는 경우")
             public void init() {
                 BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
                 BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEK);

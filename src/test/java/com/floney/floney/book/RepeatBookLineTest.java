@@ -26,14 +26,7 @@ public class RepeatBookLineTest {
     private void assertBookLineSameWithRepeat(List<BookLine> bookLines, RepeatBookLine repeatBookLine) {
         BookLine targetBookLineToAssert = bookLines.get(0);
 
-        assertAll(
-            () -> assertThat(targetBookLineToAssert.getBook()).isEqualTo(repeatBookLine.getBook()),
-            () -> assertThat(targetBookLineToAssert.getMoney()).isEqualTo(repeatBookLine.getMoney()),
-            () -> assertThat(targetBookLineToAssert.getWriter()).isEqualTo(repeatBookLine.getWriter()),
-            () -> assertThat(targetBookLineToAssert.getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory()),
-            () -> assertThat(targetBookLineToAssert.getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory()),
-            () -> assertThat(targetBookLineToAssert.getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus())
-        );
+        assertAll(() -> assertThat(targetBookLineToAssert.getBook()).isEqualTo(repeatBookLine.getBook()), () -> assertThat(targetBookLineToAssert.getMoney()).isEqualTo(repeatBookLine.getMoney()), () -> assertThat(targetBookLineToAssert.getWriter()).isEqualTo(repeatBookLine.getWriter()), () -> assertThat(targetBookLineToAssert.getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory()), () -> assertThat(targetBookLineToAssert.getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory()), () -> assertThat(targetBookLineToAssert.getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus()));
     }
 
 
@@ -68,15 +61,7 @@ public class RepeatBookLineTest {
             @DisplayName("생성된 반복 내역은 가계부 내역과 일치한다")
             void it_same_with_bookLine() {
                 RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, RepeatDuration.WEEKEND);
-                assertAll(
-                    () -> assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook()),
-                    () -> assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney()),
-                    () -> assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter()),
-                    () -> assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory()),
-                    () -> assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory()),
-                    () -> assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription()),
-                    () -> assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus())
-                );
+                assertAll(() -> assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook()), () -> assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney()), () -> assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter()), () -> assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory()), () -> assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory()), () -> assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription()), () -> assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus()));
 
             }
         }
@@ -87,6 +72,7 @@ public class RepeatBookLineTest {
     class Describe_BookLinesByRepeat {
         BookLine bookLine;
         Book book;
+        List<BookLine> bookLines;
         RepeatBookLine repeatBookLine;
         LocalDate lineDate = LocalDate.now();
 
@@ -104,12 +90,14 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("매일을 선택한 경우")
         class Context_With_EveryDay {
+            @BeforeEach
+            public void init() {
+                bookLines = repeatBookLine.bookLinesBy(RepeatDuration.EVERYDAY);
+            }
 
             @Test
             @DisplayName("매일 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.EVERYDAY);
-
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
@@ -117,19 +105,20 @@ public class RepeatBookLineTest {
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.size()).isEqualTo(daysBetween);
                 assertThat(bookLines.get(0).getLineDate()).isEqualTo(lineDate.plusDays(1));
-
             }
         }
 
         @Nested
         @DisplayName("매주를 선택한 경우")
         class Context_With_EveryWeek {
+            @BeforeEach
+            public void init() {
+                bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEK);
+            }
 
             @Test
             @DisplayName("매주 같은 요일에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEK);
-
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
@@ -145,11 +134,14 @@ public class RepeatBookLineTest {
         @DisplayName("매달을 선택한 경우")
         class Context_With_EveryMonth {
 
+            @BeforeEach
+            public void init() {
+                bookLines = repeatBookLine.bookLinesBy(RepeatDuration.MONTH);
+            }
+
             @Test
             @DisplayName("매달 같은 일자에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.MONTH);
-
                 assertBookLineSameWithRepeat(bookLines, repeatBookLine);
                 assertThat(bookLines.get(0).getLineDate()).isEqualTo(lineDate.plusMonths(1));
             }
@@ -159,11 +151,15 @@ public class RepeatBookLineTest {
         @DisplayName("주중을 선택한 경우")
         class Context_With_EveryWeekDay {
 
+            @BeforeEach
+            public void init() {
+                bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKDAY);
+
+            }
+
             @Test
             @DisplayName("주중 일자에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKDAY);
-
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
                 long weekdayCount = 0;
 
@@ -182,15 +178,17 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("주말을 선택한 경우")
         class Context_With_EveryWeekend {
+            
+            @BeforeEach
+            public void init() {
+                bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKEND);
+            }
 
             @Test
             @DisplayName("주말 일자에 가계부 내역이 생성된다")
             void it_returns_bookLines() {
-                final List<BookLine> bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKEND);
-
                 LocalDate startDate = lineDate.plusDays(1);
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
-
 
                 long weekendCount = 0;
 
