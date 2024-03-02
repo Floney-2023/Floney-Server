@@ -23,7 +23,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@DisplayName("단위 테스트 : CarryOver")
+@DisplayName("단위 테스트 : CarryOverService")
 @ExtendWith(MockitoExtension.class)
 public class CarryOverServiceTest {
 

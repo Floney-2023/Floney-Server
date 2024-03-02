@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class CarryOverTest {
 
     @Nested
-    @DisplayName("Of()를 실행할 때")
+    @DisplayName("of()를 실행할 때")
     class Describe_Of {
         User user;
         Book book;

@@ -36,6 +36,7 @@ import static org.mockito.BDDMockito.given;
 
 //TODO : 1. 테스트 코드 전체 추가, 2. mock 안쓰는 방법으로 개선
 @ExtendWith(MockitoExtension.class)
+@DisplayName("단위테스트 : BookLineService")
 public class BookLineServiceTest {
 
     @Mock
