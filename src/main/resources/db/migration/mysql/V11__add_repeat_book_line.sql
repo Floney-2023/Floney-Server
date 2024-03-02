@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `repeat_book_line`
     `money`         double       NOT NULL DEFAULT '0.0',
     `book_id`       bigint       NOT NULL,
     `writer_id`     bigint       NOT NULL,
-    `repeat_duration` varchar(20) NOT NULL,
+    `repeat_duration` varchar(100) NOT NULL,
     `line_category_id`     bigint  NOT NULL,
     `line_subcategory_id`  bigint  NOT NULL,
     `asset_subcategory_id` bigint  NOT NULL,
@@ -24,4 +24,3 @@ CREATE TABLE IF NOT EXISTS `repeat_book_line`
 
 ALTER TABLE `book_line` ADD COLUMN `repeat_book_line_id` bigint;
 ALTER TABLE `book_line` ADD INDEX repeat_book_line(`repeat_book_line_id`)
-
