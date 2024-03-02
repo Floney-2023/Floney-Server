@@ -1,8 +1,7 @@
-package com.floney.floney.book;
+package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.book.domain.RepeatDuration;
-import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -178,7 +177,7 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("주말을 선택한 경우")
         class Context_With_EveryWeekend {
-            
+
             @BeforeEach
             public void init() {
                 bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEKEND);

@@ -1,8 +1,7 @@
-package com.floney.floney.book;
+package com.floney.floney.book.domain.entity;
 
 
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
 import org.assertj.core.api.Assertions;

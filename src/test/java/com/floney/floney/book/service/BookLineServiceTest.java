@@ -1,4 +1,4 @@
-package com.floney.floney.book;
+package com.floney.floney.book.service;
 
 import com.floney.floney.analyze.service.AssetServiceImpl;
 import com.floney.floney.book.domain.RepeatDuration;
@@ -15,7 +15,6 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.book.service.BookLineServiceImpl;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;

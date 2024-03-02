@@ -1,11 +1,11 @@
-package com.floney.floney.book;
+package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.CarryOverServiceImpl;
+import com.floney.floney.analyze.service.AssetServiceImpl;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.book.repository.analyze.CarryOverRepository;
+import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,24 +18,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import static com.floney.floney.analyze.service.AssetServiceImpl.SAVE_ASSET_DURATION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@DisplayName("단위 테스트 : CarryOver")
+@DisplayName("단위 테스트 : AssetService")
 @ExtendWith(MockitoExtension.class)
-public class CarryOverServiceTest {
+public class AssetServiceTest {
 
     @InjectMocks
-    private CarryOverServiceImpl carryOverService;
+    private AssetServiceImpl assetService;
 
     @Mock
-    private CarryOverRepository carryOverRepository;
+    private AssetRepository assetRepository;
 
     @Nested
-    @DisplayName("createCarryOver()를 실행할 때")
-    class Describe_CreateCarryOver {
+    @DisplayName("addAssetOf()를 실행할 때")
+    class Describe_AddAssetOf {
         User user;
         Book book;
         String bookKey;
@@ -63,17 +63,16 @@ public class CarryOverServiceTest {
             }
 
             @Test
-            @DisplayName("이월 내역이 생성 된다")
-            void it_create_carryOver() {
-                carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, times(1)).saveAll(any(List.class));
+            @DisplayName("자산이 업데이트 된다")
+            void it_update_asset() {
+                assetService.addAssetOf(bookLine);
+                verify(assetRepository, times(SAVE_ASSET_DURATION)).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
         }
 
         @Nested
         @DisplayName("카테고리가 지출인 가계부 내역이 주어지면")
         class Context_With_OutcomeBookLine {
-
             @BeforeEach
             void init() {
                 String outcomeSubCategoryName = "식비";
@@ -82,10 +81,10 @@ public class CarryOverServiceTest {
             }
 
             @Test
-            @DisplayName("이월 내역이 생성 된다")
-            void it_create_carryOver() {
-                carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, times(1)).saveAll(any(List.class));
+            @DisplayName("자산이 업데이트 된다")
+            void it_update_asset() {
+                assetService.addAssetOf(bookLine);
+                verify(assetRepository, times(SAVE_ASSET_DURATION)).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
         }
 
@@ -100,10 +99,10 @@ public class CarryOverServiceTest {
             }
 
             @Test
-            @DisplayName("이월 내역이 생성 되지 않는다")
-            void it_didnt_create_carryOver() {
-                carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, never()).saveAll(any(List.class));
+            @DisplayName("자산이 업데이트 되지 않는다")
+            void it_update_asset() {
+                assetService.addAssetOf(bookLine);
+                verify(assetRepository, never()).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
         }
     }
