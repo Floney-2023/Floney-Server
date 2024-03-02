@@ -15,4 +15,23 @@ public class BookLineCategoryFixture {
         Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
         return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
     }
+
+    public static BookLineCategory outcomeBookLineCategory(Book book, String lineSubCategoryName, String assetSubCategoryName) {
+        Category lineCategory = Category.builder().name(CategoryType.OUTCOME).build();
+        Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
+
+        Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
+        return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
+    }
+
+    public static BookLineCategory transferBookLineCategory(Book book, String lineSubCategoryName, String assetSubCategoryName) {
+        Category lineCategory = Category.builder().name(CategoryType.TRANSFER).build();
+        Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
+
+        Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
+        return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
+    }
+
 }
