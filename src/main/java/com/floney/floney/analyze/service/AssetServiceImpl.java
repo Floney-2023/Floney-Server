@@ -5,7 +5,6 @@ import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.AssetInfo;
-import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.util.DateUtil;
@@ -20,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
 import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
@@ -73,7 +71,7 @@ public class AssetServiceImpl implements AssetService {
 
         // 이체 내역일 경우 자산 포함 X
         // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (TRANSFER.getMeaning().equals(lineCategory.toString())) {
+        if (TRANSFER.getMeaning().equals(lineCategory.getCategoryMeaning())) {
             return;
         }
 
@@ -100,13 +98,6 @@ public class AssetServiceImpl implements AssetService {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assetRepository.subtractMoneyByDateAndBook(getMoney(bookLine), currentMonth, bookLine.getBook());
         }
-    }
-
-    private double getMoney(final BookLineRequest request) {
-        if (OUTCOME.getMeaning().equals(request.getFlow())) {
-            return (-1) * request.getMoney();
-        }
-        return request.getMoney();
     }
 
     private double getMoney(final BookLine bookLine) {

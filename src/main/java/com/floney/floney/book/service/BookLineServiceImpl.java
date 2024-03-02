@@ -154,7 +154,7 @@ public class BookLineServiceImpl implements BookLineService {
         bookLineRepository.save(bookLine);
 
         if (book.getCarryOverStatus()) {
-            carryOverFactory.createCarryOverByAddBookLine(bookLine);
+            carryOverFactory.createCarryOver(bookLine);
         }
         if (bookLine.includedInAsset()) {
             assetService.addAssetOf(bookLine);
@@ -186,7 +186,7 @@ public class BookLineServiceImpl implements BookLineService {
         // 4. 모든 가계부 내역 자산, 이월 처리
         bookLines.forEach(line -> {
             if (carryOverStatus) {
-                carryOverFactory.createCarryOverByAddBookLine(line);
+                carryOverFactory.createCarryOver(line);
             }
             if (line.includedInAsset()) {
                 assetService.addAssetOf(line);
