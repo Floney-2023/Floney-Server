@@ -93,8 +93,8 @@ public class AssetServiceTest {
         class Context_With_TransferBookLine {
             @BeforeEach
             void init() {
-                String outcomeSubCategoryName = "이체";
-                final BookLineCategory bookLineCategory = BookLineCategoryFixture.transferBookLineCategory(book, outcomeSubCategoryName, assetSubCategoryName);
+                String transferSubCategoryName = "이체";
+                final BookLineCategory bookLineCategory = BookLineCategoryFixture.transferBookLineCategory(book, transferSubCategoryName, assetSubCategoryName);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
             }
 
