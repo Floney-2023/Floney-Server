@@ -39,9 +39,9 @@ CREATE TABLE IF NOT EXISTS `book_line_category`
     `line_subcategory_id`  bigint       NOT NULL,
     `asset_subcategory_id` bigint       NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `book_line_in_book_line_category` (`book_line_id`),
     KEY `line_category_in_book_line_category` (`line_category_id`),
     KEY `line_subcategory_in_book_line_category` (`line_subcategory_id`),
-    KEY `asset_subcategory_in_book_line_category` (`asset_subcategory_id`)
+    KEY `asset_subcategory_in_book_line_category` (`asset_subcategory_id`),
+    UNIQUE KEY `unique_book_line_status_in_book_line_category` (`book_line_id`, `status`)
 );
 
