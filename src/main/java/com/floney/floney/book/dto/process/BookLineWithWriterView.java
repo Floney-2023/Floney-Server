@@ -30,7 +30,7 @@ public class BookLineWithWriterView {
 
     private final String writerProfileImg;
 
-    private final long repeatBookLine;
+    private final String repeatDuration;
 
     @Builder
     @QueryProjection
@@ -44,7 +44,7 @@ public class BookLineWithWriterView {
                                   final String writerEmail,
                                   final String writerNickname,
                                   final String writerProfileImg,
-                                  final long repeatBookLine) {
+                                  final String repeatDuration) {
         this.id = id;
         this.money = money;
         this.description = description;
@@ -55,6 +55,6 @@ public class BookLineWithWriterView {
         this.assetSubCategory = assetSubCategory;
         this.writerEmail = writerEmail;
         this.writerNickname = writerNickname;
-        this.repeatBookLine = repeatBookLine;
+        this.repeatDuration = repeatDuration;
     }
 }

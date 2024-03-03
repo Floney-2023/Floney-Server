@@ -33,6 +33,7 @@ import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
+import static com.floney.floney.book.domain.entity.QRepeatBookLine.repeatBookLine;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
@@ -86,7 +87,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
-                    bookLine.repeatBookLine.id
+                    bookLine.repeatBookLine.repeatDuration.stringValue()
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -96,6 +97,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.writer, bookUser)
             .innerJoin(bookUser.user, user)
+            .innerJoin(bookLine.repeatBookLine, repeatBookLine)
             .where(
                 bookLine.lineDate.eq(date),
                 book.bookKey.eq(bookKey)
@@ -223,7 +225,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     user.profileImg,
-                    bookLine.repeatBookLine.id
+                    bookLine.repeatBookLine.repeatDuration.stringValue()
                 )
             )
             .from(bookLine)
@@ -234,6 +236,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLineCategory.lineCategory, category)
             .innerJoin(bookLineCategory.lineSubcategory, subcategory)
             .innerJoin(bookLineCategory.assetSubcategory, subcategory)
+            .innerJoin(bookLine.repeatBookLine, repeatBookLine)
             .where(
                 book.bookKey.eq(request.getBookKey()),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
