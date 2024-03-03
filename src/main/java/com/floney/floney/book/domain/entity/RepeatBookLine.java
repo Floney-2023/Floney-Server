@@ -119,8 +119,6 @@ public class RepeatBookLine extends BaseEntity {
 
     private void getEveryWeek(List<BookLine> bookLines) {
         LocalDate startDate = this.getLineDate().plusWeeks(1);
-
-        // 오늘 날짜를 포함하여 5년치를 생성.
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
         for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusWeeks(1)) {
