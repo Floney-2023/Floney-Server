@@ -53,6 +53,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final RepeatBookLineRepository repeatBookLineRepository;
 
     @Override
+    @Transactional
     public BookLineResponse createBookLine(final String email, final BookLineRequest request) {
         final Book book = findBook(request.getBookKey());
         final BookUser bookUser = findBookUser(email, request);
