@@ -8,6 +8,7 @@ import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
@@ -84,7 +85,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLineCategory.assetSubcategory.name,
                     user.email,
                     user.nickname,
-                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg)
+                    bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
+                    bookLine.repeatBookLine.id
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -109,6 +111,16 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
             .fetch();
+    }
+
+    @Override
+    public void inactiveAllByRepeatBookLine(final long repeatBookLineId) {
+        jpaQueryFactory.update(bookLine)
+            .set(bookLine.status, INACTIVE)
+            .set(bookLine.updatedAt, LocalDateTime.now())
+            .where(bookLine.repeatBookLine.id.eq(repeatBookLineId),
+                bookLine.status.eq(ACTIVE))
+            .execute();
     }
 
     @Override
@@ -186,6 +198,16 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
+    public List<BookLine> findAllRepeatBookLineByEqualOrAfter(final LocalDate localDate, final RepeatBookLine repeatBookLine) {
+        return jpaQueryFactory.selectFrom(bookLine)
+            .where(
+                bookLine.lineDate.after(localDate).or(bookLine.lineDate.eq(localDate)),
+                bookLine.repeatBookLine.eq(repeatBookLine),
+                bookLine.status.eq(ACTIVE))
+            .fetch();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<BookLineWithWriterView> findAllOutcomes(final AllOutcomesRequest request) {
         final DateDuration duration = request.getDuration();
@@ -200,7 +222,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     bookLineCategory.assetSubcategory.name,
                     user.email,
                     user.nickname,
-                    user.profileImg
+                    user.profileImg,
+                    bookLine.repeatBookLine.id
                 )
             )
             .from(bookLine)

@@ -1,33 +1,23 @@
 package com.floney.floney.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
-import com.floney.floney.book.dto.request.CarryOverRequest;
-import com.floney.floney.book.dto.request.SeeProfileRequest;
-import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.request.UpdateBudgetRequest;
-import com.floney.floney.book.dto.response.CreateBookResponse;
-import com.floney.floney.book.dto.response.InvolveBookResponse;
-import com.floney.floney.common.dto.Token;
-import com.floney.floney.common.exception.common.ErrorResponse;
-import com.floney.floney.fixture.BookFixture;
-import com.floney.floney.fixture.UserFixture;
-import com.floney.floney.user.entity.User;
-import io.restassured.RestAssured;
-import java.time.LocalDate;
 import com.floney.floney.book.domain.Currency;
+import com.floney.floney.book.domain.RepeatDuration;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
-import com.floney.floney.book.dto.response.BookLineResponse;
-import com.floney.floney.book.dto.response.InviteCodeResponse;
-import com.floney.floney.book.dto.response.TotalDayLinesResponse;
+import com.floney.floney.book.dto.response.*;
 import com.floney.floney.common.domain.vo.DateDuration;
+import com.floney.floney.common.dto.Token;
+import com.floney.floney.common.exception.common.ErrorResponse;
+import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.BookRequestDtoFixture;
+import com.floney.floney.fixture.UserFixture;
+import com.floney.floney.user.entity.User;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,11 +25,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.floney.floney.book.domain.RepeatDuration.WEEK;
+import static com.floney.floney.book.domain.RepeatDuration.WEEKEND;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @DisplayName("인수 테스트 : 가계부")
 @AcceptanceTest
@@ -327,6 +323,7 @@ public class BookAcceptanceTest {
                     .lineDate(LocalDate.parse(date))
                     .except(false)
                     .asset(assetSubCategory)
+                    .repeatDuration(RepeatDuration.NONE)
                     .build();
             }
 
@@ -889,18 +886,18 @@ public class BookAcceptanceTest {
             @DisplayName("성공한다.")
             void it_succeeds() {
                 final UpdateBookImgRequest request = UpdateBookImgRequest.builder()
-                        .bookKey(bookKey)
-                        .newUrl(BookFixture.UPDATE_URL)
-                        .build();
+                    .bookKey(bookKey)
+                    .newUrl(BookFixture.UPDATE_URL)
+                    .build();
 
                 RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/bookImg")
-                        .then()
-                        .statusCode(HttpStatus.OK.value());
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/bookImg")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
             }
         }
 
@@ -921,23 +918,23 @@ public class BookAcceptanceTest {
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final UpdateBookImgRequest request = UpdateBookImgRequest.builder()
-                        .bookKey("invalid-key")
-                        .newUrl(BookFixture.UPDATE_URL)
-                        .build();
+                    .bookKey("invalid-key")
+                    .newUrl(BookFixture.UPDATE_URL)
+                    .build();
 
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/bookImg")
-                        .then()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/bookImg")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "B001")
-                        .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
+                    .hasFieldOrPropertyWithValue("code", "B001")
+                    .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
             }
         }
 
@@ -966,16 +963,16 @@ public class BookAcceptanceTest {
             @DisplayName("성공한다.")
             void it_succeeds() {
                 final SeeProfileRequest request =
-                        new SeeProfileRequest(bookKey, Boolean.FALSE);
+                    new SeeProfileRequest(bookKey, Boolean.FALSE);
 
                 RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/seeProfile")
-                        .then()
-                        .statusCode(HttpStatus.OK.value());
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/seeProfile")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
             }
         }
 
@@ -996,21 +993,21 @@ public class BookAcceptanceTest {
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final SeeProfileRequest request =
-                        new SeeProfileRequest("invalid-key", Boolean.FALSE);
+                    new SeeProfileRequest("invalid-key", Boolean.FALSE);
 
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/seeProfile")
-                        .then()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/seeProfile")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "B001")
-                        .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
+                    .hasFieldOrPropertyWithValue("code", "B001")
+                    .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
             }
         }
 
@@ -1039,18 +1036,18 @@ public class BookAcceptanceTest {
             @DisplayName("성공한다.")
             void it_succeeds() {
                 final CarryOverRequest request = new CarryOverRequest(
-                        Boolean.FALSE,
-                        bookKey
+                    Boolean.FALSE,
+                    bookKey
                 );
 
                 RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/carryOver")
-                        .then()
-                        .statusCode(HttpStatus.OK.value());
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/carryOver")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
             }
         }
 
@@ -1079,19 +1076,19 @@ public class BookAcceptanceTest {
             @DisplayName("성공한다.")
             void it_succeeds() {
                 final UpdateBudgetRequest request = new UpdateBudgetRequest(
-                        bookKey,
-                        LocalDate.now(),
-                        10000
+                    bookKey,
+                    LocalDate.now(),
+                    10000
                 );
 
                 RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/budget")
-                        .then()
-                        .statusCode(HttpStatus.OK.value());
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/budget")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
             }
         }
 
@@ -1112,23 +1109,23 @@ public class BookAcceptanceTest {
             @DisplayName("에러를 반환한다.")
             void it_returns_error() {
                 final UpdateBudgetRequest request = new UpdateBudgetRequest(
-                        "invalid-key",
-                        LocalDate.now(),
-                        10000
+                    "invalid-key",
+                    LocalDate.now(),
+                    10000
                 );
                 final ErrorResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(request)
-                        .when().post("/books/info/budget")
-                        .then()
-                        .statusCode(HttpStatus.NOT_FOUND.value())
-                        .extract().as(ErrorResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/info/budget")
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .extract().as(ErrorResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("code", "B001")
-                        .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
+                    .hasFieldOrPropertyWithValue("code", "B001")
+                    .hasFieldOrPropertyWithValue("message", "가계부가 존재하지 않습니다");
             }
         }
 
@@ -1159,16 +1156,16 @@ public class BookAcceptanceTest {
             void it_responses_bookKey() {
 
                 InvolveBookResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/books/users/check")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(InvolveBookResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/books/users/check")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(InvolveBookResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("bookKey", lastAccessedBookKey);
+                    .hasFieldOrPropertyWithValue("bookKey", lastAccessedBookKey);
 
             }
         }
@@ -1191,16 +1188,16 @@ public class BookAcceptanceTest {
             void it_responses_null() {
 
                 InvolveBookResponse response = RestAssured
-                        .given()
-                        .auth().oauth2(token.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/books/users/check")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(InvolveBookResponse.class);
+                    .given()
+                    .auth().oauth2(token.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/books/users/check")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(InvolveBookResponse.class);
 
                 assertThat(response)
-                        .hasFieldOrPropertyWithValue("bookKey", null);
+                    .hasFieldOrPropertyWithValue("bookKey", null);
             }
         }
 
@@ -1241,24 +1238,200 @@ public class BookAcceptanceTest {
             void it_succeeds() {
 
                 java.util.List<?> responses = RestAssured
-                        .given()
-                        .log().all()
-                        .auth().oauth2(token1.getAccessToken())
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .params("bookKey", createBookResponse.getBookKey())
-                        .when().get("/books/users")
-                        .then()
-                        .log().all()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().as(java.util.List.class);
+                    .given()
+                    .log().all()
+                    .auth().oauth2(token1.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .params("bookKey", createBookResponse.getBookKey())
+                    .when().get("/books/users")
+                    .then()
+                    .log().all()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(java.util.List.class);
 
                 assertThat(responses)
-                        .extracting("email")
-                        .containsExactly(mail1, mail2, mail3);
+                    .extracting("email")
+                    .containsExactly(mail1, mail2, mail3);
             }
 
         }
 
+    }
+
+    @Nested
+    @DisplayName("deleteAllBookLineByRepeat()를 실행할 때")
+    class Describe_DeleteAllBookLineByRepeat {
+
+        @Nested
+        @DisplayName("가계부 내역이 존재하는 경우")
+        class Context_With_BookLine {
+            final User user = UserFixture.emailUser();
+            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+            long lineId;
+
+            @BeforeEach
+            public void init() {
+                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
+
+                //가계부 내역 찾기
+                TotalDayLinesResponse response = BookApiFixture.findBookLine(accessToken, bookKey, LocalDate.now());
+
+                lineId = response.getDayLinesResponse().get(0).getId();
+            }
+
+            @Test
+            @DisplayName("성공한다")
+            void it_succeeds() {
+                RestAssured
+                    .given()
+                    .log().all()
+                    .auth().oauth2(accessToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .params("bookLineKey", lineId)
+                    .when().delete("/books/lines/all")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract();
+            }
+        }
+
+        @Nested
+        @DisplayName("가계부 내역이 존재하지 않는 경우")
+        class Context_With_NotExistBookLine {
+            final User user = UserFixture.emailUser();
+            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+            long lineId = 1L;
+
+            @Test
+            @DisplayName("실패한다")
+            void it_returns_failed() {
+                final ErrorResponse response = RestAssured
+                    .given()
+                    .log().all()
+                    .auth().oauth2(accessToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .params("bookLineKey", lineId)
+                    .when().delete("/books/lines/all")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(ErrorResponse.class);
+
+                assertThat(response)
+                    .hasFieldOrPropertyWithValue("code", "B007")
+                    .hasFieldOrPropertyWithValue("message", "가계부 내역을 찾을 수 없습니다");
+            }
+
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteRepeatLine()를 실행할 때")
+    class Describe_DeleteRepeatLine {
+
+        @Nested
+        @DisplayName("반복 내역이 존재하는 경우")
+        class Context_With_RepeatLine {
+            final User user = UserFixture.emailUser();
+            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+            long repeatBookLineId;
+
+            @BeforeEach
+            public void init() {
+                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
+
+                // 반복 내역 Id 찾기
+                TotalDayLinesResponse response = BookApiFixture.findBookLine(accessToken, bookKey, LocalDate.now());
+                repeatBookLineId = response.getDayLinesResponse().get(0).getRepeatBookLine();
+            }
+
+            @Test
+            @DisplayName("성공한다")
+            void it_succeeds() {
+                RestAssured
+                    .given()
+                    .log().all()
+                    .auth().oauth2(accessToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .params("repeatLineId", repeatBookLineId)
+                    .when().delete("/books/repeat")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract();
+            }
+
+        }
+
+        @Nested
+        @DisplayName("반복 내역이 존재하지 않는 경우")
+        class Context_With_NotExistRepeatLineId {
+            final User user = UserFixture.emailUser();
+            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+            long repeatBookLineId = 10L;
+
+            @Test
+            @DisplayName("실패한다")
+            void it_returns_failed() {
+                final ErrorResponse response = RestAssured
+                    .given()
+                    .log().all()
+                    .auth().oauth2(accessToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .params("repeatLineId", repeatBookLineId)
+                    .when().delete("/books/repeat")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .extract().as(ErrorResponse.class);
+
+                assertThat(response)
+                    .hasFieldOrPropertyWithValue("code", "B013")
+                    .hasFieldOrPropertyWithValue("message", "존재하지 않는 반복 내역입니다");
+            }
+        }
+    }
+
+
+    @Nested
+    @DisplayName("getAllRepeatBookLine()를 실행할 때")
+    class Describe_GetAllRepeatBookLine {
+
+        @Nested
+        @DisplayName("카테고리와 반복 내역이 존재하는 경우")
+        class Context_With_RepeatLine {
+            final User user = UserFixture.emailUser();
+            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+            @BeforeEach
+            public void init() {
+                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
+                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEK);
+            }
+
+            @Test
+            @DisplayName("반복 내역이 반환된다")
+            void it_return_repeatBookLines() {
+                final List response = RestAssured
+                    .given()
+                    .log().all()
+                    .auth().oauth2(accessToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .params("bookKey", bookKey)
+                    .params("categoryType", CategoryType.INCOME)
+                    .when().get("/books/repeat")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .as(List.class);
+
+                assertThat(response.size()).isEqualTo(2);
+            }
+
+        }
     }
 }
 

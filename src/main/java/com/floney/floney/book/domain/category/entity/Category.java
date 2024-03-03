@@ -31,6 +31,10 @@ public class Category extends BaseEntity {
         return INCOME.equals(name) || OUTCOME.equals(name);
     }
 
+    public String getCategoryMeaning() {
+        return this.name.getMeaning();
+    }
+
     public boolean isIncome() {
         return INCOME.equals(name);
     }

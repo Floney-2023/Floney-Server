@@ -1,5 +1,7 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
@@ -40,9 +42,7 @@ public class CarryOver extends BaseEntity {
         this.date = date;
     }
 
-    public static CarryOver of(final BookLineRequest request,
-                               final Book book,
-                               final LocalDate date) {
+    public static CarryOver of(final BookLineRequest request, final Book book, final LocalDate date) {
         if (OUTCOME.getMeaning().equals(request.getFlow())) {
             return CarryOver.builder()
                 .money(-1 * request.getMoney())
@@ -57,14 +57,30 @@ public class CarryOver extends BaseEntity {
             .build();
     }
 
+    public static CarryOver of(final BookLine bookLine, final LocalDate date) {
+        Category category = bookLine.getCategories().getLineCategory();
+        if (OUTCOME.equals(category.getName())) {
+            return CarryOver.builder()
+                .money(-1 * bookLine.getMoney())
+                .book(bookLine.getBook())
+                .date(date)
+                .build();
+        }
+        return CarryOver.builder()
+            .money(bookLine.getMoney())
+            .book(bookLine.getBook())
+            .date(date)
+            .build();
+    }
+
     public static CarryOver init() {
         return CarryOver.builder()
             .money(0L)
             .build();
     }
 
-    public void update(final double updateMoney, final String lineCategoryName) {
-        if (INCOME.getMeaning().equals(lineCategoryName)) {
+    public void update(final double updateMoney, final CategoryType categoryType) {
+        if (INCOME.equals(categoryType)) {
             money += updateMoney;
         } else {
             money -= updateMoney;
@@ -76,7 +92,8 @@ public class CarryOver extends BaseEntity {
         if (!bookLineCategory.isIncomeOrOutcome()) return;
         if (bookLineCategory.isIncome()) {
             money -= updateMoney;
+        } else {
+            money += updateMoney;
         }
-        money += updateMoney;
     }
 }

@@ -7,6 +7,7 @@ import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.BookLineWithWriterView;
 import com.floney.floney.book.dto.process.TotalExpense;
@@ -24,11 +25,15 @@ public interface BookLineCustomRepository {
 
     List<BookLineWithWriterView> allLinesByDay(LocalDate date, String bookKey);
 
+    void inactiveAllByRepeatBookLine(long repeatBookLineId);
+
     TotalExpense totalMoneyByDateAndCategoryType(String bookKey, LocalDate date, final CategoryType categoryType);
 
     List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(String bookKey, DateDuration dates);
 
     void inactiveAllBy(Book book);
+
+    List<BookLine> findAllRepeatBookLineByEqualOrAfter(LocalDate localDate, RepeatBookLine repeatBookLine);
 
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 

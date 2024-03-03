@@ -165,7 +165,7 @@ class BookLineCategoryCustomRepositoryTest {
 
                 final List<BookLineCategory> activeBookLineCategories = bookLineCategoryRepository.findAll()
                     .stream()
-                    .filter(blc -> blc.getBookLine().getWriter().equals(bookUser.getNickName()) && blc.isActive())
+                    .filter(blc -> blc.getBookLine().getWriterNickName().equals(bookUser.getNickName()) && blc.isActive())
                     .toList();
 
                 assertThat(activeBookLineCategories).isEmpty();
