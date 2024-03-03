@@ -25,7 +25,12 @@ public class RepeatBookLineTest {
     private void assertBookLineSameWithRepeat(List<BookLine> bookLines, RepeatBookLine repeatBookLine) {
         BookLine targetBookLineToAssert = bookLines.get(0);
 
-        assertAll(() -> assertThat(targetBookLineToAssert.getBook()).isEqualTo(repeatBookLine.getBook()), () -> assertThat(targetBookLineToAssert.getMoney()).isEqualTo(repeatBookLine.getMoney()), () -> assertThat(targetBookLineToAssert.getWriter()).isEqualTo(repeatBookLine.getWriter()), () -> assertThat(targetBookLineToAssert.getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory()), () -> assertThat(targetBookLineToAssert.getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory()), () -> assertThat(targetBookLineToAssert.getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus()));
+        assertAll(() -> assertThat(targetBookLineToAssert.getBook()).isEqualTo(repeatBookLine.getBook()),
+            () -> assertThat(targetBookLineToAssert.getMoney()).isEqualTo(repeatBookLine.getMoney()),
+            () -> assertThat(targetBookLineToAssert.getWriter()).isEqualTo(repeatBookLine.getWriter()),
+            () -> assertThat(targetBookLineToAssert.getCategories().getLineCategory()).isEqualTo(repeatBookLine.getLineCategory()),
+            () -> assertThat(targetBookLineToAssert.getCategories().getAssetSubcategory()).isEqualTo(repeatBookLine.getAssetSubcategory()),
+            () -> assertThat(targetBookLineToAssert.getExceptStatus()).isEqualTo(repeatBookLine.getExceptStatus()));
     }
 
 
@@ -60,7 +65,13 @@ public class RepeatBookLineTest {
             @DisplayName("생성된 반복 내역은 가계부 내역과 일치한다")
             void it_same_with_bookLine() {
                 RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, RepeatDuration.WEEKEND);
-                assertAll(() -> assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook()), () -> assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney()), () -> assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter()), () -> assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory()), () -> assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory()), () -> assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription()), () -> assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus()));
+                assertAll(() -> assertThat(repeatBookLine.getBook()).isEqualTo(bookLine.getBook()),
+                    () -> assertThat(repeatBookLine.getMoney()).isEqualTo(bookLine.getMoney()),
+                    () -> assertThat(repeatBookLine.getWriter()).isEqualTo(bookLine.getWriter()),
+                    () -> assertThat(repeatBookLine.getLineCategory()).isEqualTo(bookLine.getCategories().getLineCategory()),
+                    () -> assertThat(repeatBookLine.getAssetSubcategory()).isEqualTo(bookLine.getCategories().getAssetSubcategory()),
+                    () -> assertThat(repeatBookLine.getDescription()).isEqualTo(bookLine.getDescription()),
+                    () -> assertThat(repeatBookLine.getExceptStatus()).isEqualTo(bookLine.getExceptStatus()));
 
             }
         }

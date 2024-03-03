@@ -98,8 +98,11 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public BookLineResponse changeLine(final BookLineRequest request) {
-        final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId()).orElseThrow(NotFoundBookLineException::new);
+        final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId())
+            .orElseThrow(NotFoundBookLineException::new);
+
         final Book book = findBook(request.getBookKey());
+
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
 
@@ -134,7 +137,8 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional
     public void deleteAllAfterBookLineByRepeat(final long bookLineId) {
-        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE).orElseThrow(NotFoundBookLineException::new);
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
+            .orElseThrow(NotFoundBookLineException::new);
 
         //TODO : 더 어울리는 예외 처리
         if (savedBookLine.isNotRepeat()) {
@@ -222,15 +226,18 @@ public class BookLineServiceImpl implements BookLineService {
 
     private Category findLineCategory(final String categoryName) {
         final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
-        return categoryRepository.findByType(categoryType).orElseThrow(() -> new NotFoundCategoryException(categoryName));
+        return categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
     private Subcategory findLineSubCategory(final String lineSubCategoryName, final Category lineCategory, final Book book) {
-        return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName()).orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
+        return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName())
+            .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
     private Subcategory findAssetSubCategory(final Book book, final String assetSubCategoryName) {
-        return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET).orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
+        return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET)
+            .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
 
     private void validateBookLineIncludedInBook(final Book bookOfBookLine, final Book book) {
@@ -240,11 +247,13 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookUser findBookUser(String currentUser, BookLineRequest request) {
-        return bookUserRepository.findBookUserByEmailAndBookKey(currentUser, request.getBookKey()).orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
+        return bookUserRepository.findBookUserByEmailAndBookKey(currentUser, request.getBookKey())
+            .orElseThrow(() -> new NotFoundBookUserException(request.getBookKey(), currentUser));
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private List<BookLineExpense> daysExpense(final String bookKey, final DateDuration dates) {
