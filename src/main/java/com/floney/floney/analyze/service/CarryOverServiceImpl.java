@@ -109,7 +109,7 @@ public class CarryOverServiceImpl implements CarryOverService {
 
         LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
-        for (int i = 0; i <= SAVE_CARRY_OVER_DURATION; i++) {
+        for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             targetDate = getNextMonth(targetDate);
             final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, bookLine.getBook());
             savedCarryOver.ifPresent(carryOver -> carryOver.delete(bookLine.getMoney(), bookLine.getCategories()));
