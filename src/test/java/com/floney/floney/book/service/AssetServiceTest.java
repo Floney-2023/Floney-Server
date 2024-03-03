@@ -100,7 +100,7 @@ public class AssetServiceTest {
 
             @Test
             @DisplayName("자산이 업데이트 되지 않는다")
-            void it_update_asset() {
+            void it_didnt_update_asset() {
                 assetService.addAssetOf(bookLine);
                 verify(assetRepository, never()).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
