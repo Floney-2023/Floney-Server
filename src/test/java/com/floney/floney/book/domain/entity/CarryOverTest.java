@@ -92,7 +92,7 @@ public class CarryOverTest {
         }
 
         @Nested
-        @DisplayName("수입 내역이 주어지면")
+        @DisplayName("수입 이월 내역이 주어지면")
         class Context_With_IncomeMoney {
 
             CarryOver carryOver;
@@ -114,7 +114,7 @@ public class CarryOverTest {
         }
 
         @Nested
-        @DisplayName("지출 내역이 주어지면")
+        @DisplayName("지출 이월 내역이 주어지면")
         class Context_With_OutcomeMoney {
 
             CarryOver carryOver;
@@ -156,7 +156,7 @@ public class CarryOverTest {
         }
 
         @Nested
-        @DisplayName("수입 내역이 주어지면")
+        @DisplayName("수입 이월 내역이 주어지면")
         class Context_With_IncomeMoney {
 
             CarryOver carryOver;
@@ -180,7 +180,7 @@ public class CarryOverTest {
         }
 
         @Nested
-        @DisplayName("지출 내역이 주어지면")
+        @DisplayName("지출 이월 내역이 주어지면")
         class Context_With_OutcomeMoney {
 
             CarryOver carryOver;
@@ -203,7 +203,7 @@ public class CarryOverTest {
         }
 
         @Nested
-        @DisplayName("이체 내역이 주어지면")
+        @DisplayName("이체 이월 내역이 주어지면")
         class Context_With_TransferMoney {
 
             CarryOver carryOver;
