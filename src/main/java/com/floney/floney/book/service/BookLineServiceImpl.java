@@ -142,11 +142,8 @@ public class BookLineServiceImpl implements BookLineService {
         }
 
         List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
-
-        bookLines.forEach((line) -> {
-            line.inactive();
-            bookLineRepository.save(line);
-        });
+        bookLines.forEach(BookLine::inactive);
+        bookLineRepository.saveAll(bookLines);
     }
 
     private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
