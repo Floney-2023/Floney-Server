@@ -4,11 +4,14 @@ import com.floney.floney.common.exception.common.FloneyException;
 import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.common.exception.common.LogType;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class PasswordSameException extends FloneyException {
 
     public PasswordSameException() {
-        super(ErrorType.SAME_PASSWORD, LogType.SAME_PASSWORD);
+        super(ErrorType.SAME_PASSWORD,
+                HttpStatus.BAD_REQUEST,
+                LogType.SAME_PASSWORD);
     }
 }

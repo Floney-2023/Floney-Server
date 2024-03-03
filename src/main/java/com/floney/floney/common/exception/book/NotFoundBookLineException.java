@@ -4,12 +4,15 @@ import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.common.exception.common.FloneyException;
 import com.floney.floney.common.exception.common.LogType;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class NotFoundBookLineException extends FloneyException {
 
     public NotFoundBookLineException() {
-        super(ErrorType.NOT_FOUND_BOOK_LINE, LogType.NOT_FOUND_BOOK_LINE);
+        super(ErrorType.NOT_FOUND_BOOK_LINE,
+                HttpStatus.BAD_REQUEST,
+                LogType.NOT_FOUND_BOOK_LINE);
     }
 
 }
