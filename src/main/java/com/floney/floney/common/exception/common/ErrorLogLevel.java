@@ -1,6 +1,6 @@
 package com.floney.floney.common.exception.common;
 
-public enum CustomLogLevel {
+public enum ErrorLogLevel {
 
     WARN, ERROR, DEBUG, NONE;
 
