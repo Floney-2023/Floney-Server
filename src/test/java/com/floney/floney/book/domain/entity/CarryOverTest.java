@@ -22,7 +22,6 @@ public class CarryOverTest {
         Book book;
         String bookKey;
         BookUser bookUser;
-        BookLine bookLine;
         String assetSubCategoryName = "자산";
 
         @BeforeEach
@@ -36,6 +35,8 @@ public class CarryOverTest {
         @Nested
         @DisplayName("카테고리가 수입인 가계부 내역이 주어지면")
         class Context_With_IncomeBookLine {
+
+            BookLine bookLine;
 
             @BeforeEach
             void init() {
@@ -55,6 +56,8 @@ public class CarryOverTest {
         @Nested
         @DisplayName("카테고리가 지출인 가계부 내역이 주어지면")
         class Context_With_OutcomeBookLine {
+
+            BookLine bookLine;
 
             @BeforeEach
             void init() {
@@ -80,7 +83,6 @@ public class CarryOverTest {
         Book book;
         String bookKey;
         BookUser bookUser;
-        BookLine bookLine;
         String assetSubCategoryName = "자산";
 
         @BeforeEach
@@ -94,7 +96,7 @@ public class CarryOverTest {
         @Nested
         @DisplayName("수입 이월 내역이 주어지면")
         class Context_With_IncomeMoney {
-
+            BookLine bookLine;
             CarryOver carryOver;
 
             @BeforeEach
@@ -118,6 +120,7 @@ public class CarryOverTest {
         class Context_With_OutcomeMoney {
 
             CarryOver carryOver;
+            BookLine bookLine;
 
             @BeforeEach
             void init() {
@@ -143,8 +146,6 @@ public class CarryOverTest {
         Book book;
         String bookKey;
         BookUser bookUser;
-
-        BookLine bookLine;
         String assetSubCategoryName = "자산";
 
         @BeforeEach
@@ -158,9 +159,8 @@ public class CarryOverTest {
         @Nested
         @DisplayName("수입 이월 내역이 주어지면")
         class Context_With_IncomeMoney {
-
             CarryOver carryOver;
-
+            BookLine bookLine;
             BookLineCategory bookLineCategory;
 
             @BeforeEach
@@ -182,9 +182,9 @@ public class CarryOverTest {
         @Nested
         @DisplayName("지출 이월 내역이 주어지면")
         class Context_With_OutcomeMoney {
-
             CarryOver carryOver;
             BookLineCategory bookLineCategory;
+            BookLine bookLine;
 
             @BeforeEach
             void init() {
@@ -205,9 +205,9 @@ public class CarryOverTest {
         @Nested
         @DisplayName("이체 이월 내역이 주어지면")
         class Context_With_TransferMoney {
-
             CarryOver carryOver;
             BookLineCategory bookLineCategory;
+            BookLine bookLine;
 
             @BeforeEach
             void init() {

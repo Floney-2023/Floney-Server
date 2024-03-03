@@ -38,20 +38,26 @@ public class RepeatBookLineTest {
     @DisplayName("반복 내역을 생성할 때")
     class Describe_Of {
 
+        Book book;
+
+        BookUser bookUser;
+
+        @BeforeEach
+        void init() {
+            User user = UserFixture.emailUser();
+            book = BookFixture.createBook();
+            bookUser = BookUserFixture.createBookUser(book, user);
+        }
+
         @Nested
         @DisplayName("가계부 내역, 반복 주기, 가계부가 주어진 경우")
         class Context_With_LineBookRepeatDuration {
             BookLine bookLine;
-            Book book;
 
             @BeforeEach
             public void init() {
-                User user = UserFixture.emailUser();
-                book = BookFixture.createBook();
-                BookUser bookUser = BookUserFixture.createBookUser(book, user);
                 BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, "급여", "현금");
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-
             }
 
             @Test
@@ -82,7 +88,6 @@ public class RepeatBookLineTest {
     class Describe_BookLinesByRepeat {
         BookLine bookLine;
         Book book;
-        List<BookLine> bookLines;
         RepeatBookLine repeatBookLine;
         LocalDate lineDate = LocalDate.now();
 
@@ -100,6 +105,9 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("매일을 선택한 경우")
         class Context_With_EveryDay {
+
+            List<BookLine> bookLines;
+
             @BeforeEach
             public void init() {
                 bookLines = repeatBookLine.bookLinesBy(RepeatDuration.EVERYDAY);
@@ -121,6 +129,9 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("매주를 선택한 경우")
         class Context_With_EveryWeek {
+
+            List<BookLine> bookLines;
+
             @BeforeEach
             public void init() {
                 bookLines = repeatBookLine.bookLinesBy(RepeatDuration.WEEK);
@@ -144,6 +155,8 @@ public class RepeatBookLineTest {
         @DisplayName("매달을 선택한 경우")
         class Context_With_EveryMonth {
 
+            List<BookLine> bookLines;
+
             @BeforeEach
             public void init() {
                 bookLines = repeatBookLine.bookLinesBy(RepeatDuration.MONTH);
@@ -160,6 +173,8 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("주중을 선택한 경우")
         class Context_With_EveryWeekDay {
+
+            List<BookLine> bookLines;
 
             @BeforeEach
             public void init() {
@@ -188,6 +203,8 @@ public class RepeatBookLineTest {
         @Nested
         @DisplayName("주말을 선택한 경우")
         class Context_With_EveryWeekend {
+
+            List<BookLine> bookLines;
 
             @BeforeEach
             public void init() {

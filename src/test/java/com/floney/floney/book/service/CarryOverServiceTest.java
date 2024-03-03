@@ -40,8 +40,6 @@ public class CarryOverServiceTest {
         Book book;
         String bookKey;
         BookUser bookUser;
-
-        BookLine bookLine;
         String assetSubCategoryName = "자산";
 
         @BeforeEach()
@@ -55,6 +53,8 @@ public class CarryOverServiceTest {
         @Nested
         @DisplayName("카테고리가 수입인 가계부 내역이 주어지면")
         class Context_With_IncomeBookLine {
+            BookLine bookLine;
+
             @BeforeEach
             void init() {
                 String incomeSubCategoryName = "급여";
@@ -73,6 +73,7 @@ public class CarryOverServiceTest {
         @Nested
         @DisplayName("카테고리가 지출인 가계부 내역이 주어지면")
         class Context_With_OutcomeBookLine {
+            BookLine bookLine;
 
             @BeforeEach
             void init() {
@@ -92,6 +93,8 @@ public class CarryOverServiceTest {
         @Nested
         @DisplayName("카테고리가 이체인 가계부 내역이 주어지면")
         class Context_With_TransferBookLine {
+            BookLine bookLine;
+
             @BeforeEach
             void init() {
                 String transferSubCategoryName = "이체";
