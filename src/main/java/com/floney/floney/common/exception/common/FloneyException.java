@@ -1,25 +1,28 @@
 package com.floney.floney.common.exception.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 public abstract class FloneyException extends RuntimeException {
 
+    private final transient Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
     private final ErrorType errorType;
     private final LogType logType;
-    private final String logMessage;
 
     protected FloneyException(final ErrorType errorType, final LogType logType, final String... logAttributes) {
         super(errorType.getMessage());
         this.errorType = errorType;
         this.logType = logType;
-        this.logMessage = logType.generateLog(logAttributes);
+        printLog(logType.generateLog(logAttributes));
     }
 
     protected FloneyException(final String message, final ErrorType errorType, final LogType logType, final String... logAttributes) {
         super(message);
         this.errorType = errorType;
         this.logType = logType;
-        this.logMessage = logType.generateLog(logAttributes);
+        printLog(logType.generateLog(logAttributes));
     }
 
     public String getCode() {
@@ -34,11 +37,11 @@ public abstract class FloneyException extends RuntimeException {
         return errorType.getHttpStatus();
     }
 
-    public CustomLogLevel getLogLevel() {
-        return this.logType.getLevel();
-    }
-
-    public String getLogMessage() {
-        return this.logMessage;
+    private void printLog(final String logMessage) {
+        switch (this.logType.getLevel()) {
+            case WARN -> logger.warn(logMessage);
+            case ERROR -> logger.error(logMessage);
+            case DEBUG -> logger.debug(logMessage);
+        }
     }
 }

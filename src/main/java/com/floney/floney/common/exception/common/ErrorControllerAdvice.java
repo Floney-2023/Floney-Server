@@ -25,13 +25,11 @@ public class ErrorControllerAdvice {
     // USER
     @ExceptionHandler(UserFoundException.class)
     protected ResponseEntity<ErrorResponse> foundUser(UserFoundException exception) {
-        printLog(exception);
         return createResponse(exception, Map.of("provider", exception.getProvider()));
     }
 
     @ExceptionHandler(FloneyException.class)
     protected ResponseEntity<ErrorResponse> floney(FloneyException exception) {
-        printLog(exception);
         return createResponse(exception, null);
     }
 
@@ -160,14 +158,6 @@ public class ErrorControllerAdvice {
     private ResponseEntity<ErrorResponse> createResponse(FloneyException exception, Map<String, Object> attributes) {
         ErrorResponse response = ErrorResponse.of(exception.getErrorType(), attributes);
         return ResponseEntity.status(exception.getHttpStatus()).body(response);
-    }
-
-    private void printLog(FloneyException exception) {
-        switch (exception.getLogLevel()) {
-            case WARN -> logger.warn(exception.getLogMessage());
-            case ERROR -> logger.error(exception.getLogMessage());
-            case DEBUG -> logger.debug(exception.getLogMessage());
-        }
     }
 
 }
