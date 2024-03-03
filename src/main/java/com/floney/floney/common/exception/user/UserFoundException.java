@@ -19,7 +19,4 @@ public class UserFoundException extends FloneyException {
         this.provider = String.valueOf(provider);
     }
 
-    public String getProvider() {
-        return provider;
-    }
 }

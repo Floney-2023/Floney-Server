@@ -1,9 +1,11 @@
 package com.floney.floney.common.exception.common;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public abstract class FloneyException extends RuntimeException {
 
     private final transient Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -26,18 +28,6 @@ public abstract class FloneyException extends RuntimeException {
         this.httpStatus = httpStatus;
         this.errorLogType = errorLogType;
         printLog(errorLogType.generateLogMessage(logAttributes));
-    }
-
-    public String getCode() {
-        return errorType.getCode();
-    }
-
-    public ErrorType getErrorType() {
-        return this.errorType;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return this.httpStatus;
     }
 
     private void printLog(final String logMessage) {
