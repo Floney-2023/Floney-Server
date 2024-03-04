@@ -1,8 +1,6 @@
 package com.floney.floney.acceptance.fixture;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.request.BookLineRequest;
@@ -13,12 +11,10 @@ import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.RepeatBookLineResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class BookApiFixture {
 
@@ -53,8 +49,8 @@ public class BookApiFixture {
             .extract().as(CreateBookResponse.class);
     }
 
-    public static List<RepeatBookLineResponse> getRepeatBookLineList(final String accessToken, final CategoryType categoryType, final String bookKey) throws JsonProcessingException {
-        Response response = RestAssured
+    public static RepeatBookLineResponse[] getRepeatBookLineList(final String accessToken, final CategoryType categoryType, final String bookKey) throws JsonProcessingException {
+        return RestAssured
             .given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -63,13 +59,7 @@ public class BookApiFixture {
             .when().get("/books/repeat")
             .then()
             .statusCode(HttpStatus.OK.value())
-            .extract().response();
-
-        // 스프링 3.x 에서 json 응답을 list로 변환 해주지 않아 추가
-        ObjectMapper objectMapper = new ObjectMapper();
-        final List<RepeatBookLineResponse> repeatBookLineResponses = objectMapper.readValue(response.asString(), new TypeReference<List<RepeatBookLineResponse>>() {
-        });
-        return repeatBookLineResponses;
+            .extract().as(RepeatBookLineResponse[].class);
     }
 
     public static TotalDayLinesResponse getBookLineByDay(String token, String date, String bookKey) {

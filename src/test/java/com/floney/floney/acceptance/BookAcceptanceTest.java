@@ -1346,8 +1346,8 @@ public class BookAcceptanceTest {
                 BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
 
                 // 반복 내역 Id 찾기
-                List<RepeatBookLineResponse> response = BookApiFixture.getRepeatBookLineList(accessToken, CategoryType.INCOME, bookKey);
-                repeatBookLineId = response.get(0).getId();
+                RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, CategoryType.INCOME, bookKey);
+                repeatBookLineId = response[0].getId();
             }
 
             @Test
