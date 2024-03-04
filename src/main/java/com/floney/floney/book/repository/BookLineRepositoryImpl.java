@@ -3,7 +3,6 @@ package com.floney.floney.book.repository;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
-import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -88,7 +87,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
-                    bookLine.repeatBookLine.repeatDuration.stringValue().coalesce(RepeatDuration.NONE.name())
+                    repeatBookLine.repeatDuration
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -226,7 +225,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     user.profileImg,
-                    bookLine.repeatBookLine.repeatDuration.stringValue()
+                    bookLine.repeatBookLine.repeatDuration
                 )
             )
             .from(bookLine)
