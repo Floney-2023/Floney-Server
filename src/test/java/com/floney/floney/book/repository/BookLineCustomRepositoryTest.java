@@ -2,6 +2,7 @@ package com.floney.floney.book.repository;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
@@ -181,8 +182,8 @@ class BookLineCustomRepositoryTest {
             @Test
             @DisplayName("BookLineWithWriterView 목록을 반환한다.")
             void it_returns_bookLineWithWriterViews() {
-                assertThat(bookLineRepository.allLinesByDay(date, bookKey))
-                    .hasSize(2);
+                assertThat(bookLineRepository.allLinesByDay(date, bookKey).get(0).getRepeatDuration())
+                    .isEqualTo(RepeatDuration.NONE);
             }
         }
 
