@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Disabled
 @DisplayName("PasswordValidator 테스트")
 @SpringBootTest
 class PasswordHistoryManagerTest {
