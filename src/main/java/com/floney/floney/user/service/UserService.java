@@ -179,9 +179,8 @@ public class UserService {
         signoutOtherReasonRepository.save(signoutOtherReason);
     }
 
-    private void updatePassword(String newPassword, User user) {
+    private void updatePassword(final String newPassword, final User user) {
         validatePasswordNotSame(newPassword, user);
-        passwordHistoryManager.addPassword(newPassword, user.getId());
         user.updatePassword(newPassword);
         user.encodePassword(passwordEncoder);
     }
