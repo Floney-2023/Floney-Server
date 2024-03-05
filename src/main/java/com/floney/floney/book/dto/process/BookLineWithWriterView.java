@@ -56,6 +56,6 @@ public class BookLineWithWriterView {
         this.assetSubCategory = assetSubCategory;
         this.writerEmail = writerEmail;
         this.writerNickname = writerNickname;
-        this.repeatDuration = repeatDuration == null ? RepeatDuration.NONE : repeatDuration;
+        this.repeatDuration = repeatDuration;
     }
 }
