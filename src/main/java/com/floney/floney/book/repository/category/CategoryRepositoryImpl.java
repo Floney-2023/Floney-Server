@@ -82,7 +82,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             .where(
                 subcategory.name.eq(name),
                 category.name.eq(parentName),
-                book.eq(book)
+                book.eq(targetBook)
             )
             .where(
                 subcategory.status.eq(ACTIVE),
