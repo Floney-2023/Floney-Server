@@ -3,6 +3,7 @@ package com.floney.floney.book.repository;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
 import com.floney.floney.analyze.dto.response.QAnalyzeResponseByCategory;
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
@@ -12,6 +13,7 @@ import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -33,6 +35,7 @@ import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBookLine.bookLine;
 import static com.floney.floney.book.domain.entity.QBookLineCategory.bookLineCategory;
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
+import static com.floney.floney.book.domain.entity.QRepeatBookLine.repeatBookLine;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
@@ -86,7 +89,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
-                    bookLine.repeatBookLine.id
+                    repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration)
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -96,6 +99,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.writer, bookUser)
             .innerJoin(bookUser.user, user)
+            .leftJoin(bookLine.repeatBookLine, repeatBookLine)
             .where(
                 bookLine.lineDate.eq(date),
                 book.bookKey.eq(bookKey)
@@ -223,7 +227,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     user.profileImg,
-                    bookLine.repeatBookLine.id
+                    repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration)
                 )
             )
             .from(bookLine)
@@ -234,6 +238,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .innerJoin(bookLineCategory.lineCategory, category)
             .innerJoin(bookLineCategory.lineSubcategory, subcategory)
             .innerJoin(bookLineCategory.assetSubcategory, subcategory)
+            .leftJoin(bookLine.repeatBookLine, repeatBookLine)
             .where(
                 book.bookKey.eq(request.getBookKey()),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),

@@ -188,7 +188,7 @@ public class RepeatBookLineTest {
                 LocalDate endDate = lineDate.plusYears(REPEAT_YEAR);
                 long weekdayCount = 0;
 
-                for (LocalDate date = lineDate.plusDays(1); date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
+                for (LocalDate date = lineDate.plusDays(1); !date.isAfter(endDate); date = date.plusDays(1)) {
                     if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                         weekdayCount++;
                     }
@@ -219,7 +219,7 @@ public class RepeatBookLineTest {
 
                 long weekendCount = 0;
 
-                for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+                for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                     if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
                         weekendCount++;
                     }

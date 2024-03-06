@@ -1,5 +1,6 @@
 package com.floney.floney.book.dto.process;
 
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
@@ -30,7 +31,7 @@ public class BookLineWithWriterView {
 
     private final String writerProfileImg;
 
-    private final long repeatBookLine;
+    private final RepeatDuration repeatDuration;
 
     @Builder
     @QueryProjection
@@ -44,7 +45,7 @@ public class BookLineWithWriterView {
                                   final String writerEmail,
                                   final String writerNickname,
                                   final String writerProfileImg,
-                                  final long repeatBookLine) {
+                                  final RepeatDuration repeatDuration) {
         this.id = id;
         this.money = money;
         this.description = description;
@@ -55,6 +56,6 @@ public class BookLineWithWriterView {
         this.assetSubCategory = assetSubCategory;
         this.writerEmail = writerEmail;
         this.writerNickname = writerNickname;
-        this.repeatBookLine = repeatBookLine;
+        this.repeatDuration = repeatDuration;
     }
 }

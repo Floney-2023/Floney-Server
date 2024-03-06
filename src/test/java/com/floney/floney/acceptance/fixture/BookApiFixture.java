@@ -1,11 +1,14 @@
 package com.floney.floney.acceptance.fixture;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.floney.floney.book.domain.RepeatDuration;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.request.CodeJoinRequest;
 import com.floney.floney.book.dto.request.CreateBookRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.dto.response.RepeatBookLineResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
@@ -44,6 +47,19 @@ public class BookApiFixture {
             .then()
             .statusCode(HttpStatus.ACCEPTED.value())
             .extract().as(CreateBookResponse.class);
+    }
+
+    public static RepeatBookLineResponse[] getRepeatBookLineList(final String accessToken, final CategoryType categoryType, final String bookKey) throws JsonProcessingException {
+        return RestAssured
+            .given()
+            .auth().oauth2(accessToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .param("categoryType", categoryType)
+            .param("bookKey", bookKey)
+            .when().get("/books/repeat")
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .extract().as(RepeatBookLineResponse[].class);
     }
 
     public static TotalDayLinesResponse getBookLineByDay(String token, String date, String bookKey) {

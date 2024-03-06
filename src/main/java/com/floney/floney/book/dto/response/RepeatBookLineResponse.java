@@ -3,21 +3,23 @@ package com.floney.floney.book.dto.response;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.entity.RepeatBookLine;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class RepeatBookLineResponse {
 
-    private final long id;
+    private long id;
 
-    private final String description;
+    private String description;
 
-    private final RepeatDuration repeatDuration;
+    private RepeatDuration repeatDuration;
 
-    private final String lineSubCategory;
+    private String lineSubCategory;
 
-    private final String assetSubCategory;
+    private String assetSubCategory;
 
-    private final double money;
+    private double money;
 
     public RepeatBookLineResponse(final RepeatBookLine repeatBookLine) {
         this.id = repeatBookLine.getId();

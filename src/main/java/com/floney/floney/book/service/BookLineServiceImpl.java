@@ -93,7 +93,10 @@ public class BookLineServiceImpl implements BookLineService {
     @Override
     @Transactional(readOnly = true)
     public List<DayLines> allOutcomes(final AllOutcomesRequest allOutcomesRequest) {
-        return bookLineRepository.findAllOutcomes(allOutcomesRequest).stream().map(DayLines::from).toList();
+        return bookLineRepository.findAllOutcomes(allOutcomesRequest)
+            .stream()
+            .map(DayLines::from)
+            .toList();
     }
 
     @Override

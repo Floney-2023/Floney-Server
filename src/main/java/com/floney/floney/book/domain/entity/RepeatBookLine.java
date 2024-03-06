@@ -100,7 +100,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusDays(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
@@ -110,7 +110,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusMonths(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusMonths(1)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusMonths(1)) {
             BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
@@ -121,7 +121,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusWeeks(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusWeeks(1)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusWeeks(1)) {
             BookLine bookLine = BookLine.createByRepeatBookLine(date, this);
             bookLines.add(bookLine);
         }
@@ -131,7 +131,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusDays(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             if (isWeekend(date)) {
                 bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }
@@ -142,7 +142,7 @@ public class RepeatBookLine extends BaseEntity {
         LocalDate startDate = this.getLineDate().plusDays(1);
         LocalDate endDate = this.getLineDate().plusYears(REPEAT_YEAR);
 
-        for (LocalDate date = startDate; date.isBefore(endDate) || date.isEqual(endDate); date = date.plusDays(1)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             if (isWeekDay(date)) {
                 bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }

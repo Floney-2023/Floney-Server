@@ -1,5 +1,6 @@
 package com.floney.floney.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
@@ -32,7 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.domain.RepeatDuration.WEEK;
+import static com.floney.floney.book.domain.RepeatDuration.MONTH;
 import static com.floney.floney.book.domain.RepeatDuration.WEEKEND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -1341,12 +1342,12 @@ public class BookAcceptanceTest {
             long repeatBookLineId;
 
             @BeforeEach
-            public void init() {
-                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
+            public void init() throws JsonProcessingException {
+                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
 
                 // 반복 내역 Id 찾기
-                TotalDayLinesResponse response = BookApiFixture.findBookLine(accessToken, bookKey, LocalDate.now());
-                repeatBookLineId = response.getDayLinesResponse().get(0).getRepeatBookLine();
+                RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, CategoryType.INCOME, bookKey);
+                repeatBookLineId = response[0].getId();
             }
 
             @Test
@@ -1408,8 +1409,8 @@ public class BookAcceptanceTest {
 
             @BeforeEach
             public void init() {
+                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
                 BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
-                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEK);
             }
 
             @Test
