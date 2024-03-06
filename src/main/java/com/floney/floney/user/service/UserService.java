@@ -55,14 +55,12 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
-    private final PasswordHistoryManager passwordHistoryManager;
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
         final User user = request.to();
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
-        passwordHistoryManager.addPassword(user.getPassword(), user.getId());
         return request.toLoginRequest();
     }
 
@@ -76,7 +74,6 @@ public class UserService {
 
         user.signout();
         addSignoutReason(request);
-        passwordHistoryManager.deleteHistory(user.getId());
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }
