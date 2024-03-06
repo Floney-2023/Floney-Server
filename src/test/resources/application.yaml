@@ -42,7 +42,3 @@ jwt:
 server:
   error:
     include-message: always
-
-logging:
-  level:
-    sql: debug
