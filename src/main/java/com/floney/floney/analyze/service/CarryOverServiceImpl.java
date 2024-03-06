@@ -26,7 +26,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 @RequiredArgsConstructor
 public class CarryOverServiceImpl implements CarryOverService {
 
-    private final static int SAVE_CARRY_OVER_DURATION = 60;
+    public final static int SAVE_CARRY_OVER_DURATION = 60;
     private final static int ONE_MONTH = 1;
 
     private final CarryOverRepository carryOverRepository;
