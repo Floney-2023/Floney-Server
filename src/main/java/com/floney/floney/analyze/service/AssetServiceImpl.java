@@ -77,17 +77,18 @@ public class AssetServiceImpl implements AssetService {
         if (TRANSFER.equals(categoryType)) {
             return;
         }
+
         List<Asset> assets = new ArrayList<>();
         final LocalDate startMonth = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
         for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
             assets.add(Asset.of(bookLine, categoryType, currentMonth));
-
         }
 
         assetJdbcRepository.saveAll(assets);
     }
+
 
     @Override
     @Transactional

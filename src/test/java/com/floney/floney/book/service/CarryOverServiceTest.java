@@ -5,6 +5,7 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.repository.CarryOverJdbcRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
@@ -18,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static com.floney.floney.analyze.service.CarryOverServiceImpl.SAVE_CARRY_OVER_DURATION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -32,6 +33,9 @@ public class CarryOverServiceTest {
 
     @Mock
     private CarryOverRepository carryOverRepository;
+
+    @Mock
+    private CarryOverJdbcRepository carryOverJdbcRepository;
 
     @Nested
     @DisplayName("createCarryOver()를 실행할 때")
@@ -66,7 +70,7 @@ public class CarryOverServiceTest {
             @DisplayName("이월 내역이 생성 된다")
             void it_create_carryOver() {
                 carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, times(SAVE_CARRY_OVER_DURATION)).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
+                verify(carryOverJdbcRepository, times(1)).saveAll(any(List.class));
             }
         }
 
@@ -86,7 +90,7 @@ public class CarryOverServiceTest {
             @DisplayName("이월 내역이 생성 된다")
             void it_create_carryOver() {
                 carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, times(SAVE_CARRY_OVER_DURATION)).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
+                verify(carryOverJdbcRepository, times(1)).saveAll(any(List.class));
             }
         }
 
@@ -106,7 +110,7 @@ public class CarryOverServiceTest {
             @DisplayName("이월 내역이 생성 되지 않는다")
             void it_didnt_create_carryOver() {
                 carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, never()).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
+                verify(carryOverJdbcRepository, never()).saveAll(any(List.class));
             }
         }
     }
