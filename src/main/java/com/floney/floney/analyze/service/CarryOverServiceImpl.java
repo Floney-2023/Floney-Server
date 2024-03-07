@@ -7,6 +7,7 @@ import com.floney.floney.book.domain.entity.CarryOver;
 import com.floney.floney.book.dto.process.CarryOverInfo;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.repository.BookLineRepository;
+import com.floney.floney.book.repository.CarryOverJdbcRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.util.DateUtil;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static com.floney.floney.book.domain.category.CategoryType.INCOME;
 import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
@@ -30,6 +32,7 @@ public class CarryOverServiceImpl implements CarryOverService {
     private final static int ONE_MONTH = 1;
 
     private final CarryOverRepository carryOverRepository;
+    private final CarryOverJdbcRepository carryOverJdbcRepository;
     private final BookLineRepository bookLineRepository;
 
     @Override
@@ -58,7 +61,6 @@ public class CarryOverServiceImpl implements CarryOverService {
     @Override
     @Transactional
     public void createCarryOver(BookLine bookLine) {
-        Book book = bookLine.getBook();
         CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
         // 카테고리가 이월인 경우 생성 X
@@ -66,22 +68,18 @@ public class CarryOverServiceImpl implements CarryOverService {
             return;
         }
 
+        // 현 내역 1달 후 부터 생성
         LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
-        double money = bookLine.getMoney();
 
+        List<CarryOver> carryOverList = new ArrayList<>();
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             targetDate = getNextMonth(targetDate);
-            double carryOverMoney = getCarryOverMoney(categoryType, money);
-
-            //TODO : 쿼리 벌크 처리
-            carryOverRepository.upsertMoneyByDateAndBook(targetDate, book, carryOverMoney);
+            carryOverList.add(CarryOver.of(bookLine, targetDate));
         }
 
+        carryOverJdbcRepository.saveAll(carryOverList);
     }
 
-    private double getCarryOverMoney(CategoryType categoryType, double money) {
-        return INCOME.equals(categoryType) ? money : -1 * money;
-    }
 
     @Override
     public void deleteCarryOver(final Long bookLineId) {
@@ -99,6 +97,7 @@ public class CarryOverServiceImpl implements CarryOverService {
             savedCarryOver.ifPresent(carryOver -> carryOver.delete(bookLine.getMoney(), bookLine.getCategories()));
         }
     }
+
 
     private Optional<CarryOver> findCarryOver(final LocalDate targetDate, final Book bookLine) {
         return carryOverRepository.findCarryOverByDateAndBookAndStatus(targetDate, bookLine, ACTIVE);
