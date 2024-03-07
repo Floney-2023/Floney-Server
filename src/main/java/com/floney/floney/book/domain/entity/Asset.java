@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
@@ -46,6 +47,24 @@ public class Asset extends BaseEntity {
             .date(date)
             .build();
     }
+
+    public static Asset of(final BookLine bookLine,
+                           final CategoryType categoryType,
+                           final LocalDate date) {
+        if (OUTCOME.equals(categoryType)) {
+            return Asset.builder()
+                .money(-1 * bookLine.getMoney())
+                .book(bookLine.getBook())
+                .date(date)
+                .build();
+        }
+        return Asset.builder()
+            .money(bookLine.getMoney())
+            .book(bookLine.getBook())
+            .date(date)
+            .build();
+    }
+
 
     public void add(final double money, final String flow) {
         if (INCOME.getMeaning().equals(flow)) {
