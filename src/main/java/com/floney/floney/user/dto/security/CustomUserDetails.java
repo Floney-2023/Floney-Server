@@ -22,11 +22,11 @@ public class CustomUserDetails implements UserDetails {
         roles.add(Role.USER);
 
         return new CustomUserDetails(
-                user,
-                roles.stream()
-                        .map(Role::getName)
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toUnmodifiableSet())
+            user,
+            roles.stream()
+                .map(Role::getName)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toUnmodifiableSet())
         );
     }
 
@@ -69,4 +69,11 @@ public class CustomUserDetails implements UserDetails {
         return user;
     }
 
+    @Override
+    public String toString() {
+        return "CustomUserDetails{" +
+            "user=" + user.getEmail() +
+            ", authorities=" + authorities +
+            '}';
+    }
 }
