@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RepeatBookLine extends BaseEntity {
 
-    public static final int REPEAT_YEAR = 3;
+    public static final int REPEAT_YEAR = 1;
 
     @Enumerated(value = EnumType.STRING)
     private RepeatDuration repeatDuration;
