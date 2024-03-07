@@ -1,6 +1,6 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.CarryOver;
@@ -15,10 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
 import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
@@ -27,7 +26,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 @RequiredArgsConstructor
 public class CarryOverServiceImpl implements CarryOverService {
 
-    private final static int SAVE_CARRY_OVER_DURATION = 60;
+    public final static int SAVE_CARRY_OVER_DURATION = 60;
     private final static int ONE_MONTH = 1;
 
     private final CarryOverRepository carryOverRepository;
@@ -57,51 +56,36 @@ public class CarryOverServiceImpl implements CarryOverService {
     }
 
     @Override
+    @Transactional
     public void createCarryOver(BookLine bookLine) {
         Book book = bookLine.getBook();
-        LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
-        List<CarryOver> carryOvers = new ArrayList<>();
-        Category lineCategory = bookLine.getCategories().getLineCategory();
+        CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
         // 카테고리가 이월인 경우 생성 X
-        if (TRANSFER.equals(lineCategory.getName())) {
+        if (TRANSFER.equals(categoryType)) {
             return;
         }
 
-        // 현 날짜의 다음달부터 생성
-        targetDate = getNextMonth(targetDate);
+        LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
+        double money = bookLine.getMoney();
 
-        // 5년(60개월) 동안의 엔티티 생성
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
-
-            // 이월 날짜에 해당하는 이월 내역 DB에서 가져오기
-            // TODO : 성능 개선 - 1번의 쿼리로 5년치 내역을 가져온 뒤, 날짜를 Key로 중복 체크
-            final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, book);
-
-            // DB에 이월 내역이 존재하지 않으면 생성
-            if (savedCarryOver.isEmpty()) {
-                CarryOver newCarryOver = CarryOver.of(bookLine, targetDate);
-                carryOvers.add(newCarryOver);
-            }
-
-            // DB에 존재 시, 업데이트
-            else {
-                savedCarryOver.ifPresent(carryOver -> {
-                    carryOver.update(bookLine.getMoney(), lineCategory.getName());
-                    carryOvers.add(carryOver);
-                });
-            }
             targetDate = getNextMonth(targetDate);
+            double carryOverMoney = getCarryOverMoney(categoryType, money);
+
+            //TODO : 쿼리 벌크 처리
+            carryOverRepository.upsertMoneyByDateAndBook(targetDate, book, carryOverMoney);
         }
 
-        carryOverRepository.saveAll(carryOvers);
     }
 
+    private double getCarryOverMoney(CategoryType categoryType, double money) {
+        return INCOME.equals(categoryType) ? money : -1 * money;
+    }
 
     @Override
     public void deleteCarryOver(final Long bookLineId) {
-        final BookLine bookLine = bookLineRepository.findById(bookLineId)
-            .orElseThrow(NotFoundBookLineException::new);
+        final BookLine bookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
 
         if (!bookLine.getBook().getCarryOverStatus()) {
             return;

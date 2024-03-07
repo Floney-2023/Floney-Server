@@ -18,8 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.List;
 
+import static com.floney.floney.analyze.service.CarryOverServiceImpl.SAVE_CARRY_OVER_DURATION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -66,7 +66,7 @@ public class CarryOverServiceTest {
             @DisplayName("이월 내역이 생성 된다")
             void it_create_carryOver() {
                 carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, times(1)).saveAll(any(List.class));
+                verify(carryOverRepository, times(SAVE_CARRY_OVER_DURATION)).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
         }
 
@@ -86,7 +86,7 @@ public class CarryOverServiceTest {
             @DisplayName("이월 내역이 생성 된다")
             void it_create_carryOver() {
                 carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, times(1)).saveAll(any(List.class));
+                verify(carryOverRepository, times(SAVE_CARRY_OVER_DURATION)).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
         }
 
@@ -106,7 +106,7 @@ public class CarryOverServiceTest {
             @DisplayName("이월 내역이 생성 되지 않는다")
             void it_didnt_create_carryOver() {
                 carryOverService.createCarryOver(bookLine);
-                verify(carryOverRepository, never()).saveAll(any(List.class));
+                verify(carryOverRepository, never()).upsertMoneyByDateAndBook(any(LocalDate.class), any(Book.class), any(Double.class));
             }
         }
     }
