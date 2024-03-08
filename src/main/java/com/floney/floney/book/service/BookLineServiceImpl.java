@@ -149,7 +149,10 @@ public class BookLineServiceImpl implements BookLineService {
             throw new NotFoundBookLineException();
         }
 
+        final RepeatBookLine repeatBookLine = savedBookLine.getRepeatBookLine();
         List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
+        repeatBookLine.inactive();
+
         bookLines.forEach(BookLine::inactive);
         bookLineRepository.saveAll(bookLines);
     }
