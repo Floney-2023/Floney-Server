@@ -1,8 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
@@ -42,24 +40,26 @@ public class CarryOver extends BaseEntity {
         this.date = date;
     }
 
-    public static CarryOver of(final BookLineRequest request, final Book book, final LocalDate date) {
-        if (OUTCOME.getMeaning().equals(request.getFlow())) {
+    public static CarryOver getCarryOverToAdd(final BookLine bookLine, final LocalDate date) {
+        Category category = bookLine.getCategories().getLineCategory();
+        if (OUTCOME.equals(category.getName())) {
             return CarryOver.builder()
-                .money(-1 * request.getMoney())
-                .book(book)
+                .money(-1 * bookLine.getMoney())
+                .book(bookLine.getBook())
                 .date(date)
                 .build();
         }
         return CarryOver.builder()
-            .money(request.getMoney())
-            .book(book)
+            .money(bookLine.getMoney())
+            .book(bookLine.getBook())
             .date(date)
             .build();
     }
 
-    public static CarryOver of(final BookLine bookLine, final LocalDate date) {
+    // 가계부 내역 삭제 시, 이월 금액에서 현재 내역을 취소 용
+    public static CarryOver getCarryOverToDelete(final BookLine bookLine, final LocalDate date) {
         Category category = bookLine.getCategories().getLineCategory();
-        if (OUTCOME.equals(category.getName())) {
+        if (INCOME.equals(category.getName())) {
             return CarryOver.builder()
                 .money(-1 * bookLine.getMoney())
                 .book(bookLine.getBook())
@@ -79,21 +79,4 @@ public class CarryOver extends BaseEntity {
             .build();
     }
 
-    public void update(final double updateMoney, final CategoryType categoryType) {
-        if (INCOME.equals(categoryType)) {
-            money += updateMoney;
-        } else {
-            money -= updateMoney;
-        }
-    }
-
-    // 내역을 삭제하는 경우, 이월된 값을 되돌리기
-    public void delete(final double updateMoney, final BookLineCategory bookLineCategory) {
-        if (!bookLineCategory.isIncomeOrOutcome()) return;
-        if (bookLineCategory.isIncome()) {
-            money -= updateMoney;
-        } else {
-            money += updateMoney;
-        }
-    }
 }

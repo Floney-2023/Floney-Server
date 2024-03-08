@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -63,8 +62,8 @@ public class CarryOverServiceImpl implements CarryOverService {
     public void createCarryOver(BookLine bookLine) {
         CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
-        // 카테고리가 이월인 경우 생성 X
-        if (TRANSFER.equals(categoryType)) {
+        // 카테고리가 이체인 경우 생성 X
+        if (categoryType.isTransfer()) {
             return;
         }
 
@@ -72,9 +71,10 @@ public class CarryOverServiceImpl implements CarryOverService {
         LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
         List<CarryOver> carryOverList = new ArrayList<>();
+
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             targetDate = getNextMonth(targetDate);
-            carryOverList.add(CarryOver.of(bookLine, targetDate));
+            carryOverList.add(CarryOver.getCarryOverToAdd(bookLine, targetDate));
         }
 
         carryOverJdbcRepository.saveAll(carryOverList);
@@ -82,20 +82,24 @@ public class CarryOverServiceImpl implements CarryOverService {
 
 
     @Override
+    @Transactional
     public void deleteCarryOver(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
+        CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
-        if (!bookLine.getBook().getCarryOverStatus()) {
+        if (!bookLine.getBook().getCarryOverStatus() || categoryType.isTransfer()) {
             return;
         }
 
         LocalDate targetDate = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
+        List<CarryOver> carryOverList = new ArrayList<>();
 
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             targetDate = getNextMonth(targetDate);
-            final Optional<CarryOver> savedCarryOver = findCarryOver(targetDate, bookLine.getBook());
-            savedCarryOver.ifPresent(carryOver -> carryOver.delete(bookLine.getMoney(), bookLine.getCategories()));
+            carryOverList.add(CarryOver.getCarryOverToDelete(bookLine, targetDate));
         }
+
+        carryOverJdbcRepository.saveAll(carryOverList);
     }
 
 
