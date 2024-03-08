@@ -1,7 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
 
-import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
 import org.assertj.core.api.Assertions;
@@ -16,8 +15,8 @@ import java.time.LocalDate;
 public class CarryOverTest {
 
     @Nested
-    @DisplayName("of()를 실행할 때")
-    class Describe_Of {
+    @DisplayName("getCarryOverToAdd()를 실행할 때")
+    class Describe_GetCarryOverToAdd {
         User user;
         Book book;
         String bookKey;
@@ -48,7 +47,7 @@ public class CarryOverTest {
             @Test
             @DisplayName("금액이 양수인, 이월 내역이 생성된다")
             void it_return_positive_money() {
-                CarryOver carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                CarryOver carryOver = CarryOver.getCarryOverToAdd(bookLine, LocalDate.now().plusDays(1));
                 Assertions.assertThat(carryOver.getMoney()).isEqualTo(bookLine.getMoney());
             }
         }
@@ -69,7 +68,7 @@ public class CarryOverTest {
             @Test
             @DisplayName("금액이 음수인, 이월 내역이 생성된다")
             void it_return_negative_money() {
-                CarryOver carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                CarryOver carryOver = CarryOver.getCarryOverToAdd(bookLine, LocalDate.now().plusDays(1));
                 Assertions.assertThat(carryOver.getMoney()).isEqualTo(-1 * bookLine.getMoney());
             }
 
@@ -77,8 +76,8 @@ public class CarryOverTest {
     }
 
     @Nested
-    @DisplayName("update()를 실행할 때")
-    class Describe_Update {
+    @DisplayName("getCarryOverToDelete()를 실행할 때")
+    class Describe_GetCarryOverToDelete {
         User user;
         Book book;
         String bookKey;
@@ -104,14 +103,13 @@ public class CarryOverTest {
                 String incomeSubCategoryName = "급여";
                 final BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, incomeSubCategoryName, assetSubCategoryName);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                carryOver = CarryOver.getCarryOverToDelete(bookLine, LocalDate.now().plusDays(1));
             }
 
             @Test
-            @DisplayName("이월 금액이 증가한다")
-            void it_increase_money() {
-                carryOver.update(1000, CategoryType.INCOME);
-                Assertions.assertThat(carryOver.getMoney()).isGreaterThan(bookLine.getMoney());
+            @DisplayName("이월 금액은 음수가 된다")
+            void it_return_negative_money() {
+                Assertions.assertThat(carryOver.getMoney()).isEqualTo(-1 * bookLine.getMoney());
             }
         }
 
@@ -127,14 +125,13 @@ public class CarryOverTest {
                 String outcomeSubCategory = "식비";
                 final BookLineCategory bookLineCategory = BookLineCategoryFixture.outcomeBookLineCategory(book, outcomeSubCategory, assetSubCategoryName);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                carryOver = CarryOver.getCarryOverToDelete(bookLine, LocalDate.now().plusDays(1));
             }
 
             @Test
-            @DisplayName("이월 금액이 감소한다")
-            void it_decrease_money() {
-                carryOver.update(1000, CategoryType.OUTCOME);
-                Assertions.assertThat(carryOver.getMoney()).isLessThan(bookLine.getMoney());
+            @DisplayName("이월 금액은 양수가 된다")
+            void it_return_positive_money() {
+                Assertions.assertThat(carryOver.getMoney()).isEqualTo(bookLine.getMoney());
             }
         }
     }
@@ -168,14 +165,13 @@ public class CarryOverTest {
                 String incomeSubCategoryName = "급여";
                 bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, incomeSubCategoryName, assetSubCategoryName);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                carryOver = CarryOver.getCarryOverToDelete(bookLine, LocalDate.now().plusDays(1));
             }
 
             @Test
-            @DisplayName("이월 금액이 감소한다")
-            void it_decrease_money() {
-                carryOver.delete(1000, bookLineCategory);
-                Assertions.assertThat(carryOver.getMoney()).isLessThan(bookLine.getMoney());
+            @DisplayName("이월 금액은 음수가 된다")
+            void it_return_negative_money() {
+                Assertions.assertThat(carryOver.getMoney()).isEqualTo(-1 * bookLine.getMoney());
             }
         }
 
@@ -191,14 +187,13 @@ public class CarryOverTest {
                 String outcomeSubCategory = "식비";
                 bookLineCategory = BookLineCategoryFixture.outcomeBookLineCategory(book, outcomeSubCategory, assetSubCategoryName);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                carryOver = CarryOver.getCarryOverToDelete(bookLine, LocalDate.now().plusDays(1));
             }
 
             @Test
-            @DisplayName("이월 금액이 증가한다")
-            void it_decrease_money() {
-                carryOver.delete(1000, bookLineCategory);
-                Assertions.assertThat(carryOver.getMoney()).isGreaterThan(-1 * bookLine.getMoney());
+            @DisplayName("이월 금액은 양수가 된다")
+            void it_return_positive_money() {
+                Assertions.assertThat(carryOver.getMoney()).isEqualTo(bookLine.getMoney());
             }
         }
 
@@ -214,13 +209,12 @@ public class CarryOverTest {
                 String transferSubCategory = "이체";
                 bookLineCategory = BookLineCategoryFixture.transferBookLineCategory(book, transferSubCategory, assetSubCategoryName);
                 bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
+                carryOver = CarryOver.getCarryOverToDelete(bookLine, LocalDate.now().plusDays(1));
             }
 
             @Test
             @DisplayName("이월 금액은 변하지 않는다")
             void it_maintain_money() {
-                carryOver.delete(1000, bookLineCategory);
                 Assertions.assertThat(carryOver.getMoney()).isEqualTo(bookLine.getMoney());
             }
         }
