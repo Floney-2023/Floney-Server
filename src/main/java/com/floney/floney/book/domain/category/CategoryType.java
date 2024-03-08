@@ -40,8 +40,4 @@ public enum CategoryType {
     public static boolean isLine(final CategoryType categoryType) {
         return INCOME.equals(categoryType) || OUTCOME.equals(categoryType) || TRANSFER.equals(categoryType);
     }
-
-    public boolean isTransfer() {
-        return this == CategoryType.TRANSFER;
-    }
 }
