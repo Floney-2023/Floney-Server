@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -63,7 +64,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
         // 카테고리가 이체인 경우 생성 X
-        if (categoryType.isTransfer()) {
+        if (TRANSFER.equals(categoryType)) {
             return;
         }
 
@@ -74,7 +75,8 @@ public class CarryOverServiceImpl implements CarryOverService {
 
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             targetDate = getNextMonth(targetDate);
-            carryOverList.add(CarryOver.getCarryOverToAdd(bookLine, targetDate));
+            CarryOver carryOver = CarryOver.of(bookLine, targetDate);
+            carryOverList.add(carryOver);
         }
 
         carryOverJdbcRepository.saveAll(carryOverList);
@@ -87,7 +89,7 @@ public class CarryOverServiceImpl implements CarryOverService {
         final BookLine bookLine = bookLineRepository.findById(bookLineId).orElseThrow(NotFoundBookLineException::new);
         CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
-        if (!bookLine.getBook().getCarryOverStatus() || categoryType.isTransfer()) {
+        if (!bookLine.getBook().getCarryOverStatus() || TRANSFER.equals(categoryType)) {
             return;
         }
 
@@ -96,7 +98,8 @@ public class CarryOverServiceImpl implements CarryOverService {
 
         for (int i = 0; i < SAVE_CARRY_OVER_DURATION; i++) {
             targetDate = getNextMonth(targetDate);
-            carryOverList.add(CarryOver.getCarryOverToDelete(bookLine, targetDate));
+            CarryOver carryOver = CarryOver.of(bookLine, targetDate);
+            carryOverList.add(carryOver.delete(categoryType));
         }
 
         carryOverJdbcRepository.saveAll(carryOverList);

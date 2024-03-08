@@ -1,6 +1,8 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
@@ -15,8 +17,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 
-import static com.floney.floney.book.domain.category.CategoryType.INCOME;
-import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.*;
 
 @Entity
 @Getter
@@ -40,26 +41,24 @@ public class CarryOver extends BaseEntity {
         this.date = date;
     }
 
-    public static CarryOver getCarryOverToAdd(final BookLine bookLine, final LocalDate date) {
-        Category category = bookLine.getCategories().getLineCategory();
-        if (OUTCOME.equals(category.getName())) {
+    public static CarryOver of(final BookLineRequest request, final Book book, final LocalDate date) {
+        if (OUTCOME.getMeaning().equals(request.getFlow())) {
             return CarryOver.builder()
-                .money(-1 * bookLine.getMoney())
-                .book(bookLine.getBook())
+                .money(-1 * request.getMoney())
+                .book(book)
                 .date(date)
                 .build();
         }
         return CarryOver.builder()
-            .money(bookLine.getMoney())
-            .book(bookLine.getBook())
+            .money(request.getMoney())
+            .book(book)
             .date(date)
             .build();
     }
 
-    // 가계부 내역 삭제 시, 이월 금액에서 현재 내역을 취소 용
-    public static CarryOver getCarryOverToDelete(final BookLine bookLine, final LocalDate date) {
+    public static CarryOver of(final BookLine bookLine, final LocalDate date) {
         Category category = bookLine.getCategories().getLineCategory();
-        if (INCOME.equals(category.getName())) {
+        if (OUTCOME.equals(category.getName())) {
             return CarryOver.builder()
                 .money(-1 * bookLine.getMoney())
                 .book(bookLine.getBook())
@@ -79,4 +78,27 @@ public class CarryOver extends BaseEntity {
             .build();
     }
 
+    public void update(final double updateMoney, final CategoryType categoryType) {
+        if (INCOME.equals(categoryType)) {
+            money += updateMoney;
+        } else {
+            money -= updateMoney;
+        }
+    }
+
+    public CarryOver delete(CategoryType categoryType) {
+        if (TRANSFER.equals(categoryType)) {
+            return CarryOver.builder()
+                .money(this.money)
+                .book(book)
+                .date(date)
+                .build();
+        }
+
+        return CarryOver.builder()
+            .money(-1 * this.money)
+            .book(book)
+            .date(date)
+            .build();
+    }
 }
