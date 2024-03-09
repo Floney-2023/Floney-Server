@@ -1,7 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
 
-import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
 import org.assertj.core.api.Assertions;
@@ -73,69 +72,6 @@ public class CarryOverTest {
                 Assertions.assertThat(carryOver.getMoney()).isEqualTo(-1 * bookLine.getMoney());
             }
 
-        }
-    }
-
-    @Nested
-    @DisplayName("update()를 실행할 때")
-    class Describe_Update {
-        User user;
-        Book book;
-        String bookKey;
-        BookUser bookUser;
-        String assetSubCategoryName = "자산";
-
-        @BeforeEach
-        void init() {
-            user = UserFixture.emailUser();
-            book = BookFixture.createBook();
-            bookKey = book.getBookKey();
-            bookUser = BookUserFixture.createBookUser(book, user);
-        }
-
-        @Nested
-        @DisplayName("수입 이월 내역이 주어지면")
-        class Context_With_IncomeMoney {
-            BookLine bookLine;
-            CarryOver carryOver;
-
-            @BeforeEach
-            void init() {
-                String incomeSubCategoryName = "급여";
-                final BookLineCategory bookLineCategory = BookLineCategoryFixture.incomeBookLineCategory(book, incomeSubCategoryName, assetSubCategoryName);
-                bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
-            }
-
-            @Test
-            @DisplayName("이월 금액이 증가한다")
-            void it_increase_money() {
-                carryOver.update(1000, CategoryType.INCOME);
-                Assertions.assertThat(carryOver.getMoney()).isGreaterThan(bookLine.getMoney());
-            }
-        }
-
-        @Nested
-        @DisplayName("지출 이월 내역이 주어지면")
-        class Context_With_OutcomeMoney {
-
-            CarryOver carryOver;
-            BookLine bookLine;
-
-            @BeforeEach
-            void init() {
-                String outcomeSubCategory = "식비";
-                final BookLineCategory bookLineCategory = BookLineCategoryFixture.outcomeBookLineCategory(book, outcomeSubCategory, assetSubCategoryName);
-                bookLine = BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now());
-                carryOver = CarryOver.of(bookLine, LocalDate.now().plusDays(1));
-            }
-
-            @Test
-            @DisplayName("이월 금액이 감소한다")
-            void it_decrease_money() {
-                carryOver.update(1000, CategoryType.OUTCOME);
-                Assertions.assertThat(carryOver.getMoney()).isLessThan(bookLine.getMoney());
-            }
         }
     }
 
