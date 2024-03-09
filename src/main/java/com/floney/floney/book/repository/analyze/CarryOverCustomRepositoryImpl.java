@@ -43,19 +43,4 @@ public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository 
 
         entityManager.clear();
     }
-
-    @Override
-    @Transactional
-    public void inactiveAllByBook(final Book book) {
-        jpaQueryFactory.update(carryOver)
-            .set(carryOver.status, INACTIVE)
-            .set(carryOver.updatedAt, LocalDateTime.now())
-            .where(
-                carryOver.book.eq(book),
-                carryOver.status.eq(ACTIVE)
-            )
-            .execute();
-
-        entityManager.clear();
-    }
 }
