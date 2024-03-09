@@ -24,6 +24,14 @@ public class CarryOverCustomRepositoryImpl implements CarryOverCustomRepository 
     @Override
     @Transactional
     public void inactiveAllBy(final Book book) {
+        // unique index 가 걸려서 INACTIVE 데이터 먼저 삭제
+        jpaQueryFactory.delete(carryOver)
+            .where(
+                carryOver.book.eq(book),
+                carryOver.status.eq(INACTIVE)
+            )
+            .execute();
+
         jpaQueryFactory.update(carryOver)
             .set(carryOver.status, INACTIVE)
             .set(carryOver.updatedAt, LocalDateTime.now())

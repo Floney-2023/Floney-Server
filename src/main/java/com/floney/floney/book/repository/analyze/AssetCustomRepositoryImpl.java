@@ -25,6 +25,14 @@ public class AssetCustomRepositoryImpl implements AssetCustomRepository {
     @Override
     @Transactional
     public void inactiveAllBy(final Book book) {
+        // unique index 가 걸려서 INACTIVE 데이터 먼저 삭제
+        jpaQueryFactory.delete(asset)
+            .where(
+                asset.book.eq(book),
+                asset.status.eq(INACTIVE)
+            )
+            .execute();
+        
         jpaQueryFactory.update(asset)
             .set(asset.status, INACTIVE)
             .set(asset.updatedAt, LocalDateTime.now())
