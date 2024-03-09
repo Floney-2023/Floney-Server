@@ -1,9 +1,6 @@
 package com.floney.floney.fixture;
 
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.domain.entity.BookLineCategory;
-import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.*;
 
 import java.time.LocalDate;
 
@@ -22,6 +19,22 @@ public class BookLineFixture {
             .lineDate(lineDate)
             .exceptStatus(false)
             .money(DEFAULT_MONEY)
+            .build();
+    }
+
+    public static BookLine createWithDateAndRepeat(final Book book,
+                                                   final BookUser bookUser,
+                                                   final BookLineCategory categories,
+                                                   final RepeatBookLine repeatBookLine,
+                                                   final LocalDate lineDate) {
+        return BookLine.builder()
+            .book(book)
+            .writer(bookUser)
+            .categories(categories)
+            .lineDate(lineDate)
+            .exceptStatus(false)
+            .money(DEFAULT_MONEY)
+            .repeatBookLine(repeatBookLine)
             .build();
     }
 
