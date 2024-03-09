@@ -2,6 +2,7 @@ package com.floney.floney.book.controller;
 
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -52,9 +53,10 @@ public class BookController {
      * @body CreateLineRequest 가계부 내역
      */
     @PostMapping("/lines")
-    public ResponseEntity<?> createBookLine(@RequestBody BookLineRequest request,
-                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(), request), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookLineResponse createBookLine(@RequestBody BookLineRequest request,
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return bookLineService.createBookLine(userDetails.getUsername(), request);
     }
 
     /**
