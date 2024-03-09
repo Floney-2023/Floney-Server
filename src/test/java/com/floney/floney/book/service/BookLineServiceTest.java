@@ -18,7 +18,6 @@ import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,16 +26,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 //TODO : 1. 테스트 코드 전체 추가, 2. mock 안쓰는 방법으로 개선
 @ExtendWith(MockitoExtension.class)
-@DisplayName("단위테스트 : BookLineService")
+@DisplayName("단위 테스트: BookLineService")
 public class BookLineServiceTest {
 
     @Mock
@@ -86,16 +87,23 @@ public class BookLineServiceTest {
 
                 given(categoryRepository.findByType(CategoryType.INCOME))
                     .willReturn(Optional.ofNullable(incomeCategory));
+
                 given(bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE))
                     .willReturn(Optional.ofNullable(book));
+
                 given(bookUserRepository.findBookUserByEmailAndBookKey(user.getEmail(), bookKey))
                     .willReturn(Optional.ofNullable(bookUser));
+
                 given(categoryRepository.findSubcategory(incomeSubCategoryName, book, CategoryType.INCOME))
                     .willReturn(Optional.ofNullable(subCategory));
+
                 given(categoryRepository.findSubcategory(assetSubCategoryName, book, CategoryType.ASSET))
                     .willReturn(Optional.ofNullable(assetSubCategory));
+
+                final BookLine bookLine = BookLineFixture.create(book, bookUser, bookLineCategory);
+                ReflectionTestUtils.setField(bookLine, "id", 1L);
                 given(bookLineRepository.save(any(BookLine.class)))
-                    .willReturn(BookLineFixture.createWithDate(book, bookUser, bookLineCategory, LocalDate.now()));
+                    .willReturn(bookLine);
             }
 
             @Test
@@ -112,9 +120,8 @@ public class BookLineServiceTest {
                     .repeatDuration(RepeatDuration.NONE)
                     .build();
 
-                BookLineResponse bookLineResponse = bookLineService.createBookLine(user.getEmail(), request);
-                Assertions.assertThat(bookLineResponse.getLineDate())
-                    .isEqualTo(LocalDate.now());
+                final BookLineResponse bookLineResponse = bookLineService.createBookLine(user.getEmail(), request);
+                assertThat(bookLineResponse.getId()).isEqualTo(1);
             }
         }
     }
