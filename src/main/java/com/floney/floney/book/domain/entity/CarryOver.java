@@ -2,7 +2,6 @@ package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
-import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.common.entity.BaseEntity;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
@@ -17,7 +16,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 
-import static com.floney.floney.book.domain.category.CategoryType.*;
+import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
+import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 
 @Entity
 @Getter
@@ -41,21 +41,6 @@ public class CarryOver extends BaseEntity {
         this.date = date;
     }
 
-    public static CarryOver of(final BookLineRequest request, final Book book, final LocalDate date) {
-        if (OUTCOME.getMeaning().equals(request.getFlow())) {
-            return CarryOver.builder()
-                .money(-1 * request.getMoney())
-                .book(book)
-                .date(date)
-                .build();
-        }
-        return CarryOver.builder()
-            .money(request.getMoney())
-            .book(book)
-            .date(date)
-            .build();
-    }
-
     public static CarryOver of(final BookLine bookLine, final LocalDate date) {
         Category category = bookLine.getCategories().getLineCategory();
         if (OUTCOME.equals(category.getName())) {
@@ -76,14 +61,6 @@ public class CarryOver extends BaseEntity {
         return CarryOver.builder()
             .money(0L)
             .build();
-    }
-
-    public void update(final double updateMoney, final CategoryType categoryType) {
-        if (INCOME.equals(categoryType)) {
-            money += updateMoney;
-        } else {
-            money -= updateMoney;
-        }
     }
 
     public CarryOver delete(CategoryType categoryType) {
