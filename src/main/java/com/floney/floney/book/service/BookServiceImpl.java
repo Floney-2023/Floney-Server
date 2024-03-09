@@ -244,6 +244,7 @@ public class BookServiceImpl implements BookService {
         settlementRepository.inactiveAllBy(book);
         carryOverRepository.inactiveAllBy(book);
         budgetRepository.inactiveAllBy(book);
+        repeatBookLineRepository.inactiveAllByBook(book);
     }
 
     @Override
@@ -360,6 +361,7 @@ public class BookServiceImpl implements BookService {
         budgetRepository.inactiveAllBy(book);
         carryOverRepository.inactiveAllByBook(book);
         categoryRepository.inactiveAllByBook(book);
+        repeatBookLineRepository.inactiveAllByBook(book);
     }
 
     private void inactiveAllBy(final BookUser bookUser) {
@@ -367,6 +369,7 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.findAllByBookUser(bookUser)
             .forEach(BookLine::inactive);
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
+        repeatBookLineRepository.inactiveAllByBookUser(bookUser);
     }
 
     private void saveDefaultCategories(final Book book) {
