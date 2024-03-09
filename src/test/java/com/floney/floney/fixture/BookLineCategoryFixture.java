@@ -7,31 +7,41 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 
 public class BookLineCategoryFixture {
-    public static BookLineCategory incomeBookLineCategory(Book book, String lineSubCategoryName, String assetSubCategoryName) {
-        Category lineCategory = Category.builder().name(CategoryType.INCOME).build();
-        Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
 
-        Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
-        Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
+    public static BookLineCategory incomeBookLineCategory(final Book book,
+                                                          final String lineSubCategoryName,
+                                                          final String assetSubCategoryName) {
+        final Category lineCategory = CategoryFixture.create(CategoryType.INCOME);
+        final Category assetLineCategory = CategoryFixture.create(CategoryType.ASSET);
+
+        final Subcategory subcategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        final Subcategory assetSubcategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
+
+        return BookLineCategory.create(lineCategory, subcategory, assetSubcategory);
+    }
+
+    public static BookLineCategory outcomeBookLineCategory(final Book book,
+                                                           final String lineSubCategoryName,
+                                                           final String assetSubCategoryName) {
+        final Category lineCategory = CategoryFixture.create(CategoryType.OUTCOME);
+        final Category assetLineCategory = CategoryFixture.create(CategoryType.ASSET);
+
+        final Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        final Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
+
         return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
     }
 
-    public static BookLineCategory outcomeBookLineCategory(Book book, String lineSubCategoryName, String assetSubCategoryName) {
-        Category lineCategory = Category.builder().name(CategoryType.OUTCOME).build();
-        Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
+    public static BookLineCategory transferBookLineCategory(final Book book,
+                                                            final String lineSubCategoryName,
+                                                            final String assetSubCategoryName) {
+        final Category lineCategory = CategoryFixture.create(CategoryType.TRANSFER);
+        final Category assetCategory = CategoryFixture.create(CategoryType.ASSET);
 
-        Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
-        Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
-        return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
-    }
+        final Subcategory subcategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
+        final Subcategory assetSubcategory = SubcategoryFixture.createSubcategory(book, assetCategory, assetSubCategoryName);
 
-    public static BookLineCategory transferBookLineCategory(Book book, String lineSubCategoryName, String assetSubCategoryName) {
-        Category lineCategory = Category.builder().name(CategoryType.TRANSFER).build();
-        Category assetLineCategory = Category.builder().name(CategoryType.ASSET).build();
-
-        Subcategory subCategory = SubcategoryFixture.createSubcategory(book, lineCategory, lineSubCategoryName);
-        Subcategory assetSubCategory = SubcategoryFixture.createSubcategory(book, assetLineCategory, assetSubCategoryName);
-        return BookLineCategory.create(lineCategory, subCategory, assetSubCategory);
+        return BookLineCategory.create(lineCategory, subcategory, assetSubcategory);
     }
 
 }

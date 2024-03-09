@@ -358,7 +358,7 @@ public class BookServiceImpl implements BookService {
         bookLineCategoryRepository.inactiveAllByBook(book);
         bookUserRepository.inactiveAllByBook(book);
         budgetRepository.inactiveAllBy(book);
-        carryOverRepository.inactiveAllByBook(book);
+        carryOverRepository.inactiveAllBy(book);
         categoryRepository.inactiveAllByBook(book);
     }
 

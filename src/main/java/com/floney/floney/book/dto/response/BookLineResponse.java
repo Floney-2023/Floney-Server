@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookLineResponse {
 
+    private final long id;
     private final double money;
     private final String flow;
     private final String asset;
@@ -24,6 +25,7 @@ public class BookLineResponse {
 
     public static BookLineResponse from(final BookLine bookLine) {
         return BookLineResponse.builder()
+            .id(bookLine.getId())
             .money(bookLine.getMoney())
             .flow(bookLine.getCategories().getLineCategory().getName().getMeaning())
             .asset(bookLine.getCategories().getAssetSubcategory().getName())
