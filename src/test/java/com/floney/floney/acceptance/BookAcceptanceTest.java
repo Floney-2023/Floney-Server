@@ -218,8 +218,8 @@ public class BookAcceptanceTest {
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
 
-                BookApiFixture.createBookLineWith(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 9));
-                BookApiFixture.createBookLineWith(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 10));
+                BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 9));
+                BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 10));
             }
 
             @Test
@@ -238,7 +238,6 @@ public class BookAcceptanceTest {
                 assertThat(response).hasFieldOrProperty("expenses");
                 assertThat(response.getTotalIncome()).isEqualTo(2000.0);
                 assertThat(response.getTotalOutcome()).isEqualTo(0.0);
-
             }
         }
     }
@@ -263,8 +262,8 @@ public class BookAcceptanceTest {
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
 
-                BookApiFixture.createBookLineWith(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 9));
-                BookApiFixture.createBookLineWith(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 9));
+                BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 9));
+                BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.of(2024, 2, 9));
             }
 
             @Test
@@ -312,8 +311,7 @@ public class BookAcceptanceTest {
                 String assetSubCategory = "체크카드";
                 String date = "2024-02-14";
 
-                BookApiFixture.createBookLineWith(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.parse(date));
-                long bookLineId = BookApiFixture.getBookLineByDay(token, date, bookKey).getDayLinesResponse().get(0).getId();
+                final long bookLineId = BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.parse(date));
 
                 request = BookLineRequest.builder()
                     .lineId(bookLineId)
@@ -368,8 +366,7 @@ public class BookAcceptanceTest {
                 String assetSubCategory = "체크카드";
 
                 String date = "2024-02-14";
-                BookApiFixture.createBookLineWith(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.parse(date));
-                bookLineId = BookApiFixture.getBookLineByDay(token, date, bookKey).getDayLinesResponse().get(0).getId();
+                bookLineId = BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.parse(date));
             }
 
             @Test
@@ -593,8 +590,8 @@ public class BookAcceptanceTest {
                 LocalDate startDate = LocalDate.of(2024, 1, 1);
                 LocalDate endDate = LocalDate.of(2024, 1, 31);
 
-                BookApiFixture.createBookLineWith(token, bookKey, outcomeLineCategory, subCategory, assetSubCategory, startDate);
-                BookApiFixture.createBookLineWith(token, bookKey, outcomeLineCategory, subCategory, assetSubCategory, endDate);
+                BookApiFixture.createBookLine(token, bookKey, outcomeLineCategory, subCategory, assetSubCategory, startDate);
+                BookApiFixture.createBookLine(token, bookKey, outcomeLineCategory, subCategory, assetSubCategory, endDate);
 
                 request = new AllOutcomesRequest(bookKey, Arrays.asList(user.getEmail()),
                     new DateDuration(startDate, endDate));
@@ -1274,12 +1271,7 @@ public class BookAcceptanceTest {
 
             @BeforeEach
             public void init() {
-                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
-
-                //가계부 내역 찾기
-                TotalDayLinesResponse response = BookApiFixture.findBookLine(accessToken, bookKey, LocalDate.now());
-
-                lineId = response.getDayLinesResponse().get(0).getId();
+                lineId = BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
             }
 
             @Test
@@ -1343,7 +1335,7 @@ public class BookAcceptanceTest {
 
             @BeforeEach
             public void init() throws JsonProcessingException {
-                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
+                BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
 
                 // 반복 내역 Id 찾기
                 RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, CategoryType.INCOME, bookKey);
@@ -1409,8 +1401,8 @@ public class BookAcceptanceTest {
 
             @BeforeEach
             public void init() {
-                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
-                BookApiFixture.createBookLineWith(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
+                BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
+                BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
             }
 
             @Test
@@ -1431,7 +1423,6 @@ public class BookAcceptanceTest {
 
                 assertThat(response.size()).isEqualTo(2);
             }
-
         }
     }
 }

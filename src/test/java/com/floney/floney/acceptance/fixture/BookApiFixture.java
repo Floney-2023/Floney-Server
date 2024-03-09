@@ -2,7 +2,6 @@ package com.floney.floney.acceptance.fixture;
 
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.RepeatBookLineResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
@@ -73,12 +72,12 @@ public class BookApiFixture {
             .extract().as(TotalDayLinesResponse.class);
     }
 
-    public static BookLineResponse createBookLineWith(final String accessToken,
-                                                      final String bookKey,
-                                                      final String lineCategoryName,
-                                                      final String lineSubcategoryName,
-                                                      final String assetSubcategoryName,
-                                                      final LocalDate date) {
+    public static long createBookLine(final String accessToken,
+                                      final String bookKey,
+                                      final String lineCategoryName,
+                                      final String lineSubcategoryName,
+                                      final String assetSubcategoryName,
+                                      final LocalDate date) {
         return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -97,16 +96,18 @@ public class BookApiFixture {
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
-            .extract().as(BookLineResponse.class);
+            .extract()
+            .jsonPath()
+            .getLong("id");
     }
 
-    public static BookLineResponse createBookLineWith(final String accessToken,
-                                                      final String bookKey,
-                                                      final String lineCategoryName,
-                                                      final String lineSubcategoryName,
-                                                      final String assetSubcategoryName,
-                                                      final LocalDate lineDate,
-                                                      final RepeatDuration repeatDuration) {
+    public static long createBookLine(final String accessToken,
+                                      final String bookKey,
+                                      final String lineCategoryName,
+                                      final String lineSubcategoryName,
+                                      final String assetSubcategoryName,
+                                      final LocalDate lineDate,
+                                      final RepeatDuration repeatDuration) {
         return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -125,20 +126,8 @@ public class BookApiFixture {
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
-            .extract().as(BookLineResponse.class);
-    }
-
-    public static TotalDayLinesResponse findBookLine(final String accessToken,
-                                                     final String bookKey,
-                                                     final LocalDate lineDate) {
-        return RestAssured.given()
-            .auth().oauth2(accessToken)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .param("bookKey", bookKey)
-            .param("date", lineDate.toString())
-            .when().get("/books/days")
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .extract().as(TotalDayLinesResponse.class);
+            .extract()
+            .jsonPath()
+            .getLong("id");
     }
 }
