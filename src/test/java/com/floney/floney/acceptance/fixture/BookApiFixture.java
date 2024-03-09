@@ -1,11 +1,7 @@
 package com.floney.floney.acceptance.fixture;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.dto.request.BookLineRequest;
-import com.floney.floney.book.dto.request.CodeJoinRequest;
-import com.floney.floney.book.dto.request.CreateBookRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.RepeatBookLineResponse;
@@ -19,16 +15,15 @@ import java.time.LocalDate;
 public class BookApiFixture {
 
     public static CreateBookResponse createBook(final String accessToken) {
-        final CreateBookRequest request = CreateBookRequest.builder()
-            .name("name")
-            .profileImg("url")
-            .build();
-
-        return RestAssured
-            .given()
+        return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
+            .body("""
+                {
+                    "name": "name",
+                    "profileImg": "url"
+                }
+                """)
             .when().post("/books")
             .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -36,22 +31,25 @@ public class BookApiFixture {
     }
 
     public static CreateBookResponse involveBook(final String accessToken, final String code) {
-        final CodeJoinRequest request = new CodeJoinRequest(code);
-
         return RestAssured
             .given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
+            .body("""
+                {
+                    "code": "%s"
+                }
+                """.formatted(code))
             .when().post("/books/join")
             .then()
             .statusCode(HttpStatus.ACCEPTED.value())
             .extract().as(CreateBookResponse.class);
     }
 
-    public static RepeatBookLineResponse[] getRepeatBookLineList(final String accessToken, final CategoryType categoryType, final String bookKey) throws JsonProcessingException {
-        return RestAssured
-            .given()
+    public static RepeatBookLineResponse[] getRepeatBookLineList(final String accessToken,
+                                                                 final CategoryType categoryType,
+                                                                 final String bookKey) {
+        return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .param("categoryType", categoryType)
@@ -62,10 +60,11 @@ public class BookApiFixture {
             .extract().as(RepeatBookLineResponse[].class);
     }
 
-    public static TotalDayLinesResponse getBookLineByDay(String token, String date, String bookKey) {
-        return RestAssured
-            .given()
-            .header("Authorization", "Bearer " + token)
+    public static TotalDayLinesResponse getBookLineByDay(final String accessToken,
+                                                         final String date,
+                                                         final String bookKey) {
+        return RestAssured.given()
+            .auth().oauth2(accessToken)
             .param("bookKey", bookKey)
             .param("date", date)
             .when().get("/books/days")
@@ -74,55 +73,65 @@ public class BookApiFixture {
             .extract().as(TotalDayLinesResponse.class);
     }
 
-    public static BookLineResponse createBookLineWith(final String accessToken, final String bookKey, String lineCategory, String subCategory, String assetSubCategory, LocalDate localDate) {
-        final BookLineRequest request = BookLineRequest.builder()
-            .money(1000)
-            .line(subCategory)
-            .bookKey(bookKey)
-            .flow(lineCategory)
-            .asset(assetSubCategory)
-            .lineDate(localDate)
-            .description("예시")
-            .except(false)
-            .repeatDuration(RepeatDuration.NONE)
-            .build();
-
+    public static BookLineResponse createBookLineWith(final String accessToken,
+                                                      final String bookKey,
+                                                      final String lineCategoryName,
+                                                      final String lineSubcategoryName,
+                                                      final String assetSubcategoryName,
+                                                      final LocalDate date) {
         return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
+            .body("""
+                {
+                    "bookKey": "%s",
+                    "money": 1000,
+                    "flow": "%s",
+                    "asset": "%s",
+                    "line": "%s",
+                    "lineDate": "%s",
+                    "except": false,
+                    "repeatDuration": "NONE"
+                }
+                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, date))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .extract().as(BookLineResponse.class);
     }
 
-    public static BookLineResponse createBookLineWith(final String accessToken, final String bookKey, String lineCategory, String subCategory, String assetSubCategory, LocalDate localDate, RepeatDuration repeatDuration) {
-        final BookLineRequest request = BookLineRequest.builder()
-            .money(1000)
-            .line(subCategory)
-            .bookKey(bookKey)
-            .flow(lineCategory)
-            .asset(assetSubCategory)
-            .lineDate(localDate)
-            .description("예시")
-            .except(false)
-            .repeatDuration(repeatDuration)
-            .build();
-
+    public static BookLineResponse createBookLineWith(final String accessToken,
+                                                      final String bookKey,
+                                                      final String lineCategoryName,
+                                                      final String lineSubcategoryName,
+                                                      final String assetSubcategoryName,
+                                                      final LocalDate lineDate,
+                                                      final RepeatDuration repeatDuration) {
         return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
+            .body("""
+                {
+                    "bookKey": "%s",
+                    "money": 1000,
+                    "flow": "%s",
+                    "asset": "%s",
+                    "line": "%s",
+                    "lineDate": "%s",
+                    "except": false,
+                    "repeatDuration": "%s"
+                }
+                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, lineDate, repeatDuration))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .extract().as(BookLineResponse.class);
     }
 
-    public static TotalDayLinesResponse findBookLine(String accessToken, String bookKey, LocalDate lineDate) {
-        return RestAssured
-            .given()
+    public static TotalDayLinesResponse findBookLine(final String accessToken,
+                                                     final String bookKey,
+                                                     final LocalDate lineDate) {
+        return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .param("bookKey", bookKey)
