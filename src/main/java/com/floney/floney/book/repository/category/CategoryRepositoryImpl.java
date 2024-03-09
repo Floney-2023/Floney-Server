@@ -151,6 +151,14 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     @Override
     public void inactiveAllByBook(final Book book) {
+        // unique index 가 걸려서 INACTIVE 데이터 먼저 삭제
+        jpaQueryFactory.delete(subcategory)
+            .where(
+                subcategory.book.eq(book),
+                subcategory.status.eq(INACTIVE)
+            )
+            .execute();
+
         final long result = jpaQueryFactory.update(subcategory)
             .set(subcategory.status, INACTIVE)
             .set(subcategory.updatedAt, LocalDateTime.now())

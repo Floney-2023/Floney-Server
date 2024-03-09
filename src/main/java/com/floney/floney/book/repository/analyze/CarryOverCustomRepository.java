@@ -5,6 +5,4 @@ import com.floney.floney.book.domain.entity.Book;
 public interface CarryOverCustomRepository {
 
     void inactiveAllBy(Book book);
-
-    void inactiveAllByBook(Book book);
 }

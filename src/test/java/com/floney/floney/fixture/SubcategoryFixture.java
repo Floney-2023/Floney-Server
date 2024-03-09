@@ -7,7 +7,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class SubcategoryFixture {
 
-    public static Subcategory createSubcategory(Book book, Category parent, String name) {
+    public static Subcategory createSubcategory(final Book book,
+                                                final Category parent,
+                                                final String name) {
         return Subcategory.builder()
             .book(book)
             .parent(parent)

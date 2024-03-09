@@ -58,7 +58,7 @@ public class BookLineServiceImpl implements BookLineService {
         final Book book = findBook(request.getBookKey());
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
-        final BookLine bookLine = request.to(bookUser, bookLineCategory);
+        final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
 
         // 반복 내역인 경우
         if (request.getRepeatDuration() != RepeatDuration.NONE) {
