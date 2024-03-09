@@ -47,7 +47,7 @@ public class RepeatBookLineRepositoryTest {
     class Describe_InactiveAllBy {
 
         @Nested
-        @DisplayName("반복내역이 존재하는 경우")
+        @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatBookLine {
 
             Book book;

@@ -44,7 +44,7 @@ public class RepeatBookLineRepositoryImpl implements RepeatBookLineCustomReposit
     @Override
     @Transactional
     public void inactiveAllByBookUser(final BookUser targetBookUser) {
-        final JPQLQuery<Long> bookLineIdByBookUser =
+        final JPQLQuery<Long> repeatBookLineIdByBookUser =
             JPAExpressions.select(repeatBookLine.id)
                 .from(repeatBookLine)
                 .innerJoin(repeatBookLine.writer, bookUser)
@@ -57,7 +57,7 @@ public class RepeatBookLineRepositoryImpl implements RepeatBookLineCustomReposit
             .set(repeatBookLine.status, INACTIVE)
             .set(repeatBookLine.updatedAt, LocalDateTime.now())
             .where(
-                repeatBookLine.writer.id.in(bookLineIdByBookUser),
+                repeatBookLine.id.in(repeatBookLineIdByBookUser),
                 repeatBookLine.status.eq(ACTIVE)
             )
             .execute();
