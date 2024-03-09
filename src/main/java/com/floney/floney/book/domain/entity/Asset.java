@@ -1,6 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.dto.request.BookLineRequest;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.common.entity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -30,19 +30,19 @@ public class Asset extends BaseEntity {
 
     private LocalDate date;
 
-    public static Asset of(final BookLineRequest request,
-                           final Book book,
+    public static Asset of(final BookLine bookLine,
+                           final CategoryType categoryType,
                            final LocalDate date) {
-        if (OUTCOME.getMeaning().equals(request.getFlow())) {
+        if (OUTCOME.equals(categoryType)) {
             return Asset.builder()
-                .money(-1 * request.getMoney())
-                .book(book)
+                .money(-1 * bookLine.getMoney())
+                .book(bookLine.getBook())
                 .date(date)
                 .build();
         }
         return Asset.builder()
-            .money(request.getMoney())
-            .book(book)
+            .money(bookLine.getMoney())
+            .book(bookLine.getBook())
             .date(date)
             .build();
     }

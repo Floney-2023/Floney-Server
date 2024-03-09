@@ -1,10 +1,11 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.entity.Asset;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.AssetInfo;
+import com.floney.floney.book.repository.AssetJdbcRepository;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.util.DateUtil;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class AssetServiceImpl implements AssetService {
     private static final int ONE_MONTH = 1;
 
     private final AssetRepository assetRepository;
+    private final AssetJdbcRepository assetJdbcRepository;
     private final BookLineRepository bookLineRepository;
 
     @Override
@@ -67,21 +70,25 @@ public class AssetServiceImpl implements AssetService {
     @Transactional
     public void addAssetOf(final BookLine bookLine) {
 
-        Category lineCategory = bookLine.getCategories().getLineCategory();
+        CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
         // 이체 내역일 경우 자산 포함 X
         // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (TRANSFER.equals(lineCategory.getName())) {
+        if (TRANSFER.equals(categoryType)) {
             return;
         }
 
+        List<Asset> assets = new ArrayList<>();
         final LocalDate startMonth = DateUtil.getFirstDayOfMonth(bookLine.getLineDate());
 
         for (int month = 0; month < SAVE_ASSET_DURATION; month++) {
             final LocalDate currentMonth = startMonth.plusMonths(month);
-            assetRepository.upsertMoneyByDateAndBook(currentMonth, bookLine.getBook(), getMoney(bookLine));
+            assets.add(Asset.of(bookLine, categoryType, currentMonth));
         }
+
+        assetJdbcRepository.saveAll(assets);
     }
+
 
     @Override
     @Transactional
