@@ -76,6 +76,34 @@ public class BookApiFixture {
                                       final String bookKey,
                                       final String lineCategoryName,
                                       final String lineSubcategoryName,
+                                      final String assetSubcategoryName) {
+        return RestAssured.given()
+            .auth().oauth2(accessToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("""
+                {
+                    "bookKey": "%s",
+                    "money": 1000,
+                    "flow": "%s",
+                    "asset": "%s",
+                    "line": "%s",
+                    "lineDate": "2000-01-01",
+                    "except": false,
+                    "repeatDuration": "NONE"
+                }
+                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName))
+            .when().post("/books/lines")
+            .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .extract()
+            .jsonPath()
+            .getLong("id");
+    }
+
+    public static long createBookLine(final String accessToken,
+                                      final String bookKey,
+                                      final String lineCategoryName,
+                                      final String lineSubcategoryName,
                                       final String assetSubcategoryName,
                                       final LocalDate date) {
         return RestAssured.given()

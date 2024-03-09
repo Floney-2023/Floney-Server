@@ -6,7 +6,6 @@ import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
 import com.floney.floney.book.domain.Currency;
 import com.floney.floney.book.domain.RepeatDuration;
-import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
@@ -35,6 +34,7 @@ import java.util.Map;
 
 import static com.floney.floney.book.domain.RepeatDuration.MONTH;
 import static com.floney.floney.book.domain.RepeatDuration.WEEKEND;
+import static com.floney.floney.book.domain.category.CategoryType.INCOME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -1338,7 +1338,7 @@ public class BookAcceptanceTest {
                 BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
 
                 // 반복 내역 Id 찾기
-                RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, CategoryType.INCOME, bookKey);
+                RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, INCOME, bookKey);
                 repeatBookLineId = response[0].getId();
             }
 
@@ -1414,7 +1414,7 @@ public class BookAcceptanceTest {
                     .auth().oauth2(accessToken)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .params("bookKey", bookKey)
-                    .params("categoryType", CategoryType.INCOME)
+                    .params("categoryType", INCOME)
                     .when().get("/books/repeat")
                     .then()
                     .statusCode(HttpStatus.OK.value())
@@ -1422,6 +1422,41 @@ public class BookAcceptanceTest {
                     .as(List.class);
 
                 assertThat(response.size()).isEqualTo(2);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("resetBook()을 실행할 때")
+    class Describe_ResetBook {
+
+        @Nested
+        @DisplayName("내역을 작성한 가계부인 경우")
+        class Context_With_BookWithBookLine {
+
+            private String token;
+            private String bookKey;
+
+            @BeforeEach
+            public void init() {
+                final User user = UserFixture.emailUser();
+                token = UserApiFixture.loginAfterSignup(user).getAccessToken();
+                bookKey = BookApiFixture.createBook(token).getBookKey();
+
+                BookApiFixture.createBookLine(token, bookKey, INCOME.getMeaning(), "급여", "은행");
+            }
+
+            @Test
+            @DisplayName("초기화에 성공한다.")
+            public void it_resets_book() {
+                RestAssured.given()
+                    .auth().oauth2(token)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .param("bookKey", bookKey)
+                    .when().delete("/books/info/delete/all")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract();
             }
         }
     }
