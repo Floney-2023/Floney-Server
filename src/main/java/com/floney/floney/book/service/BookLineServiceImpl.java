@@ -109,10 +109,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
-
-        if (bookLine.includedInAsset()) {
-            assetService.subtractAssetOf(bookLine.getId());
-        }
+        assetService.subtractAssetOf(bookLine.getId());
 
         // 가계부 내역 갱신
         bookLine.update(request);
@@ -121,9 +118,9 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.updateCarryOver(request, bookLine);
         }
-        if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(bookLine);
-        }
+
+        assetService.addAssetOf(bookLine);
+
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
 
@@ -161,7 +158,8 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOver(bookLine);
         }
-        if (bookLine.includedInAsset()) {
+        //수입인 경우 - 자산에서 제외가 아닌 경우만 업데이트
+        if (bookLine.isIncome() && !bookLine.getExceptStatus() || bookLine.isOutcome()) {
             assetService.addAssetOf(bookLine);
         }
 
@@ -193,9 +191,8 @@ public class BookLineServiceImpl implements BookLineService {
             if (carryOverStatus) {
                 carryOverFactory.createCarryOver(line);
             }
-            if (line.includedInAsset()) {
-                assetService.addAssetOf(line);
-            }
+            assetService.addAssetOf(line);
+
         });
 
         return BookLineResponse.from(bookLine);
