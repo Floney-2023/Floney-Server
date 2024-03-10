@@ -1,14 +1,12 @@
 package com.floney.floney.book.repository;
 
 
-import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.config.QueryDslTest;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.RepeatBookLineFixture;
@@ -21,6 +19,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static com.floney.floney.book.domain.RepeatDuration.EVERYDAY;
+import static com.floney.floney.book.domain.RepeatDuration.MONTH;
+import static com.floney.floney.common.constant.Status.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QueryDslTest
@@ -55,15 +56,14 @@ public class RepeatBookLineRepositoryTest {
 
             @BeforeEach
             void init() {
-                String bookKey = "1234";
-                book = bookRepository.save(BookFixture.createBookWith(bookKey));
+                book = bookRepository.save(BookFixture.createBook());
 
                 final User user = userRepository.save(UserFixture.emailUser());
                 final BookUser bookUser = bookUserRepository.save(BookUser.of(user, book));
                 category = categoryRepository.findByType(CategoryType.INCOME).get();
 
-                final RepeatBookLine repeatBookLine = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, book, RepeatDuration.EVERYDAY);
-                final RepeatBookLine repeatBookLine2 = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, book, RepeatDuration.MONTH);
+                final RepeatBookLine repeatBookLine = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, EVERYDAY);
+                final RepeatBookLine repeatBookLine2 = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, MONTH);
 
                 repeatBookLineRepository.save(repeatBookLine);
                 repeatBookLineRepository.save(repeatBookLine2);
@@ -73,7 +73,7 @@ public class RepeatBookLineRepositoryTest {
             @DisplayName("반복 내역을 모두 비활성화 시킨다")
             void it_inactive_all() {
                 repeatBookLineRepository.inactiveAllByBook(book);
-                assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, Status.ACTIVE, category))
+                assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, category))
                     .isEmpty();
             }
         }
@@ -93,15 +93,14 @@ public class RepeatBookLineRepositoryTest {
 
             @BeforeEach
             void init() {
-                String bookKey = "1234";
-                book = bookRepository.save(BookFixture.createBookWith(bookKey));
+                book = bookRepository.save(BookFixture.createBook());
 
                 final User user = userRepository.save(UserFixture.emailUser());
                 bookUser = bookUserRepository.save(BookUser.of(user, book));
                 category = categoryRepository.findByType(CategoryType.INCOME).get();
 
-                final RepeatBookLine repeatBookLine = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, book, RepeatDuration.EVERYDAY);
-                final RepeatBookLine repeatBookLine2 = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, book, RepeatDuration.MONTH);
+                final RepeatBookLine repeatBookLine = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, EVERYDAY);
+                final RepeatBookLine repeatBookLine2 = RepeatBookLineFixture.createRepeatBookLine(category, bookUser, MONTH);
 
                 repeatBookLineRepository.save(repeatBookLine);
                 repeatBookLineRepository.save(repeatBookLine2);
@@ -111,7 +110,7 @@ public class RepeatBookLineRepositoryTest {
             @DisplayName("반복 내역을 모두 비활성화 시킨다")
             void it_inactive_all() {
                 repeatBookLineRepository.inactiveAllByBookUser(bookUser);
-                assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, Status.ACTIVE, category))
+                assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, category))
                     .isEmpty();
             }
         }
