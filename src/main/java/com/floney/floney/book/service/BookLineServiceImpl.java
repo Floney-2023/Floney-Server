@@ -158,11 +158,7 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOver(bookLine);
         }
-        //수입인 경우 - 자산에서 제외가 아닌 경우만 업데이트
-        if (bookLine.isIncome() && !bookLine.getExceptStatus() || bookLine.isOutcome()) {
-            assetService.addAssetOf(bookLine);
-        }
-
+        assetService.addAssetOf(bookLine);
         return BookLineResponse.from(bookLine);
     }
 
@@ -184,16 +180,13 @@ public class BookLineServiceImpl implements BookLineService {
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
 
-        boolean carryOverStatus = book.getCarryOverStatus();
+        if (book.getCarryOverStatus()) {
+            bookLines.forEach(carryOverFactory::createCarryOver);
+        }
 
-        // 4. 모든 가계부 내역 자산, 이월 처리
-        bookLines.forEach(line -> {
-            if (carryOverStatus) {
-                carryOverFactory.createCarryOver(line);
-            }
-            assetService.addAssetOf(line);
-
-        });
+        if (bookLine.isIncludedInAsset()) {
+            bookLines.forEach(assetService::addAssetOf);
+        }
 
         return BookLineResponse.from(bookLine);
     }
