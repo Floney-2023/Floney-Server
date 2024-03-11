@@ -1,8 +1,10 @@
 package com.floney.floney.book.repository;
 
 
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
 import static com.floney.floney.book.domain.entity.QRepeatBookLine.repeatBookLine;
@@ -65,4 +68,36 @@ public class RepeatBookLineRepositoryImpl implements RepeatBookLineCustomReposit
         entityManager.clear();
     }
 
+    @Override
+    public void inactiveAllBySubcategory(final Subcategory subcategory) {
+        jpaQueryFactory.update(repeatBookLine)
+            .set(repeatBookLine.status, INACTIVE)
+            .set(repeatBookLine.updatedAt, LocalDateTime.now())
+            .where(
+                repeatBookLine.lineSubcategory.eq(subcategory)
+                    .or(repeatBookLine.assetSubcategory.eq(subcategory))
+            )
+            .where(
+                repeatBookLine.status.eq(ACTIVE)
+            )
+            .execute();
+
+        entityManager.clear();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RepeatBookLine> findAllBySubcategory(final Subcategory subcategory) {
+        return jpaQueryFactory.selectFrom(repeatBookLine)
+            .where(
+                repeatBookLine.lineSubcategory.eq(subcategory)
+                    .or(repeatBookLine.assetSubcategory.eq(subcategory))
+            )
+            .where(
+                repeatBookLine.status.eq(ACTIVE),
+                repeatBookLine.lineSubcategory.status.eq(ACTIVE),
+                repeatBookLine.assetSubcategory.status.eq(ACTIVE)
+            )
+            .fetch();
+    }
 }
