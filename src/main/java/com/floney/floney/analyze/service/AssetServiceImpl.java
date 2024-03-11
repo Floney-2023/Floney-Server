@@ -57,7 +57,7 @@ public class AssetServiceImpl implements AssetService {
         LocalDate localDate = LocalDate.parse(date);
         Map<LocalDate, AssetInfo> initAssets = new LinkedHashMap<>();
 
-        for (int i = 0; i < SHOW_ASSET_DURATION; i++) {
+        for (int i = 0; i <= SHOW_ASSET_DURATION; i++) {
             initAssets.put(localDate, AssetInfo.init(book.getAsset(), localDate));
             localDate = localDate.minusMonths(ONE_MONTH);
         }
