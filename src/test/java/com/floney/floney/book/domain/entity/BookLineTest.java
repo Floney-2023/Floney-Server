@@ -3,7 +3,6 @@ package com.floney.floney.book.domain.entity;
 
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("단위 테스트: 가계부 내역")
 public class BookLineTest {
@@ -30,7 +31,7 @@ public class BookLineTest {
             book = BookFixture.createBook();
             bookUser = BookUserFixture.createBookUser(book, user);
         }
-        
+
         @Nested
         @DisplayName("지출 내역이 주어지면")
         class Context_OutcomeBookLine {
@@ -47,7 +48,7 @@ public class BookLineTest {
             @Test
             @DisplayName("True를 반환한다")
             void it_returns_true() {
-                Assertions.assertThat(bookLine.isIncludedInAsset()).isTrue();
+                assertThat(bookLine.isIncludedInAsset()).isTrue();
             }
         }
 
@@ -67,7 +68,7 @@ public class BookLineTest {
             @Test
             @DisplayName("True를 반환한다")
             void it_returns_true() {
-                Assertions.assertThat(bookLine.isIncludedInAsset()).isTrue();
+                assertThat(bookLine.isIncludedInAsset()).isTrue();
             }
         }
 
@@ -89,7 +90,7 @@ public class BookLineTest {
             @Test
             @DisplayName("false를 반환한다")
             void it_returns_false() {
-                Assertions.assertThat(bookLine.isIncludedInAsset()).isFalse();
+                assertThat(bookLine.isIncludedInAsset()).isFalse();
             }
         }
 
