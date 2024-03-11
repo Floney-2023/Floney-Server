@@ -97,6 +97,10 @@ public class BookLine extends BaseEntity {
         return RepeatDuration.NONE;
     }
 
+    public boolean isIncludedInAsset() {
+        return (this.isIncome() && !exceptStatus) || this.isOutcome();
+    }
+
     public String getWriterNickName() {
         return this.writer.getNickName();
     }
@@ -110,11 +114,15 @@ public class BookLine extends BaseEntity {
         this.status = Status.INACTIVE;
     }
 
-    public boolean includedInAsset() {
-        return categories.isIncomeOrOutcome();
-    }
-
     public boolean isNotRepeat() {
         return this.repeatBookLine == null;
+    }
+
+    public boolean isIncome() {
+        return categories.isIncome();
+    }
+
+    public boolean isOutcome() {
+        return categories.isOutcome();
     }
 }
