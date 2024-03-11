@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.floney.floney.book.domain.category.CategoryType.TRANSFER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -29,8 +28,8 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 @RequiredArgsConstructor
 public class AssetServiceImpl implements AssetService {
 
-    private static final int SHOW_ASSET_DURATION = 5;
     public static final int SAVE_ASSET_DURATION = 60;
+    private static final int SHOW_ASSET_DURATION = 5;
     private static final int ONE_MONTH = 1;
 
     private final AssetRepository assetRepository;
@@ -69,12 +68,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public void addAssetOf(final BookLine bookLine) {
-
         CategoryType categoryType = bookLine.getCategories().getLineCategory().getName();
 
-        // 이체 내역일 경우 자산 포함 X
-        // TODO: 파라미터에 BookLineRequest을 BookLine으로 대체한 후 검증 로직 추가
-        if (TRANSFER.equals(categoryType)) {
+        if (!bookLine.isIncludedInAsset()) {
             return;
         }
 
@@ -95,7 +91,8 @@ public class AssetServiceImpl implements AssetService {
     public void subtractAssetOf(final Long bookLineId) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategories(bookLineId)
             .orElseThrow(NotFoundBookLineException::new);
-        if (!bookLine.includedInAsset()) {
+
+        if (!bookLine.isIncludedInAsset()) {
             return;
         }
 

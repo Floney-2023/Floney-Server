@@ -1,6 +1,5 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.fixture.*;
 import com.floney.floney.user.entity.User;
@@ -18,7 +17,6 @@ import static com.floney.floney.book.domain.entity.RepeatBookLine.REPEAT_YEAR;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@AcceptanceTest
 @DisplayName("단위 테스트: 반복 내역")
 public class RepeatBookLineTest {
 

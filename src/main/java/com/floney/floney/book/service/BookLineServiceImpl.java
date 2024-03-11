@@ -109,10 +109,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
-
-        if (bookLine.includedInAsset()) {
-            assetService.subtractAssetOf(bookLine.getId());
-        }
+        assetService.subtractAssetOf(bookLine.getId());
 
         // 가계부 내역 갱신
         bookLine.update(request);
@@ -121,9 +118,9 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.updateCarryOver(request, bookLine);
         }
-        if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(bookLine);
-        }
+
+        assetService.addAssetOf(bookLine);
+
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
 
@@ -161,10 +158,7 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOver(bookLine);
         }
-        if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(bookLine);
-        }
-
+        assetService.addAssetOf(bookLine);
         return BookLineResponse.from(bookLine);
     }
 
@@ -186,17 +180,13 @@ public class BookLineServiceImpl implements BookLineService {
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
 
-        boolean carryOverStatus = book.getCarryOverStatus();
+        if (book.getCarryOverStatus()) {
+            bookLines.forEach(carryOverFactory::createCarryOver);
+        }
 
-        // 4. 모든 가계부 내역 자산, 이월 처리
-        bookLines.forEach(line -> {
-            if (carryOverStatus) {
-                carryOverFactory.createCarryOver(line);
-            }
-            if (line.includedInAsset()) {
-                assetService.addAssetOf(line);
-            }
-        });
+        if (bookLine.isIncludedInAsset()) {
+            bookLines.forEach(assetService::addAssetOf);
+        }
 
         return BookLineResponse.from(bookLine);
     }
