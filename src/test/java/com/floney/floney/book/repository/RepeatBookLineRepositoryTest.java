@@ -25,7 +25,7 @@ import static com.floney.floney.book.domain.RepeatDuration.MONTH;
 import static com.floney.floney.book.domain.category.CategoryType.ASSET;
 import static com.floney.floney.book.domain.category.CategoryType.INCOME;
 import static com.floney.floney.common.constant.Status.ACTIVE;
-import static com.floney.floney.fixture.RepeatBookLineFixture.createRepeatBookLine;
+import static com.floney.floney.fixture.RepeatBookLineFixture.repeatBookLine;
 import static com.floney.floney.fixture.SubcategoryFixture.createSubcategory;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -70,8 +70,8 @@ public class RepeatBookLineRepositoryTest {
                 final BookUser bookUser = bookUserRepository.save(BookUser.of(user, book));
                 category = categoryRepository.findByType(INCOME).orElseThrow();
 
-                final RepeatBookLine repeatBookLine = createRepeatBookLine(category, bookUser, EVERYDAY);
-                final RepeatBookLine repeatBookLine2 = createRepeatBookLine(category, bookUser, MONTH);
+                final RepeatBookLine repeatBookLine = repeatBookLine(category, bookUser, EVERYDAY);
+                final RepeatBookLine repeatBookLine2 = repeatBookLine(category, bookUser, MONTH);
 
                 repeatBookLineRepository.save(repeatBookLine);
                 repeatBookLineRepository.save(repeatBookLine2);
@@ -108,8 +108,8 @@ public class RepeatBookLineRepositoryTest {
                 bookUser = bookUserRepository.save(BookUser.of(user, book));
                 category = categoryRepository.findByType(INCOME).orElseThrow();
 
-                final RepeatBookLine repeatBookLine = createRepeatBookLine(category, bookUser, EVERYDAY);
-                final RepeatBookLine repeatBookLine2 = createRepeatBookLine(category, bookUser, MONTH);
+                final RepeatBookLine repeatBookLine = repeatBookLine(category, bookUser, EVERYDAY);
+                final RepeatBookLine repeatBookLine2 = repeatBookLine(category, bookUser, MONTH);
 
                 repeatBookLineRepository.save(repeatBookLine);
                 repeatBookLineRepository.save(repeatBookLine2);

@@ -12,11 +12,11 @@ import java.time.LocalDate;
 
 public class RepeatBookLineFixture {
 
-    public static RepeatBookLine createRepeatBookLine(final Category category,
-                                                      final BookUser bookUser,
-                                                      final RepeatDuration repeatDuration) {
+    public static RepeatBookLine repeatBookLine(final Category category,
+                                                final BookUser bookUser,
+                                                final RepeatDuration repeatDuration) {
         final Book book = bookUser.getBook();
-        
+
         return RepeatBookLine.builder()
             .lineDate(LocalDate.now())
             .lineCategory(category)
