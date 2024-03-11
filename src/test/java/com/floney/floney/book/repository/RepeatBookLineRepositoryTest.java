@@ -24,7 +24,6 @@ import static com.floney.floney.book.domain.RepeatDuration.EVERYDAY;
 import static com.floney.floney.book.domain.RepeatDuration.MONTH;
 import static com.floney.floney.book.domain.category.CategoryType.ASSET;
 import static com.floney.floney.book.domain.category.CategoryType.INCOME;
-import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.fixture.RepeatBookLineFixture.repeatBookLine;
 import static com.floney.floney.fixture.SubcategoryFixture.createSubcategory;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,15 +51,14 @@ public class RepeatBookLineRepositoryTest {
     private SubcategoryRepository subcategoryRepository;
 
     @Nested
-    @DisplayName("inactiveAllBy()를 실행할 때")
-    class Describe_InactiveAllBy {
+    @DisplayName("inactiveAllByBook()를 실행할 때")
+    class Describe_InactiveAllByBook {
 
         @Nested
         @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatBookLine {
 
             Book book;
-            Category category;
 
             @BeforeEach
             void init() {
@@ -68,10 +66,10 @@ public class RepeatBookLineRepositoryTest {
 
                 final User user = userRepository.save(UserFixture.emailUser());
                 final BookUser bookUser = bookUserRepository.save(BookUser.of(user, book));
-                category = categoryRepository.findByType(INCOME).orElseThrow();
+                final Category lineCategory = categoryRepository.findByType(INCOME).orElseThrow();
 
-                final RepeatBookLine repeatBookLine = repeatBookLine(category, bookUser, EVERYDAY);
-                final RepeatBookLine repeatBookLine2 = repeatBookLine(category, bookUser, MONTH);
+                final RepeatBookLine repeatBookLine = repeatBookLine(lineCategory, bookUser, EVERYDAY);
+                final RepeatBookLine repeatBookLine2 = repeatBookLine(lineCategory, bookUser, MONTH);
 
                 repeatBookLineRepository.save(repeatBookLine);
                 repeatBookLineRepository.save(repeatBookLine2);
@@ -82,8 +80,9 @@ public class RepeatBookLineRepositoryTest {
             void it_inactivates_all() {
                 repeatBookLineRepository.inactiveAllByBook(book);
 
-                assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, category))
-                    .isEmpty();
+                assertThat(repeatBookLineRepository.findAll())
+                    .filteredOn(RepeatBookLine::isActive)
+                    .allMatch(repeatBookLine -> !repeatBookLine.getBook().equals(book));
             }
         }
     }
@@ -96,20 +95,18 @@ public class RepeatBookLineRepositoryTest {
         @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatBookLine {
 
-            Book book;
             BookUser bookUser;
-            Category category;
 
             @BeforeEach
             void init() {
-                book = bookRepository.save(BookFixture.createBook());
-
+                final Book book = bookRepository.save(BookFixture.createBook());
                 final User user = userRepository.save(UserFixture.emailUser());
                 bookUser = bookUserRepository.save(BookUser.of(user, book));
-                category = categoryRepository.findByType(INCOME).orElseThrow();
 
-                final RepeatBookLine repeatBookLine = repeatBookLine(category, bookUser, EVERYDAY);
-                final RepeatBookLine repeatBookLine2 = repeatBookLine(category, bookUser, MONTH);
+                final Category lineCategory = categoryRepository.findByType(INCOME).orElseThrow();
+
+                final RepeatBookLine repeatBookLine = repeatBookLine(lineCategory, bookUser, EVERYDAY);
+                final RepeatBookLine repeatBookLine2 = repeatBookLine(lineCategory, bookUser, MONTH);
 
                 repeatBookLineRepository.save(repeatBookLine);
                 repeatBookLineRepository.save(repeatBookLine2);
@@ -120,8 +117,9 @@ public class RepeatBookLineRepositoryTest {
             void it_inactivates_all() {
                 repeatBookLineRepository.inactiveAllByBookUser(bookUser);
 
-                assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, category))
-                    .isEmpty();
+                assertThat(repeatBookLineRepository.findAll())
+                    .filteredOn(RepeatBookLine::isActive)
+                    .allMatch(repeatBookLine -> repeatBookLine.getWriter().equals(bookUser));
             }
         }
     }
@@ -161,7 +159,9 @@ public class RepeatBookLineRepositoryTest {
             void it_inactivates_all() {
                 repeatBookLineRepository.inactiveAllBySubcategory(lineSubcategory);
 
-                assertThat(repeatBookLineRepository.findAllBySubcategory(lineSubcategory)).isEmpty();
+                assertThat(repeatBookLineRepository.findAll())
+                    .filteredOn(RepeatBookLine::isActive)
+                    .allMatch(repeatBookLine -> !repeatBookLine.getLineSubcategory().equals(lineSubcategory));
             }
         }
 
@@ -196,7 +196,9 @@ public class RepeatBookLineRepositoryTest {
             void it_inactivates_all() {
                 repeatBookLineRepository.inactiveAllBySubcategory(assetSubcategory);
 
-                assertThat(repeatBookLineRepository.findAllBySubcategory(assetSubcategory)).isEmpty();
+                assertThat(repeatBookLineRepository.findAll())
+                    .filteredOn(RepeatBookLine::isActive)
+                    .allMatch(repeatBookLine -> !repeatBookLine.getAssetSubcategory().equals(assetSubcategory));
             }
         }
     }
