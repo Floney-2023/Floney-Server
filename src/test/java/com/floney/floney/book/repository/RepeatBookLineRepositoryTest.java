@@ -25,7 +25,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QueryDslTest
-@DisplayName("단위 테스트: RepeatBookLineRepositoryTest")
+@DisplayName("단위 테스트: RepeatBookLineRepository")
 public class RepeatBookLineRepositoryTest {
 
     @Autowired
@@ -70,8 +70,8 @@ public class RepeatBookLineRepositoryTest {
             }
 
             @Test
-            @DisplayName("반복 내역을 모두 비활성화 시킨다")
-            void it_inactive_all() {
+            @DisplayName("반복 내역을 모두 비활성화 시킨다.")
+            void it_inactivates_all() {
                 repeatBookLineRepository.inactiveAllByBook(book);
                 assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, category))
                     .isEmpty();
@@ -84,7 +84,7 @@ public class RepeatBookLineRepositoryTest {
     class Describe_InactiveAllByBookUser {
 
         @Nested
-        @DisplayName("반복내역이 존재하는 경우")
+        @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatBookLine {
 
             Book book;
@@ -107,8 +107,8 @@ public class RepeatBookLineRepositoryTest {
             }
 
             @Test
-            @DisplayName("반복 내역을 모두 비활성화 시킨다")
-            void it_inactive_all() {
+            @DisplayName("반복 내역을 모두 비활성화 시킨다.")
+            void it_inactivates_all() {
                 repeatBookLineRepository.inactiveAllByBookUser(bookUser);
                 assertThat(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, category))
                     .isEmpty();
