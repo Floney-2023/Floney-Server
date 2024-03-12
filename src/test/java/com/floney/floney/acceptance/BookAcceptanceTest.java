@@ -18,6 +18,8 @@ import com.floney.floney.fixture.BookRequestDtoFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -659,6 +661,20 @@ public class BookAcceptanceTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .extract();
+
+                ErrorResponse response = RestAssured
+                        .given()
+                        .param("bookKey", request.getBookKey())
+                        .auth().oauth2(token)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/books/users")
+                        .then()
+                        .statusCode(HttpStatus.BAD_REQUEST.value())
+                        .extract().as(ErrorResponse.class);
+
+                assertThat(response)
+                        .hasFieldOrPropertyWithValue("code", "B006")
+                        .hasFieldOrPropertyWithValue("message", "가계부 멤버를 찾을 수 없습니다");
             }
         }
     }
