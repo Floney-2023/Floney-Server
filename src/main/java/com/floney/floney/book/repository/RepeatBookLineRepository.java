@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RepeatBookLineRepository extends JpaRepository<RepeatBookLine, Long>, RepeatBookLineCustomRepository {
+
     List<RepeatBookLine> findAllByBookAndStatusAndLineCategory(Book book, Status status, Category category);
 
-    Optional<RepeatBookLine> findByIdAndStatus(long repeatLineId, Status status);
+    Optional<RepeatBookLine> findByIdAndStatus(long id, Status status);
 }

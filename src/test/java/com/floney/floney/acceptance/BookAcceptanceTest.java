@@ -1299,7 +1299,7 @@ public class BookAcceptanceTest {
             long lineId = 1L;
 
             @Test
-            @DisplayName("실패한다")
+            @DisplayName("가계부 내역을 반환한다.")
             void it_returns_failed() {
                 final ErrorResponse response = RestAssured
                     .given()
@@ -1327,51 +1327,54 @@ public class BookAcceptanceTest {
         @Nested
         @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatLine {
-            final User user = UserFixture.emailUser();
-            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
-            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+            String accessToken;
+            String bookKey;
 
             long repeatBookLineId;
 
             @BeforeEach
             public void init() throws JsonProcessingException {
+                final User user = UserFixture.emailUser();
+                accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
                 BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
 
-                // 반복 내역 Id 찾기
                 RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, INCOME, bookKey);
                 repeatBookLineId = response[0].getId();
             }
 
             @Test
-            @DisplayName("성공한다")
-            void it_succeeds() {
-                RestAssured
-                    .given()
-                    .log().all()
+            @DisplayName("반복 내역을 삭제한다.")
+            void it_deletes_repeatedLine() {
+                RestAssured.given()
                     .auth().oauth2(accessToken)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .params("repeatLineId", repeatBookLineId)
                     .when().delete("/books/repeat")
                     .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract();
+                    .statusCode(HttpStatus.OK.value());
             }
-
         }
 
         @Nested
         @DisplayName("반복 내역이 존재하지 않는 경우")
         class Context_With_NotExistRepeatLineId {
-            final User user = UserFixture.emailUser();
-            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+
+            String accessToken;
             long repeatBookLineId = 10L;
 
+            @BeforeEach
+            public void init() {
+                final User user = UserFixture.emailUser();
+                accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+                BookApiFixture.createBook(accessToken);
+            }
+
             @Test
-            @DisplayName("실패한다")
-            void it_returns_failed() {
-                final ErrorResponse response = RestAssured
-                    .given()
-                    .log().all()
+            @DisplayName("에러를 반환한다.")
+            void it_returns_error() {
+                final ErrorResponse response = RestAssured.given()
                     .auth().oauth2(accessToken)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .params("repeatLineId", repeatBookLineId)
@@ -1393,24 +1396,26 @@ public class BookAcceptanceTest {
     class Describe_GetAllRepeatBookLine {
 
         @Nested
-        @DisplayName("카테고리와 반복 내역이 존재하는 경우")
+        @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatLine {
-            final User user = UserFixture.emailUser();
-            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
-            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+            String accessToken;
+            String bookKey;
 
             @BeforeEach
             public void init() {
-                BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
-                BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), WEEKEND);
+                final User user = UserFixture.emailUser();
+                accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+                BookApiFixture.createBookLine(accessToken, bookKey, INCOME.getMeaning(), "급여", "은행", MONTH);
+                BookApiFixture.createBookLine(accessToken, bookKey, INCOME.getMeaning(), "급여", "은행", WEEKEND);
             }
 
             @Test
-            @DisplayName("반복 내역이 반환된다")
-            void it_return_repeatBookLines() {
-                final List response = RestAssured
-                    .given()
-                    .log().all()
+            @DisplayName("반복 내역을 반환한다.")
+            void it_returns_repeatBookLines() {
+                RestAssured.given()
                     .auth().oauth2(accessToken)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .params("bookKey", bookKey)
@@ -1418,10 +1423,7 @@ public class BookAcceptanceTest {
                     .when().get("/books/repeat")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .extract()
-                    .as(List.class);
-
-                assertThat(response.size()).isEqualTo(2);
+                    .body("size()", is(2));
             }
         }
     }

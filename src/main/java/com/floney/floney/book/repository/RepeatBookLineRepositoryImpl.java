@@ -1,6 +1,7 @@
 package com.floney.floney.book.repository;
 
 
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.querydsl.jpa.JPAExpressions;
@@ -65,4 +66,20 @@ public class RepeatBookLineRepositoryImpl implements RepeatBookLineCustomReposit
         entityManager.clear();
     }
 
+    @Override
+    public void inactiveAllBySubcategory(final Subcategory subcategory) {
+        jpaQueryFactory.update(repeatBookLine)
+            .set(repeatBookLine.status, INACTIVE)
+            .set(repeatBookLine.updatedAt, LocalDateTime.now())
+            .where(
+                repeatBookLine.lineSubcategory.eq(subcategory)
+                    .or(repeatBookLine.assetSubcategory.eq(subcategory))
+            )
+            .where(
+                repeatBookLine.status.eq(ACTIVE)
+            )
+            .execute();
+
+        entityManager.clear();
+    }
 }

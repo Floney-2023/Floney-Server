@@ -4,7 +4,6 @@ import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.RepeatBookLineResponse;
-import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,19 +58,6 @@ public class BookApiFixture {
             .extract().as(RepeatBookLineResponse[].class);
     }
 
-    public static TotalDayLinesResponse getBookLineByDay(final String accessToken,
-                                                         final String date,
-                                                         final String bookKey) {
-        return RestAssured.given()
-            .auth().oauth2(accessToken)
-            .param("bookKey", bookKey)
-            .param("date", date)
-            .when().get("/books/days")
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .extract().as(TotalDayLinesResponse.class);
-    }
-
     public static long createBookLine(final String accessToken,
                                       final String bookKey,
                                       final String lineCategoryName,
@@ -121,6 +107,35 @@ public class BookApiFixture {
                     "repeatDuration": "NONE"
                 }
                 """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, date))
+            .when().post("/books/lines")
+            .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .extract()
+            .jsonPath()
+            .getLong("id");
+    }
+
+    public static long createBookLine(final String accessToken,
+                                      final String bookKey,
+                                      final String lineCategoryName,
+                                      final String lineSubcategoryName,
+                                      final String assetSubcategoryName,
+                                      final RepeatDuration repeatDuration) {
+        return RestAssured.given()
+            .auth().oauth2(accessToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body("""
+                {
+                    "bookKey": "%s",
+                    "money": 1000,
+                    "flow": "%s",
+                    "asset": "%s",
+                    "line": "%s",
+                    "lineDate": "2000-01-01",
+                    "except": false,
+                    "repeatDuration": "%s"
+                }
+                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, repeatDuration))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
