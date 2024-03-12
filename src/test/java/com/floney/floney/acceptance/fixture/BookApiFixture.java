@@ -4,6 +4,7 @@ import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.response.CreateBookResponse;
 import com.floney.floney.book.dto.response.RepeatBookLineResponse;
+import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import io.restassured.RestAssured;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -172,5 +173,17 @@ public class BookApiFixture {
             .extract()
             .jsonPath()
             .getLong("id");
+    }
+
+    public static TotalDayLinesResponse getBookLineByDay(String token, String date, String bookKey) {
+        return RestAssured
+                .given()
+                .header("Authorization", "Bearer " + token)
+                .param("bookKey", bookKey)
+                .param("date", date)
+                .when().get("/books/days")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().as(TotalDayLinesResponse.class);
     }
 }

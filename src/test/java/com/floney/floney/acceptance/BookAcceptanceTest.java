@@ -18,6 +18,7 @@ import com.floney.floney.fixture.BookRequestDtoFixture;
 import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.user.entity.User;
 import io.restassured.RestAssured;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -292,6 +293,7 @@ public class BookAcceptanceTest {
     @Nested
     @DisplayName("changeBookLine()을 실행할 때")
     class Describe_ChangeBookLine {
+
         @Nested
         @DisplayName("가계부 내역이 존재하는 경우")
         class Context_With_ExistBookLine {
@@ -329,7 +331,7 @@ public class BookAcceptanceTest {
             @Test
             @DisplayName("가계부 내역을 수정한다")
             public void it_change_line() {
-                final BookLineResponse response = RestAssured
+                RestAssured
                     .given()
                     .auth().oauth2(token)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -339,7 +341,19 @@ public class BookAcceptanceTest {
                     .statusCode(HttpStatus.OK.value())
                     .extract().as(BookLineResponse.class);
 
-                assertThat(response.getMoney()).isEqualTo(2000.0);
+                TotalDayLinesResponse totalDayLinesResponse = BookApiFixture.getBookLineByDay(
+                        token,
+                        request.getLineDate().toString(),
+                        request.getBookKey());
+
+                double expectedMoney = totalDayLinesResponse
+                        .getDayLinesResponse()
+                        .stream().filter(bookLineView -> Objects.equals(bookLineView.getId(), request.getLineId()))
+                        .findFirst()
+                        .get()
+                        .getMoney();
+
+                assertThat(expectedMoney).isEqualTo(2000.0);
             }
         }
     }
