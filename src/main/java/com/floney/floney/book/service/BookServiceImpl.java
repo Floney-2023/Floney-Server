@@ -203,6 +203,7 @@ public class BookServiceImpl implements BookService {
         final Book book = findBook(request.getBookKey());
         resetBookExceptCategory(book);
         book.changeCurrency(request.getRequestCurrency());
+        bookRepository.save(book);
         return CurrencyResponse.of(book);
     }
 

@@ -745,6 +745,19 @@ public class BookAcceptanceTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("myBookCurrency", is("CNY"));
+
+                ExtractableResponse<Response> response = RestAssured
+                        .given()
+                        .param("bookKey", request.getBookKey())
+                        .auth().oauth2(token)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/books/info/currency")
+                        .then()
+                        .log().all()
+                        .extract();
+
+                assertThat(response.jsonPath().getString("myBookCurrency"))
+                        .isEqualTo("CNY");
             }
         }
     }
