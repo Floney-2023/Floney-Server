@@ -1,5 +1,4 @@
 truncate table `alarm`;
-truncate table `asset`;
 truncate table `book`;
 truncate table `book_line`;
 truncate table `book_line_category`;
