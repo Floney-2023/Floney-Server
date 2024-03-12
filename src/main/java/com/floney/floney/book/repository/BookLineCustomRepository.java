@@ -15,6 +15,7 @@ import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,4 +57,12 @@ public interface BookLineCustomRepository {
     List<BookLine> findAllByBookUser(BookUser bookUser);
 
     double totalMoneyByDurationAndCategoryType(String bookKey, DateDuration duration, CategoryType categoryType);
+
+    double totalIncomeUntil(Book book, YearMonth endMonth);
+
+    double totalAllOutcomeUntil(Book book, YearMonth endMonth);
+
+    double totalIncomeByMonth(Book book, YearMonth month);
+
+    double totalAllOutcomeByMonth(Book book, YearMonth month);
 }

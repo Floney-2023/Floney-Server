@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -467,6 +468,113 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
                 bookLineCategory.lineCategory.name.eq(categoryType),
                 book.bookKey.eq(bookKey)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double totalIncomeUntil(final Book targetBook,
+                                   final YearMonth endMonth) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(INCOME),
+                bookLine.lineDate.between(BookLine.START_DATE, endMonth.atEndOfMonth()),
+                bookLine.exceptStatus.eq(false)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    /**
+     * 예산에서 제외된 내역들까지 포함해, 해당 월까지의 모든 지출을 합산한다.
+     *
+     * @param targetBook
+     * @param endMonth
+     * @return 해당 월까지의 모든 지출
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public double totalAllOutcomeUntil(final Book targetBook,
+                                       final YearMonth endMonth) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(OUTCOME),
+                bookLine.lineDate.between(BookLine.START_DATE, endMonth.atEndOfMonth())
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double totalIncomeByMonth(final Book targetBook,
+                                     final YearMonth month) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(INCOME),
+                bookLine.lineDate.between(month.atDay(1), month.atEndOfMonth()),
+                bookLine.exceptStatus.eq(false)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    /**
+     * 예산에서 제외된 내역들까지 포함해, 해당 월의 모든 지출을 합산한다.
+     *
+     * @param targetBook
+     * @param month
+     * @return 해당 월의 모든 지출
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public double totalAllOutcomeByMonth(final Book targetBook, final YearMonth month) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(OUTCOME),
+                bookLine.lineDate.between(month.atDay(1), month.atEndOfMonth())
             )
             .where(
                 book.status.eq(ACTIVE),
