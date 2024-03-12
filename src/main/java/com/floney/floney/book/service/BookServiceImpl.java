@@ -14,7 +14,6 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.RepeatBookLineRepository;
-import com.floney.floney.book.repository.analyze.AssetRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.analyze.CarryOverRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
@@ -60,7 +59,6 @@ public class BookServiceImpl implements BookService {
     private final SettlementRepository settlementRepository;
     private final CarryOverRepository carryOverRepository;
     private final AlarmRepository alarmRepository;
-    private final AssetRepository assetRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
 
     @Override
@@ -240,7 +238,6 @@ public class BookServiceImpl implements BookService {
 
         bookLineRepository.inactiveAllBy(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
-        assetRepository.inactiveAllBy(book);
         settlementRepository.inactiveAllBy(book);
         carryOverRepository.inactiveAllBy(book);
         budgetRepository.inactiveAllBy(book);
