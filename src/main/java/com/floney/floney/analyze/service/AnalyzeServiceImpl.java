@@ -39,7 +39,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
-    private final AssetServiceImpl assetFactory;
+    private final AssetService assetService;
     private final CategoryRepository categoryRepository;
 
     @Override
@@ -81,14 +81,14 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Override
     @Transactional(readOnly = true)
     public AnalyzeResponseByAsset analyzeByAsset(final AnalyzeRequestByAsset request) {
-        final Book savedBook = findBook(request.getBookKey());
+        final Book book = findBook(request.getBookKey());
 
         // 총 지출, 수입 조회
-        final Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(savedBook, LocalDate.parse(request.getDate()));
+        final Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(book, LocalDate.parse(request.getDate()));
 
         final BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        final Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
-        return bookAnalyzer.analyzeAsset(request.getDate(), savedBook.getAsset(), assetInfo);
+        final Map<LocalDate, AssetInfo> assetInfo = assetService.getAssetInfo(book, request.getDate());
+        return bookAnalyzer.analyzeAsset(request.getDate(), book.getAsset(), assetInfo);
     }
 
     private void validateCanAnalyze(final Category category) {
