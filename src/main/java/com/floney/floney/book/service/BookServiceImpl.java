@@ -115,9 +115,9 @@ public class BookServiceImpl implements BookService {
 
         validateCanDeleteBookBy(bookUser);
         bookUser.inactive();
+        bookUserRepository.save(bookUser);
         deleteBook(bookUser.getBook());
         saveAnotherRecentBookKey(user);
-        userRepository.save(user);
     }
 
     @Override
@@ -342,6 +342,7 @@ public class BookServiceImpl implements BookService {
                 bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
                 () -> user.saveRecentBookKey(null)
             );
+        userRepository.save(user);
     }
 
     private void validateJoinByBookUserCapacity(Book book) {
@@ -352,6 +353,7 @@ public class BookServiceImpl implements BookService {
     private void deleteBook(final Book book) {
         inactiveAllBy(book);
         book.delete();
+        bookRepository.save(book);
     }
 
     private void inactiveAllBy(final Book book) {
