@@ -15,7 +15,7 @@ import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
 @Transactional
 @RequiredArgsConstructor
 public class CarryOverServiceImpl implements CarryOverService {
-    private final static LocalDate FIRST_DATE_OF_BOOK = LocalDate.of(2001, 1, 1);
+    private final static LocalDate FIRST_DATE_OF_BOOK = LocalDate.of(2000, 1, 1);
     private final BookLineRepository bookLineRepository;
 
     @Override
