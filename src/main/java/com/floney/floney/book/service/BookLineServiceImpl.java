@@ -113,6 +113,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         // 가계부 내역 갱신
         bookLine.update(request);
+        bookLineRepository.save(bookLine);
 
         // 가계부 내역 갱신에 따른 관련 데이터들 갱신
         if (book.getCarryOverStatus()) {
@@ -123,8 +124,6 @@ public class BookLineServiceImpl implements BookLineService {
 
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
-        bookLineRepository.save(bookLine);
-
         return BookLineResponse.from(bookLine);
     }
 
