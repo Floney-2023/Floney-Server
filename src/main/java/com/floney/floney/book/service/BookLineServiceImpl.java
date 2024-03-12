@@ -8,10 +8,7 @@ import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.BookLineWithWriterView;
-import com.floney.floney.book.dto.process.DayLines;
-import com.floney.floney.book.dto.process.TotalExpense;
+import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -47,7 +44,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
-    private final CarryOverService carryOverFactory;
+    private final CarryOverService carryOverService;
     private final AssetService assetService;
     private final CategoryCustomRepository categoryRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
@@ -73,10 +70,10 @@ public class BookLineServiceImpl implements BookLineService {
     public MonthLinesResponse showByMonth(final String bookKey, final String date) {
         final Book book = findBook(bookKey);
         final DateDuration dates = DateDuration.startAndEndOfMonth(date);
-
-        return MonthLinesResponse.of(date, daysExpense(bookKey, dates), totalExpense(bookKey, dates), carryOverFactory.getCarryOverInfo(book, date));
+        final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
+        return MonthLinesResponse.of(date, daysExpense(bookKey, dates), totalExpense(bookKey, dates), carryOverInfo);
     }
-
+    
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(final String bookKey, final String date) {
@@ -86,8 +83,8 @@ public class BookLineServiceImpl implements BookLineService {
         final List<BookLineWithWriterView> bookLinesOfDay = bookLineRepository.allLinesByDay(day, bookKey);
 
         final List<TotalExpense> totalExpensesOfDay = List.of(bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME), bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME));
-
-        return TotalDayLinesResponse.of(bookLinesOfDay, totalExpensesOfDay, book.getSeeProfile(), carryOverFactory.getCarryOverInfo(book, date));
+        final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
+        return TotalDayLinesResponse.of(bookLinesOfDay, totalExpensesOfDay, book.getSeeProfile(), carryOverInfo);
     }
 
     @Override
@@ -113,11 +110,6 @@ public class BookLineServiceImpl implements BookLineService {
 
         // 가계부 내역 갱신
         bookLine.update(request);
-
-        // 가계부 내역 갱신에 따른 관련 데이터들 갱신
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.updateCarryOver(request, bookLine);
-        }
 
         assetService.addAssetOf(bookLine);
 
@@ -154,10 +146,6 @@ public class BookLineServiceImpl implements BookLineService {
     private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
         Book book = bookLine.getBook();
         bookLineRepository.save(bookLine);
-
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.createCarryOver(bookLine);
-        }
         assetService.addAssetOf(bookLine);
         return BookLineResponse.from(bookLine);
     }
@@ -179,10 +167,6 @@ public class BookLineServiceImpl implements BookLineService {
         // 3.  저장
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
-
-        if (book.getCarryOverStatus()) {
-            bookLines.forEach(carryOverFactory::createCarryOver);
-        }
 
         if (bookLine.isIncludedInAsset()) {
             bookLines.forEach(assetService::addAssetOf);
