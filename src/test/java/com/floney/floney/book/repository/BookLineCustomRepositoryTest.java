@@ -1151,6 +1151,67 @@ class BookLineCustomRepositoryTest {
         }
     }
 
+    @Nested
+    @DisplayName("getCarryOver()를 실행할 때")
+    class Describe_GetCarryOver {
+
+        final Category incomeCategory = categoryRepository.findByType(INCOME).orElseThrow();
+        final Category assetCategory = categoryRepository.findByType(ASSET).orElseThrow();
+
+        @Nested
+        @DisplayName("가계부 내역이 주어지면")
+        class Context_With_BookLine {
+
+            final String bookKey = "AAAAAA";
+            final DateDuration dateDuration = new DateDuration(LocalDate.now(), LocalDate.now());
+
+            double totalMoney;
+
+            @BeforeEach
+            void init() {
+
+            }
+
+            @Test
+            @DisplayName("총수입을 반환한다.")
+            void it_returns_double() {
+
+            }
+        }
+
+        @Nested
+        @DisplayName("해당 날짜의 bookLine들이 다른 lineCategory를 가지는 경우")
+        class Context_With_BookLineWithDifferentCategoryByDay {
+
+            final String bookKey = "AAAAAA";
+            final DateDuration dateDuration = new DateDuration(LocalDate.now(), LocalDate.now());
+
+            @BeforeEach
+            void init() {
+                final Book book = bookRepository.save(BookFixture.createBookWith(bookKey));
+                final User user = userRepository.save(UserFixture.emailUser());
+                final BookUser bookUser = bookUserRepository.save(BookUser.of(user, book));
+
+                final Subcategory lineSubcategory = subcategoryRepository.save(Subcategory.of(incomeCategory, book, "급여"));
+                final Subcategory assetSubcategory = subcategoryRepository.save(Subcategory.of(assetCategory, book, "현금"));
+
+                final List<BookLine> bookLines = List.of(
+                    BookLineFixture.createWithDate(
+                        book, bookUser, categories(incomeCategory, lineSubcategory, assetSubcategory), LocalDate.now()
+                    )
+                );
+                bookLineRepository.saveAll(bookLines);
+            }
+
+            @Test
+            @DisplayName("0.0을 반환한다.")
+            void it_returns_double() {
+                assertThat(bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dateDuration, OUTCOME))
+                    .isCloseTo(0.0, Percentage.withPercentage(99.9));
+            }
+        }
+    }
+
     private BookLineCategory categories(final Category lineCategory,
                                         final Subcategory lineSubcategory,
                                         final Subcategory assetSubcategory) {

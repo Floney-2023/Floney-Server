@@ -73,8 +73,7 @@ public class BookLineServiceImpl implements BookLineService {
         final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
         return MonthLinesResponse.of(date, daysExpense(bookKey, dates), totalExpense(bookKey, dates), carryOverInfo);
     }
-
-
+    
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(final String bookKey, final String date) {
@@ -112,11 +111,6 @@ public class BookLineServiceImpl implements BookLineService {
         // 가계부 내역 갱신
         bookLine.update(request);
 
-        // 가계부 내역 갱신에 따른 관련 데이터들 갱신
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.updateCarryOver(request, bookLine);
-        }
-
         assetService.addAssetOf(bookLine);
 
         // TODO: CategoryService 로 이동
@@ -152,10 +146,6 @@ public class BookLineServiceImpl implements BookLineService {
     private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
         Book book = bookLine.getBook();
         bookLineRepository.save(bookLine);
-
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.createCarryOver(bookLine);
-        }
         assetService.addAssetOf(bookLine);
         return BookLineResponse.from(bookLine);
     }
