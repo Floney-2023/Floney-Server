@@ -1,6 +1,5 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.analyze.dto.process.BookAnalyzer;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
@@ -8,12 +7,12 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.vo.Assets;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
@@ -28,8 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -82,13 +81,21 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Transactional(readOnly = true)
     public AnalyzeResponseByAsset analyzeByAsset(final AnalyzeRequestByAsset request) {
         final Book book = findBook(request.getBookKey());
+        final YearMonth currentMonth = request.getDate();
 
-        // 총 지출, 수입 조회
-        final Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(book, LocalDate.parse(request.getDate()));
+        final Assets assets = Assets.create(book.getAsset(), currentMonth);
 
-        final BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        final Map<LocalDate, AssetInfo> assetInfo = assetService.getAssetInfo(book, request.getDate());
-        return bookAnalyzer.analyzeAsset(request.getDate(), book.getAsset(), assetInfo);
+        for (int month = 0; month < Assets.MONTHS; month++) {
+            final YearMonth targetMonth = currentMonth.minusMonths(month);
+            final double totalIncome = bookLineRepository.totalIncomeUntil(book, targetMonth);
+            final double totalOutcome = bookLineRepository.totalAllOutcomeUntil(book, targetMonth);
+            assets.update(targetMonth, totalIncome - totalOutcome);
+        }
+
+        final double incomeOfThisMonth = bookLineRepository.totalIncomeByMonth(book, currentMonth);
+        final double outcomeOfThisMonth = bookLineRepository.totalAllOutcomeByMonth(book, currentMonth);
+
+        return AnalyzeResponseByAsset.of(incomeOfThisMonth - outcomeOfThisMonth, book.getAsset(), assets);
     }
 
     private void validateCanAnalyze(final Category category) {

@@ -2,6 +2,8 @@ package com.floney.floney.analyze.dto.request;
 
 import lombok.*;
 
+import java.time.YearMonth;
+
 @Getter
 @ToString
 @AllArgsConstructor
@@ -9,5 +11,5 @@ import lombok.*;
 public class AnalyzeRequestByAsset {
 
     private String bookKey;
-    private String date;
+    private YearMonth date;
 }
