@@ -238,7 +238,7 @@ public class BookServiceImpl implements BookService {
 
     private void resetBookExceptCategory(final Book book) {
         book.initBook();
-
+        bookRepository.save(book);
         bookLineRepository.inactiveAllBy(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
         assetRepository.inactiveAllBy(book);
