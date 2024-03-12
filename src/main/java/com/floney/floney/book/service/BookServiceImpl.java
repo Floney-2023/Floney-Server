@@ -230,14 +230,14 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void resetBook(final String bookKey) {
         final Book book = findBook(bookKey);
-        resetBookExceptCategory(book);
         categoryRepository.inactiveAllByBook(book);
         saveDefaultCategories(book);
+        resetBookExceptCategory(book);
+        bookRepository.save(book); // 순서 중요
     }
+    
 
     private void resetBookExceptCategory(final Book book) {
-        book.initBook();
-        bookRepository.save(book);
         bookLineRepository.inactiveAllBy(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
         assetRepository.inactiveAllBy(book);
@@ -245,6 +245,7 @@ public class BookServiceImpl implements BookService {
         carryOverRepository.inactiveAllBy(book);
         budgetRepository.inactiveAllBy(book);
         repeatBookLineRepository.inactiveAllByBook(book);
+        book.initBook(); // 다시 entity manager가 관리하도록
     }
 
     @Override
