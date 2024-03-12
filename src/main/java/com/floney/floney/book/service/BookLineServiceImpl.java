@@ -1,6 +1,5 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
@@ -48,7 +47,6 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
     private final CarryOverService carryOverFactory;
-    private final AssetService assetService;
     private final CategoryCustomRepository categoryRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
 
@@ -109,7 +107,6 @@ public class BookLineServiceImpl implements BookLineService {
 
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
-        assetService.subtractAssetOf(bookLine.getId());
 
         // 가계부 내역 갱신
         bookLine.update(request);
@@ -118,8 +115,6 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.updateCarryOver(request, bookLine);
         }
-
-        assetService.addAssetOf(bookLine);
 
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
@@ -158,7 +153,6 @@ public class BookLineServiceImpl implements BookLineService {
         if (book.getCarryOverStatus()) {
             carryOverFactory.createCarryOver(bookLine);
         }
-        assetService.addAssetOf(bookLine);
         return BookLineResponse.from(bookLine);
     }
 
@@ -182,10 +176,6 @@ public class BookLineServiceImpl implements BookLineService {
 
         if (book.getCarryOverStatus()) {
             bookLines.forEach(carryOverFactory::createCarryOver);
-        }
-
-        if (bookLine.isIncludedInAsset()) {
-            bookLines.forEach(assetService::addAssetOf);
         }
 
         return BookLineResponse.from(bookLine);

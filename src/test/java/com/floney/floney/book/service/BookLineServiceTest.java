@@ -1,6 +1,5 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
@@ -54,10 +53,7 @@ public class BookLineServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
-
-    @Mock
-    private AssetService assetService;
-
+    
     @Nested
     @DisplayName("createBookLine()을 실행할 때")
     class Describe_CreateBookLine {

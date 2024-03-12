@@ -26,8 +26,6 @@ public interface BookLineCustomRepository {
 
     List<BookLineWithWriterView> allLinesByDay(LocalDate date, String bookKey);
 
-    void inactiveAllByRepeatBookLine(long repeatBookLineId);
-
     TotalExpense totalMoneyByDateAndCategoryType(String bookKey, LocalDate date, final CategoryType categoryType);
 
     List<BookLineExpense> findIncomeAndOutcomeByDurationPerDay(String bookKey, DateDuration dates);
@@ -45,8 +43,6 @@ public interface BookLineCustomRepository {
     double totalOutcomeMoneyForBudget(Book targetBook, DateDuration duration);
 
     Map<String, Double> totalExpensesForAsset(Book book, final LocalDate date);
-
-    Optional<BookLine> findByIdWithCategories(Long id);
 
     Optional<BookLine> findByIdWithCategoriesAndWriter(Long id);
 

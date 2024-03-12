@@ -38,7 +38,6 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
-    private final AssetService assetService;
     private final CategoryRepository categoryRepository;
 
     @Override

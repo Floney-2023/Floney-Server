@@ -119,16 +119,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     @Override
-    public void inactiveAllByRepeatBookLine(final long repeatBookLineId) {
-        jpaQueryFactory.update(bookLine)
-            .set(bookLine.status, INACTIVE)
-            .set(bookLine.updatedAt, LocalDateTime.now())
-            .where(bookLine.repeatBookLine.id.eq(repeatBookLineId),
-                bookLine.status.eq(ACTIVE))
-            .execute();
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public TotalExpense totalMoneyByDateAndCategoryType(final String bookKey,
                                                         final LocalDate date,
@@ -354,28 +344,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
         totalExpenses.put(INCOME.getMeaning(), totalIncomeMoney);
         totalExpenses.put(OUTCOME.getMeaning(), totalOutcomeMoney);
         return totalExpenses;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<BookLine> findByIdWithCategories(final Long id) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
-            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
-            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
-            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
-            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
-            .where(
-                bookLine.id.eq(id)
-            )
-            .where(
-                bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
-                bookLineCategory.assetSubcategory.status.eq(ACTIVE)
-            )
-            .fetchOne()
-        );
     }
 
     @Override

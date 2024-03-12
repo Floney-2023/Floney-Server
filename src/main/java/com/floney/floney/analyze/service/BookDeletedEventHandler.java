@@ -14,7 +14,6 @@ public class BookDeletedEventHandler {
 
     private final SettlementService settlementService;
     private final CarryOverService carryOverService;
-    private final AssetService assetService;
     private final CategoryService categoryService;
 
     @EventListener(BookDeletedEvent.class)
@@ -27,7 +26,6 @@ public class BookDeletedEventHandler {
     public void deleteBookLine(final BookLineDeletedEvent event) {
         final long bookLineId = event.getBookLineId();
         carryOverService.deleteCarryOver(bookLineId);
-        assetService.subtractAssetOf(bookLineId);
         categoryService.deleteAllBookLineCategory(bookLineId);
     }
 
