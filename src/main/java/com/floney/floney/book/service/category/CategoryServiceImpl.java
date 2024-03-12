@@ -74,6 +74,7 @@ public class CategoryServiceImpl implements CategoryService {
         repeatBookLineRepository.inactiveAllBySubcategory(subcategory);
 
         subcategory.inactive();
+        subcategoryRepository.save(subcategory);
     }
 
     @Override
