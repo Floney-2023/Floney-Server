@@ -217,7 +217,6 @@ public class BookServiceImpl implements BookService {
 
         // 유효 가계부 초기화 하기(다른 참여 가계부가 없다면 null로 초기화)
         saveAnotherRecentBookKey(user);
-        userRepository.save(user);
     }
 
     @Override
