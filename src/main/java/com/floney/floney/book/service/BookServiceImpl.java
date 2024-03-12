@@ -330,7 +330,10 @@ public class BookServiceImpl implements BookService {
 
     private void saveAnotherRecentBookKey(User user) {
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
-        myBookInfos.stream().findFirst().ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()), () -> user.saveRecentBookKey(null));
+        myBookInfos.stream()
+            .findFirst()
+            .ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
+                () -> user.saveRecentBookKey(null));
         userRepository.save(user);
     }
 
