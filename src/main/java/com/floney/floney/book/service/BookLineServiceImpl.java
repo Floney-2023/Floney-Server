@@ -1,6 +1,5 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
@@ -44,10 +43,9 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
-    private final CarryOverService carryOverService;
-    private final AssetService assetService;
     private final CategoryCustomRepository categoryRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
+    private final CarryOverService carryOverService;
 
     @Override
     @Transactional
@@ -73,7 +71,7 @@ public class BookLineServiceImpl implements BookLineService {
         final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
         return MonthLinesResponse.of(date, daysExpense(bookKey, dates), totalExpense(bookKey, dates), carryOverInfo);
     }
-    
+
     @Override
     @Transactional(readOnly = true)
     public TotalDayLinesResponse showByDays(final String bookKey, final String date) {
@@ -106,12 +104,9 @@ public class BookLineServiceImpl implements BookLineService {
 
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
-        assetService.subtractAssetOf(bookLine.getId());
 
         // 가계부 내역 갱신
         bookLine.update(request);
-
-        assetService.addAssetOf(bookLine);
 
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
@@ -146,7 +141,7 @@ public class BookLineServiceImpl implements BookLineService {
     private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
         Book book = bookLine.getBook();
         bookLineRepository.save(bookLine);
-        assetService.addAssetOf(bookLine);
+
         return BookLineResponse.from(bookLine);
     }
 
@@ -167,10 +162,6 @@ public class BookLineServiceImpl implements BookLineService {
         // 3.  저장
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
-
-        if (bookLine.isIncludedInAsset()) {
-            bookLines.forEach(assetService::addAssetOf);
-        }
 
         return BookLineResponse.from(bookLine);
     }

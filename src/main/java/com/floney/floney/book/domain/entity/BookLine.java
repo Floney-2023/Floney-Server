@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 
-    public final static LocalDate START_DATE_OF_BOOK = LocalDate.of(2000, 1, 1);
+    public static final LocalDate START_DATE = LocalDate.of(2000, 1, 1);
 
     @ManyToOne(fetch = FetchType.LAZY)
     private BookUser writer;

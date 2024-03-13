@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,16 +116,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
             .fetch();
-    }
-
-    @Override
-    public void inactiveAllByRepeatBookLine(final long repeatBookLineId) {
-        jpaQueryFactory.update(bookLine)
-            .set(bookLine.status, INACTIVE)
-            .set(bookLine.updatedAt, LocalDateTime.now())
-            .where(bookLine.repeatBookLine.id.eq(repeatBookLineId),
-                bookLine.status.eq(ACTIVE))
-            .execute();
     }
 
     @Override
@@ -357,28 +348,6 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<BookLine> findByIdWithCategories(final Long id) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
-            .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
-            .innerJoin(bookLineCategory.lineCategory, category).fetchJoin()
-            .innerJoin(bookLineCategory.lineSubcategory, subcategory).fetchJoin()
-            .innerJoin(bookLineCategory.assetSubcategory, subcategory).fetchJoin()
-            .where(
-                bookLine.id.eq(id)
-            )
-            .where(
-                bookLine.status.eq(ACTIVE),
-                bookLineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineCategory.status.eq(ACTIVE),
-                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
-                bookLineCategory.assetSubcategory.status.eq(ACTIVE)
-            )
-            .fetchOne()
-        );
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Optional<BookLine> findByIdWithCategoriesAndWriter(final Long id) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory).fetchJoin()
@@ -467,6 +436,99 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
                 bookLineCategory.lineCategory.name.eq(categoryType),
                 book.bookKey.eq(bookKey)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double incomeMoneyForAssetUntil(final Book targetBook,
+                                           final YearMonth endMonth) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(INCOME),
+                bookLine.lineDate.between(BookLine.START_DATE, endMonth.atEndOfMonth()),
+                bookLine.exceptStatus.eq(false)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double outcomeMoneyUntil(final Book targetBook,
+                                    final YearMonth endMonth) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(OUTCOME),
+                bookLine.lineDate.between(BookLine.START_DATE, endMonth.atEndOfMonth())
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double incomeMoneyForAssetByMonth(final Book targetBook,
+                                             final YearMonth month) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(INCOME),
+                bookLine.lineDate.between(month.atDay(1), month.atEndOfMonth()),
+                bookLine.exceptStatus.eq(false)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineCategory.status.eq(ACTIVE)
+            )
+            .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public double outcomeMoneyByMonth(final Book targetBook, final YearMonth month) {
+        return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
+            .from(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .where(
+                bookLine.book.eq(targetBook),
+                bookLineCategory.lineCategory.name.eq(OUTCOME),
+                bookLine.lineDate.between(month.atDay(1), month.atEndOfMonth())
             )
             .where(
                 book.status.eq(ACTIVE),
