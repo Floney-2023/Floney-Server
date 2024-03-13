@@ -157,6 +157,7 @@ public class UserService {
             }
             deletedBookKeys.add(book.getBookKey());
             book.inactive();
+            bookRepository.save(book);
         }
     }
 
