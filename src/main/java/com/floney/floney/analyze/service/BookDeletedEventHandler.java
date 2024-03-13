@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class BookDeletedEventHandler {
 
     private final SettlementService settlementService;
-    private final CarryOverService carryOverService;
     private final CategoryService categoryService;
 
     @EventListener(BookDeletedEvent.class)
@@ -25,7 +24,6 @@ public class BookDeletedEventHandler {
     @EventListener(BookLineDeletedEvent.class)
     public void deleteBookLine(final BookLineDeletedEvent event) {
         final long bookLineId = event.getBookLineId();
-        carryOverService.deleteCarryOver(bookLineId);
         categoryService.deleteAllBookLineCategory(bookLineId);
     }
 
