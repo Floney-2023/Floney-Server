@@ -317,6 +317,7 @@ public class BookAcceptanceTest {
             private String token;
             private BookLineRequest request;
             private String changeSubCategory;
+            private String changeAssetSubCategory = "현금";
             private String changeDate = "2024-02-15";
             private String changeDescription = "변경된 내용";
 
@@ -340,11 +341,11 @@ public class BookAcceptanceTest {
                         .money(2000.0)
                         .bookKey(bookKey)
                         .line(changeSubCategory)
+                        .asset(changeAssetSubCategory)
                         .flow(incomeLineCategory)
                         .lineDate(LocalDate.parse(changeDate))
                         .description(changeDescription)
                         .except(false)
-                        .asset(assetSubCategory)
                         .repeatDuration(RepeatDuration.NONE)
                         .build();
             }
@@ -373,7 +374,8 @@ public class BookAcceptanceTest {
                 assertThat(actualBookLine)
                         .hasFieldOrPropertyWithValue("money", 2000.0)
                         .hasFieldOrPropertyWithValue("lineSubCategory", changeSubCategory)
-                        .hasFieldOrPropertyWithValue("description", changeDescription);
+                        .hasFieldOrPropertyWithValue("description", changeDescription)
+                        .hasFieldOrPropertyWithValue("assetSubCategory", changeAssetSubCategory);
             }
         }
     }
