@@ -296,6 +296,7 @@ public class BookServiceImpl implements BookService {
             // 가계부 탈퇴
             inactiveAllBy(bookUser);
             bookUser.inactive();
+            bookUserRepository.save(bookUser);
         });
     }
 
