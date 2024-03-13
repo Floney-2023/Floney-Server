@@ -367,18 +367,16 @@ public class BookAcceptanceTest {
             final User user = UserFixture.emailUser();
             private String token;
             private long bookLineId;
-            String date;
-            String bookKey;
 
             @BeforeEach
             public void init() {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
-                bookKey = BookApiFixture.createBook(token).getBookKey();
+                String bookKey = BookApiFixture.createBook(token).getBookKey();
 
                 String incomeLineCategory = "수입";
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
-                date = "2024-02-14";
+                String date = "2024-02-14";
 
                 bookLineId = BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.parse(date));
             }
