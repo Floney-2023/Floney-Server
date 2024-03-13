@@ -86,13 +86,13 @@ public class AnalyzeServiceImpl implements AnalyzeService {
 
         for (int month = 0; month < Assets.MONTHS; month++) {
             final YearMonth targetMonth = currentMonth.minusMonths(month);
-            final double totalIncome = bookLineRepository.totalIncomeUntil(book, targetMonth);
-            final double totalOutcome = bookLineRepository.totalAllOutcomeUntil(book, targetMonth);
+            final double totalIncome = bookLineRepository.incomeMoneyForAssetUntil(book, targetMonth);
+            final double totalOutcome = bookLineRepository.outcomeMoneyUntil(book, targetMonth);
             assets.update(targetMonth, totalIncome - totalOutcome);
         }
 
-        final double incomeOfThisMonth = bookLineRepository.totalIncomeByMonth(book, currentMonth);
-        final double outcomeOfThisMonth = bookLineRepository.totalAllOutcomeByMonth(book, currentMonth);
+        final double incomeOfThisMonth = bookLineRepository.incomeMoneyForAssetByMonth(book, currentMonth);
+        final double outcomeOfThisMonth = bookLineRepository.outcomeMoneyByMonth(book, currentMonth);
 
         return AnalyzeResponseByAsset.of(incomeOfThisMonth - outcomeOfThisMonth, book.getAsset(), assets);
     }

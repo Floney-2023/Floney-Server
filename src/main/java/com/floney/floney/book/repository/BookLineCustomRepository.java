@@ -54,11 +54,11 @@ public interface BookLineCustomRepository {
 
     double totalMoneyByDurationAndCategoryType(String bookKey, DateDuration duration, CategoryType categoryType);
 
-    double totalIncomeUntil(Book book, YearMonth endMonth);
+    double incomeMoneyForAssetUntil(Book book, YearMonth endMonth);
 
-    double totalAllOutcomeUntil(Book book, YearMonth endMonth);
+    double outcomeMoneyUntil(Book book, YearMonth endMonth);
 
-    double totalIncomeByMonth(Book book, YearMonth month);
+    double incomeMoneyForAssetByMonth(Book book, YearMonth month);
 
-    double totalAllOutcomeByMonth(Book book, YearMonth month);
+    double outcomeMoneyByMonth(Book book, YearMonth month);
 }

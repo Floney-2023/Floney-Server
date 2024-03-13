@@ -448,8 +448,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public double totalIncomeUntil(final Book targetBook,
-                                   final YearMonth endMonth) {
+    public double incomeMoneyForAssetUntil(final Book targetBook,
+                                           final YearMonth endMonth) {
         return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
@@ -470,17 +470,10 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetchOne()).orElse(0.0);
     }
 
-    /**
-     * 예산에서 제외된 내역들까지 포함해, 해당 월까지의 모든 지출을 합산한다.
-     *
-     * @param targetBook
-     * @param endMonth
-     * @return 해당 월까지의 모든 지출
-     */
     @Override
     @Transactional(readOnly = true)
-    public double totalAllOutcomeUntil(final Book targetBook,
-                                       final YearMonth endMonth) {
+    public double outcomeMoneyUntil(final Book targetBook,
+                                    final YearMonth endMonth) {
         return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
@@ -502,8 +495,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public double totalIncomeByMonth(final Book targetBook,
-                                     final YearMonth month) {
+    public double incomeMoneyForAssetByMonth(final Book targetBook,
+                                             final YearMonth month) {
         return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
@@ -524,16 +517,9 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetchOne()).orElse(0.0);
     }
 
-    /**
-     * 예산에서 제외된 내역들까지 포함해, 해당 월의 모든 지출을 합산한다.
-     *
-     * @param targetBook
-     * @param month
-     * @return 해당 월의 모든 지출
-     */
     @Override
     @Transactional(readOnly = true)
-    public double totalAllOutcomeByMonth(final Book targetBook, final YearMonth month) {
+    public double outcomeMoneyByMonth(final Book targetBook, final YearMonth month) {
         return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
             .innerJoin(bookLine.book, book)
