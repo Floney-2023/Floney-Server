@@ -124,6 +124,7 @@ public class BookLineServiceImpl implements BookLineService {
 
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
+        bookLineRepository.save(bookLine);
         return BookLineResponse.from(bookLine);
     }
 
