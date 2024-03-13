@@ -4,8 +4,6 @@ package com.floney.floney.book.repository;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.floney.floney.book.domain.entity.QBookUser.bookUser;
 import static com.floney.floney.book.domain.entity.QRepeatBookLine.repeatBookLine;
@@ -45,14 +44,15 @@ public class RepeatBookLineRepositoryImpl implements RepeatBookLineCustomReposit
     @Override
     @Transactional
     public void inactiveAllByBookUser(final BookUser targetBookUser) {
-        final JPQLQuery<Long> repeatBookLineIdByBookUser =
-            JPAExpressions.select(repeatBookLine.id)
+        final List<Long> repeatBookLineIdByBookUser =
+            jpaQueryFactory.select(repeatBookLine.id)
                 .from(repeatBookLine)
                 .innerJoin(repeatBookLine.writer, bookUser)
                 .where(
                     bookUser.eq(targetBookUser),
                     repeatBookLine.status.eq(ACTIVE)
-                );
+                )
+                .fetch();
 
         jpaQueryFactory.update(repeatBookLine)
             .set(repeatBookLine.status, INACTIVE)

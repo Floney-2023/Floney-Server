@@ -107,10 +107,11 @@ public class BookLineServiceImpl implements BookLineService {
 
         // 가계부 내역 갱신
         bookLine.update(request);
+        bookLineRepository.save(bookLine);
 
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
-
+        bookLineRepository.save(bookLine);
         return BookLineResponse.from(bookLine);
     }
 
@@ -145,7 +146,6 @@ public class BookLineServiceImpl implements BookLineService {
         return BookLineResponse.from(bookLine);
     }
 
-    // TODO : 성능 개선
     private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
         Book book = bookLine.getBook();
 
