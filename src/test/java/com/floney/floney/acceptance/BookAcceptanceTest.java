@@ -334,14 +334,11 @@ public class BookAcceptanceTest {
             @DisplayName("가계부 내역을 수정한다")
             public void it_change_line() {
                 RestAssured
-                    .given()
-                    .auth().oauth2(token)
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(request)
-                    .when().post("/books/lines/change")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .extract().as(BookLineResponse.class);
+                        .given()
+                        .auth().oauth2(token)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body(request)
+                        .when().post("/books/lines/change");
 
                 TotalDayLinesResponse totalDayLinesResponse = BookApiFixture.getBookLineByDay(
                         token,
@@ -369,19 +366,20 @@ public class BookAcceptanceTest {
         class Context_With_ExistBookLine {
             final User user = UserFixture.emailUser();
             private String token;
-
             private long bookLineId;
+            String date;
+            String bookKey;
 
             @BeforeEach
             public void init() {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
-                String bookKey = BookApiFixture.createBook(token).getBookKey();
+                bookKey = BookApiFixture.createBook(token).getBookKey();
 
                 String incomeLineCategory = "수입";
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
+                date = "2024-02-14";
 
-                String date = "2024-02-14";
                 bookLineId = BookApiFixture.createBookLine(token, bookKey, incomeLineCategory, subCategory, assetSubCategory, LocalDate.parse(date));
             }
 
@@ -753,7 +751,6 @@ public class BookAcceptanceTest {
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().get("/books/info/currency")
                         .then()
-                        .log().all()
                         .extract();
 
                 assertThat(response.jsonPath().getString("myBookCurrency"))

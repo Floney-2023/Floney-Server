@@ -178,7 +178,7 @@ public class BookApiFixture {
     public static TotalDayLinesResponse getBookLineByDay(String token, String date, String bookKey) {
         return RestAssured
                 .given()
-                .header("Authorization", "Bearer " + token)
+                .auth().oauth2(token)
                 .param("bookKey", bookKey)
                 .param("date", date)
                 .when().get("/books/days")
