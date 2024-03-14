@@ -18,6 +18,7 @@ import com.floney.floney.common.exception.book.AlreadyExistException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,10 +43,12 @@ public class CategoryServiceImpl implements CategoryService {
         final Category category = findCategory(request.getParent());
         final Book book = findBook(bookKey);
 
-        validateDifferentSubcategory(book, category, request.getName());
-
         final Subcategory subcategory = Subcategory.of(category, book, request.getName());
-        subcategoryRepository.save(subcategory);
+        try {
+            subcategoryRepository.save(subcategory);
+        } catch (final DataIntegrityViolationException e) {
+            throw new AlreadyExistException(subcategory.getName());
+        }
 
         return CreateCategoryResponse.of(subcategory);
     }
@@ -86,15 +89,6 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryType categoryType = CategoryType.findByMeaning(name);
         return categoryRepository.findByType(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(name));
-    }
-
-    private void validateDifferentSubcategory(final Book book,
-                                              final Category parent,
-                                              final String name) {
-        categoryRepository.findSubcategory(parent, book, name)
-            .ifPresent(subCategory -> {
-                throw new AlreadyExistException(subCategory.getName());
-            });
     }
 
     private Book findBook(final String bookKey) {
