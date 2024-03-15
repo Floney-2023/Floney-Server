@@ -41,11 +41,13 @@ class SubcategoryRepositoryTest {
                 final Book book = BookFixture.createBook();
                 ReflectionTestUtils.setField(book, "id", 1L);
 
-                final Subcategory inactiveSubcategory = Subcategory.of(category, book, "새 카테고리");
+                final String subcategoryName = "새 카테고리";
+
+                final Subcategory inactiveSubcategory = Subcategory.of(category, book, subcategoryName);
                 inactiveSubcategory.inactive();
                 subcategoryRepository.save(inactiveSubcategory);
 
-                subcategory = Subcategory.of(category, book, "새 카테고리");
+                subcategory = Subcategory.of(category, book, subcategoryName);
                 subcategoryRepository.save(subcategory);
             }
 
