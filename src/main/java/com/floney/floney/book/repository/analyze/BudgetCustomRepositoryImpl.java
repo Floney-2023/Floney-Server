@@ -50,7 +50,8 @@ public class BudgetCustomRepositoryImpl implements BudgetCustomRepository {
             .innerJoin(budget.book, book)
             .where(
                 book.bookKey.eq(bookKey),
-                budget.date.between(duration.getStartDate(), duration.getEndDate())
+                budget.date.between(duration.getStartDate(), duration.getEndDate()),
+                budget.status.eq(ACTIVE)
             )
             .fetch();
     }
