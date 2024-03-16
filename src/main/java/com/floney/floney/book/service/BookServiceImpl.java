@@ -159,7 +159,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void saveOrUpdateBudget(UpdateBudgetRequest request) {
         Book savedBook = findBook(request.getBookKey());
-        Optional<Budget> savedBudget = budgetRepository.findBudgetByBookAndDate(savedBook, request.getDate());
+        Optional<Budget> savedBudget = budgetRepository.findBudgetByBookAndDateAndStatus(savedBook, request.getDate(), ACTIVE);
 
         if (savedBudget.isPresent()) {
             updateBudget(savedBudget.get(), request);

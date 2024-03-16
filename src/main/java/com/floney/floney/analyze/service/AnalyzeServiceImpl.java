@@ -17,7 +17,6 @@ import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.CannotAnalyzeException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -29,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
 @Transactional
@@ -68,7 +69,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         final Book book = findBook(request.getBookKey());
 
         // 자산 조회
-        final Budget budget = budgetRepository.findBudgetByBookAndDate(book, LocalDate.parse(request.getDate()))
+        final Budget budget = budgetRepository.findBudgetByBookAndDateAndStatus(book, LocalDate.parse(request.getDate()), ACTIVE)
             .orElse(Budget.init());
 
         // 총 수입 조회
@@ -110,7 +111,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
