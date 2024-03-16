@@ -60,55 +60,7 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(ErrorType.INVALID_LOGIN));
     }
 
-    @ExceptionHandler(OAuthResponseException.class)
-    protected ResponseEntity<ErrorResponse> badOAuthResponse(OAuthResponseException exception) {
-        logger.error("외부 로그인 서버에서 빈 응답을 받음 \n [ERROR_MSG] : {} \n [ERROR STACK] : {}", exception.getMessage(), exception.getStackTrace());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
     // BOOK
-    @ExceptionHandler(NotFoundCategoryException.class)
-    protected ResponseEntity<ErrorResponse> notFoundCategory(NotFoundCategoryException exception) {
-        logger.warn("[{}] {}", exception.getCategoryName(), ErrorType.NOT_FOUND_CATEGORY.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(ExcelMakingException.class)
-    protected ResponseEntity<ErrorResponse> excelError(ExcelMakingException exception) {
-        logger.error("엑셀 오류 발생 [ERROR_MSG] : {} \n [ERROR_STACK] : {} \n ", exception.getMessage(), exception.getStackTrace());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(LimitRequestException.class)
-    protected ResponseEntity<ErrorResponse> limitOfService(LimitRequestException exception) {
-        logger.warn(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(AlreadyJoinException.class)
-    protected ResponseEntity<ErrorResponse> joinException(AlreadyJoinException exception) {
-        logger.warn("{}는 {} \n [ERROR_MSG] : {} \n  [ERROR_STACK] : {}", exception.getUserEmail(), ErrorType.ALREADY_JOIN.getMessage(), exception.getMessage(), exception.getStackTrace());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(NotFoundAlarmException.class)
-    protected ResponseEntity<ErrorResponse> alarmException(NotFoundAlarmException exception) {
-        logger.error("{} id = {} \n [ERROR_MSG] : {} \n [ERROR_STACK] : {}", ErrorType.NOT_FOUND_ALARM.getMessage(), exception.getRequestKey(), exception.getMessage(), exception.getStackTrace());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
-    }
-
-    @ExceptionHandler(NotFoundParentCategoryException.class)
-    protected ResponseEntity<ErrorResponse> notFoundParentCategoryException(NotFoundParentCategoryException exception) {
-        logger.warn("[{}] {}", exception.getCategoryName(), exception.getErrorType().getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(exception.getErrorType()));
-    }
 
     // SETTLEMENT
 

@@ -8,11 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class AlreadyJoinException extends FloneyException {
 
-    private final String userEmail;
-
     public AlreadyJoinException(String userEmail) {
         super(ErrorType.ALREADY_JOIN, HttpStatus.BAD_REQUEST);
-        this.userEmail = userEmail;
+        logger.warn("{}는 {} \n [ERROR_MSG] : {} \n  [ERROR_STACK] : {}", userEmail, ErrorType.ALREADY_JOIN.getMessage(), getMessage(), getStackTrace());
     }
-
 }
