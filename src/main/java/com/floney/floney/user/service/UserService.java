@@ -55,14 +55,12 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
-    private final PasswordHistoryManager passwordHistoryManager;
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
         final User user = request.to();
         user.encodePassword(passwordEncoder);
         userRepository.save(user);
-        passwordHistoryManager.addPassword(user.getPassword(), user.getId());
         return request.toLoginRequest();
     }
 
@@ -76,7 +74,6 @@ public class UserService {
 
         user.signout();
         addSignoutReason(request);
-        passwordHistoryManager.deleteHistory(user.getId());
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
     }
@@ -160,6 +157,7 @@ public class UserService {
             }
             deletedBookKeys.add(book.getBookKey());
             book.inactive();
+            bookRepository.save(book);
         }
     }
 
@@ -179,9 +177,8 @@ public class UserService {
         signoutOtherReasonRepository.save(signoutOtherReason);
     }
 
-    private void updatePassword(String newPassword, User user) {
+    private void updatePassword(final String newPassword, final User user) {
         validatePasswordNotSame(newPassword, user);
-        passwordHistoryManager.addPassword(newPassword, user.getId());
         user.updatePassword(newPassword);
         user.encodePassword(passwordEncoder);
     }

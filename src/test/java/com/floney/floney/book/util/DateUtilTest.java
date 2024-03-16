@@ -1,6 +1,5 @@
-package com.floney.floney.book;
+package com.floney.floney.book.util;
 
-import com.floney.floney.book.util.DateUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +43,5 @@ public class DateUtilTest {
         assertThat(DateUtil.getLastDateOfMonth(currentDate))
             .isEqualTo(LocalDate.of(2024, 12, 31));
     }
-    
+
 }

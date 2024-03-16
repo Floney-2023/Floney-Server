@@ -7,6 +7,7 @@ import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.RepeatBookLine;
 import com.floney.floney.book.dto.process.BookLineExpense;
 import com.floney.floney.book.dto.process.BookLineWithWriterView;
 import com.floney.floney.book.dto.process.TotalExpense;
@@ -14,6 +15,7 @@ import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +32,8 @@ public interface BookLineCustomRepository {
 
     void inactiveAllBy(Book book);
 
+    List<BookLine> findAllRepeatBookLineByEqualOrAfter(LocalDate localDate, RepeatBookLine repeatBookLine);
+
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 
     double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
@@ -40,8 +44,6 @@ public interface BookLineCustomRepository {
 
     Map<String, Double> totalExpensesForAsset(Book book, final LocalDate date);
 
-    Optional<BookLine> findByIdWithCategories(Long id);
-
     Optional<BookLine> findByIdWithCategoriesAndWriter(Long id);
 
     List<BookLine> findAllByBookKeyOrderByDateDesc(String bookKey);
@@ -51,4 +53,12 @@ public interface BookLineCustomRepository {
     List<BookLine> findAllByBookUser(BookUser bookUser);
 
     double totalMoneyByDurationAndCategoryType(String bookKey, DateDuration duration, CategoryType categoryType);
+
+    double incomeMoneyForAssetUntil(Book book, YearMonth endMonth);
+
+    double outcomeMoneyUntil(Book book, YearMonth endMonth);
+
+    double incomeMoneyForAssetByMonth(Book book, YearMonth month);
+
+    double outcomeMoneyByMonth(Book book, YearMonth month);
 }

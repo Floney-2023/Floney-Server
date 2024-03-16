@@ -1,6 +1,8 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.request.*;
+import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.book.service.BookService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -51,9 +53,10 @@ public class BookController {
      * @body CreateLineRequest 가계부 내역
      */
     @PostMapping("/lines")
-    public ResponseEntity<?> createBookLine(@RequestBody BookLineRequest request,
-                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookLineService.createBookLine(userDetails.getUsername(), request), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookLineResponse createBookLine(@RequestBody BookLineRequest request,
+                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return bookLineService.createBookLine(userDetails.getUsername(), request);
     }
 
     /**
@@ -265,7 +268,8 @@ public class BookController {
     }
 
     /**
-     * 가계부 내역 삭제
+     * 가계부 내역 단건 삭제
+     * 반복 내역 삭제 시, [이 내역만 삭제] 옵션에 해당함.
      *
      * @param bookLineKey 가계부 내역 PK
      */
@@ -274,6 +278,40 @@ public class BookController {
         bookLineService.deleteLine(bookLineKey);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    /**
+     * 가계부 내역 삭제
+     * 반복 내역 삭제 시, [이후 내역 삭제] 옵션에 해당함.
+     *
+     * @param bookLineKey 가계부 내역 PK
+     */
+    @DeleteMapping("/lines/all")
+    public ResponseEntity<?> deleteAllBookLineByRepeat(@RequestParam Long bookLineKey) {
+        bookLineService.deleteAllAfterBookLineByRepeat(bookLineKey);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 반복 내역 삭제
+     *
+     * @param repeatLineId 가계부 내역 PK
+     */
+    @DeleteMapping("/repeat")
+    public ResponseEntity<?> deleteRepeatLine(@RequestParam long repeatLineId) {
+        bookService.deleteRepeatLine(repeatLineId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * 반복 내역 조회
+     *
+     * @param bookKey 가계부 키
+     */
+    @GetMapping("/repeat")
+    public ResponseEntity<?> getAllRepeatBookLine(@RequestParam String bookKey, @RequestParam CategoryType categoryType) {
+        return new ResponseEntity<>(bookService.getAllRepeatBookLine(bookKey, categoryType), HttpStatus.OK);
+    }
+
 
     /**
      * 가계부 화폐정보 조회

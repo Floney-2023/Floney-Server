@@ -1,4 +1,4 @@
-package com.floney.floney.book;
+package com.floney.floney.book.domain;
 
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.LimitRequestException;

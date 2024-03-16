@@ -1,5 +1,6 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
@@ -53,4 +54,8 @@ public interface BookService {
     Map<Month, Double> getBudgetByYear(String bookKey, String year);
 
     void leaveBooksBy(long userId);
+
+    void deleteRepeatLine(long repeatLineKey);
+
+    List<RepeatBookLineResponse> getAllRepeatBookLine(String bookKey, CategoryType categoryType);
 }

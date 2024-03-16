@@ -61,6 +61,11 @@ public class ErrorControllerAdvice {
     }
 
     // BOOK
+    @ExceptionHandler(NotFoundRepeatBookLineException.class)
+    protected ResponseEntity<ErrorResponse> notFoundRepeatLine(NotFoundRepeatBookLineException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getErrorType()));
+    }
 
     // SETTLEMENT
 

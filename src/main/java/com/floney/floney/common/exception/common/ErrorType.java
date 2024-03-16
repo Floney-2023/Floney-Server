@@ -45,6 +45,7 @@ public enum ErrorType {
     NOT_FOUND_ALARM("B010", "알람 내역을 찾을 수 없습니다"),
     ALREADY_EXIST("B011", "이미 존재하는 데이터입니다"),
     CANNOT_ANALYZE("B012", "분석이 불가능한 카테고리입니다"),
+    NOT_FOUND_REPEAT_LINE("B013", "존재하지 않는 반복 내역입니다"),
 
     LIMIT("S002", "제공하지 않는 서비스입니다"),
 

@@ -59,6 +59,12 @@ class BookLineCustomRepositoryTest {
     @Autowired
     private SubcategoryRepository subcategoryRepository;
 
+    private BookLineCategory categories(final Category lineCategory,
+                                        final Subcategory lineSubcategory,
+                                        final Subcategory assetSubcategory) {
+        return BookLineCategory.create(lineCategory, lineSubcategory, assetSubcategory);
+    }
+
     @Nested
     @DisplayName("findAllByDurationOrderByDateDesc()를 실행할 때")
     class Describe_FindAllByDurationOrderByDateDesc {
@@ -690,9 +696,9 @@ class BookLineCustomRepositoryTest {
         @DisplayName("기간 내 lineSubcategory 목록에 포함되는 bookLine이 존재하는 경우")
         class Context_With_BookLineHasLineSubCategory {
 
-            List<Subcategory> lineSubcategories;
             final String bookKey = "AAAAAA";
             final DateDuration dateDuration = new DateDuration(LocalDate.now(), LocalDate.now());
+            List<Subcategory> lineSubcategories;
 
             @BeforeEach
             void init() {
@@ -733,9 +739,9 @@ class BookLineCustomRepositoryTest {
         @DisplayName("기간 내 lineSubcategory 목록에 포함되지 않는 bookLine이 존재하는 경우")
         class Context_With_BookLineHasOtherLineSubCategory {
 
-            List<Subcategory> lineSubcategories;
             final String bookKey = "AAAAAA";
             final DateDuration dateDuration = new DateDuration(LocalDate.now(), LocalDate.now());
+            List<Subcategory> lineSubcategories;
 
             @BeforeEach
             void init() {
@@ -766,9 +772,9 @@ class BookLineCustomRepositoryTest {
         @DisplayName("lineSubcategory가 아닌 다른 subcategory로 요청한 경우")
         class Context_With_NotLineSubCategory {
 
-            List<Subcategory> lineSubcategories;
             final String bookKey = "AAAAAA";
             final DateDuration dateDuration = new DateDuration(LocalDate.now(), LocalDate.now());
+            List<Subcategory> lineSubcategories;
 
             @BeforeEach
             void init() {
@@ -1149,11 +1155,5 @@ class BookLineCustomRepositoryTest {
                     .isCloseTo(0.0, Percentage.withPercentage(99.9));
             }
         }
-    }
-
-    private BookLineCategory categories(final Category lineCategory,
-                                        final Subcategory lineSubcategory,
-                                        final Subcategory assetSubcategory) {
-        return BookLineCategory.create(lineCategory, lineSubcategory, assetSubcategory);
     }
 }

@@ -9,6 +9,7 @@ import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
 import com.floney.floney.book.dto.response.CreateCategoryResponse;
 import com.floney.floney.book.repository.BookRepository;
+import com.floney.floney.book.repository.RepeatBookLineRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.category.SubcategoryRepository;
@@ -34,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookRepository bookRepository;
     private final BookLineService bookLineService;
     private final BookLineCategoryRepository bookLineCategoryRepository;
+    private final RepeatBookLineRepository repeatBookLineRepository;
 
     @Override
     public CreateCategoryResponse createSubcategory(final String bookKey, final CreateCategoryRequest request) {
@@ -69,7 +71,10 @@ public class CategoryServiceImpl implements CategoryService {
                 bookLineService.deleteLine(bookLine.getId());
             });
 
+        repeatBookLineRepository.inactiveAllBySubcategory(subcategory);
+
         subcategory.inactive();
+        subcategoryRepository.save(subcategory);
     }
 
     @Override

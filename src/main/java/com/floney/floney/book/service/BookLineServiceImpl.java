@@ -1,19 +1,13 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.analyze.service.AssetService;
 import com.floney.floney.analyze.service.CarryOverService;
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
-import com.floney.floney.book.domain.entity.Book;
-import com.floney.floney.book.domain.entity.BookLine;
-import com.floney.floney.book.domain.entity.BookLineCategory;
-import com.floney.floney.book.domain.entity.BookUser;
+import com.floney.floney.book.domain.entity.*;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.BookLineWithWriterView;
-import com.floney.floney.book.dto.process.DayLines;
-import com.floney.floney.book.dto.process.TotalExpense;
+import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.dto.response.BookLineResponse;
@@ -21,6 +15,7 @@ import com.floney.floney.book.dto.response.TotalDayLinesResponse;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.book.repository.RepeatBookLineRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -48,27 +43,24 @@ public class BookLineServiceImpl implements BookLineService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
-    private final CarryOverService carryOverFactory;
-    private final AssetService assetService;
     private final CategoryCustomRepository categoryRepository;
+    private final RepeatBookLineRepository repeatBookLineRepository;
+    private final CarryOverService carryOverService;
 
     @Override
+    @Transactional
     public BookLineResponse createBookLine(final String email, final BookLineRequest request) {
         final Book book = findBook(request.getBookKey());
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
-        final BookLine bookLine = request.to(bookUser, bookLineCategory);
+        final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
 
-        bookLineRepository.save(bookLine);
-
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.createCarryOverByAddBookLine(request, book);
+        // 반복 내역인 경우
+        if (request.getRepeatDuration() != RepeatDuration.NONE) {
+            return createBookLineByRepeat(bookLine, request.getRepeatDuration());
+        } else {
+            return createBookLineByNotRepeat(bookLine);
         }
-        if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(request, book);
-        }
-
-        return BookLineResponse.from(bookLine);
     }
 
     @Override
@@ -76,13 +68,8 @@ public class BookLineServiceImpl implements BookLineService {
     public MonthLinesResponse showByMonth(final String bookKey, final String date) {
         final Book book = findBook(bookKey);
         final DateDuration dates = DateDuration.startAndEndOfMonth(date);
-
-        return MonthLinesResponse.of(
-            date,
-            daysExpense(bookKey, dates),
-            totalExpense(bookKey, dates),
-            carryOverFactory.getCarryOverInfo(book, date)
-        );
+        final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
+        return MonthLinesResponse.of(date, daysExpense(bookKey, dates), totalExpense(bookKey, dates), carryOverInfo);
     }
 
     @Override
@@ -93,17 +80,9 @@ public class BookLineServiceImpl implements BookLineService {
 
         final List<BookLineWithWriterView> bookLinesOfDay = bookLineRepository.allLinesByDay(day, bookKey);
 
-        final List<TotalExpense> totalExpensesOfDay = List.of(
-            bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME),
-            bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME)
-        );
-
-        return TotalDayLinesResponse.of(
-            bookLinesOfDay,
-            totalExpensesOfDay,
-            book.getSeeProfile(),
-            carryOverFactory.getCarryOverInfo(book, date)
-        );
+        final List<TotalExpense> totalExpensesOfDay = List.of(bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME), bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME));
+        final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
+        return TotalDayLinesResponse.of(bookLinesOfDay, totalExpensesOfDay, book.getSeeProfile(), carryOverInfo);
     }
 
     @Override
@@ -120,36 +99,71 @@ public class BookLineServiceImpl implements BookLineService {
     public BookLineResponse changeLine(final BookLineRequest request) {
         final BookLine bookLine = bookLineRepository.findByIdWithCategoriesAndWriter(request.getLineId())
             .orElseThrow(NotFoundBookLineException::new);
+
         final Book book = findBook(request.getBookKey());
+
         // TODO: BookLineRequest에 bookKey 삭제 후 아래 메서드 삭제
         validateBookLineIncludedInBook(bookLine.getBook(), book);
 
-        if (bookLine.includedInAsset()) {
-            assetService.subtractAssetOf(bookLine.getId());
-        }
-
         // 가계부 내역 갱신
         bookLine.update(request);
+        bookLineRepository.save(bookLine);
 
-        // 가계부 내역 갱신에 따른 관련 데이터들 갱신
-        if (book.getCarryOverStatus()) {
-            carryOverFactory.updateCarryOver(request, bookLine);
-        }
-        if (bookLine.includedInAsset()) {
-            assetService.addAssetOf(request, book);
-        }
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
-
+        bookLineRepository.save(bookLine);
         return BookLineResponse.from(bookLine);
     }
 
     @Override
     @Transactional
     public void deleteLine(final Long bookLineId) {
+        final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE).orElseThrow(NotFoundBookLineException::new);
+        savedBookLine.inactive();
+        bookLineRepository.save(savedBookLine);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllAfterBookLineByRepeat(final long bookLineId) {
         final BookLine savedBookLine = bookLineRepository.findByIdAndStatus(bookLineId, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
-        savedBookLine.inactive();
+
+        //TODO : 더 어울리는 예외 처리
+        if (savedBookLine.isNotRepeat()) {
+            throw new NotFoundBookLineException();
+        }
+
+        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(savedBookLine.getLineDate(), savedBookLine.getRepeatBookLine());
+        bookLines.forEach(BookLine::inactive);
+        bookLineRepository.saveAll(bookLines);
+    }
+
+    private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
+        Book book = bookLine.getBook();
+        bookLineRepository.save(bookLine);
+
+        return BookLineResponse.from(bookLine);
+    }
+
+    private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
+        Book book = bookLine.getBook();
+
+        // 1. 반복 내역 객체 생성
+        RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, requestRepeatDuration);
+
+        // 2. 가계부 내역 - 반복 내역 매핑
+        bookLine.repeatBookLine(repeatBookLine);
+
+        // 3. 반복 내역 생성
+        List<BookLine> bookLines = repeatBookLine.bookLinesBy(requestRepeatDuration);
+        bookLines.add(bookLine);
+
+        // 3.  저장
+        repeatBookLineRepository.save(repeatBookLine);
+        bookLineRepository.saveAll(bookLines);
+
+        return BookLineResponse.from(bookLine);
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
@@ -161,22 +175,18 @@ public class BookLineServiceImpl implements BookLineService {
         return BookLineCategory.create(lineCategory, lineSubcategory, assetSubcategory);
     }
 
-    private void updateCategory(final BookLineCategory bookLineCategory,
-                                final String lineSubCategoryName,
-                                final String assetSubCategoryName) {
+    private void updateCategory(final BookLineCategory bookLineCategory, final String lineSubCategoryName, final String assetSubCategoryName) {
         updateLineSubCategory(bookLineCategory, lineSubCategoryName);
         updateAssetSubCategory(bookLineCategory, assetSubCategoryName);
     }
 
-    private void updateAssetSubCategory(final BookLineCategory bookLineCategory,
-                                        final String assetSubCategoryName) {
+    private void updateAssetSubCategory(final BookLineCategory bookLineCategory, final String assetSubCategoryName) {
         final Book book = bookLineCategory.getBookLine().getBook();
         final Subcategory assetSubcategory = findAssetSubCategory(book, assetSubCategoryName);
         bookLineCategory.updateAssetSubCategory(assetSubcategory);
     }
 
-    private void updateLineSubCategory(final BookLineCategory bookLineCategory,
-                                       final String lineSubCategoryName) {
+    private void updateLineSubCategory(final BookLineCategory bookLineCategory, final String lineSubCategoryName) {
         final Book book = bookLineCategory.getBookLine().getBook();
         final Category lineCategory = bookLineCategory.getLineCategory();
         final Subcategory lineSubcategory = findLineSubCategory(lineSubCategoryName, lineCategory, book);
@@ -189,15 +199,12 @@ public class BookLineServiceImpl implements BookLineService {
             .orElseThrow(() -> new NotFoundCategoryException(categoryName));
     }
 
-    private Subcategory findLineSubCategory(final String lineSubCategoryName,
-                                            final Category lineCategory,
-                                            final Book book) {
+    private Subcategory findLineSubCategory(final String lineSubCategoryName, final Category lineCategory, final Book book) {
         return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName())
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));
     }
 
-    private Subcategory findAssetSubCategory(final Book book,
-                                             final String assetSubCategoryName) {
+    private Subcategory findAssetSubCategory(final Book book, final String assetSubCategoryName) {
         return categoryRepository.findSubcategory(assetSubCategoryName, book, ASSET)
             .orElseThrow(() -> new NotFoundCategoryException(assetSubCategoryName));
     }
@@ -226,9 +233,6 @@ public class BookLineServiceImpl implements BookLineService {
         final double income = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, INCOME);
         final double outcome = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, OUTCOME);
         // TODO: Map 대신 새로운 객체 생성
-        return Map.of(
-            INCOME.getMeaning(), income,
-            OUTCOME.getMeaning(), outcome
-        );
+        return Map.of(INCOME.getMeaning(), income, OUTCOME.getMeaning(), outcome);
     }
 }
