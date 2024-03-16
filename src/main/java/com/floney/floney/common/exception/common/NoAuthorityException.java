@@ -7,8 +7,7 @@ import org.springframework.http.HttpStatus;
 public class NoAuthorityException extends FloneyException {
 
     public NoAuthorityException(String owner, String requestUser) {
-        super(ErrorType.NO_AUTHORITY,
-                HttpStatus.UNAUTHORIZED,
-                ErrorLogType.NO_AUTHORITY, owner, ErrorType.NO_AUTHORITY.getMessage(), requestUser);
+        super(ErrorType.NO_AUTHORITY, HttpStatus.UNAUTHORIZED, ErrorLogType.NO_AUTHORITY);
+        printLog(owner, ErrorType.NO_AUTHORITY.getMessage(), requestUser);
     }
 }

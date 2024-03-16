@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class PasswordNotSameException extends FloneyException {
 
     public PasswordNotSameException() {
-        super(ErrorType.NOT_SAME_PASSWORD,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.NOT_SAME_PASSWORD);
+        super(ErrorType.NOT_SAME_PASSWORD, HttpStatus.BAD_REQUEST, ErrorLogType.NOT_SAME_PASSWORD);
+        printLog();
     }
 }

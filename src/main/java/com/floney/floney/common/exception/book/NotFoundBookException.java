@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class NotFoundBookException extends FloneyException {
 
     public NotFoundBookException(String requestKey) {
-        super(ErrorType.NOT_FOUND_BOOK,
-                HttpStatus.NOT_FOUND,
-                ErrorLogType.NOT_FOUND_BOOK, requestKey, ErrorType.NOT_FOUND_BOOK.getMessage());
+        super(ErrorType.NOT_FOUND_BOOK, HttpStatus.NOT_FOUND, ErrorLogType.NOT_FOUND_BOOK);
+        printLog(requestKey, ErrorType.NOT_FOUND_BOOK.getMessage());
     }
 }

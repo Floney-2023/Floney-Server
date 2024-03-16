@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class CannotDeleteBookException extends FloneyException {
 
     public CannotDeleteBookException() {
-        super(ErrorType.NO_DELETE_BOOK,
-                HttpStatus.NOT_FOUND,
-                ErrorLogType.NO_DELETE_BOOK);
+        super(ErrorType.NO_DELETE_BOOK, HttpStatus.NOT_FOUND, ErrorLogType.NO_DELETE_BOOK);
+        printLog();
     }
 }

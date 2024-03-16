@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class SignoutOtherReasonEmptyException extends FloneyException {
 
     public SignoutOtherReasonEmptyException() {
-        super(ErrorType.EMPTY_SIGNOUT_OTHER_REASON,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.EMPTY_SIGNOUT_OTHER_REASON);
+        super(ErrorType.EMPTY_SIGNOUT_OTHER_REASON, HttpStatus.BAD_REQUEST, ErrorLogType.EMPTY_SIGNOUT_OTHER_REASON);
+        printLog();
     }
 }

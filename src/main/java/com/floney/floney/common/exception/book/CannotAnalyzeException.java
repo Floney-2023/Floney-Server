@@ -11,8 +11,7 @@ import org.springframework.http.HttpStatus;
 public class CannotAnalyzeException extends FloneyException {
 
     public CannotAnalyzeException(final CategoryType categoryType) {
-        super(ErrorType.CANNOT_ANALYZE,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.CANNOT_ANALYZE, categoryType.toString());
+        super(ErrorType.CANNOT_ANALYZE, HttpStatus.BAD_REQUEST, ErrorLogType.CANNOT_ANALYZE);
+        printLog(categoryType.toString());
     }
 }

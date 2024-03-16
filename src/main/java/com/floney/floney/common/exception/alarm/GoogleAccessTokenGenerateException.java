@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class GoogleAccessTokenGenerateException extends FloneyException {
 
     public GoogleAccessTokenGenerateException() {
-        super(ErrorType.FAIL_TO_GENERATE_TOKEN,
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                ErrorLogType.FAIL_TO_GENERATE_TOKEN);
+        super(ErrorType.FAIL_TO_GENERATE_TOKEN, HttpStatus.INTERNAL_SERVER_ERROR, ErrorLogType.FAIL_TO_GENERATE_TOKEN);
+        printLog();
     }
 }

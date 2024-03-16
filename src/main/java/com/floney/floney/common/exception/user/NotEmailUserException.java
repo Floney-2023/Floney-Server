@@ -11,8 +11,7 @@ import org.springframework.http.HttpStatus;
 public class NotEmailUserException extends FloneyException {
 
     public NotEmailUserException(final Provider provider) {
-        super(ErrorType.NOT_EMAIL_USER,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.NOT_EMAIL_USER, provider.toString());
+        super(ErrorType.NOT_EMAIL_USER, HttpStatus.BAD_REQUEST, ErrorLogType.NOT_EMAIL_USER);
+        printLog(provider.toString());
     }
 }

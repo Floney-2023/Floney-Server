@@ -13,9 +13,7 @@ public class UserFoundException extends FloneyException {
     private final String provider;
 
     public UserFoundException(String email, Provider provider) {
-        super(ErrorType.USER_FOUND,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.USER_FOUND, email);
+        super(ErrorType.USER_FOUND, HttpStatus.BAD_REQUEST, ErrorLogType.USER_FOUND);
         this.provider = String.valueOf(provider);
     }
 

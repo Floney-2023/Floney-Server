@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class OutcomeUserNotFoundException extends FloneyException {
 
     public OutcomeUserNotFoundException() {
-        super(ErrorType.NOT_FOUND_OUTCOME_USER,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.NOT_FOUND_OUTCOME_USER);
+        super(ErrorType.NOT_FOUND_OUTCOME_USER, HttpStatus.BAD_REQUEST, ErrorLogType.NOT_FOUND_OUTCOME_USER);
+        printLog();
     }
 }

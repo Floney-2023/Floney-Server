@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class UserNotFoundException extends FloneyException {
 
     public UserNotFoundException(String username) {
-        super(ErrorType.USER_NOT_FOUND,
-                HttpStatus.UNAUTHORIZED,
-                ErrorLogType.USER_NOT_FOUND, username);
+        super(ErrorType.USER_NOT_FOUND, HttpStatus.UNAUTHORIZED, ErrorLogType.USER_NOT_FOUND);
+        printLog(username);
     }
 }

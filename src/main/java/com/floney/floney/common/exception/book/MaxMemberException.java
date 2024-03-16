@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class MaxMemberException extends FloneyException {
 
     public MaxMemberException(final String bookKey, final int memberCount) {
-        super(ErrorType.MAX_MEMBER,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.MAX_MEMBER, bookKey, ErrorType.MAX_MEMBER.getMessage(), String.valueOf(memberCount));
+        super(ErrorType.MAX_MEMBER, HttpStatus.BAD_REQUEST, ErrorLogType.MAX_MEMBER);
+        printLog(bookKey, ErrorType.MAX_MEMBER.getMessage(), String.valueOf(memberCount));
     }
 }

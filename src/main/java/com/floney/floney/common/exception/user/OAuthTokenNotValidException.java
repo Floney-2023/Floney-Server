@@ -10,9 +10,8 @@ import org.springframework.http.HttpStatus;
 public class OAuthTokenNotValidException extends FloneyException {
 
     public OAuthTokenNotValidException() {
-        super(ErrorType.INVALID_OAUTH_TOKEN,
-                HttpStatus.UNAUTHORIZED,
-                ErrorLogType.INVALID_OAUTH_TOKEN);
+        super(ErrorType.INVALID_OAUTH_TOKEN, HttpStatus.UNAUTHORIZED, ErrorLogType.INVALID_OAUTH_TOKEN);
+        printLog();
     }
 
 }

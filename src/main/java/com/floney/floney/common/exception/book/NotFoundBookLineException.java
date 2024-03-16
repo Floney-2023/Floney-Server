@@ -10,9 +10,8 @@ import org.springframework.http.HttpStatus;
 public class NotFoundBookLineException extends FloneyException {
 
     public NotFoundBookLineException() {
-        super(ErrorType.NOT_FOUND_BOOK_LINE,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.NOT_FOUND_BOOK_LINE);
+        super(ErrorType.NOT_FOUND_BOOK_LINE, HttpStatus.BAD_REQUEST, ErrorLogType.NOT_FOUND_BOOK_LINE);
+        printLog();
     }
 
 }

@@ -14,27 +14,27 @@ public abstract class FloneyException extends RuntimeException {
     private final HttpStatus httpStatus;
     private final ErrorLogType errorLogType;
 
-    protected FloneyException(final ErrorType errorType, final HttpStatus httpStatus, final ErrorLogType errorLogType, final String... logAttributes) {
+    protected FloneyException(final ErrorType errorType, final HttpStatus httpStatus, final ErrorLogType errorLogType) {
         super(errorType.getMessage());
         this.errorType = errorType;
         this.httpStatus = httpStatus;
         this.errorLogType = errorLogType;
-        printLog(errorLogType.generateLogMessage(logAttributes));
     }
 
-    protected FloneyException(final String message, final ErrorType errorType, HttpStatus httpStatus, final ErrorLogType errorLogType, final String... logAttributes) {
+    protected FloneyException(final String message, final ErrorType errorType, HttpStatus httpStatus, final ErrorLogType errorLogType) {
         super(message);
         this.errorType = errorType;
         this.httpStatus = httpStatus;
         this.errorLogType = errorLogType;
-        printLog(errorLogType.generateLogMessage(logAttributes));
     }
 
-    private void printLog(final String logMessage) {
+    protected void printLog(final String... logAttributes) {
+        String logMessage = this.errorLogType.generateLogMessage(logAttributes);
         switch (this.errorLogType.getLevel()) {
             case WARN -> logger.warn(logMessage);
             case ERROR -> logger.error(logMessage);
             case DEBUG -> logger.debug(logMessage);
         }
     }
+
 }

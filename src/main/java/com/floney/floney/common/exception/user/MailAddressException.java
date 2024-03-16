@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class MailAddressException extends FloneyException {
 
     public MailAddressException(String email) {
-        super(ErrorType.INVALID_MAIL_ADDRESS,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.INVALID_MAIL_ADDRESS, email);
+        super(ErrorType.INVALID_MAIL_ADDRESS, HttpStatus.BAD_REQUEST, ErrorLogType.INVALID_MAIL_ADDRESS);
+        printLog(email);
     }
 }

@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class CodeNotFoundException extends FloneyException {
 
     public CodeNotFoundException(final String email) {
-        super(ErrorType.CODE_NOT_FOUND,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.CODE_NOT_FOUND, email);
+        super(ErrorType.CODE_NOT_FOUND, HttpStatus.BAD_REQUEST, ErrorLogType.CODE_NOT_FOUND);
+        printLog(email);
     }
 }

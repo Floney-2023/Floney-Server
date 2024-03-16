@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class EmailNotFoundException extends FloneyException {
 
     public EmailNotFoundException(final String email) {
-        super(ErrorType.EMAIL_NOT_FOUND,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.EMAIL_NOT_FOUND, email);
+        super(ErrorType.EMAIL_NOT_FOUND, HttpStatus.BAD_REQUEST, ErrorLogType.EMAIL_NOT_FOUND);
+        printLog(email);
     }
 }

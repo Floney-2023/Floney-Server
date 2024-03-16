@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class CodeNotSameException extends FloneyException {
 
     public CodeNotSameException(final String code, final String anotherCode) {
-        super(ErrorType.INVALID_CODE,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.INVALID_CODE, code, anotherCode);
+        super(ErrorType.INVALID_CODE, HttpStatus.BAD_REQUEST, ErrorLogType.INVALID_CODE);
+        printLog(code, anotherCode);
     }
 }

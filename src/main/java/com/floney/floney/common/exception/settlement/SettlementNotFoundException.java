@@ -10,8 +10,7 @@ import org.springframework.http.HttpStatus;
 public class SettlementNotFoundException extends FloneyException {
 
     public SettlementNotFoundException(final long settlementId) {
-        super(ErrorType.NOT_FOUND_SETTLEMENT,
-                HttpStatus.BAD_REQUEST,
-                ErrorLogType.NOT_FOUND_SETTLEMENT, String.valueOf(settlementId));
+        super(ErrorType.NOT_FOUND_SETTLEMENT, HttpStatus.BAD_REQUEST, ErrorLogType.NOT_FOUND_SETTLEMENT);
+        printLog(String.valueOf(settlementId));
     }
 }
