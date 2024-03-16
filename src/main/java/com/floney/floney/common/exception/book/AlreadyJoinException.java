@@ -1,6 +1,5 @@
 package com.floney.floney.common.exception.book;
 
-import com.floney.floney.common.exception.common.ErrorLogType;
 import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.common.exception.common.FloneyException;
 import lombok.Getter;
@@ -12,7 +11,7 @@ public class AlreadyJoinException extends FloneyException {
     private final String userEmail;
 
     public AlreadyJoinException(String userEmail) {
-        super(ErrorType.ALREADY_JOIN, HttpStatus.BAD_REQUEST, ErrorLogType.ALREADY_JOIN);
+        super(ErrorType.ALREADY_JOIN, HttpStatus.BAD_REQUEST);
         this.userEmail = userEmail;
     }
 

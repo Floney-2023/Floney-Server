@@ -2,7 +2,6 @@ package com.floney.floney.common.exception.settlement;
 
 import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.common.exception.common.FloneyException;
-import com.floney.floney.common.exception.common.ErrorLogType;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -10,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public class SettlementNotFoundException extends FloneyException {
 
     public SettlementNotFoundException(final long settlementId) {
-        super(ErrorType.NOT_FOUND_SETTLEMENT, HttpStatus.BAD_REQUEST, ErrorLogType.NOT_FOUND_SETTLEMENT);
-        printLog(String.valueOf(settlementId));
+        super(ErrorType.NOT_FOUND_SETTLEMENT, HttpStatus.BAD_REQUEST);
+        logger.warn("settlement id [{}]의 정산 내역이 존재하지 않음", settlementId);
     }
 }

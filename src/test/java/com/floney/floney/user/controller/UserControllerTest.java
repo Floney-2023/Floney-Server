@@ -2,7 +2,7 @@ package com.floney.floney.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.dto.Token;
-import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.InvalidMailAddressException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.config.WithMockCustomUser;
 import com.floney.floney.user.dto.constant.SignoutType;
@@ -149,7 +149,7 @@ class UserControllerTest {
     void sendAuthenticateEmail_fail_invalidEmail() throws Exception {
         // given
         String email = "wrong@email.com";
-        given(authenticationService.sendEmailAuthMail(email)).willThrow(new MailAddressException(""));
+        given(authenticationService.sendEmailAuthMail(email)).willThrow(new InvalidMailAddressException(""));
 
         // when & then
         mockMvc.perform(get("/users/email/mail").queryParam("email", email))

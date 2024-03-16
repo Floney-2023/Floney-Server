@@ -1,7 +1,7 @@
 package com.floney.floney.common.util;
 
 import com.floney.floney.common.domain.vo.Mail;
-import com.floney.floney.common.exception.user.MailAddressException;
+import com.floney.floney.common.exception.user.InvalidMailAddressException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,7 +27,7 @@ public class MailProvider {
         try {
             javaMailSender.send(simpleMailMessage);
         } catch (MailSendException exception) {
-            throw new MailAddressException(email);
+            throw new InvalidMailAddressException(email);
         }
     }
 }
