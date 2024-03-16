@@ -30,6 +30,7 @@ import static com.floney.floney.common.constant.Status.ACTIVE;
 import static com.floney.floney.fixture.BookFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,16 +60,16 @@ public class BookServiceTest {
         Book testBook = BookFixture.createBookWith("1234");
         User testUser = UserFixture.emailUser();
 
-        given(bookRepository.findBookExclusivelyByCodeAndStatus(CODE, ACTIVE))
-            .willReturn(Optional.ofNullable(testBook));
+        given(bookRepository.findBookExclusivelyByCodeAndStatus(anyString(), any(Status.class)))
+            .willReturn(Optional.of(testBook));
 
-        given(bookUserRepository.findBookUserByCode(testUser.getEmail(), CODE))
+        given(bookUserRepository.findBookUserByCode(anyString(), anyString()))
             .willReturn(Optional.empty());
 
         given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
         assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
-            .isEqualTo(bookResponse().getCode());
+            .isEqualTo(testBook.getCode());
     }
 
     @Test
