@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public class NotFoundBookUserException extends FloneyException {
 
     public NotFoundBookUserException(String bookKey, String requestUser) {
-        super(ErrorType.NOT_FOUND_BOOK_USER, HttpStatus.NOT_FOUND);
+        super(ErrorType.NOT_FOUND_BOOK_USER, HttpStatus.BAD_REQUEST);
         logger.warn("가계부 키 [{}] 에서 [{}]와 일치하는 {}", bookKey, requestUser, errorType.getMessage());
     }
 }
