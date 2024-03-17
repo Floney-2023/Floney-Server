@@ -6,7 +6,7 @@ import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.CodeJoinRequest;
 import com.floney.floney.book.dto.request.CreateBookRequest;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
-import com.floney.floney.book.dto.response.CreateBookResponse;
+import com.floney.floney.book.util.CodeFactory;
 
 import static com.floney.floney.fixture.UserFixture.DEFAULT_EMAIL;
 
@@ -15,7 +15,6 @@ public class BookFixture {
     public static String NAME = "플로니";
     public static String URL = "https://fileisHere.com";
     public static String UPDATE_URL = "https://fileisUpdate.com";
-    public static String CODE = "code";
     public static String BOOK_KEY = "book-key";
 
 
@@ -32,13 +31,13 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(bookKey)
             .owner(DEFAULT_EMAIL)
-            .code(CODE)
+            .code(CodeFactory.generateCode())
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
             .build();
     }
 
     public static CodeJoinRequest codeJoinRequest() {
-        return new CodeJoinRequest(CODE);
+        return new CodeJoinRequest(CodeFactory.generateCode());
     }
 
     public static Book createBook() {
@@ -47,7 +46,7 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(BOOK_KEY)
             .owner(DEFAULT_EMAIL)
-            .code(CODE)
+            .code(CodeFactory.generateCode())
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
             .build();
     }
@@ -58,7 +57,7 @@ public class BookFixture {
             .profileImg(URL)
             .bookKey(BOOK_KEY)
             .owner(owner)
-            .code(CODE)
+            .code(CodeFactory.generateCode())
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
             .build();
     }
@@ -71,13 +70,6 @@ public class BookFixture {
             .owner(DEFAULT_EMAIL)
             .code(code)
             .userCapacity(BookUserCapacity.DEFAULT.getValue())
-            .build();
-    }
-
-    public static CreateBookResponse bookResponse() {
-        return CreateBookResponse.builder()
-            .bookKey(BOOK_KEY)
-            .code(CODE)
             .build();
     }
 
