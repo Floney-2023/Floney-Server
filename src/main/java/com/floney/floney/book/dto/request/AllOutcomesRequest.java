@@ -1,16 +1,15 @@
 package com.floney.floney.book.dto.request;
 
 import com.floney.floney.common.domain.vo.DateDuration;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class AllOutcomesRequest {
 
     private String bookKey;
@@ -19,10 +18,4 @@ public class AllOutcomesRequest {
 
     @NotNull(message = "duration을 입력해주세요")
     private DateDuration duration;
-
-    public AllOutcomesRequest(String bookKey, List<String> usersEmails, DateDuration duration) {
-        this.bookKey = bookKey;
-        this.usersEmails = usersEmails;
-        this.duration = duration;
-    }
 }

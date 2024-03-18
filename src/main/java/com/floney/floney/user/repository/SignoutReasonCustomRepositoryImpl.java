@@ -19,8 +19,8 @@ public class SignoutReasonCustomRepositoryImpl implements SignoutReasonCustomRep
     @Transactional
     public void increaseCount(final SignoutType signoutType) {
         jpaQueryFactory.update(signoutReason)
-                .set(signoutReason.count, signoutReason.count.add(1))
-                .where(signoutReason.reasonType.eq(signoutType))
-                .execute();
+            .set(signoutReason.count, signoutReason.count.add(1))
+            .where(signoutReason.reasonType.eq(signoutType))
+            .execute();
     }
 }

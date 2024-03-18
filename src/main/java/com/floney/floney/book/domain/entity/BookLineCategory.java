@@ -1,44 +1,66 @@
 package com.floney.floney.book.domain.entity;
 
+import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.common.entity.BaseEntity;
-import com.querydsl.core.annotations.QueryProjection;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookLineCategory extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private BookLine bookLine;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Category category;
+    private Category lineCategory;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Subcategory lineSubcategory;
 
-    @Builder
-    @QueryProjection
-    private BookLineCategory(BookLine bookLine, Category category, String name) {
-        this.bookLine = bookLine;
-        this.category = category;
-        this.name = name;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Subcategory assetSubcategory;
 
-    public static BookLineCategory of(BookLine bookLine, Category category) {
+    public static BookLineCategory create(final Category lineCategory,
+                                          final Subcategory lineSubcategory,
+                                          final Subcategory assetSubcategory) {
         return BookLineCategory.builder()
-                .bookLine(bookLine)
-                .category(category)
-                .name(category.getName())
-                .build();
+            .lineCategory(lineCategory)
+            .lineSubcategory(lineSubcategory)
+            .assetSubcategory(assetSubcategory)
+            .build();
     }
+
+    public void setBookLine(final BookLine bookLine) {
+        this.bookLine = bookLine;
+    }
+
+    public void updateLineSubCategory(final Subcategory lineSubcategory) {
+        this.lineSubcategory = lineSubcategory;
+    }
+
+    public void updateAssetSubCategory(final Subcategory assetSubcategory) {
+        this.assetSubcategory = assetSubcategory;
+    }
+
+    public boolean isIncomeOrOutcome() {
+        return lineCategory.isIncomeOrOutcome();
+    }
+
+    public boolean isIncome() {
+        return lineCategory.isIncome();
+    }
+
+    public boolean isOutcome() {
+        return lineCategory.isOutcome();
+    }
+    
 }

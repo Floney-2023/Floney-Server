@@ -1,7 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.constant.AssetType;
-import com.floney.floney.book.domain.constant.CategoryEnum;
+import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.dto.request.BookLineRequest;
 import com.floney.floney.book.event.BookLineDeletedEvent;
 import com.floney.floney.common.constant.Status;
@@ -16,8 +15,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.EnumMap;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -26,15 +23,16 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookLine extends BaseEntity {
 
+    public static final LocalDate START_DATE = LocalDate.of(2000, 1, 1);
+
     @ManyToOne(fetch = FetchType.LAZY)
     private BookUser writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookLine")
-    @MapKeyEnumerated(EnumType.STRING)
-    private final Map<CategoryEnum, BookLineCategory> bookLineCategories = new EnumMap<>(CategoryEnum.class);
+    @OneToOne(mappedBy = "bookLine", cascade = CascadeType.ALL)
+    private BookLineCategory categories;
 
     @Column(nullable = false)
     private Double money;
@@ -48,22 +46,43 @@ public class BookLine extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private RepeatBookLine repeatBookLine;
+
     @Builder
-    private BookLine(BookUser writer, Book book, Double money, LocalDate lineDate, String description, Boolean exceptStatus) {
+    private BookLine(final BookUser writer,
+                     final Book book,
+                     final BookLineCategory categories,
+                     final Double money,
+                     final LocalDate lineDate,
+                     final String description,
+                     final Boolean exceptStatus, final RepeatBookLine repeatBookLine) {
+
+        categories.setBookLine(this);
+
         this.writer = writer;
         this.book = book;
+        this.categories = categories;
         this.money = money;
         this.lineDate = lineDate;
         this.description = description;
         this.exceptStatus = exceptStatus;
+        this.repeatBookLine = repeatBookLine;
     }
 
-    public void add(CategoryEnum flow, BookLineCategory category) {
-        this.bookLineCategories.put(flow, category);
-    }
+    public static BookLine createByRepeatBookLine(LocalDate date, RepeatBookLine repeatBookLine) {
+        BookLineCategory bookLineCategory = BookLineCategory.create(repeatBookLine.getLineCategory(), repeatBookLine.getLineSubcategory(), repeatBookLine.getAssetSubcategory());
 
-    public String getTargetCategory(CategoryEnum key) {
-        return this.bookLineCategories.get(key).getName();
+        return BookLine.builder()
+            .categories(bookLineCategory)
+            .book(repeatBookLine.getBook())
+            .description(repeatBookLine.getDescription())
+            .lineDate(date)
+            .money(repeatBookLine.getMoney())
+            .exceptStatus(repeatBookLine.getExceptStatus())
+            .writer(repeatBookLine.getWriter())
+            .repeatBookLine(repeatBookLine)
+            .build();
     }
 
     public void update(BookLineRequest request) {
@@ -73,8 +92,23 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = request.getExcept();
     }
 
-    public String getWriter() {
+    public RepeatDuration getRepeatDuration() {
+        if (this.repeatBookLine != null) {
+            return this.repeatBookLine.getRepeatDuration();
+        }
+        return RepeatDuration.NONE;
+    }
+
+    public boolean isIncludedInAsset() {
+        return (this.isIncome() && !exceptStatus) || this.isOutcome();
+    }
+
+    public String getWriterNickName() {
         return this.writer.getNickName();
+    }
+
+    public void repeatBookLine(RepeatBookLine repeatBookLine) {
+        this.repeatBookLine = repeatBookLine;
     }
 
     public void inactive() {
@@ -82,7 +116,15 @@ public class BookLine extends BaseEntity {
         this.status = Status.INACTIVE;
     }
 
-    public boolean includedInAsset() {
-        return !AssetType.BANK.getKind().equals(bookLineCategories.get(CategoryEnum.FLOW).getName());
+    public boolean isNotRepeat() {
+        return this.repeatBookLine == null;
+    }
+
+    public boolean isIncome() {
+        return categories.isIncome();
+    }
+
+    public boolean isOutcome() {
+        return categories.isOutcome();
     }
 }

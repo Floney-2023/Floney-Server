@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +25,16 @@ import static com.floney.floney.common.constant.Status.INACTIVE;
 import static com.floney.floney.user.entity.QUser.user;
 
 @Repository
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class BookUserRepositoryImpl implements BookUserCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+    private final EntityManager entityManager;
 
     @Override
-    public List<OurBookUser> findAllUser(String bookKey) {
+    @Transactional(readOnly = true)
+    public List<OurBookUser> findAllUser(final String bookKey) {
         return jpaQueryFactory.select(
                 new QOurBookUser(
                     user.nickname,
@@ -41,26 +43,33 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 ))
             .from(bookUser)
             .innerJoin(bookUser.book, book)
+            .innerJoin(bookUser.user, user)
             .where(
-                book.bookKey.eq(bookKey),
+                book.bookKey.eq(bookKey)
+            )
+            .where(
+                user.status.eq(ACTIVE),
                 book.status.eq(ACTIVE),
                 bookUser.status.eq(ACTIVE)
             )
-            .innerJoin(bookUser.user, user)
-            .where(user.status.eq(ACTIVE))
             .fetch();
     }
 
     @Override
-    public Optional<String> findOldestBookUserEmailExceptOwner(User owner, Book targetBook) {
-        return Optional.ofNullable(jpaQueryFactory
-            .select(user.email)
+    @Transactional(readOnly = true)
+    public Optional<String> findOldestBookUserEmailExceptOwner(final User owner,
+                                                               final Book targetBook) {
+        return Optional.ofNullable(jpaQueryFactory.select(user.email)
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .innerJoin(bookUser.user, user)
             .where(
                 book.eq(targetBook),
-                user.ne(owner),
+                user.ne(owner)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                user.status.eq(ACTIVE),
                 bookUser.status.eq(ACTIVE)
             )
             .orderBy(bookUser.createdAt.asc())
@@ -68,126 +77,97 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public Optional<BookUser> findBookUserByEmailAndBookKey(String userEmail, String bookKey) {
+    @Transactional(readOnly = true)
+    public Optional<BookUser> findBookUserByEmailAndBookKey(final String userEmail,
+                                                            final String bookKey) {
         return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.book, book)
-            .where(
-                book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE)
-            )
-            .innerJoin(bookUser.user, user)
+            .innerJoin(bookUser.book, book).fetchJoin()
+            .innerJoin(bookUser.user, user).fetchJoin()
             .where(
                 user.email.eq(userEmail),
+                book.bookKey.eq(bookKey)
+            )
+            .where(
                 user.status.eq(ACTIVE),
-                bookUser.status.eq(ACTIVE)
+                bookUser.status.eq(ACTIVE),
+                book.status.eq(ACTIVE)
             )
             .fetchOne());
     }
 
     @Override
-    public boolean existsByBookKeyAndUserEmail(final String bookKey, final String userEmail) {
+    @Transactional(readOnly = true)
+    public boolean existsByBookKeyAndUserEmail(final String bookKey,
+                                               final String userEmail) {
         return jpaQueryFactory.select(bookUser.id)
             .from(bookUser)
             .innerJoin(bookUser.book, book)
-            .where(
-                book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE)
-            )
             .innerJoin(bookUser.user, user)
             .where(
-                bookUser.status.eq(ACTIVE),
                 user.email.eq(userEmail),
-                user.status.eq(ACTIVE)
+                book.bookKey.eq(bookKey)
+            )
+            .where(
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE),
+                book.status.eq(ACTIVE)
             )
             .fetchOne() != null;
     }
 
     @Override
-    public Optional<BookUser> findBookUserByKey(String currentUserEmail, String bookKey) {
-        return Optional.ofNullable(jpaQueryFactory
-            .selectFrom(bookUser)
-            .innerJoin(bookUser.user, user)
-            .where(
-                user.email.eq(currentUserEmail),
-                user.status.eq(ACTIVE)
-            )
-            .innerJoin(bookUser.book, book)
-            .where(
-                bookUser.status.eq(ACTIVE),
-                book.bookKey.eq(bookKey),
-                book.status.eq(ACTIVE)
-            )
-            .fetchOne());
-    }
-
-    @Override
-    public Optional<BookUser> findBookUserByCode(String currentUserEmail, String bookCode) {
-        return Optional.ofNullable(jpaQueryFactory
-            .select(bookUser)
-            .from(bookUser)
-            .innerJoin(bookUser.user, user)
-            .where(
-                user.email.eq(currentUserEmail),
-                user.status.eq(ACTIVE)
-            )
-            .innerJoin(bookUser.book, book)
+    @Transactional(readOnly = true)
+    public Optional<BookUser> findBookUserByCode(final String userEmail,
+                                                 final String bookCode) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(bookUser)
+            .innerJoin(bookUser.user, user).fetchJoin()
+            .innerJoin(bookUser.book, book).fetchJoin()
             .where(
                 book.code.eq(bookCode),
+                user.email.eq(userEmail)
+            )
+            .where(
                 book.status.eq(ACTIVE),
-                bookUser.status.eq(ACTIVE)
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE)
             )
             .fetchOne());
     }
 
-
     @Override
-    public List<MyBookInfo> findMyBookInfos(User user) {
-        List<Book> books = jpaQueryFactory.select(book)
+    @Transactional(readOnly = true)
+    public List<MyBookInfo> findMyBookInfos(final User targetUser) {
+        return jpaQueryFactory.select(
+                new QMyBookInfo(
+                    book.bookImg,
+                    book.bookKey,
+                    book.name,
+                    bookUser.count()
+                ))
             .from(bookUser)
-            .where(bookUser.user.eq(user),
-                bookUser.status.eq(ACTIVE))
-            .fetch();
-
-        List<MyBookInfo> infos = new ArrayList<>();
-        for (Book target : books) {
-            MyBookInfo my = jpaQueryFactory.select(
-                    new QMyBookInfo(
-                        book.bookImg,
-                        book.name,
-                        bookUser.count(),
-                        book.bookKey
-                    ))
-                .from(bookUser)
-                .where(
-                    bookUser.book.eq(target),
-                    bookUser.status.eq(ACTIVE),
-                    book.status.eq(ACTIVE)
-                ).fetchOne();
-            infos.add(my);
-        }
-        return infos;
-    }
-
-    // 유저가 owner인 가계부 조회
-    @Override
-    public List<Book> findBookByOwner(User user) {
-        return jpaQueryFactory.select(book)
-            .from(book)
+            .innerJoin(bookUser.book, book)
+            .innerJoin(bookUser.user, user)
             .where(
-                book.owner.eq(user.getEmail()),
+                user.eq(targetUser)
+            )
+            .where(
+                bookUser.status.eq(ACTIVE),
                 book.status.eq(ACTIVE)
             )
+            .groupBy(book)
             .fetch();
-
     }
 
     @Override
-    public int countByBook(final Book target) {
+    @Transactional(readOnly = true)
+    public int countByBook(final Book targetBook) {
         return jpaQueryFactory.select(bookUser.id)
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .where(
-                book.eq(target),
+                book.eq(targetBook)
+            )
+            .where(
                 bookUser.status.eq(ACTIVE)
             )
             .fetch()
@@ -200,7 +180,9 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
             .from(bookUser)
             .innerJoin(bookUser.book, book)
             .where(
-                book.eq(target),
+                book.eq(target)
+            )
+            .where(
                 bookUser.status.eq(ACTIVE)
             )
             .setLockMode(LockModeType.PESSIMISTIC_WRITE)
@@ -209,48 +191,21 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     }
 
     @Override
-    public BookUser findBookUserBy(String email, Book target) {
-        return jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.book, book)
-            .where(
-                book.eq(target),
-                book.status.eq(ACTIVE)
-            )
-            .innerJoin(bookUser.user, user)
-            .where(
-                user.email.eq(email),
-                user.status.eq(ACTIVE),
-                bookUser.status.eq(ACTIVE)
-            )
-            .fetchOne();
-
-    }
-
-    @Override
-    public boolean existsByUserEmailAndBookKey(final String email, final String bookKey) {
-        return jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.book, book)
-            .innerJoin(bookUser.user, user)
-            .where(
-                book.bookKey.eq(bookKey),
-                bookUser.status.eq(ACTIVE),
-                user.email.eq(email),
-                user.status.eq(ACTIVE)
-            )
-            .fetchOne() != null;
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public List<BookUser> findAllByUserId(final Long userId) {
         return jpaQueryFactory.selectFrom(bookUser)
-            .innerJoin(bookUser.user,user)
-            .where(user.id.eq(userId),bookUser.status.eq(ACTIVE))
-            .fetchJoin()
+            .innerJoin(bookUser.user, user).fetchJoin()
+            .where(
+                user.id.eq(userId)
+            )
+            .where(
+                bookUser.status.eq(ACTIVE),
+                user.status.eq(ACTIVE)
+            )
             .fetch();
     }
 
     @Override
-    @Transactional
     public void inactiveAllByBook(final Book book) {
         jpaQueryFactory.update(bookUser)
             .set(bookUser.status, INACTIVE)
@@ -260,5 +215,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 bookUser.status.eq(ACTIVE)
             )
             .execute();
+
+        entityManager.clear();
     }
 }

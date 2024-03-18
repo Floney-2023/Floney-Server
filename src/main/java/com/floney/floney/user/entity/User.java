@@ -31,10 +31,13 @@ import java.time.LocalDateTime;
 public class User extends BaseEntity {
 
     public static final String DELETE_VALUE = "알수없음";
+
     private static final int EMAIL_MAX_LENGTH = 350;
     private static final int PASSWORD_MIN_LENGTH = 8;
     public static final int PASSWORD_MAX_LENGTH = 32;
     private static final int NICKNAME_MAX_LENGTH = 8;
+
+    private static final String DEFAULT_PROFILE_IMG = "user_default";
 
     @Column(nullable = false)
     private String email;
@@ -46,7 +49,8 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(length = 300)
-    private String profileImg;
+    @Builder.Default
+    private String profileImg = DEFAULT_PROFILE_IMG;
 
     @Column(nullable = false)
     @DateTimeFormat(iso = ISO.DATE_TIME)

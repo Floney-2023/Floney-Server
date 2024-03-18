@@ -1,9 +1,9 @@
 package com.floney.floney.book.service;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public interface BookService {
 
-    CreateBookResponse addBook(final User user, final CreateBookRequest request);
+    CreateBookResponse createBook(final User user, final CreateBookRequest request);
 
     CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
 
@@ -43,7 +43,7 @@ public interface BookService {
 
     CurrencyResponse changeCurrency(final ChangeCurrencyRequest request);
 
-    Book makeInitBook(final String bookKey);
+    void resetBook(final String bookKey);
 
     CurrencyResponse getCurrency(String bookKey);
 
@@ -54,4 +54,8 @@ public interface BookService {
     Map<Month, Double> getBudgetByYear(String bookKey, String year);
 
     void leaveBooksBy(long userId);
+
+    void deleteRepeatLine(long repeatLineKey);
+
+    List<RepeatBookLineResponse> getAllRepeatBookLine(String bookKey, CategoryType categoryType);
 }

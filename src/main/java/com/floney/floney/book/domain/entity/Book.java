@@ -1,6 +1,6 @@
 package com.floney.floney.book.domain.entity;
 
-import com.floney.floney.book.domain.constant.Currency;
+import com.floney.floney.book.domain.Currency;
 import com.floney.floney.book.dto.request.UpdateBookImgRequest;
 import com.floney.floney.book.event.BookDeletedEvent;
 import com.floney.floney.common.entity.BaseEntity;

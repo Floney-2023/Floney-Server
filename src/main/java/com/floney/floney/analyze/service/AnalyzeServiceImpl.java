@@ -1,6 +1,5 @@
 package com.floney.floney.analyze.service;
 
-import com.floney.floney.analyze.dto.process.BookAnalyzer;
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
@@ -8,17 +7,18 @@ import com.floney.floney.analyze.dto.response.AnalyzeResponse;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
 import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.vo.Assets;
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.category.entity.Category;
+import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.Budget;
-import com.floney.floney.book.domain.entity.Category;
-import com.floney.floney.book.domain.entity.category.BookCategory;
-import com.floney.floney.book.dto.process.AssetInfo;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
-import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.domain.vo.DateDuration;
+import com.floney.floney.common.exception.book.CannotAnalyzeException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import lombok.RequiredArgsConstructor;
@@ -26,70 +26,92 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import java.util.Map;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AnalyzeServiceImpl implements AnalyzeService {
 
     private final BookRepository bookRepository;
     private final BookLineRepository bookLineRepository;
     private final BudgetRepository budgetRepository;
-    private final AssetServiceImpl assetFactory;
     private final CategoryRepository categoryRepository;
 
     @Override
-    @Transactional
-    public AnalyzeResponse analyzeByCategory(AnalyzeByCategoryRequest request) {
+    @Transactional(readOnly = true)
+    public AnalyzeResponse analyzeByCategory(final AnalyzeByCategoryRequest request) {
+        // lineCategory 가 지출 또는 수입일 때만 분석
+        final Category category = findCategory(request.getRoot());
+        validateCanAnalyze(category);
 
-        // 분석 종류 - 지출 or 수입
-        Category rootCategory = categoryRepository.findParentCategory(request.getRoot())
-            .orElseThrow(() -> new NotFoundCategoryException(request.getRoot()));
-        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
-        String bookKey = request.getBookKey();
+        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
+        final String bookKey = request.getBookKey();
 
-        // 부모가 지출 or 수입인 자식 카테고리 조회
-        List<Category> childCategoriesByRoot = getAllChildCategoryByRoot(rootCategory, bookKey);
+        final List<Subcategory> subCategories = getSubCategoriesByParentAndBookKey(category, bookKey);
 
-        // 카테고리 별, 가계부 내역 합계 조회
-        List<AnalyzeResponseByCategory> analyzeResultByCategory = bookLineRepository.analyzeByCategory(childCategoriesByRoot, duration, bookKey);
-
-        double totalMoney = calculateTotalMoney(analyzeResultByCategory);
-        double difference = calculateDifference(request, totalMoney);
-        return AnalyzeResponse.of(analyzeResultByCategory, totalMoney, difference);
+        // lineSubCategory 별로 가계부 내역 합계 조회
+        final List<AnalyzeResponseByCategory> analyzeByCategory = bookLineRepository.analyzeByLineSubcategory(
+            subCategories, duration, bookKey
+        );
+        final double totalMoney = calculateTotalMoney(analyzeByCategory);
+        final double difference = calculateDifference(request, totalMoney);
+        return AnalyzeResponse.of(analyzeByCategory, totalMoney, difference);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AnalyzeResponseByBudget analyzeByBudget(AnalyzeRequestByBudget request) {
-        DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
-        Book savedBook = findBook(request.getBookKey());
+    public AnalyzeResponseByBudget analyzeByBudget(final AnalyzeRequestByBudget request) {
+        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
+        final Book book = findBook(request.getBookKey());
 
         // 자산 조회
-        Budget budget = budgetRepository.findBudgetByBookAndDate(savedBook, LocalDate.parse(request.getDate()))
+        final Budget budget = budgetRepository.findBudgetByBookAndDateAndStatus(book, LocalDate.parse(request.getDate()), ACTIVE)
             .orElse(Budget.init());
 
         // 총 수입 조회
-        double totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(request, duration);
+        final double totalOutcome = bookLineRepository.totalOutcomeMoneyForBudget(book, duration);
         return AnalyzeResponseByBudget.of(totalOutcome, budget.getMoney());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AnalyzeResponseByAsset analyzeByAsset(AnalyzeRequestByAsset request) {
-        Book savedBook = findBook(request.getBookKey());
+    public AnalyzeResponseByAsset analyzeByAsset(final AnalyzeRequestByAsset request) {
+        final Book book = findBook(request.getBookKey());
+        final YearMonth currentMonth = request.getDate();
 
-        // 총 지출, 수입 조회
-        Map<String, Double> totalExpense = bookLineRepository.totalExpensesForAsset(request);
+        final Assets assets = Assets.create(book.getAsset(), currentMonth);
 
-        BookAnalyzer bookAnalyzer = new BookAnalyzer(totalExpense);
-        Map<LocalDate, AssetInfo> assetInfo = assetFactory.getAssetInfo(savedBook, request.getDate());
-        return bookAnalyzer.analyzeAsset(request.getDate(), savedBook.getAsset(), assetInfo);
+        for (int month = 0; month < Assets.MONTHS; month++) {
+            final YearMonth targetMonth = currentMonth.minusMonths(month);
+            final double totalIncome = bookLineRepository.incomeMoneyForAssetUntil(book, targetMonth);
+            final double totalOutcome = bookLineRepository.outcomeMoneyUntil(book, targetMonth);
+            assets.update(targetMonth, totalIncome - totalOutcome);
+        }
+
+        final double incomeOfThisMonth = bookLineRepository.incomeMoneyForAssetByMonth(book, currentMonth);
+        final double outcomeOfThisMonth = bookLineRepository.outcomeMoneyByMonth(book, currentMonth);
+
+        return AnalyzeResponseByAsset.of(incomeOfThisMonth - outcomeOfThisMonth, book.getAsset(), assets);
+    }
+
+    private void validateCanAnalyze(final Category category) {
+        if (!category.isIncomeOrOutcome()) {
+            throw new CannotAnalyzeException(category.getName());
+        }
+    }
+
+    private Category findCategory(final String name) {
+        CategoryType categoryType = CategoryType.findByMeaning(name);
+        return categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(name));
     }
 
     private Book findBook(String bookKey) {
-        return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
+        return bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
@@ -98,11 +120,9 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         return totalMoney - beforeMonthTotal;
     }
 
-    private List<Category> getAllChildCategoryByRoot(Category rootCategory, String bookKey) {
-        List<Category> childCategoriesByRoot = categoryRepository.findAllDefaultChildCategoryByRoot(rootCategory);
-        List<BookCategory> customCategories = categoryRepository.findAllCustomChildCategoryByRootAndRoot(rootCategory, bookKey);
-        childCategoriesByRoot.addAll(customCategories);
-        return childCategoriesByRoot;
+    private List<Subcategory> getSubCategoriesByParentAndBookKey(final Category parent,
+                                                                 final String bookKey) {
+        return categoryRepository.findSubcategories(parent, bookKey);
     }
 
     private double calculateTotalMoney(List<AnalyzeResponseByCategory> result) {

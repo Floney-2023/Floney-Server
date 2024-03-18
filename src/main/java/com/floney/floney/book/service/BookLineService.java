@@ -22,4 +22,6 @@ public interface BookLineService {
     BookLineResponse changeLine(BookLineRequest request);
 
     void deleteLine(Long bookLineId);
+
+    void deleteAllAfterBookLineByRepeat(long bookLineId);
 }

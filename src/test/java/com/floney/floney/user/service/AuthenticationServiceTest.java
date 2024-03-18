@@ -48,9 +48,9 @@ public class AuthenticationServiceTest {
         User user = UserFixture.emailUser();
 
         LoginRequest request = LoginRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .build();
+            .email(user.getEmail())
+            .password(user.getPassword())
+            .build();
 
         given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
@@ -58,7 +58,7 @@ public class AuthenticationServiceTest {
 
         // when & then
         assertThatNoException().isThrownBy(() -> authenticationService.login(request));
-        assertThat(user.isInactive()).isFalse();
+        assertThat(user.isActive()).isTrue();
         assertThat(user.getLastLoginTime()).isNotNull();
     }
 
@@ -67,9 +67,9 @@ public class AuthenticationServiceTest {
     void login_fail_throws_userNotFoundException() {
         // given
         LoginRequest request = LoginRequest.builder()
-                .email("fail@fail.com")
-                .password("fail")
-                .build();
+            .email("fail@fail.com")
+            .password("fail")
+            .build();
 
         given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.empty());
 
@@ -84,9 +84,9 @@ public class AuthenticationServiceTest {
         User user = UserFixture.emailUser();
 
         LoginRequest request = LoginRequest.builder()
-                .email(user.getEmail())
-                .password("fail")
-                .build();
+            .email(user.getEmail())
+            .password("fail")
+            .build();
 
         given(userRepository.findByEmail(request.getEmail())).willReturn(Optional.of(user));
         given(passwordEncoder.matches(anyString(), anyString())).willReturn(false);

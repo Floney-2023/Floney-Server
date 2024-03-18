@@ -1,7 +1,6 @@
 package com.floney.floney.book.service;
 
-import com.floney.floney.book.domain.constant.CategoryEnum;
-import com.floney.floney.book.domain.constant.ExcelDuration;
+import com.floney.floney.book.domain.ExcelDuration;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.request.ExcelDownloadRequest;
 import com.floney.floney.book.repository.BookLineRepository;
@@ -26,23 +25,6 @@ public class ExcelServiceImpl implements ExcelService {
 
     private final BookUserRepository bookUserRepository;
     private final BookLineRepository bookLineRepository;
-
-    private static void setWidthOfCells(final List<BookLine> bookLines, final Sheet sheet) {
-        int maxLengthOfWriter = 10;
-        int maxLengthOfMoney = 5;
-        int maxLengthOfDescription = 15;
-
-        for (final BookLine bookLine : bookLines) {
-            maxLengthOfWriter = Math.max(maxLengthOfWriter, bookLine.getWriter().length());
-            maxLengthOfMoney = Math.max(maxLengthOfMoney, String.valueOf(bookLine.getMoney()).length());
-            maxLengthOfDescription = Math.max(maxLengthOfDescription, bookLine.getDescription().length());
-        }
-
-        sheet.setColumnWidth(0, 10 + 256 * maxLengthOfWriter * 2);
-        sheet.setColumnWidth(1, 10 + 256 * 15);
-        sheet.setColumnWidth(3, 10 + 256 * maxLengthOfMoney * 2);
-        sheet.setColumnWidth(7, 10 + 256 * maxLengthOfDescription * 2);
-    }
 
     @Override
     public Workbook createBookExcel(final String userEmail, final ExcelDownloadRequest downloadRequest) {
@@ -73,7 +55,7 @@ public class ExcelServiceImpl implements ExcelService {
 
             int cellIdx = 0;
             final Cell writerCell = row.createCell(cellIdx++);
-            writerCell.setCellValue(bookLine.getWriter());
+            writerCell.setCellValue(bookLine.getWriterNickName());
             writerCell.setCellStyle(cellStyle);
 
             final Cell dateCell = row.createCell(cellIdx++);
@@ -83,9 +65,10 @@ public class ExcelServiceImpl implements ExcelService {
             final CellStyle dateStyle = createDateStyle(workbook);
             dateCell.setCellStyle(dateStyle);
 
-            final Cell flowCell = row.createCell(cellIdx++);
-            flowCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.FLOW));
-            flowCell.setCellStyle(cellStyle);
+            final Cell lineCell = row.createCell(cellIdx++);
+            final String lineName = bookLine.getCategories().getLineCategory().getName().getMeaning();
+            lineCell.setCellValue(lineName);
+            lineCell.setCellStyle(cellStyle);
 
             final Cell moneyCell = row.createCell(cellIdx++);
             moneyCell.setCellValue(bookLine.getMoney());
@@ -95,13 +78,15 @@ public class ExcelServiceImpl implements ExcelService {
             currencyCell.setCellValue(bookLine.getBook().getCurrency());
             currencyCell.setCellStyle(cellStyle);
 
-            final Cell assetCell = row.createCell(cellIdx++);
-            assetCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.ASSET));
-            assetCell.setCellStyle(cellStyle);
+            final Cell assetSubCell = row.createCell(cellIdx++);
+            final String assetSubName = bookLine.getCategories().getAssetSubcategory().getName();
+            assetSubCell.setCellValue(assetSubName);
+            assetSubCell.setCellStyle(cellStyle);
 
-            final Cell flowLineCell = row.createCell(cellIdx++);
-            flowLineCell.setCellValue(bookLine.getTargetCategory(CategoryEnum.FLOW_LINE));
-            flowLineCell.setCellStyle(cellStyle);
+            final Cell lineSubCell = row.createCell(cellIdx++);
+            final String lineSubName = bookLine.getCategories().getLineSubcategory().getName();
+            lineSubCell.setCellValue(lineSubName);
+            lineSubCell.setCellStyle(cellStyle);
 
             final Cell descriptionCell = row.createCell(cellIdx);
             descriptionCell.setCellValue(bookLine.getDescription());
@@ -111,6 +96,23 @@ public class ExcelServiceImpl implements ExcelService {
         return workbook;
     }
 
+    private static void setWidthOfCells(final List<BookLine> bookLines, final Sheet sheet) {
+        int maxLengthOfWriter = 10;
+        int maxLengthOfMoney = 5;
+        int maxLengthOfDescription = 15;
+
+        for (final BookLine bookLine : bookLines) {
+            maxLengthOfWriter = Math.max(maxLengthOfWriter, bookLine.getWriterNickName().length());
+            maxLengthOfMoney = Math.max(maxLengthOfMoney, String.valueOf(bookLine.getMoney()).length());
+            maxLengthOfDescription = Math.max(maxLengthOfDescription, bookLine.getDescription().length());
+        }
+
+        sheet.setColumnWidth(0, 10 + 256 * maxLengthOfWriter * 2);
+        sheet.setColumnWidth(1, 10 + 256 * 15);
+        sheet.setColumnWidth(3, 10 + 256 * maxLengthOfMoney * 2);
+        sheet.setColumnWidth(7, 10 + 256 * maxLengthOfDescription * 2);
+    }
+
     private CellStyle createDateStyle(Workbook workbook) {
         final CellStyle dateStyle = workbook.createCellStyle();
         dateStyle.setDataFormat(getDataFormat(workbook));
@@ -118,14 +120,17 @@ public class ExcelServiceImpl implements ExcelService {
         return dateStyle;
     }
 
-    private List<BookLine> getBookLinesByDuration(ExcelDownloadRequest downloadRequest) {
-        String bookKey = downloadRequest.getBookKey();
+    private List<BookLine> getBookLinesByDuration(final ExcelDownloadRequest downloadRequest) {
+        final String bookKey = downloadRequest.getBookKey();
 
-        if (downloadRequest.getExcelDuration() != ExcelDuration.ALL) {
-            DateDuration duration = durationByExcelDuration(downloadRequest.getCurrentDate(), downloadRequest.getExcelDuration());
-            return bookLineRepository.findAllBookLineByDurationOrderByDateDesc(bookKey, duration);
+        final ExcelDuration excelDuration = downloadRequest.getExcelDuration();
+        if (excelDuration != ExcelDuration.ALL) {
+            final String currentDate = downloadRequest.getCurrentDate();
+            final DateDuration duration = durationByExcelDuration(currentDate, excelDuration);
+
+            return bookLineRepository.findAllByDurationOrderByDateDesc(bookKey, duration);
         } else {
-            return bookLineRepository.findAllByBookOrderByDateDesc(bookKey);
+            return bookLineRepository.findAllByBookKeyOrderByDateDesc(bookKey);
         }
     }
 
@@ -162,7 +167,7 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private void validateBookUser(final String userEmail, final String bookKey) {
-        if (!bookUserRepository.existsByUserEmailAndBookKey(userEmail, bookKey)) {
+        if (!bookUserRepository.existsByBookKeyAndUserEmail(bookKey, userEmail)) {
             throw new NotFoundBookUserException(bookKey, userEmail);
         }
     }
