@@ -8,31 +8,53 @@
 - 🔗 iOS 다운: [앱스토어 링크](https://apps.apple.com/kr/app/%ED%94%8C%EB%A1%9C%EB%8B%88-floney/id6462989500)
 - 🔗 안드로이드 다운: 출시 예정
 
-## 시연 영상 🎥
+<br/>
+
+## 시연 영상(gif) 🎥
 
 ### 가계부 내역 추가
 
-![추가](https://github.com/Floney-2023/Floney-Server/assets/70848762/159cb204-a8ff-4c0e-8a05-dfbdcc6a6b8e)
+<details>
+<summary>👋 영상 확인</summary>
+<img src="https://github.com/Floney-2023/Floney-Server/assets/70848762/159cb204-a8ff-4c0e-8a05-dfbdcc6a6b8e" width="30%">
+</details>
 
 ### 가계부 정산
 
-![정산](https://github.com/Floney-2023/Floney-Server/assets/70848762/1ccb065e-c15a-4672-af3b-820ca4d43439)
+<details>
+<summary>👋 영상 확인</summary>
+<img src="https://github.com/Floney-2023/Floney-Server/assets/70848762/1ccb065e-c15a-4672-af3b-820ca4d43439" width="30%">
+</details>
 
 ### 가계부 내역 분석
 
-![분석](https://github.com/Floney-2023/Floney-Server/assets/70848762/476f0589-ef1c-466b-915d-e39289624f14)
+<details>
+<summary>👋 영상 확인</summary>
+<img src="https://github.com/Floney-2023/Floney-Server/assets/70848762/476f0589-ef1c-466b-915d-e39289624f14" width="30%">
+</details>
+
+<br/>
 
 ## API 명세서 📝
 
-[🔗 API 명세서 바로가기](https://docs.google.com/spreadsheets/d/1dYrJyME0qMLKuLyS1l5VZkP54tgOKujcHlnroN7nLoA/edit?usp=sharing)
+🔗 [API 명세서 바로가기](https://docs.google.com/spreadsheets/d/1dYrJyME0qMLKuLyS1l5VZkP54tgOKujcHlnroN7nLoA/edit?usp=sharing)
+
+<br/>
 
 ## 시스템 아키텍처 🏗
 
-![image](./system_architecture.png)
+<img src="system_architecture.png" width="70%">
+
+<br/>
 
 ## ERD 📊
 
-![erd.png](erd.png)
+<details>
+<summary>👋 ERD 확인</summary>
+<img src="erd.png">
+</details>
+
+<br/>
 
 ## 팀 컨벤션 👭
 
