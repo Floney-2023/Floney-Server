@@ -4,11 +4,12 @@
 
 ![image](https://github.com/Floney-2023/Floney-Server/assets/64001680/928b5b86-2eea-4083-80e4-1d0cff3ec675)
 
+- 📅 진행 기간  : 2023.04 ~ ing
+- 👩‍💻 서버팀
+  멤버 : [최세은](https://github.com/dahyen0o), [김성윤](https://github.com/sienna011022), [송세정](https://github.com/sejeongsong)
 - 🔗 서비스 소개: https://github.com/Floney-2023
 - 🔗 iOS 다운: [앱스토어 링크](https://apps.apple.com/kr/app/%ED%94%8C%EB%A1%9C%EB%8B%88-floney/id6462989500)
 - 🔗 안드로이드 다운: 출시 예정
-
-<br/>
 
 ## 시연 영상(gif) 🎥
 
