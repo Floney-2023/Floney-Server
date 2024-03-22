@@ -308,7 +308,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RepeatBookLineResponse> getAllRepeatBookLine(final String bookKey, final CategoryType categoryType) {
         Book book = findBook(bookKey);
         Category lineCategory = categoryRepository.findByType(categoryType)
@@ -337,7 +337,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private boolean shouldKeepBookLine(RepeatBookLine repeatBookLine) {
-        boolean keepBookLine = bookLineRepository.findAllBookLineByRepeatLine(repeatBookLine.getId()).size() > 0;
+        boolean keepBookLine = bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine);
 
         if (!keepBookLine) {
             repeatBookLine.inactive();

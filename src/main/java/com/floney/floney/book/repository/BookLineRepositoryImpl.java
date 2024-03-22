@@ -568,16 +568,4 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 )
                 .fetchOne()).orElse(0.0);
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<BookLine> findAllBookLineByRepeatLine(long repeatBookLineId) {
-        return jpaQueryFactory.select(bookLine)
-                .from(bookLine)
-                .innerJoin(bookLine.repeatBookLine, repeatBookLine)
-                .where(repeatBookLine.id.eq(repeatBookLineId),
-                        bookLine.status.eq(ACTIVE),
-                        repeatBookLine.status.eq(ACTIVE))
-                .fetch();
-    }
 }
