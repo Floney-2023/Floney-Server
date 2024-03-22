@@ -53,7 +53,7 @@ public class BookLineServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
-    
+
     @Nested
     @DisplayName("createBookLine()을 실행할 때")
     class Describe_CreateBookLine {
@@ -80,43 +80,45 @@ public class BookLineServiceTest {
                 final BookLineCategory bookLineCategory = BookLineCategory.create(incomeCategory, subCategory, assetSubCategory);
 
                 given(categoryRepository.findByType(CategoryType.INCOME))
-                    .willReturn(Optional.ofNullable(incomeCategory));
+                        .willReturn(Optional.ofNullable(incomeCategory));
 
                 given(bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE))
-                    .willReturn(Optional.of(book));
+                        .willReturn(Optional.of(book));
 
                 given(bookUserRepository.findBookUserByEmailAndBookKey(userEmail, bookKey))
-                    .willReturn(Optional.ofNullable(bookUser));
+                        .willReturn(Optional.ofNullable(bookUser));
 
                 given(categoryRepository.findSubcategory("급여", book, CategoryType.INCOME))
-                    .willReturn(Optional.ofNullable(subCategory));
+                        .willReturn(Optional.ofNullable(subCategory));
 
                 given(categoryRepository.findSubcategory("현금", book, CategoryType.ASSET))
-                    .willReturn(Optional.ofNullable(assetSubCategory));
+                        .willReturn(Optional.ofNullable(assetSubCategory));
 
                 final BookLine bookLine = BookLineFixture.create(book, bookUser, bookLineCategory);
                 ReflectionTestUtils.setField(bookLine, "id", 1L);
                 given(bookLineRepository.save(any(BookLine.class)))
-                    .willReturn(bookLine);
+                        .willReturn(bookLine);
             }
 
             @Test
             @DisplayName("생성한 내역의 정보를 반환한다.")
             void it_returns_bookLine() {
                 final BookLineRequest request = BookLineRequest.builder()
-                    .bookKey(bookKey)
-                    .flow(CategoryType.INCOME.getMeaning())
-                    .line("급여")
-                    .asset("현금")
-                    .lineDate(LocalDate.now())
-                    .except(Boolean.FALSE)
-                    .money(2000)
-                    .repeatDuration(RepeatDuration.NONE)
-                    .build();
+                        .bookKey(bookKey)
+                        .flow(CategoryType.INCOME.getMeaning())
+                        .line("급여")
+                        .asset("현금")
+                        .lineDate(LocalDate.now())
+                        .except(Boolean.FALSE)
+                        .money(2000)
+                        .repeatDuration(RepeatDuration.NONE)
+                        .build();
 
                 final BookLineResponse bookLineResponse = bookLineService.createBookLine(userEmail, request);
                 assertThat(bookLineResponse.getId()).isEqualTo(1);
             }
         }
+
     }
 }
+
