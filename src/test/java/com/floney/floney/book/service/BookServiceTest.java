@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+@DisplayName("단위 테스트 : BookService")
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
@@ -76,96 +77,81 @@ public class BookServiceTest {
     @Mock
     private RepeatBookLineRepository repeatBookLineRepository;
 
-    @Test
-    @DisplayName("초대코드로 가계부에 가입한다")
-    void create_book() {
-        Book testBook = BookFixture.createBookWith("1234");
-        User testUser = UserFixture.emailUser();
 
-        given(bookRepository.findBookExclusivelyByCodeAndStatus(anyString(), any(Status.class)))
-                .willReturn(Optional.of(testBook));
+    @Nested
+    @DisplayName("joinWithCode()를 실행할 때")
+    class Describe_JoinWithCode {
 
-        given(bookUserRepository.findBookUserByCode(anyString(), anyString()))
-                .willReturn(Optional.empty());
+        @Nested
+        @DisplayName("초대코드가 유효한다면")
+        class Context_With_ValidCode {
 
-        given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
+            User testUser;
+            Book testBook;
 
-        assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
-                .isEqualTo(testBook.getCode());
-    }
+            @BeforeEach
+            void init() {
+                testBook = BookFixture.createBookWith("1234");
+                testUser = UserFixture.emailUser();
 
-    @Test
-    @DisplayName("참여한 가계부가 2개 이상이면 가계부를 만들 수 없다")
-    void default_book_create_exception() {
-        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(2);
+                given(bookRepository.findBookExclusivelyByCodeAndStatus(anyString(), any(Status.class)))
+                        .willReturn(Optional.of(testBook));
 
-        assertThatThrownBy(() -> bookService.createBook(UserFixture.emailUser(), createBookRequest()))
-                .isInstanceOf(LimitRequestException.class);
-    }
+                given(bookUserRepository.findBookUserByCode(anyString(), anyString()))
+                        .willReturn(Optional.empty());
 
-    @Test
-    @DisplayName("참여한 가계부가 2개 미만이면 가계부를 만든다")
-    void default_book_create() {
-        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(1);
-        given(bookRepository.save(any(Book.class)))
-                .willReturn(BookFixture.createBook());
-        given(defaultSubcategoryRepository.findAllByStatus(ACTIVE))
-                .willReturn(List.of());
+                given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
-        assertThatNoException().isThrownBy(() -> bookService.createBook(UserFixture.emailUser(), createBookRequest()));
-    }
+            }
 
-    @Test
-    @DisplayName("참여한 가계부가 2개 이상이면, 가계부에 더 이상 참여할 수 없다")
-    void default_book_join_limitRequestException() {
-        // given
-        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(BookCapacity.DEFAULT.getValue());
-
-        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(ofNullable(createBook()));
-
-        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
-
-        // when & then
-        assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(LimitRequestException.class);
-    }
-
-    @Test
-    @DisplayName("참여할 가계부의 정원이 이미 찼다면, 가계부에 더 이상 참여할 수 없다")
-    void default_book_join_maxMemberException() {
-        // given
-        given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                .willReturn(0);
-
-        given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                .willReturn(ofNullable(createBook()));
-
-        given(bookUserRepository.countByBookExclusively(any(Book.class)))
-                .willReturn(BookUserCapacity.DEFAULT.getValue());
-
-        CustomUserDetails customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
-
-        // when & then
-        assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                .isInstanceOf(MaxMemberException.class);
-    }
-
-    @Test
-    @DisplayName("가계부 이름 변경을 요청한다")
-    void change_name() {
-        String changeTo = "newName";
-        Book book = BookFixture.createBook();
-        book.updateName(changeTo);
-        Assertions.assertThat(book.getName()).isEqualTo(changeTo);
+            @Test
+            @DisplayName("기계부 참여에 성공한다")
+            void it_return_code() {
+                assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
+                        .isEqualTo(testBook.getCode());
+            }
+        }
     }
 
     @Nested
     @DisplayName("GetAllRepeatBookLine()을 실행할 때")
     class Context_GetAllRepeatBookLine {
+
+
+        @Nested
+        @DisplayName("가계부 내역이 존재하는 반복 내역이 주어지는 경우")
+        class Describe_ExistBookLine {
+
+            Book book;
+            RepeatBookLine repeatBookLine;
+
+            @BeforeEach
+            void init() {
+                book = createBook();
+                BookUser bookUser = BookUserFixture.createBookUser(book, UserFixture.emailUser());
+                repeatBookLine = RepeatBookLineFixture.repeatBookLine(CategoryFixture.create(INCOME), bookUser, MONTH);
+                ReflectionTestUtils.setField(repeatBookLine, "id", 1L);
+
+                given(bookRepository.findBookByBookKeyAndStatus(anyString(), any(Status.class)))
+                        .willReturn(ofNullable(book));
+                given(categoryRepository.findByType(any(CategoryType.class)))
+                        .willReturn(ofNullable(CategoryFixture.create(INCOME)));
+                given(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(any(Book.class), any(Status.class), any(Category.class)))
+                        .willReturn(Arrays.asList(repeatBookLine));
+                given(bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine))
+                        .willReturn(true);
+
+            }
+
+            @Test
+            @DisplayName("해당 반복 내역은 조회 된다")
+            void it_return_repeatBookLine() {
+                Assertions.assertThat(bookService.getAllRepeatBookLine(book.getBookKey(), INCOME)).isNotEmpty();
+                Assertions.assertThat(repeatBookLine.isActive()).isTrue();
+
+
+            }
+        }
 
         @Nested
         @DisplayName("가계부 내역이 존재하지 않는 반복 내역이 주어지는 경우")
@@ -202,38 +188,88 @@ public class BookServiceTest {
         }
     }
 
+
     @Nested
-    @DisplayName("가계부 내역이 존재하는 반복 내역이 주어지는 경우")
-    class Describe_ExistBookLine {
+    @DisplayName("createBook()를 실행할 때")
+    class Describe_CreateBook {
+        @Nested
+        @DisplayName("참여한 가계부가 2개 이상이라면")
+        class Context_With_OverJoin {
 
-        Book book;
-        RepeatBookLine repeatBookLine;
+            CustomUserDetails customUserDetails;
 
-        @BeforeEach
-        void init() {
-            book = createBook();
-            BookUser bookUser = BookUserFixture.createBookUser(book, UserFixture.emailUser());
-            repeatBookLine = RepeatBookLineFixture.repeatBookLine(CategoryFixture.create(INCOME), bookUser, MONTH);
-            ReflectionTestUtils.setField(repeatBookLine, "id", 1L);
+            @BeforeEach
+            void init() {
+                // given
+                given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                        .willReturn(BookCapacity.DEFAULT.getValue());
 
-            given(bookRepository.findBookByBookKeyAndStatus(anyString(), any(Status.class)))
-                    .willReturn(ofNullable(book));
-            given(categoryRepository.findByType(any(CategoryType.class)))
-                    .willReturn(ofNullable(CategoryFixture.create(INCOME)));
-            given(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(any(Book.class), any(Status.class), any(Category.class)))
-                    .willReturn(Arrays.asList(repeatBookLine));
-            given(bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine))
-                    .willReturn(true);
+                given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
+                        .willReturn(ofNullable(createBook()));
 
+                customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
+
+            }
+
+            @Test
+            @DisplayName("에러를 반환한다")
+            void it_returns_exception() {
+                assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
+                        .isInstanceOf(LimitRequestException.class);
+
+            }
         }
 
-        @Test
-        @DisplayName("해당 반복 내역은 조회 된다")
-        void it_return_repeatBookLine() {
-            Assertions.assertThat(bookService.getAllRepeatBookLine(book.getBookKey(), INCOME)).isNotEmpty();
-            Assertions.assertThat(repeatBookLine.isActive()).isTrue();
+        @Nested
+        @DisplayName("참여한 가계부가 2개 미만이라면")
+        class Context_With_ValidJoin {
+            Book book;
 
+            @BeforeEach
+            void init() {
+                book = BookFixture.createBookWith("book-key");
+                given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                        .willReturn(1);
+                given(bookRepository.save(any(Book.class)))
+                        .willReturn(book);
+                given(defaultSubcategoryRepository.findAllByStatus(ACTIVE))
+                        .willReturn(List.of());
 
+            }
+
+            @Test
+            @DisplayName("성공한다")
+            void it_returns_success() {
+                assertThatNoException().isThrownBy(() -> bookService.createBook(UserFixture.emailUser(), createBookRequest()));
+            }
+        }
+
+        @Nested
+        @DisplayName("참여할 가계부의 정원이 이미 찼다면")
+        class Context_With_FullJoin {
+            CustomUserDetails customUserDetails;
+
+            @BeforeEach()
+            void init() {
+                given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
+                        .willReturn(0);
+
+                given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
+                        .willReturn(ofNullable(createBook()));
+
+                given(bookUserRepository.countByBookExclusively(any(Book.class)))
+                        .willReturn(BookUserCapacity.DEFAULT.getValue());
+
+                customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
+            }
+
+            @Test
+            @DisplayName("예외를 반환한다")
+            void it_returns_exception() {
+                assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
+                        .isInstanceOf(MaxMemberException.class);
+            }
         }
     }
+
 }

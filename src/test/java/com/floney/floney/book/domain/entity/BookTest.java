@@ -19,7 +19,7 @@ public class BookTest {
         String other = "sienna011022@naver.com";
 
         assertThatThrownBy(() -> book.validateOwner(other))
-            .isInstanceOf(NoAuthorityException.class);
+                .isInstanceOf(NoAuthorityException.class);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class BookTest {
         Book book = createBook();
         book.updateImg(updateBookImgRequest());
         Assertions.assertThat(book.getBookImg())
-            .isEqualTo(UPDATE_URL);
+                .isEqualTo(UPDATE_URL);
     }
 
     @Test
@@ -38,6 +38,16 @@ public class BookTest {
         Book book = BookFixture.createBook();
         book.changeCurrency(changeTo);
         Assertions.assertThat(book.getCurrency()).isEqualTo(changeTo.toString());
+    }
+
+
+    @Test
+    @DisplayName("가계부 이름 변경한다")
+    void change_name() {
+        String changeTo = "newName";
+        Book book = BookFixture.createBook();
+        book.updateName(changeTo);
+        Assertions.assertThat(book.getName()).isEqualTo(changeTo);
     }
 
 }
