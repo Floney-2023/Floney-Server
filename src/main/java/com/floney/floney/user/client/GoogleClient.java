@@ -1,6 +1,6 @@
 package com.floney.floney.user.client;
 
-import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.EmptyOAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.dto.response.GoogleUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class GoogleClient implements ClientProxy {
         } catch (HttpClientErrorException.BadRequest exception) {
             throw new OAuthTokenNotValidException();
         } catch (NullPointerException exception) {
-            throw new OAuthResponseException();
+            throw new EmptyOAuthResponseException();
         }
     }
 }

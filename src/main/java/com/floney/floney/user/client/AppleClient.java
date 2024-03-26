@@ -2,7 +2,7 @@ package com.floney.floney.user.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.EmptyOAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.client.dto.ApplePublicKeys;
 import com.floney.floney.user.client.dto.AppleTokenHeader;
@@ -44,7 +44,7 @@ public class AppleClient implements ClientProxy {
             final ApplePublicKeys applePublicKeys = restTemplate.getForObject(uri, ApplePublicKeys.class);
 
             if (applePublicKeys == null) {
-                throw new OAuthResponseException();
+                throw new EmptyOAuthResponseException();
             }
 
             final PublicKey publicKey = publicKeyGenerator.generate(authTokenHeader, applePublicKeys.getKeys());

@@ -1,14 +1,14 @@
 package com.floney.floney.common.exception.user;
 
+import com.floney.floney.common.exception.common.FloneyException;
 import com.floney.floney.common.exception.common.ErrorType;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
-public class PasswordNotSameException extends RuntimeException {
-
-    private final ErrorType errorType;
+public class PasswordNotSameException extends FloneyException {
 
     public PasswordNotSameException() {
-        this.errorType = ErrorType.NOT_SAME_PASSWORD;
+        super(ErrorType.NOT_SAME_PASSWORD, HttpStatus.BAD_REQUEST);
     }
 }

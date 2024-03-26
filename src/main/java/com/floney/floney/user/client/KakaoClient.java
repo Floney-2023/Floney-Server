@@ -1,6 +1,6 @@
 package com.floney.floney.user.client;
 
-import com.floney.floney.common.exception.user.OAuthResponseException;
+import com.floney.floney.common.exception.user.EmptyOAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.user.dto.response.KakaoUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class KakaoClient implements ClientProxy {
         } catch (HttpClientErrorException.Unauthorized exception) {
             throw new OAuthTokenNotValidException();
         } catch (NullPointerException exception) {
-            throw new OAuthResponseException();
+            throw new EmptyOAuthResponseException();
         }
     }
 }
