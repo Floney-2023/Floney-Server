@@ -7,6 +7,8 @@ import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.process.QMyBookInfo;
 import com.floney.floney.book.dto.process.QOurBookUser;
 import com.floney.floney.user.entity.User;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -137,6 +139,17 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
     @Override
     @Transactional(readOnly = true)
     public List<MyBookInfo> findMyBookInfos(final User targetUser) {
+        final JPQLQuery<Long> booksByUser = JPAExpressions.select(book.id)
+            .from(bookUser)
+            .innerJoin(bookUser.book, book)
+            .where(
+                bookUser.user.eq(targetUser)
+            )
+            .where(
+                bookUser.status.eq(ACTIVE),
+                book.status.eq(ACTIVE)
+            );
+
         return jpaQueryFactory.select(
                 new QMyBookInfo(
                     book.bookImg,
@@ -145,16 +158,10 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                     bookUser.count()
                 ))
             .from(bookUser)
-            .innerJoin(bookUser.book, book)
-            .innerJoin(bookUser.user, user)
             .where(
-                user.eq(targetUser)
+                bookUser.book.id.in(booksByUser)
             )
-            .where(
-                bookUser.status.eq(ACTIVE),
-                book.status.eq(ACTIVE)
-            )
-            .groupBy(book)
+            .groupBy(bookUser.book)
             .fetch();
     }
 
