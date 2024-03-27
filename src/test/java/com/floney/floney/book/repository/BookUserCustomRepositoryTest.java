@@ -290,8 +290,8 @@ public class BookUserCustomRepositoryTest {
     class Describe_FindMyBookInfos {
 
         @Nested
-        @DisplayName("유저가 참여한 가계부가 존재하는 경우")
-        class Context_With_BookUserExists {
+        @DisplayName("유저가 참여한 가계부가 여러 개 존재하는 경우")
+        class Context_With_MultipleBooks {
 
             final User user = UserFixture.emailUser();
             final int bookCount = 3;
@@ -312,6 +312,35 @@ public class BookUserCustomRepositoryTest {
                     .hasSize(bookCount)
                     .extracting("memberCount", Long.class)
                     .allSatisfy(memberCount -> assertThat(memberCount).isEqualTo(1));
+            }
+        }
+
+        @Nested
+        @DisplayName("유저가 참여한 가계부의 부원이 여러 명일 경우")
+        class Context_With_MultipleBookUsers {
+
+            User user;
+
+            @BeforeEach
+            void init() {
+                user = userRepository.save(UserFixture.emailUser());
+                final User otherUser1 = userRepository.save(UserFixture.emailUserWithEmail("other1@email.com"));
+                final User otherUser2 = userRepository.save(UserFixture.emailUserWithEmail("other2@email.com"));
+
+                final Book book = bookRepository.save(BookFixture.createBook());
+                bookUserRepository.save(BookUser.of(user, book));
+                bookUserRepository.save(BookUser.of(otherUser1, book));
+                bookUserRepository.save(BookUser.of(otherUser2, book));
+            }
+
+            @Test
+            @DisplayName("MyBookInfo 리스트를 반환한다.")
+            void it_returns_myBookInfos() {
+                assertThat(bookUserRepository.findMyBookInfos(user))
+                    .hasSize(1)
+                    .allSatisfy(myBookInfo -> {
+                        assertThat(myBookInfo).hasFieldOrPropertyWithValue("memberCount", 3L);
+                    });
             }
         }
 
