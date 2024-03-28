@@ -95,10 +95,10 @@ public class BookServiceTest {
                 testUser = UserFixture.emailUser();
 
                 given(bookRepository.findBookExclusivelyByCodeAndStatus(anyString(), any(Status.class)))
-                        .willReturn(Optional.of(testBook));
+                    .willReturn(Optional.of(testBook));
 
                 given(bookUserRepository.findBookUserByCode(anyString(), anyString()))
-                        .willReturn(Optional.empty());
+                    .willReturn(Optional.empty());
 
                 given(bookUserRepository.countByBookExclusively(any(Book.class))).willReturn(1);
 
@@ -108,7 +108,7 @@ public class BookServiceTest {
             @DisplayName("기계부 참여에 성공한다")
             void it_return_code() {
                 assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
-                        .isEqualTo(testBook.getCode());
+                    .isEqualTo(testBook.getCode());
             }
         }
     }
@@ -133,13 +133,13 @@ public class BookServiceTest {
                 ReflectionTestUtils.setField(repeatBookLine, "id", 1L);
 
                 given(bookRepository.findBookByBookKeyAndStatus(anyString(), any(Status.class)))
-                        .willReturn(ofNullable(book));
+                    .willReturn(ofNullable(book));
                 given(categoryRepository.findByType(any(CategoryType.class)))
-                        .willReturn(ofNullable(CategoryFixture.create(INCOME)));
+                    .willReturn(ofNullable(CategoryFixture.create(INCOME)));
                 given(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(any(Book.class), any(Status.class), any(Category.class)))
-                        .willReturn(Arrays.asList(repeatBookLine));
+                    .willReturn(Arrays.asList(repeatBookLine));
                 given(bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine))
-                        .willReturn(true);
+                    .willReturn(true);
 
             }
 
@@ -168,11 +168,11 @@ public class BookServiceTest {
                 ReflectionTestUtils.setField(repeatBookLine, "id", 1L);
 
                 given(bookRepository.findBookByBookKeyAndStatus(anyString(), any(Status.class)))
-                        .willReturn(ofNullable(book));
+                    .willReturn(ofNullable(book));
                 given(categoryRepository.findByType(any(CategoryType.class)))
-                        .willReturn(ofNullable(CategoryFixture.create(INCOME)));
+                    .willReturn(ofNullable(CategoryFixture.create(INCOME)));
                 given(repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(any(Book.class), any(Status.class), any(Category.class)))
-                        .willReturn(Arrays.asList(repeatBookLine));
+                    .willReturn(Arrays.asList(repeatBookLine));
                 given(bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine)).willReturn(false);
 
             }
@@ -202,10 +202,10 @@ public class BookServiceTest {
             void init() {
                 // given
                 given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                        .willReturn(BookCapacity.DEFAULT.getValue());
+                    .willReturn(BookCapacity.DEFAULT.getValue());
 
                 given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                        .willReturn(ofNullable(createBook()));
+                    .willReturn(ofNullable(createBook()));
 
                 customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
 
@@ -215,7 +215,7 @@ public class BookServiceTest {
             @DisplayName("에러를 반환한다")
             void it_returns_exception() {
                 assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                        .isInstanceOf(LimitRequestException.class);
+                    .isInstanceOf(LimitRequestException.class);
 
             }
         }
@@ -229,11 +229,11 @@ public class BookServiceTest {
             void init() {
                 book = BookFixture.createBookWith("book-key");
                 given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                        .willReturn(1);
+                    .willReturn(1);
                 given(bookRepository.save(any(Book.class)))
-                        .willReturn(book);
+                    .willReturn(book);
                 given(defaultSubcategoryRepository.findAllByStatus(ACTIVE))
-                        .willReturn(List.of());
+                    .willReturn(List.of());
 
             }
 
@@ -252,13 +252,13 @@ public class BookServiceTest {
             @BeforeEach()
             void init() {
                 given(bookUserRepository.countBookUserByUserAndStatus(any(User.class), any(ACTIVE.getClass())))
-                        .willReturn(0);
+                    .willReturn(0);
 
                 given(bookRepository.findBookExclusivelyByCodeAndStatus(any(String.class), any(Status.class)))
-                        .willReturn(ofNullable(createBook()));
+                    .willReturn(ofNullable(createBook()));
 
                 given(bookUserRepository.countByBookExclusively(any(Book.class)))
-                        .willReturn(BookUserCapacity.DEFAULT.getValue());
+                    .willReturn(BookUserCapacity.DEFAULT.getValue());
 
                 customUserDetails = CustomUserDetails.of(UserFixture.emailUser());
             }
@@ -267,7 +267,7 @@ public class BookServiceTest {
             @DisplayName("예외를 반환한다")
             void it_returns_exception() {
                 assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
-                        .isInstanceOf(MaxMemberException.class);
+                    .isInstanceOf(MaxMemberException.class);
             }
         }
     }

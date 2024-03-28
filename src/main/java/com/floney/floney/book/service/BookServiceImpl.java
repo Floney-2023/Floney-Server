@@ -81,7 +81,7 @@ public class BookServiceImpl implements BookService {
         User user = userDetails.getUser();
 
         Book book = bookRepository.findBookExclusivelyByCodeAndStatus(code, ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(code));
+            .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
         validateJoinByBookCapacity(user);
@@ -185,10 +185,10 @@ public class BookServiceImpl implements BookService {
 
         final List<User> users = new ArrayList<>(List.of(userDetails.getUser()));
         users.addAll(findAllByBookAndStatus(bookKey)
-                .stream()
-                .map(BookUser::getUser)
-                .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
-                .toList());
+            .stream()
+            .map(BookUser::getUser)
+            .filter(user -> !user.getEmail().equals(userDetails.getUsername()))
+            .toList());
 
         return userToResponse(users);
     }
@@ -312,13 +312,13 @@ public class BookServiceImpl implements BookService {
     public List<RepeatBookLineResponse> getAllRepeatBookLine(final String bookKey, final CategoryType categoryType) {
         Book book = findBook(bookKey);
         Category lineCategory = categoryRepository.findByType(categoryType)
-                .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
 
         return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory)
-                .stream()
-                .filter(this::shouldKeepBookLine)
-                .map(RepeatBookLineResponse::new)
-                .collect(Collectors.toList());
+            .stream()
+            .filter(this::shouldKeepBookLine)
+            .map(RepeatBookLineResponse::new)
+            .collect(Collectors.toList());
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
@@ -330,9 +330,9 @@ public class BookServiceImpl implements BookService {
     private void saveAnotherRecentBookKey(User user) {
         List<MyBookInfo> myBookInfos = bookUserRepository.findMyBookInfos(user);
         myBookInfos.stream()
-                .findFirst()
-                .ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
-                        () -> user.saveRecentBookKey(null));
+            .findFirst()
+            .ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
+                () -> user.saveRecentBookKey(null));
         userRepository.save(user);
     }
 
