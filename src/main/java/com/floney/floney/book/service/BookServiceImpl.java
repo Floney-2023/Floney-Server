@@ -308,13 +308,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RepeatBookLineResponse> getAllRepeatBookLine(final String bookKey, final CategoryType categoryType) {
         Book book = findBook(bookKey);
+        Category lineCategory = categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
 
-        Category lineCategory = categoryRepository.findByType(categoryType).orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
-
-        return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory).stream().map(RepeatBookLineResponse::new).collect(Collectors.toList());
+        return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory)
+            .stream()
+            .filter(this::shouldKeepBookLine)
+            .map(RepeatBookLineResponse::new)
+            .collect(Collectors.toList());
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
@@ -330,6 +334,18 @@ public class BookServiceImpl implements BookService {
             .ifPresentOrElse(bookInfo -> user.saveRecentBookKey(bookInfo.getBookKey()),
                 () -> user.saveRecentBookKey(null));
         userRepository.save(user);
+    }
+
+    private boolean shouldKeepBookLine(RepeatBookLine repeatBookLine) {
+        boolean keepBookLine = bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine);
+
+        if (!keepBookLine) {
+            repeatBookLine.inactive();
+            repeatBookLineRepository.save(repeatBookLine);
+            return false;
+        }
+        return true;
+
     }
 
     private void validateJoinByBookUserCapacity(Book book) {
