@@ -6,5 +6,19 @@ public enum Currency {
     EUR,
     JPY,
     CNY,
-    GBP
+    GBP,
+    VND,
+    PHP,
+    THE,
+    IDR,
+    MYR,
+    TRY,
+    RUB,
+    HUF,
+    CHF,
+    INR,
+    PLN,
+    CZK,
+    DKK,
+    NGN
 }
