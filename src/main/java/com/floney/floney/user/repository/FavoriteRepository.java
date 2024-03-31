@@ -1,10 +1,10 @@
-package com.floney.floney.favorite.repository;
+package com.floney.floney.user.repository;
 
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
-import com.floney.floney.favorite.entity.Favorite;
+import com.floney.floney.user.entity.Favorite;
 import com.floney.floney.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,4 +1,4 @@
-package com.floney.floney.favorite.service;
+package com.floney.floney.user.service;
 
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
@@ -11,10 +11,9 @@ import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.floney.floney.common.exception.favorite.FavoriteAlreadyRegisteredException;
 import com.floney.floney.common.exception.favorite.FavoriteNotFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
-import com.floney.floney.favorite.dto.MyFavoriteResponseByFlow;
-import com.floney.floney.favorite.entity.Favorite;
-import com.floney.floney.favorite.repository.FavoriteRepository;
-import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.floney.floney.user.dto.response.MyFavoriteResponseByFlow;
+import com.floney.floney.user.entity.Favorite;
+import com.floney.floney.user.repository.FavoriteRepository;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +33,8 @@ public class FavoriteService {
     private final CategoryRepository categoryRepository;
     private final BookLineRepository bookLineRepository;
 
-    public void register(CustomUserDetails userDetails, Long bookLineId) {
-        User user = findUserByUserDetails(userDetails);
+    public void register(final String email, final Long bookLineId) {
+        User user = getUser(email);
         BookLine bookLine = bookLineRepository.findByIdAndStatus(bookLineId, Status.ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
         Optional<Favorite> favorite = favoriteRepository.findByUserAndBookLine(user, bookLine);
@@ -50,8 +49,8 @@ public class FavoriteService {
         favoriteRepository.save(forRegister);
     }
 
-    public void cancel(CustomUserDetails userDetails, Long bookLineId) {
-        User user = findUserByUserDetails(userDetails);
+    public void cancel(final String email, final Long bookLineId) {
+        User user = getUser(email);
         BookLine bookLine = bookLineRepository.findByIdAndStatus(bookLineId, Status.ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
         Optional<Favorite> forDelete = favoriteRepository.findByUserAndBookLine(user, bookLine);
@@ -62,8 +61,8 @@ public class FavoriteService {
     }
 
     @Transactional(readOnly = true)
-    public List<MyFavoriteResponseByFlow> showMyFavoritesByFlow(CustomUserDetails userDetails, CategoryType flowType) {
-        User user = findUserByUserDetails(userDetails);
+    public List<MyFavoriteResponseByFlow> showMyFavoritesByFlow(final String email, final CategoryType flowType) {
+        User user = getUser(email);
         Category flow = categoryRepository.findByType(flowType)
             .orElseThrow(() -> new NotFoundCategoryException(flowType.name()));
         List<BookLine> bookLines = favoriteRepository.findAllBookLinesByUserAndFlow(user, flow);
@@ -72,10 +71,9 @@ public class FavoriteService {
             .toList();
     }
 
-    private User findUserByUserDetails(CustomUserDetails userDetails) {
-        User requestedUser = userDetails.getUser();
-        return userRepository.findById(requestedUser.getId())
-            .orElseThrow( () -> new UserNotFoundException(requestedUser.getEmail()) );
+    private User getUser(final String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 
 }

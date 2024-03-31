@@ -1,8 +1,8 @@
-package com.floney.floney.favorite.controller;
+package com.floney.floney.user.controller;
 
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.favorite.dto.MyFavoriteResponseByFlow;
-import com.floney.floney.favorite.service.FavoriteService;
+import com.floney.floney.user.dto.response.MyFavoriteResponseByFlow;
+import com.floney.floney.user.service.FavoriteService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class FavoriteController {
   @PostMapping("/users/favorites/{bookLineId}")
   public ResponseEntity<Void> registerMyFavorite(@AuthenticationPrincipal final CustomUserDetails userDetails,
                                                  @PathVariable final Long bookLineId) {
-      favoriteService.register(userDetails, bookLineId);
+      favoriteService.register(userDetails.getUsername(), bookLineId);
       return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -39,7 +39,7 @@ public class FavoriteController {
     @GetMapping("/users/favorites/{flow}")
     public ResponseEntity<?> showMyFavoritesByFlow(@AuthenticationPrincipal final CustomUserDetails userDetails,
                                                    @PathVariable final CategoryType flow) {
-        List<MyFavoriteResponseByFlow> responses = favoriteService.showMyFavoritesByFlow(userDetails, flow);
+        List<MyFavoriteResponseByFlow> responses = favoriteService.showMyFavoritesByFlow(userDetails.getUsername(), flow);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
@@ -51,7 +51,7 @@ public class FavoriteController {
     @DeleteMapping("/users/favorites/{bookLineId}")
     public ResponseEntity<Void> cancelMyFavorite(@AuthenticationPrincipal final CustomUserDetails userDetails,
                                                  @PathVariable final Long bookLineId) {
-        favoriteService.cancel(userDetails, bookLineId);
+        favoriteService.cancel(userDetails.getUsername(), bookLineId);
         return ResponseEntity.noContent().build();
     }
 

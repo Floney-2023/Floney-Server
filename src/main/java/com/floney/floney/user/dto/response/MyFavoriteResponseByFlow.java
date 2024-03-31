@@ -1,4 +1,4 @@
-package com.floney.floney.favorite.dto;
+package com.floney.floney.user.dto.response;
 
 import com.floney.floney.book.domain.entity.BookLine;
 import lombok.AccessLevel;
@@ -15,7 +15,7 @@ public class MyFavoriteResponseByFlow {
     private final String line;
     private final double money;
 
-    public static MyFavoriteResponseByFlow from(BookLine bookLine) {
+    public static MyFavoriteResponseByFlow from(final BookLine bookLine) {
         return new MyFavoriteResponseByFlow(
             bookLine.getId(),
             bookLine.getDescription(),

@@ -1,9 +1,8 @@
-package com.floney.floney.favorite.entity;
+package com.floney.floney.user.entity;
 
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.entity.BaseEntity;
-import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
