@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -18,10 +17,10 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Favorite extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private BookLine bookLine;
 
     private Favorite(User user, BookLine bookLine) {
