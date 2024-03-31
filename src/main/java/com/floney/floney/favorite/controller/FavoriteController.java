@@ -18,32 +18,39 @@ public class FavoriteController {
 
   private final FavoriteService favoriteService;
 
+    /**
+     * 즐겨찾기 둥록
+     *
+     * @param bookLineId 가계부 내역 PK
+     */
   @PostMapping("/users/favorites/{bookLineId}")
-  @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<Void> registerMyFavorite(
-      @AuthenticationPrincipal final CustomUserDetails userDetails,
-      @PathVariable final Long bookLineId
-      ) {
+  public ResponseEntity<Void> registerMyFavorite(@AuthenticationPrincipal final CustomUserDetails userDetails,
+                                                 @PathVariable final Long bookLineId) {
       favoriteService.register(userDetails, bookLineId);
       return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
+    /**
+     * 카테고리별 즐겨찾기 내역 조회
+     *
+     * @param flow 카테고리 (수입/지출/이체)
+     * @return List<MyFavoriteResponseByFlow> 즐겨찾기한 가계부 내역 정보
+     */
     @GetMapping("/users/favorites/{flow}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<MyFavoriteResponseByFlow>> showMyFavoritesByCategory(
-        @AuthenticationPrincipal final CustomUserDetails userDetails,
-        @PathVariable final CategoryType flow
-    ) {
-        List<MyFavoriteResponseByFlow> responses = favoriteService.showMyFavoritesByCategory(userDetails, flow);
+    public ResponseEntity<?> showMyFavoritesByFlow(@AuthenticationPrincipal final CustomUserDetails userDetails,
+                                                   @PathVariable final CategoryType flow) {
+        List<MyFavoriteResponseByFlow> responses = favoriteService.showMyFavoritesByFlow(userDetails, flow);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
+    /**
+     * 즐겨찾기 취소
+     *
+     * @param bookLineId 가계부 내역 PK
+     */
     @DeleteMapping("/users/favorites/{bookLineId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> cancelMyFavorite(
-        @AuthenticationPrincipal final CustomUserDetails userDetails,
-        @PathVariable final Long bookLineId
-    ) {
+    public ResponseEntity<Void> cancelMyFavorite(@AuthenticationPrincipal final CustomUserDetails userDetails,
+                                                 @PathVariable final Long bookLineId) {
         favoriteService.cancel(userDetails, bookLineId);
         return ResponseEntity.noContent().build();
     }

@@ -62,7 +62,7 @@ public class FavoriteService {
     }
 
     @Transactional(readOnly = true)
-    public List<MyFavoriteResponseByFlow> showMyFavoritesByCategory(CustomUserDetails userDetails, CategoryType flowType) {
+    public List<MyFavoriteResponseByFlow> showMyFavoritesByFlow(CustomUserDetails userDetails, CategoryType flowType) {
         User user = findUserByUserDetails(userDetails);
         Category flow = categoryRepository.findByType(flowType)
             .orElseThrow(() -> new NotFoundCategoryException(flowType.name()));
