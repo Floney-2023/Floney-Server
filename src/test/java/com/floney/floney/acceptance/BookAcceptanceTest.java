@@ -17,6 +17,7 @@ import com.floney.floney.common.exception.common.ErrorResponse;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.BookRequestDtoFixture;
 import com.floney.floney.fixture.UserFixture;
+import com.floney.floney.user.dto.response.MyFavoriteResponseByFlow;
 import com.floney.floney.user.entity.User;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -182,7 +183,7 @@ public class BookAcceptanceTest {
                 String assetSubCategory = "체크카드";
 
                 request = BookRequestDtoFixture.createBookLineRequest(bookKey, incomeLineCategory, subCategory,
-                        assetSubCategory);
+                        assetSubCategory, Boolean.TRUE);
             }
 
             @Test
@@ -198,10 +199,23 @@ public class BookAcceptanceTest {
                         .statusCode(HttpStatus.CREATED.value())
                         .extract().as(BookLineResponse.class);
 
+                MyFavoriteResponseByFlow[] responses = RestAssured
+                    .given()
+                    .auth().oauth2(token)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/users/favorites/{flow}", "INCOME")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract().as(MyFavoriteResponseByFlow[].class);
+
                 assertThat(response)
-                        .hasFieldOrProperty("money")
-                        .hasFieldOrProperty("flow")
-                        .hasNoNullFieldsOrProperties();
+                    .hasFieldOrProperty("money")
+                    .hasFieldOrProperty("flow")
+                    .hasNoNullFieldsOrProperties();
+
+                assertThat(responses)
+                    .extracting("bookLineId")
+                    .containsExactly(response.getId());
             }
         }
     }

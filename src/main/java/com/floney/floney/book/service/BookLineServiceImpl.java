@@ -22,6 +22,7 @@ import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.user.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final CategoryCustomRepository categoryRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
     private final CarryOverService carryOverService;
+    private final FavoriteService favoriteService;
 
     @Override
     @Transactional
@@ -55,12 +57,17 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLineCategory bookLineCategory = findCategories(request, book);
         final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
 
+        if (request.isFavorite()) {
+            favoriteService.register(email, bookLine.getId());
+        }
+
         // 반복 내역인 경우
         if (request.getRepeatDuration() != RepeatDuration.NONE) {
             return createBookLineByRepeat(bookLine, request.getRepeatDuration());
         } else {
             return createBookLineByNotRepeat(bookLine);
         }
+
     }
 
     @Override

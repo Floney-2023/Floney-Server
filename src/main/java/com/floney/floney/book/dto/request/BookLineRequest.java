@@ -25,6 +25,7 @@ public class BookLineRequest {
     private String description;
     private Boolean except;
     private RepeatDuration repeatDuration;
+    private boolean favorite;
 
     public BookLine to(final BookUser bookUser, final BookLineCategory bookLineCategory) {
         return BookLine.builder()
