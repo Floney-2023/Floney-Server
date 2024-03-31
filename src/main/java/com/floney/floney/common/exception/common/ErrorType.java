@@ -53,10 +53,12 @@ public enum ErrorType {
 
     FAIL_TO_GENERATE_TOKEN("A001", "외부 서버에서 토큰을 요청하는 중 에러가 발생했습니다"),
 
+    FAVORITE_ALREADY_REGISTERED("F001", "이미 즐겨찾기로 등록되어 있는 가계부 내역입니다."),
+    FAVORITE_NOT_FOUND("F002", "해당 즐겨찾기를 찾을 수 없습니다."),
+
     SERVER_ERROR("0", "서버에 알 수 없는 에러가 발생했습니다"),
     REQUEST_BODY_ERROR("1", "요청 body의 내용이 올바르지 않습니다"),
-    REQUEST_PARAMETER_ERROR("2", "요청 parameter가 올바르지 않습니다"),
-    ;
+    REQUEST_PARAMETER_ERROR("2", "요청 parameter가 올바르지 않습니다");
 
     private final String code;
     private final String message;

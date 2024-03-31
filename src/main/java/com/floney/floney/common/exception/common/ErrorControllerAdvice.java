@@ -2,6 +2,8 @@ package com.floney.floney.common.exception.common;
 
 import com.floney.floney.common.exception.alarm.GoogleAccessTokenGenerateException;
 import com.floney.floney.common.exception.book.*;
+import com.floney.floney.common.exception.favorite.FavoriteAlreadyRegisteredException;
+import com.floney.floney.common.exception.favorite.FavoriteNotFoundException;
 import com.floney.floney.common.exception.settlement.OutcomeUserNotFoundException;
 import com.floney.floney.common.exception.settlement.SettlementNotFoundException;
 import com.floney.floney.common.exception.user.*;
@@ -276,6 +278,19 @@ public class ErrorControllerAdvice {
     @ExceptionHandler(GoogleAccessTokenGenerateException.class)
     protected ResponseEntity<ErrorResponse> failToGenerateGoogleAccessTokenException(GoogleAccessTokenGenerateException exception) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    // FAVORITE
+    @ExceptionHandler(FavoriteAlreadyRegisteredException.class)
+    protected ResponseEntity<ErrorResponse> favoriteAlreadyRegisteredException(FavoriteAlreadyRegisteredException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(FavoriteNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> favoriteNotFoundException(FavoriteNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 

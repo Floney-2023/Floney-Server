@@ -9,6 +9,7 @@ truncate table `settlement`;
 truncate table `settlement_user`;
 truncate table `signout_other_reason`;
 truncate table `user`;
+truncate table `favorite`;
 
 update `signout_reason`
 set count = 0
