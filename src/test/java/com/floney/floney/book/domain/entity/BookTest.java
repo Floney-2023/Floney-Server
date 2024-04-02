@@ -40,4 +40,14 @@ public class BookTest {
         Assertions.assertThat(book.getCurrency()).isEqualTo(changeTo.toString());
     }
 
+
+    @Test
+    @DisplayName("가계부 이름 변경한다")
+    void change_name() {
+        String changeTo = "newName";
+        Book book = BookFixture.createBook();
+        book.updateName(changeTo);
+        Assertions.assertThat(book.getName()).isEqualTo(changeTo);
+    }
+
 }

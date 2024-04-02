@@ -53,7 +53,7 @@ public class BookLineServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
-    
+
     @Nested
     @DisplayName("createBookLine()을 실행할 때")
     class Describe_CreateBookLine {
@@ -118,5 +118,7 @@ public class BookLineServiceTest {
                 assertThat(bookLineResponse.getId()).isEqualTo(1);
             }
         }
+
     }
 }
+
