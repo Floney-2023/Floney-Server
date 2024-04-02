@@ -33,7 +33,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -318,7 +317,7 @@ public class BookServiceImpl implements BookService {
             .stream()
             .filter(this::shouldKeepBookLine)
             .map(RepeatBookLineResponse::new)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
