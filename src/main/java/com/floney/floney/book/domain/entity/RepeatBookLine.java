@@ -9,10 +9,12 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.floney.floney.book.util.DateUtil.isWeekDay;
+import static com.floney.floney.book.util.DateUtil.isWeekend;
 
 @Entity
 @Getter
@@ -147,16 +149,6 @@ public class RepeatBookLine extends BaseEntity {
                 bookLines.add(BookLine.createByRepeatBookLine(date, this));
             }
         }
-    }
-
-    private boolean isWeekDay(LocalDate date) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
-    }
-
-    private boolean isWeekend(LocalDate date) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
     }
 
 
