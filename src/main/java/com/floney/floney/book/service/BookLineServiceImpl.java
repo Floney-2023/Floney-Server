@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +56,7 @@ public class BookLineServiceImpl implements BookLineService {
         final Book book = findBook(request.getBookKey());
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
+
         final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
 
         // 반복 내역인 경우
@@ -151,24 +153,23 @@ public class BookLineServiceImpl implements BookLineService {
     private void checkDateByRepeatDuration(RepeatDuration repeatDuration, final BookLine bookLine) {
         LocalDate date = bookLine.getLineDate();
 
-        // 가계부 내역 날짜로 주말을 골랐지만, 반복 주기가 주말이 아닌 경우
+        // 가계부 내역 날짜로 주말을 골랐지만, 반복 주기가 평일인 경우
         if (DateUtil.isWeekend(date) && !repeatDuration.equals(RepeatDuration.WEEKEND)) {
-            LocalDate nextSaturday = date.with(DayOfWeek.SATURDAY);
+            LocalDate nextSaturday = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
             bookLine.updateDate(nextSaturday);
         }
 
-        // 가계부 내역 날짜로 평일을 골랐지만 반복 주기가 평일이 아닌 경우
+        // 가계부 내역 날짜로 평일을 골랐지만 반복 주기가 주말인 경우
         if (DateUtil.isWeekDay(date) && repeatDuration.equals(RepeatDuration.WEEKEND)) {
-            LocalDate nextMonday = date.with(DayOfWeek.MONDAY);
+            LocalDate nextMonday = date.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
             bookLine.updateDate(nextMonday);
         }
     }
 
     private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
-
         // 1. 날짜와 반복 주기 정합성 체크
         checkDateByRepeatDuration(requestRepeatDuration, bookLine);
-
+        
         // 2. 반복 내역 객체 생성
         RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, requestRepeatDuration);
 
