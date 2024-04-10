@@ -115,6 +115,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.lineSubcategory.status.eq(ACTIVE),
                 bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
+            .orderBy(bookLine.createdAt.desc())
             .fetch();
     }
 
