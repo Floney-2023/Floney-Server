@@ -10,6 +10,7 @@ import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.BookLineWithWriterView;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.category.SubcategoryRepository;
@@ -26,8 +27,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -221,6 +224,45 @@ class BookLineCustomRepositoryTest {
             void it_returns_empty() {
                 assertThat(bookLineRepository.allLinesByDay(date, bookKey))
                     .isEmpty();
+            }
+        }
+
+        @Nested
+        @DisplayName("여러개의 bookLine이 존재하는 경우")
+        class Context_With_BookLines {
+
+            final String bookKey = "AAAAAA";
+            final LocalDate date = LocalDate.now();
+            BookLine beforeLine;
+            BookLine afterLine;
+
+            @BeforeEach
+            void init() {
+                final Book book = bookRepository.save(BookFixture.createBookWith(bookKey));
+                final User user = userRepository.save(UserFixture.emailUser());
+                final BookUser bookUser = bookUserRepository.save(BookUser.of(user, book));
+
+                final Subcategory lineSubcategory = subcategoryRepository.save(Subcategory.of(lineCategory, book, "급여"));
+                final Subcategory assetSubcategory = subcategoryRepository.save(Subcategory.of(assetCategory, book, "현금"));
+
+                beforeLine = BookLineFixture.createWithDate(book, bookUser, categories(lineCategory, lineSubcategory, assetSubcategory), date);
+                afterLine = BookLineFixture.createWithDate(book, bookUser, categories(lineCategory, lineSubcategory, assetSubcategory), date);
+
+                ReflectionTestUtils.setField(beforeLine, "createdAt", LocalDateTime.now());
+                ReflectionTestUtils.setField(afterLine, "createdAt", LocalDateTime.now());
+                ReflectionTestUtils.setField(beforeLine, "description", "과거 내역");
+                ReflectionTestUtils.setField(afterLine, "description", "최근 내역");
+
+                final List<BookLine> bookLines = List.of(beforeLine, afterLine);
+                bookLineRepository.saveAll(bookLines);
+            }
+
+            @Test
+            @DisplayName("생성 날짜를 기준으로 최근것부터 반환된다")
+            void it_returns_desc() {
+                assertThat(bookLineRepository.allLinesByDay(date, bookKey))
+                    .extracting(BookLineWithWriterView::getDescription)
+                    .containsExactly(afterLine.getDescription(), beforeLine.getDescription());
             }
         }
     }
