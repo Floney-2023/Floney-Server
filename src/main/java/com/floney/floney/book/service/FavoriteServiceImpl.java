@@ -38,10 +38,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     public FavoriteResponse createFavorite(final String bookKey,
                                            final String userEmail,
                                            final FavoriteCreateRequest request) {
-        if (!bookUserRepository.existsByBookKeyAndUserEmail(bookKey, userEmail)) {
-            log.warn("사용자가 자신이 참여하지 않은 가계부로 요청 - bookKey: {}, 사용자: {}", bookKey, userEmail);
-            throw new NotFoundBookUserException(bookKey, userEmail);
-        }
+        validateBookUser(bookKey, userEmail);
 
         final Book book = findBook(bookKey);
         validateFavoriteSizeByBook(book);
@@ -61,6 +58,12 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.save(favorite);
 
         return FavoriteResponse.from(favorite);
+    }
+
+    private void validateBookUser(final String bookKey, final String userEmail) {
+        if (!bookUserRepository.existsByBookKeyAndUserEmail(bookKey, userEmail)) {
+            throw new NotFoundBookUserException(bookKey, userEmail);
+        }
     }
 
     private void validateFavoriteSizeByBook(final Book book) {

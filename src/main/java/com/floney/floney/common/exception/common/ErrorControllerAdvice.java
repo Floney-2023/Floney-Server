@@ -175,11 +175,6 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(NotFoundBookUserException.class)
     protected ResponseEntity<ErrorResponse> notFoundUser(NotFoundBookUserException exception) {
-        logger.warn("가계부 키 [{}] 에서 [{}]와 일치하는 {}",
-            exception.getBookKey(),
-            exception.getRequestUser(),
-            ErrorType.NOT_FOUND_BOOK_USER.getMessage());
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
