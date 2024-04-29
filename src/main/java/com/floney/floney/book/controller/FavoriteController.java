@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 public class FavoriteController {
@@ -19,7 +21,7 @@ public class FavoriteController {
     @ResponseStatus(HttpStatus.CREATED)
     public FavoriteResponse createFavorite(@PathVariable("key") final String bookKey,
                                            @AuthenticationPrincipal final CustomUserDetails userDetails,
-                                           @RequestBody final FavoriteCreateRequest request) {
+                                           @RequestBody @Valid final FavoriteCreateRequest request) {
         return favoriteService.createFavorite(bookKey, userDetails.getUsername(), request);
     }
 }
