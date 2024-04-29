@@ -2,7 +2,9 @@ package com.floney.floney.acceptance;
 
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
+import com.floney.floney.acceptance.fixture.FavoriteApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
+import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.fixture.UserFixture;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +22,11 @@ public class FavoriteAcceptanceTest {
 
     @Nested
     @DisplayName("즐겨찾기를 추가할 때")
-    class Context_createFavorite {
+    class Describe_createFavorite {
 
         @Nested
         @DisplayName("description 을 제외한 모든 값이 주어진 경우")
-        class Describe_requestWithoutDescription {
+        class Context_With_RequestWithoutDescription {
 
             String accessToken;
             String bookKey;
@@ -65,6 +67,47 @@ public class FavoriteAcceptanceTest {
                         "lineCategoryName", is(lineCategoryName),
                         "lineSubcategoryName", is(lineSubcategoryName),
                         "assetSubcategoryName", is(assetSubcategoryName)
+                    );
+            }
+        }
+
+        @Nested
+        @DisplayName("이미 해당 가계부에 10개의 즐겨찾기가 존재하는 경우")
+        class Context_With_10Favorites {
+
+            String accessToken;
+            String bookKey;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+                for (int i = 0; i < 10; i++) {
+                    FavoriteApiFixture.createFavorite(accessToken, bookKey);
+                }
+            }
+
+            @Test
+            @DisplayName("에러가 발생한다.")
+            void it_returns_error() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .body("""
+                        {
+                            "money": 10000,
+                            "lineCategoryName": "지출",
+                            "lineSubcategoryName": "식비",
+                            "assetSubcategoryName": "현금"
+                        }
+                        """)
+                    .when()
+                    .post("/books/{key}/favorites", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(
+                        "code", is(ErrorType.INVALID_FAVORITE_SIZE.getCode()),
+                        "message", is(ErrorType.INVALID_FAVORITE_SIZE.getMessage())
                     );
             }
         }
