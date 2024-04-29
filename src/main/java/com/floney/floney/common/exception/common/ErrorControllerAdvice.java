@@ -257,6 +257,12 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(FavoriteSizeInvalidException.class)
+    protected ResponseEntity<ErrorResponse> favoriteSizeInvalidException(FavoriteSizeInvalidException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // SETTLEMENT
     @ExceptionHandler(SettlementNotFoundException.class)
     protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {

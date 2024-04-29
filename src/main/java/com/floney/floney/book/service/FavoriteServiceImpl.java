@@ -11,6 +11,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.favorite.FavoriteRepository;
+import com.floney.floney.common.exception.book.FavoriteSizeInvalidException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.common.exception.book.NotFoundCategoryException;
@@ -43,6 +44,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         }
 
         final Book book = findBook(bookKey);
+        validateFavoriteSizeByBook(book);
+
         final Category lineCategory = findLineCategory(request.lineCategoryName());
         final Subcategory lineSubcategory = findLineSubcategory(request.lineSubcategoryName(), lineCategory, book);
         final Subcategory assetSubcategory = findAssetSubcategory(book, request.assetSubcategoryName());
@@ -58,6 +61,16 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.save(favorite);
 
         return FavoriteResponse.from(favorite);
+    }
+
+    private void validateFavoriteSizeByBook(final Book book) {
+        final int favoriteSize = favoriteRepository.findAllExclusivelyByBookAndStatus(book, ACTIVE).size();
+        if (favoriteSize == Book.FAVORITE_MAX_SIZE) {
+            throw new FavoriteSizeInvalidException(book.getBookKey());
+        } else if (favoriteSize > Book.FAVORITE_MAX_SIZE) {
+            log.error("가계부의 즐겨찾기 개수가 이미 {}개를 초과 - 가계부: {}", Book.FAVORITE_MAX_SIZE, book.getBookKey());
+            throw new FavoriteSizeInvalidException(book.getBookKey());
+        }
     }
 
     private Book findBook(final String bookKey) {
