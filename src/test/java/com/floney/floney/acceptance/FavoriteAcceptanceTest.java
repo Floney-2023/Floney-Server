@@ -111,5 +111,42 @@ public class FavoriteAcceptanceTest {
                     );
             }
         }
+
+        @Nested
+        @DisplayName("특정 값 없이 요청한 경우")
+        class Context_With_InvalidRequest {
+
+            String accessToken;
+            String bookKey;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+            }
+
+            @Test
+            @DisplayName("에러가 발생한다.")
+            void it_returns_error() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .body("""
+                        {
+                            "lineCategoryName": "",
+                            "lineSubcategoryName": "",
+                            "assetSubcategoryName": ""
+                        }
+                        """)
+                    .when()
+                    .post("/books/{key}/favorites", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(
+                        "code", is("1"),
+                        "message", is("lineSubcategoryName를 입력해주세요")
+                    );
+            }
+        }
     }
 }
