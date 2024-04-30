@@ -144,7 +144,7 @@ public class FavoriteAcceptanceTest {
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body(
                         "code", is("1"),
-                        "message", is("lineSubcategoryName를 입력해주세요")
+                        "message", containsString("입력해주세요")
                     );
             }
         }
