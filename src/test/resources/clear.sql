@@ -4,6 +4,7 @@ truncate table `book_line`;
 truncate table `book_line_category`;
 truncate table `book_user`;
 truncate table `budget`;
+truncate table `favorite`;
 truncate table `subcategory`;
 truncate table `settlement`;
 truncate table `settlement_user`;
