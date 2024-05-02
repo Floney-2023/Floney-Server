@@ -36,8 +36,11 @@ spring:
     baseline-on-migrate: true
 
 jwt:
-  token:
-    secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
+  secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
+  access-token:
+    expired-time: 60000
+  refresh-token:
+    expired-time: 120000
 
 server:
   error:

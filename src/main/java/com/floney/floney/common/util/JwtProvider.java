@@ -21,17 +21,19 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
-
     private final Key key;
+    private final long accessTokenExpiredTime, refreshTokenExpiredTime;
     private final CustomUserDetailsService customUserDetailsService;
     private final RedisProvider redisProvider;
 
-    public JwtProvider(@Value("${jwt.token.secret-key}") String secretKey,
+    public JwtProvider(@Value("${jwt.secret-key}") String secretKey,
+                       @Value("${jwt.access-token.expired-time}") long accessTokenExpiredTime,
+                       @Value("${jwt.refresh-token.expired-time}") long refreshTokenExpiredTime,
                        CustomUserDetailsService customUserDetailsService,
                        RedisProvider redisProvider) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        this.accessTokenExpiredTime = accessTokenExpiredTime;
+        this.refreshTokenExpiredTime = refreshTokenExpiredTime;
         this.customUserDetailsService = customUserDetailsService;
         this.redisProvider = redisProvider;
     }
@@ -44,30 +46,30 @@ public class JwtProvider {
         Claims claims = Jwts.claims().setSubject(subject);
 
         Date now = new Date();
-        Date expiresIn = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
+        Date expiresIn = new Date(now.getTime() + accessTokenExpiredTime);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiresIn)
-                .signWith(key)
-                .compact();
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(expiresIn)
+            .signWith(key)
+            .compact();
     }
 
     private String generateRefreshToken(String subject) {
         Claims claims = Jwts.claims().setSubject(subject);
 
         Date now = new Date();
-        Date expiresIn = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        Date expiresIn = new Date(now.getTime() + refreshTokenExpiredTime);
 
         String refreshToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiresIn)
-                .signWith(key)
-                .compact();
+            .setClaims(claims)
+            .setIssuedAt(now)
+            .setExpiration(expiresIn)
+            .signWith(key)
+            .compact();
 
-        redisProvider.set(subject, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        redisProvider.set(subject, refreshToken, refreshTokenExpiredTime);
 
         return refreshToken;
     }
@@ -101,9 +103,8 @@ public class JwtProvider {
 
     public long getExpiration(String accessToken) {
         Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody()
-                .getExpiration();
+            .getExpiration();
         long now = new Date().getTime();
         return expiration.getTime() - now;
     }
-
 }
