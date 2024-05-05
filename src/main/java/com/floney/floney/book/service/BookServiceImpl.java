@@ -19,6 +19,7 @@ import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.category.DefaultSubcategoryRepository;
 import com.floney.floney.book.repository.category.SubcategoryRepository;
+import com.floney.floney.book.repository.favorite.FavoriteRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
@@ -57,6 +58,7 @@ public class BookServiceImpl implements BookService {
     private final SettlementRepository settlementRepository;
     private final AlarmRepository alarmRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Override
     @Transactional
@@ -238,6 +240,7 @@ public class BookServiceImpl implements BookService {
         settlementRepository.inactiveAllBy(book);
         budgetRepository.inactiveAllBy(book);
         repeatBookLineRepository.inactiveAllByBook(book);
+        favoriteRepository.inactiveAllByBook(book);
         book.initBook(); // 다시 entity manager가 관리하도록
     }
 

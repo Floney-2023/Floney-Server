@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Lock;
 import javax.persistence.LockModeType;
 import java.util.List;
 
-public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
+public interface FavoriteRepository extends JpaRepository<Favorite, Long> , FavoriteCustomRepository{
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Favorite> findAllExclusivelyByBookAndStatus(final Book book, final Status status);
