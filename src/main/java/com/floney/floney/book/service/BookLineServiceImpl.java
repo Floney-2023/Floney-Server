@@ -17,6 +17,7 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.RepeatBookLineRepository;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
+import com.floney.floney.book.util.DateUtil;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
@@ -26,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,6 +56,7 @@ public class BookLineServiceImpl implements BookLineService {
         final Book book = findBook(request.getBookKey());
         final BookUser bookUser = findBookUser(email, request);
         final BookLineCategory bookLineCategory = findCategories(request, book);
+
         final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
 
         // 반복 내역인 경우
@@ -146,20 +150,37 @@ public class BookLineServiceImpl implements BookLineService {
         return BookLineResponse.from(bookLine);
     }
 
-    private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
-        Book book = bookLine.getBook();
+    private void checkDateByRepeatDuration(RepeatDuration repeatDuration, final BookLine bookLine) {
+        LocalDate date = bookLine.getLineDate();
 
-        // 1. 반복 내역 객체 생성
+        // 가계부 내역 날짜로 주말을 골랐지만, 반복 주기가 평일인 경우
+        if (DateUtil.isWeekend(date) && !repeatDuration.equals(RepeatDuration.WEEKEND)) {
+            LocalDate nextSaturday = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+            bookLine.updateDate(nextSaturday);
+        }
+
+        // 가계부 내역 날짜로 평일을 골랐지만 반복 주기가 주말인 경우
+        if (DateUtil.isWeekDay(date) && repeatDuration.equals(RepeatDuration.WEEKEND)) {
+            LocalDate nextMonday = date.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+            bookLine.updateDate(nextMonday);
+        }
+    }
+
+    private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
+        // 1. 날짜와 반복 주기 정합성 체크
+        checkDateByRepeatDuration(requestRepeatDuration, bookLine);
+        
+        // 2. 반복 내역 객체 생성
         RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, requestRepeatDuration);
 
-        // 2. 가계부 내역 - 반복 내역 매핑
+        // 3. 가계부 내역 - 반복 내역 매핑
         bookLine.repeatBookLine(repeatBookLine);
 
-        // 3. 반복 내역 생성
+        // 4. 반복 내역 생성
         List<BookLine> bookLines = repeatBookLine.bookLinesBy(requestRepeatDuration);
         bookLines.add(bookLine);
 
-        // 3.  저장
+        // 5.  저장
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
 
