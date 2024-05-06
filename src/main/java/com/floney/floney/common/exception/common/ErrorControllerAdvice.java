@@ -258,6 +258,12 @@ public class ErrorControllerAdvice {
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 
+    @ExceptionHandler(FavoriteNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> favoriteNotFoundException(FavoriteNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
     // SETTLEMENT
     @ExceptionHandler(SettlementNotFoundException.class)
     protected ResponseEntity<ErrorResponse> settlementNotFoundException(SettlementNotFoundException exception) {

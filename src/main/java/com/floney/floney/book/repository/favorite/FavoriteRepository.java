@@ -1,5 +1,6 @@
 package com.floney.floney.book.repository.favorite;
 
+import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.favorite.Favorite;
 import com.floney.floney.common.constant.Status;
@@ -13,4 +14,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Favorite> findAllExclusivelyByBookAndStatus(final Book book, final Status status);
+
+    List<Favorite> findAllByBookAndLineCategoryAndStatusOrderByIdDesc(final Book book, final Category lineCategory, final Status status);
 }
