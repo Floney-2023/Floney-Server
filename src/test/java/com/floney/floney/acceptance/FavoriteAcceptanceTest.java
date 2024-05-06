@@ -4,6 +4,7 @@ import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.FavoriteApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.common.exception.common.ErrorType;
 import com.floney.floney.fixture.UserFixture;
 import io.restassured.RestAssured;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 
@@ -232,6 +237,57 @@ public class FavoriteAcceptanceTest {
                     .body(
                         "code", is(ErrorType.FAVORITE_NOT_FOUND.getCode()),
                         "message", is(ErrorType.FAVORITE_NOT_FOUND.getMessage())
+                    );
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("lineCategory 별로 즐겨찾기를 조회할 때")
+    class Describe_GetFavoritesByLineCategory {
+
+        @Nested
+        @DisplayName("존재하는 lineCategory로 요청한 경우")
+        class Context_With_LineCategoryExists {
+
+            String accessToken;
+            String bookKey;
+            List<Integer> favoriteIds;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+                // 해당 lineCategory 로 즐겨찾기 생성
+                final int favoriteSize = 3;
+                favoriteIds = new ArrayList<>(favoriteSize);
+                for (int i = 0; i < favoriteSize; i++) {
+                    final int favoriteId = FavoriteApiFixture.createFavoriteByLineCategory(accessToken, bookKey, "수입", "급여");
+                    favoriteIds.add(favoriteId);
+                }
+                favoriteIds.sort(Comparator.reverseOrder());
+                // 다른 lineCategory 로 즐겨찾기 생성
+                FavoriteApiFixture.createFavoriteByLineCategory(accessToken, bookKey, "지출", "식비");
+            }
+
+            @Test
+            @DisplayName("정렬된 즐겨찾기 목록을 반환한다.")
+            void it_returns_favorites() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .param("categoryType", CategoryType.INCOME)
+                    .when()
+                    .get("/books/{key}/favorites", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body(
+                        "size()", is(favoriteIds.size()),
+                        "findAll { it.lineCategoryName == '수입' }.size()", is(favoriteIds.size()),
+                        "[0].id", is(favoriteIds.get(0)),
+                        "[1].id", is(favoriteIds.get(1)),
+                        "[2].id", is(favoriteIds.get(2))
                     );
             }
         }
