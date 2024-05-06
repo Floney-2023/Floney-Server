@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class LogByAop {
 
-    @Pointcut("execution(* com.floney.floney.*.controller..*.*(..))")
+    @Pointcut("execution(* com.floney.floney.*.controller..*.*(..)) && !execution(* com.floney.floney.common.controller.HealthCheckController.*(..))")
     private void cutAllRequest() {
     }
 
