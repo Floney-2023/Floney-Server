@@ -1,5 +1,6 @@
 package com.floney.floney.book.domain.category;
 
+import com.floney.floney.common.exception.book.NotFoundCategoryException;
 import com.floney.floney.common.exception.book.NotFoundParentCategoryException;
 import lombok.Getter;
 
@@ -39,5 +40,12 @@ public enum CategoryType {
 
     public static boolean isLine(final CategoryType categoryType) {
         return INCOME.equals(categoryType) || OUTCOME.equals(categoryType) || TRANSFER.equals(categoryType);
+    }
+
+    public void validateLineType() {
+        if (INCOME.equals(this) || OUTCOME.equals(this) || TRANSFER.equals(this)) {
+            return;
+        }
+        throw new NotFoundCategoryException(this.meaning);
     }
 }

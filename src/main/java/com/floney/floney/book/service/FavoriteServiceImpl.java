@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.floney.floney.book.domain.category.CategoryType.ASSET;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
@@ -64,6 +66,29 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         final Favorite favorite = findFavorite(id);
         return FavoriteResponse.from(favorite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FavoriteResponse> getFavoritesByLineCategory(final String bookKey,
+                                                             final CategoryType categoryType,
+                                                             final String userEmail) {
+        validateBookUser(bookKey, userEmail);
+
+        final Book book = findBook(bookKey);
+        final Category lineCategory = findLineCategory(categoryType);
+
+        return favoriteRepository.findAllByBookAndLineCategoryAndStatusOrderByIdDesc(book, lineCategory, ACTIVE)
+            .stream()
+            .map(FavoriteResponse::from)
+            .toList();
+    }
+
+    private Category findLineCategory(final CategoryType categoryType) {
+        final Category lineCategory = categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
+        categoryType.validateLineType();
+        return lineCategory;
     }
 
     private Favorite findFavorite(final long id) {
