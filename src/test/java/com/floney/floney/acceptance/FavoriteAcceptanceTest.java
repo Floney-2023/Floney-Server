@@ -205,5 +205,35 @@ public class FavoriteAcceptanceTest {
                     );
             }
         }
+
+        @Nested
+        @DisplayName("존재하지 않는 즐겨찾기의 id로 요청한 경우")
+        class Context_With_FavoriteNotExist {
+
+            String accessToken;
+            String bookKey;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+            }
+
+            @Test
+            @DisplayName("에러가 발생한다.")
+            void it_returns_error() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .when()
+                    .get("/books/{key}/favorites/{id}", bookKey, 1)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body(
+                        "code", is(ErrorType.FAVORITE_NOT_FOUND.getCode()),
+                        "message", is(ErrorType.FAVORITE_NOT_FOUND.getMessage())
+                    );
+            }
+        }
     }
 }
