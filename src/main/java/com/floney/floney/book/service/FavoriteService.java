@@ -13,4 +13,6 @@ public interface FavoriteService {
     FavoriteResponse getFavorite(String bookKey, long id, String userEmail);
 
     List<FavoriteResponse> getFavoritesByLineCategory(String bookKey, CategoryType categoryType, String userEmail);
+
+    void deleteFavorite(String bookKey, long id, String userEmail);
 }
