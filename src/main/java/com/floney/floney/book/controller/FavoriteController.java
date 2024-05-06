@@ -24,4 +24,12 @@ public class FavoriteController {
                                            @RequestBody @Valid final FavoriteCreateRequest request) {
         return favoriteService.createFavorite(bookKey, userDetails.getUsername(), request);
     }
+
+    @GetMapping("/books/{key}/favorites/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public FavoriteResponse getFavorite(@PathVariable("key") final String bookKey,
+                                        @PathVariable("id") final long id,
+                                        @AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return favoriteService.getFavorite(bookKey, id, userDetails.getUsername());
+    }
 }
