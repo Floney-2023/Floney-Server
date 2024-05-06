@@ -39,7 +39,7 @@ public class Category extends BaseEntity {
         return OUTCOME.equals(name);
     }
 
-    public boolean isLine() {
-        return CategoryType.isLine(name);
+    public void validateLine() {
+        name.validateLineType();
     }
 }

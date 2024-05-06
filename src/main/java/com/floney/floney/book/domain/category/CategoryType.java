@@ -38,10 +38,6 @@ public enum CategoryType {
             .orElseThrow(() -> new NotFoundParentCategoryException(meaning));
     }
 
-    public static boolean isLine(final CategoryType categoryType) {
-        return INCOME.equals(categoryType) || OUTCOME.equals(categoryType) || TRANSFER.equals(categoryType);
-    }
-
     public void validateLineType() {
         if (INCOME.equals(this) || OUTCOME.equals(this) || TRANSFER.equals(this)) {
             return;
