@@ -291,5 +291,36 @@ public class FavoriteAcceptanceTest {
                     );
             }
         }
+
+        @Nested
+        @DisplayName("존재하지 않는 lineCategory로 요청한 경우")
+        class Context_With_LineCategoryNotExist {
+
+            String accessToken;
+            String bookKey;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+            }
+
+            @Test
+            @DisplayName("에러가 발생한다.")
+            void it_returns_error() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .param("categoryType", CategoryType.ASSET)
+                    .when()
+                    .get("/books/{key}/favorites", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body(
+                        "code", is(ErrorType.NOT_FOUND_CATEGORY.getCode()),
+                        "message", is(ErrorType.NOT_FOUND_CATEGORY.getMessage())
+                    );
+            }
+        }
     }
 }
