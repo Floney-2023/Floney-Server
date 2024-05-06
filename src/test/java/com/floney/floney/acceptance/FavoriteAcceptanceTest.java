@@ -323,4 +323,49 @@ public class FavoriteAcceptanceTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("즐겨찾기를 삭제할 때")
+    class Describe_DeleteFavorite {
+
+        @Nested
+        @DisplayName("존재하는 즐겨찾기의 id로 요청한 경우")
+        class Context_With_ValidFavorite {
+
+            int favoriteId;
+            String accessToken;
+            String bookKey;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+                favoriteId = FavoriteApiFixture.createFavorite(accessToken, bookKey);
+            }
+
+            @Test
+            @DisplayName("즐겨찾기가 삭제된다.")
+            void it_deletes_favorite() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .when()
+                    .delete("/books/{key}/favorites/{id}", bookKey, favoriteId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .when()
+                    .get("/books/{key}/favorites/{id}", bookKey, favoriteId)
+                    .then()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body(
+                        "code", is(ErrorType.FAVORITE_NOT_FOUND.getCode()),
+                        "message", is(ErrorType.FAVORITE_NOT_FOUND.getMessage())
+                    );
+            }
+        }
+    }
 }
