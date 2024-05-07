@@ -84,6 +84,14 @@ public class FavoriteServiceImpl implements FavoriteService {
             .toList();
     }
 
+    @Override
+    public void deleteFavorite(final String bookKey, final long id, final String userEmail) {
+        validateBookUser(bookKey, userEmail);
+
+        final Favorite favorite = findFavorite(id);
+        favorite.inactive();
+    }
+
     private Category findLineCategory(final CategoryType categoryType) {
         final Category lineCategory = categoryRepository.findByType(categoryType)
             .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));

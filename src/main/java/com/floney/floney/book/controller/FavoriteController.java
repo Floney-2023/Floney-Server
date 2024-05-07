@@ -42,4 +42,12 @@ public class FavoriteController {
                                                              @AuthenticationPrincipal final CustomUserDetails userDetails) {
         return favoriteService.getFavoritesByLineCategory(bookKey, categoryType, userDetails.getUsername());
     }
+
+    @DeleteMapping("/books/{key}/favorites/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFavorite(@PathVariable("key") final String bookKey,
+                               @PathVariable("id") final long id,
+                               @AuthenticationPrincipal final CustomUserDetails userDetails) {
+        favoriteService.deleteFavorite(bookKey, id, userDetails.getUsername());
+    }
 }
