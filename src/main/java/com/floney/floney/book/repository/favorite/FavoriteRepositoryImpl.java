@@ -27,13 +27,13 @@ public class FavoriteRepositoryImpl implements FavoriteCustomRepository {
     @Transactional
     public void inactiveAllByBook(final Book book) {
         jpaQueryFactory.update(favorite)
-                .set(favorite.status, INACTIVE)
-                .set(favorite.updatedAt, LocalDateTime.now())
-                .where(
-                        favorite.book.eq(book),
-                        favorite.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(favorite.status, INACTIVE)
+            .set(favorite.updatedAt, LocalDateTime.now())
+            .where(
+                favorite.book.eq(book),
+                favorite.status.eq(ACTIVE)
+            )
+            .execute();
 
         entityManager.clear();
     }
@@ -41,16 +41,14 @@ public class FavoriteRepositoryImpl implements FavoriteCustomRepository {
     @Override
     public void inactiveAllBySubcategory(final Subcategory subcategory) {
         jpaQueryFactory.update(favorite)
-                .set(favorite.status, INACTIVE)
-                .set(favorite.updatedAt, LocalDateTime.now())
-                .where(
-                        favorite.lineSubcategory.eq(subcategory)
-                                .or(favorite.assetSubcategory.eq(subcategory))
-                )
-                .where(
-                        favorite.status.eq(ACTIVE)
-                )
-                .execute();
+            .set(favorite.status, INACTIVE)
+            .set(favorite.updatedAt, LocalDateTime.now())
+            .where(
+                favorite.lineSubcategory.eq(subcategory)
+                    .or(favorite.assetSubcategory.eq(subcategory))
+            )
+            .where(favorite.status.eq(ACTIVE))
+            .execute();
 
         entityManager.clear();
     }
