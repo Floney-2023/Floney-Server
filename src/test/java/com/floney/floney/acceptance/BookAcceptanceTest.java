@@ -3,9 +3,11 @@ package com.floney.floney.acceptance;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
+import com.floney.floney.acceptance.fixture.FavoriteApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
 import com.floney.floney.book.domain.Currency;
 import com.floney.floney.book.domain.RepeatDuration;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.BookLineWithWriterView;
 import com.floney.floney.book.dto.process.OurBookInfo;
@@ -21,6 +23,7 @@ import com.floney.floney.user.entity.User;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -1585,6 +1588,46 @@ public class BookAcceptanceTest {
     @Nested
     @DisplayName("resetBook()을 실행할 때")
     class Describe_ResetBook {
+
+        @Nested
+        @DisplayName("즐겨찾기가 존재하는 경우")
+        class Context_With_Favorite {
+
+            private String token;
+            private String bookKey;
+
+            @BeforeEach
+            public void init() {
+                final User user = UserFixture.emailUser();
+                token = UserApiFixture.loginAfterSignup(user).getAccessToken();
+                bookKey = BookApiFixture.createBook(token).getBookKey();
+
+                BookApiFixture.createBookLine(token, bookKey, INCOME.getMeaning(), "급여", "은행");
+                FavoriteApiFixture.createFavorite(token, bookKey);
+            }
+
+            private void assertFavoritesByCategory(CategoryType categoryType) {
+                List<FavoriteResponse> response = FavoriteApiFixture.getFavoriteByCategory(token, bookKey, categoryType);
+                Assertions.assertThat(response.size()).isZero();
+            }
+
+            @Test
+            @DisplayName("즐겨찾기가 삭제된다")
+            public void it_resets_favorite() {
+                RestAssured.given()
+                    .auth().oauth2(token)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .param("bookKey", bookKey)
+                    .when().delete("/books/info/delete/all")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract();
+
+                assertFavoritesByCategory(CategoryType.INCOME);
+                assertFavoritesByCategory(CategoryType.OUTCOME);
+                assertFavoritesByCategory(CategoryType.TRANSFER);
+            }
+        }
 
         @Nested
         @DisplayName("내역을 작성한 가계부인 경우")

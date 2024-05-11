@@ -3,15 +3,21 @@ package com.floney.floney.acceptance;
 import com.floney.floney.acceptance.config.AcceptanceTest;
 import com.floney.floney.acceptance.fixture.BookApiFixture;
 import com.floney.floney.acceptance.fixture.CategoryApiFixture;
+import com.floney.floney.acceptance.fixture.FavoriteApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
+import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.dto.response.FavoriteResponse;
 import com.floney.floney.fixture.UserFixture;
 import io.restassured.RestAssured;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 
@@ -196,6 +202,50 @@ public class CategoryAcceptanceTest {
     @Nested
     @DisplayName("카테고리를 삭제할 때")
     class Describe_DeleteSubcategory {
+
+        @Nested()
+        @DisplayName("즐겨찾기가 존재하는 경우")
+        class Context_With_Favorite {
+            final String parentName = "지출";
+            final String name = "식비";
+
+            String accessToken;
+            String bookKey;
+
+            @BeforeEach
+            void init() {
+                accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
+                bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+                FavoriteApiFixture.createFavorite(accessToken, bookKey);
+            }
+
+            private void assertFavoritesByCategory(CategoryType categoryType) {
+                List<FavoriteResponse> response = FavoriteApiFixture.getFavoriteByCategory(accessToken, bookKey, categoryType);
+                Assertions.assertThat(response.size()).isZero();
+            }
+
+            @Test
+            @DisplayName("즐겨찾기와 카테고리가 모두 삭제된다.")
+            void it_returns_empty() {
+                RestAssured.given()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .auth().oauth2(accessToken)
+                    .body("""
+                        {
+                            "parent": "%s",
+                            "name": "%s"
+                        }
+                        """.formatted(parentName, name))
+                    .when()
+                    .delete("/books/{key}/categories", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+                assertFavoritesByCategory(CategoryType.INCOME);
+                assertFavoritesByCategory(CategoryType.OUTCOME);
+                assertFavoritesByCategory(CategoryType.TRANSFER);
+            }
+        }
 
         @Nested
         @DisplayName("해당 카테고리가 존재하는 경우")
