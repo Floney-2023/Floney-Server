@@ -369,6 +369,7 @@ public class BookServiceImpl implements BookService {
         budgetRepository.inactiveAllBy(book);
         categoryRepository.inactiveAllByBook(book);
         repeatBookLineRepository.inactiveAllByBook(book);
+        favoriteRepository.inactiveAllByBook(book);
     }
 
     private void inactiveAllBy(final BookUser bookUser) {

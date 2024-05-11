@@ -24,7 +24,6 @@ public class FavoriteRepositoryImpl implements FavoriteCustomRepository {
     private final EntityManager entityManager;
 
     @Override
-    @Transactional
     public void inactiveAllByBook(final Book book) {
         jpaQueryFactory.update(favorite)
             .set(favorite.status, INACTIVE)
