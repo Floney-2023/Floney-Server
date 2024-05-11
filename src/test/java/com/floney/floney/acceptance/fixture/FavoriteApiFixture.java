@@ -30,4 +30,27 @@ public final class FavoriteApiFixture {
             .body("id", notNullValue())
             .extract().path("id");
     }
+
+    public static int createFavoriteByLineCategory(final String accessToken,
+                                                   final String bookKey,
+                                                   final String lineCategoryName,
+                                                   final String lineSubcategoryName) {
+        return RestAssured.given()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .auth().oauth2(accessToken)
+            .body("""
+                {
+                    "money": 1000,
+                    "lineCategoryName": "%s",
+                    "lineSubcategoryName": "%s",
+                    "assetSubcategoryName": "현금"
+                }
+                """.formatted(lineCategoryName, lineSubcategoryName))
+            .when()
+            .post("/books/{key}/favorites", bookKey)
+            .then()
+            .statusCode(HttpStatus.CREATED.value())
+            .body("id", notNullValue())
+            .extract().path("id");
+    }
 }

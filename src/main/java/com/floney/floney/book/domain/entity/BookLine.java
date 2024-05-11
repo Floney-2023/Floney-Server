@@ -128,4 +128,8 @@ public class BookLine extends BaseEntity {
     public boolean isOutcome() {
         return categories.isOutcome();
     }
+
+    public void updateDate(final LocalDate date) {
+        this.lineDate = date;
+    }
 }

@@ -1,5 +1,6 @@
 package com.floney.floney.book.util;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
@@ -22,4 +23,16 @@ public class DateUtil {
     public static LocalDate getLastDateOfMonth(LocalDate currentDate) {
         return YearMonth.from(currentDate).atEndOfMonth();
     }
+
+
+    public static boolean isWeekDay(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY;
+    }
+
+    public static boolean isWeekend(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+    }
+
 }

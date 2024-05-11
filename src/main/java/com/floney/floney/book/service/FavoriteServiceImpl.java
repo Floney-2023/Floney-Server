@@ -11,14 +11,13 @@ import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.favorite.FavoriteRepository;
-import com.floney.floney.common.exception.book.FavoriteSizeInvalidException;
-import com.floney.floney.common.exception.book.NotFoundBookException;
-import com.floney.floney.common.exception.book.NotFoundBookUserException;
-import com.floney.floney.common.exception.book.NotFoundCategoryException;
+import com.floney.floney.common.exception.book.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.floney.floney.book.domain.category.CategoryType.ASSET;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -58,6 +57,55 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.save(favorite);
 
         return FavoriteResponse.from(favorite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FavoriteResponse getFavorite(final String bookKey, final long id, final String userEmail) {
+        validateBookUser(bookKey, userEmail);
+
+        final Favorite favorite = findFavorite(id);
+        return FavoriteResponse.from(favorite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FavoriteResponse> getFavoritesByLineCategory(final String bookKey,
+                                                             final CategoryType categoryType,
+                                                             final String userEmail) {
+        validateBookUser(bookKey, userEmail);
+
+        final Book book = findBook(bookKey);
+        final Category lineCategory = findLineCategory(categoryType);
+
+        return favoriteRepository.findAllByBookAndLineCategoryAndStatusOrderByIdDesc(book, lineCategory, ACTIVE)
+            .stream()
+            .map(FavoriteResponse::from)
+            .toList();
+    }
+
+    @Override
+    public void deleteFavorite(final String bookKey, final long id, final String userEmail) {
+        validateBookUser(bookKey, userEmail);
+
+        final Favorite favorite = findFavorite(id);
+        favorite.inactive();
+    }
+
+    private Category findLineCategory(final CategoryType categoryType) {
+        final Category lineCategory = categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
+        categoryType.validateLineType();
+        return lineCategory;
+    }
+
+    private Favorite findFavorite(final long id) {
+        final Favorite favorite = favoriteRepository.findById(id)
+            .orElseThrow(() -> new FavoriteNotFoundException(id));
+        if (!favorite.isActive()) {
+            throw new FavoriteNotFoundException(id);
+        }
+        return favorite;
     }
 
     private void validateBookUser(final String bookKey, final String userEmail) {
