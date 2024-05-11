@@ -362,6 +362,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void inactiveAllBy(final Book book) {
+        favoriteRepository.inactiveAllByBook(book);
         alarmRepository.inactiveAllByBook(book);
         bookLineRepository.inactiveAllByBook(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
@@ -369,7 +370,6 @@ public class BookServiceImpl implements BookService {
         budgetRepository.inactiveAllBy(book);
         categoryRepository.inactiveAllByBook(book);
         repeatBookLineRepository.inactiveAllByBook(book);
-        favoriteRepository.inactiveAllByBook(book);
     }
 
     private void inactiveAllBy(final BookUser bookUser) {

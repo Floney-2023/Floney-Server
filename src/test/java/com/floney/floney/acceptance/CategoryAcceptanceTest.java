@@ -6,10 +6,8 @@ import com.floney.floney.acceptance.fixture.CategoryApiFixture;
 import com.floney.floney.acceptance.fixture.FavoriteApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
 import com.floney.floney.book.domain.category.CategoryType;
-import com.floney.floney.book.dto.response.FavoriteResponse;
 import com.floney.floney.fixture.UserFixture;
 import io.restassured.RestAssured;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,8 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.List;
-
+import static com.floney.floney.acceptance.fixture.FavoriteApiFixture.assertFavoritesByCategory;
 import static org.hamcrest.Matchers.is;
 
 @AcceptanceTest
@@ -219,11 +216,6 @@ public class CategoryAcceptanceTest {
                 FavoriteApiFixture.createFavorite(accessToken, bookKey);
             }
 
-            private void assertFavoritesByCategory(CategoryType categoryType) {
-                List<FavoriteResponse> response = FavoriteApiFixture.getFavoriteByCategory(accessToken, bookKey, categoryType);
-                Assertions.assertThat(response.size()).isZero();
-            }
-
             @Test
             @DisplayName("즐겨찾기와 카테고리가 모두 삭제된다.")
             void it_returns_empty() {
@@ -241,9 +233,9 @@ public class CategoryAcceptanceTest {
                     .then()
                     .statusCode(HttpStatus.OK.value());
 
-                assertFavoritesByCategory(CategoryType.INCOME);
-                assertFavoritesByCategory(CategoryType.OUTCOME);
-                assertFavoritesByCategory(CategoryType.TRANSFER);
+                assertFavoritesByCategory(accessToken, bookKey, CategoryType.INCOME);
+                assertFavoritesByCategory(accessToken, bookKey, CategoryType.OUTCOME);
+                assertFavoritesByCategory(accessToken, bookKey, CategoryType.TRANSFER);
             }
         }
 
