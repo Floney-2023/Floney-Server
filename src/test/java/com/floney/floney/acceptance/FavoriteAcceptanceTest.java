@@ -77,8 +77,8 @@ public class FavoriteAcceptanceTest {
         }
 
         @Nested
-        @DisplayName("이미 해당 가계부에 10개의 즐겨찾기가 존재하는 경우")
-        class Context_With_10Favorites {
+        @DisplayName("이미 해당 가계부 및 카테고리에 5개의 즐겨찾기가 존재하는 경우")
+        class Context_With_AllFavorites {
 
             String accessToken;
             String bookKey;
@@ -87,8 +87,8 @@ public class FavoriteAcceptanceTest {
             void init() {
                 accessToken = UserApiFixture.loginAfterSignup(UserFixture.emailUser()).getAccessToken();
                 bookKey = BookApiFixture.createBook(accessToken).getBookKey();
-                for (int i = 0; i < 10; i++) {
-                    FavoriteApiFixture.createFavorite(accessToken, bookKey);
+                for (int i = 0; i < 5; i++) {
+                    FavoriteApiFixture.createFavoriteByLineCategory(accessToken, bookKey, "지출", "식비");
                 }
             }
 
