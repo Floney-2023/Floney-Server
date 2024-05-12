@@ -13,7 +13,7 @@ import java.util.List;
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Favorite> findAllExclusivelyByBookAndStatus(final Book book, final Status status);
+    List<Favorite> findAllExclusivelyByBookAndLineCategoryAndStatus(final Book book, final Category lineCategory, final Status status);
 
     List<Favorite> findAllByBookAndLineCategoryAndStatusOrderByIdDesc(final Book book, final Category lineCategory, final Status status);
 }
