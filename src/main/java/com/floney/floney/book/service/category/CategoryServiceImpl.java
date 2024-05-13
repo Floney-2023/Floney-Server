@@ -13,6 +13,7 @@ import com.floney.floney.book.repository.RepeatBookLineRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.category.SubcategoryRepository;
+import com.floney.floney.book.repository.favorite.FavoriteRepository;
 import com.floney.floney.book.service.BookLineService;
 import com.floney.floney.common.exception.book.AlreadyExistException;
 import com.floney.floney.common.exception.book.NotFoundBookException;
@@ -37,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookLineService bookLineService;
     private final BookLineCategoryRepository bookLineCategoryRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Override
     public CreateCategoryResponse createSubcategory(final String bookKey, final CreateCategoryRequest request) {
@@ -75,7 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
             });
 
         repeatBookLineRepository.inactiveAllBySubcategory(subcategory);
-
+        favoriteRepository.inactiveAllBySubcategory(subcategory);
         subcategoryRepository.inactive(subcategory);
     }
 
