@@ -40,9 +40,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         validateBookUser(bookKey, userEmail);
 
         final Book book = findBook(bookKey);
-        validateFavoriteSizeByBook(book);
-
         final Category lineCategory = findLineCategory(request.lineCategoryName());
+        validateFavoriteSize(book, lineCategory);
+
         final Subcategory lineSubcategory = findLineSubcategory(request.lineSubcategoryName(), lineCategory, book);
         final Subcategory assetSubcategory = findAssetSubcategory(book, request.assetSubcategoryName());
 
@@ -114,13 +114,13 @@ public class FavoriteServiceImpl implements FavoriteService {
         }
     }
 
-    private void validateFavoriteSizeByBook(final Book book) {
-        final int favoriteSize = favoriteRepository.findAllExclusivelyByBookAndStatus(book, ACTIVE).size();
-        if (favoriteSize == Book.FAVORITE_MAX_SIZE) {
-            throw new FavoriteSizeInvalidException(book.getBookKey());
-        } else if (favoriteSize > Book.FAVORITE_MAX_SIZE) {
-            log.error("가계부의 즐겨찾기 개수가 이미 {}개를 초과 - 가계부: {}", Book.FAVORITE_MAX_SIZE, book.getBookKey());
-            throw new FavoriteSizeInvalidException(book.getBookKey());
+    private void validateFavoriteSize(final Book book, final Category category) {
+        final int favoriteSize = favoriteRepository.findAllExclusivelyByBookAndLineCategoryAndStatus(book, category, ACTIVE).size();
+        if (favoriteSize == Category.FAVORITE_MAX_SIZE) {
+            throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
+        } else if (favoriteSize > Category.FAVORITE_MAX_SIZE) {
+            log.error("가계부({})의 {} 카테고리의 즐겨찾기 개수가 이미 {}개를 초과", book.getBookKey(), category.getName(), Category.FAVORITE_MAX_SIZE);
+            throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
         }
     }
 

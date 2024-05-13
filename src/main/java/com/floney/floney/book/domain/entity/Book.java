@@ -26,7 +26,6 @@ import java.time.LocalDate;
 public class Book extends BaseEntity {
 
     private static final double DEFAULT = 0.0;
-    public static final int FAVORITE_MAX_SIZE = 10;
 
     @Column(nullable = false)
     private String name;
