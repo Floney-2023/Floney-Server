@@ -6,8 +6,10 @@ import com.floney.floney.acceptance.fixture.CategoryApiFixture;
 import com.floney.floney.acceptance.fixture.FavoriteApiFixture;
 import com.floney.floney.acceptance.fixture.UserApiFixture;
 import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.dto.response.FavoriteResponse;
 import com.floney.floney.fixture.UserFixture;
 import io.restassured.RestAssured;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import static com.floney.floney.acceptance.fixture.FavoriteApiFixture.assertFavoritesByCategory;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 
 @AcceptanceTest
@@ -208,6 +211,11 @@ public class CategoryAcceptanceTest {
 
             String accessToken;
             String bookKey;
+
+            public void assertFavoritesByCategory(String accessToken, String bookKey, CategoryType categoryType) {
+                List<FavoriteResponse> response = FavoriteApiFixture.getFavoriteByCategory(accessToken, bookKey, categoryType);
+                Assertions.assertThat(response.size()).isZero();
+            }
 
             @BeforeEach
             void init() {
