@@ -8,5 +8,6 @@ public record FavoriteCreateRequest(
     String description,
     @NotBlank(message = "lineCategoryName를 입력해주세요") String lineCategoryName,
     @NotBlank(message = "lineSubcategoryName를 입력해주세요") String lineSubcategoryName,
-    @NotBlank(message = "assetSubcategoryName를 입력해주세요") String assetSubcategoryName) {
+    @NotBlank(message = "assetSubcategoryName를 입력해주세요") String assetSubcategoryName,
+    boolean exceptStatus) {
 }
