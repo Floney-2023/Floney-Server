@@ -280,6 +280,45 @@ public class BookAcceptanceTest {
                     .hasFieldOrPropertyWithValue("lineDate", LocalDate.of(2024, 4, 15));
             }
         }
+
+        @Nested
+        @DisplayName("반복 주기는 매주고 내역 날짜는 주말을 생성한 경우")
+        class Context_With_RepeatBookLine_EveryWeek {
+
+            final User user = UserFixture.emailUser();
+            String accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
+            String bookKey = BookApiFixture.createBook(accessToken).getBookKey();
+
+            private BookLineRequest request;
+
+            @BeforeEach
+            public void init() {
+
+                String incomeLineCategory = "수입";
+                String subCategory = "급여";
+                String assetSubCategory = "체크카드";
+                LocalDate weekendDate = LocalDate.of(2024, 5, 26);
+                request = BookRequestDtoFixture.createBookLineRequest(weekendDate, bookKey, incomeLineCategory, subCategory,
+                    assetSubCategory, WEEK);
+            }
+
+            @Test
+            @DisplayName("선텍한 날짜로 반복내역이 생성된다")
+            void it_succeeds() {
+                final BookLineResponse response = RestAssured
+                    .given()
+                    .auth().oauth2(accessToken)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(request)
+                    .when().post("/books/lines")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract().as(BookLineResponse.class);
+
+                assertThat(response)
+                    .hasFieldOrPropertyWithValue("lineDate", LocalDate.of(2024, 5, 26));
+            }
+        }
     }
 
 
