@@ -9,7 +9,7 @@ public enum Currency {
     GBP,
     VND,
     PHP,
-    THE,
+    THB,
     IDR,
     MYR,
     TRY,
