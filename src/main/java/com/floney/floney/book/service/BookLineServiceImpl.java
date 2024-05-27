@@ -154,7 +154,7 @@ public class BookLineServiceImpl implements BookLineService {
         LocalDate date = bookLine.getLineDate();
 
         // 가계부 내역 날짜로 주말을 골랐지만, 반복 주기가 평일인 경우
-        if (DateUtil.isWeekend(date) && !repeatDuration.equals(RepeatDuration.WEEKEND)) {
+        if (DateUtil.isWeekend(date) && repeatDuration.equals(RepeatDuration.WEEKDAY)) {
             LocalDate nextSaturday = date.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
             bookLine.updateDate(nextSaturday);
         }
@@ -169,7 +169,7 @@ public class BookLineServiceImpl implements BookLineService {
     private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
         // 1. 날짜와 반복 주기 정합성 체크
         checkDateByRepeatDuration(requestRepeatDuration, bookLine);
-        
+
         // 2. 반복 내역 객체 생성
         RepeatBookLine repeatBookLine = RepeatBookLine.of(bookLine, requestRepeatDuration);
 
