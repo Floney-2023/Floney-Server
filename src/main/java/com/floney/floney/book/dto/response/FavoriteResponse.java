@@ -7,7 +7,8 @@ public record FavoriteResponse(long id,
                                String description,
                                String lineCategoryName,
                                String lineSubcategoryName,
-                               String assetSubcategoryName) {
+                               String assetSubcategoryName,
+                               boolean exceptStatus) {
 
     public static FavoriteResponse from(final Favorite favorite) {
         return new FavoriteResponse(
@@ -16,7 +17,8 @@ public record FavoriteResponse(long id,
             favorite.getDescription(),
             favorite.getLineCategory().getName().getMeaning(),
             favorite.getLineSubcategory().getName(),
-            favorite.getAssetSubcategory().getName()
+            favorite.getAssetSubcategory().getName(),
+            favorite.isExceptStatus()
         );
     }
 }

@@ -40,6 +40,7 @@ public class FavoriteAcceptanceTest {
             final String lineCategoryName = "지출";
             final String lineSubcategoryName = "식비";
             final String assetSubcategoryName = "현금";
+            final boolean exceptStatus = false;
 
             @BeforeEach
             void init() {
@@ -58,9 +59,10 @@ public class FavoriteAcceptanceTest {
                             "money": %s,
                             "lineCategoryName": "%s",
                             "lineSubcategoryName": "%s",
-                            "assetSubcategoryName": "%s"
+                            "assetSubcategoryName": "%s",
+                            "exceptStatus": %s
                         }
-                        """.formatted(money, lineCategoryName, lineSubcategoryName, assetSubcategoryName))
+                        """.formatted(money, lineCategoryName, lineSubcategoryName, assetSubcategoryName, exceptStatus))
                     .when()
                     .post("/books/{key}/favorites", bookKey)
                     .then()
@@ -103,7 +105,8 @@ public class FavoriteAcceptanceTest {
                             "money": 10000,
                             "lineCategoryName": "지출",
                             "lineSubcategoryName": "식비",
-                            "assetSubcategoryName": "현금"
+                            "assetSubcategoryName": "현금",
+                            "exceptStatus": false
                         }
                         """)
                     .when()
@@ -179,7 +182,8 @@ public class FavoriteAcceptanceTest {
                             "money": 1000,
                             "lineCategoryName": "지출",
                             "lineSubcategoryName": "식비",
-                            "assetSubcategoryName": "현금"
+                            "assetSubcategoryName": "현금",
+                            "exceptStatus": false
                         }
                         """)
                     .when()
@@ -206,7 +210,8 @@ public class FavoriteAcceptanceTest {
                         "description", nullValue(),
                         "lineCategoryName", is("지출"),
                         "lineSubcategoryName", is("식비"),
-                        "assetSubcategoryName", is("현금")
+                        "assetSubcategoryName", is("현금"),
+                        "exceptStatus", is(false)
                     );
             }
         }

@@ -39,4 +39,7 @@ public class Favorite extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Subcategory assetSubcategory;
+
+    @Column(nullable = false, columnDefinition = "TINYINT")
+    private boolean exceptStatus;
 }

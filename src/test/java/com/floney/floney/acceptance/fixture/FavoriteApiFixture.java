@@ -24,7 +24,8 @@ public final class FavoriteApiFixture {
                     "money": 1000,
                     "lineCategoryName": "지출",
                     "lineSubcategoryName": "식비",
-                    "assetSubcategoryName": "현금"
+                    "assetSubcategoryName": "현금",
+                    "exceptStatus": false
                 }
                 """)
             .when()
@@ -47,7 +48,8 @@ public final class FavoriteApiFixture {
                     "money": 1000,
                     "lineCategoryName": "%s",
                     "lineSubcategoryName": "%s",
-                    "assetSubcategoryName": "현금"
+                    "assetSubcategoryName": "현금",
+                    "exceptStatus": false
                 }
                 """.formatted(lineCategoryName, lineSubcategoryName))
             .when()
