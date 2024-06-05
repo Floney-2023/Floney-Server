@@ -53,6 +53,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             .lineCategory(lineCategory)
             .lineSubcategory(lineSubcategory)
             .assetSubcategory(assetSubcategory)
+            .exceptStatus(request.exceptStatus())
             .build();
         favoriteRepository.save(favorite);
 
