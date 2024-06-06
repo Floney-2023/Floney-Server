@@ -40,7 +40,7 @@ public class FavoriteAcceptanceTest {
             final String lineCategoryName = "지출";
             final String lineSubcategoryName = "식비";
             final String assetSubcategoryName = "현금";
-            final boolean exceptStatus = false;
+            final boolean exceptStatus = true;
 
             @BeforeEach
             void init() {
@@ -73,7 +73,8 @@ public class FavoriteAcceptanceTest {
                         "description", nullValue(),
                         "lineCategoryName", is(lineCategoryName),
                         "lineSubcategoryName", is(lineSubcategoryName),
-                        "assetSubcategoryName", is(assetSubcategoryName)
+                        "assetSubcategoryName", is(assetSubcategoryName),
+                        "exceptStatus", is(exceptStatus)
                     );
             }
         }
