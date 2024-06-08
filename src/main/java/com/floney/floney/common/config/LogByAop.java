@@ -1,11 +1,10 @@
 package com.floney.floney.common.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,28 +14,27 @@ import java.util.Arrays;
 import java.util.List;
 
 @Aspect
+@Slf4j
 @Component
 public class LogByAop {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    @Pointcut("execution(* com.floney.floney.*.controller..*.*(..))")
+    @Pointcut("execution(* com.floney.floney.*.controller..*.*(..)) && !execution(* com.floney.floney.common.controller.HealthCheckController.*(..))")
     private void cutAllRequest() {
     }
 
     @Before("cutAllRequest()")
-    public void beforeRequest(JoinPoint joinPoint) {
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    public void beforeRequest(final JoinPoint joinPoint) {
+        final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        String method = request.getMethod();
-        String path = request.getRequestURI();
-        String ipAddress = request.getRemoteAddr();
+        final String method = request.getMethod();
+        final String path = request.getRequestURI();
+        final String ipAddress = request.getRemoteAddr();
 
-        List<String> data = Arrays.stream(joinPoint.getArgs())
-                .map(Object::toString)
-                .toList();
+        final List<String> data = Arrays.stream(joinPoint.getArgs())
+            .map(Object::toString)
+            .toList();
 
-        logger.info("[ACCESS LOG] " + method + " " + path + " [REQUEST DATA] " + data + " [IP] " + ipAddress);
+        log.info("[ACCESS LOG] {} {} [REQUEST DATA] {} [IP] {}", method, path, data, ipAddress);
     }
 
 }

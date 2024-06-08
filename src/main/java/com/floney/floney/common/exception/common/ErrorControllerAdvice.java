@@ -175,11 +175,6 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(NotFoundBookUserException.class)
     protected ResponseEntity<ErrorResponse> notFoundUser(NotFoundBookUserException exception) {
-        logger.warn("가계부 키 [{}] 에서 [{}]와 일치하는 {}",
-            exception.getBookKey(),
-            exception.getRequestUser(),
-            ErrorType.NOT_FOUND_BOOK_USER.getMessage());
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
@@ -254,6 +249,18 @@ public class ErrorControllerAdvice {
     protected ResponseEntity<ErrorResponse> notFoundParentCategoryException(NotFoundParentCategoryException exception) {
         logger.warn("[{}] {}", exception.getCategoryName(), exception.getErrorType().getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(FavoriteSizeInvalidException.class)
+    protected ResponseEntity<ErrorResponse> favoriteSizeInvalidException(FavoriteSizeInvalidException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse.of(exception.getErrorType()));
+    }
+
+    @ExceptionHandler(FavoriteNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> favoriteNotFoundException(FavoriteNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse.of(exception.getErrorType()));
     }
 

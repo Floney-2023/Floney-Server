@@ -19,6 +19,7 @@ import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.category.DefaultSubcategoryRepository;
 import com.floney.floney.book.repository.category.SubcategoryRepository;
+import com.floney.floney.book.repository.favorite.FavoriteRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
@@ -33,7 +34,6 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -58,6 +58,7 @@ public class BookServiceImpl implements BookService {
     private final SettlementRepository settlementRepository;
     private final AlarmRepository alarmRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Override
     @Transactional
@@ -239,6 +240,7 @@ public class BookServiceImpl implements BookService {
         settlementRepository.inactiveAllBy(book);
         budgetRepository.inactiveAllBy(book);
         repeatBookLineRepository.inactiveAllByBook(book);
+        favoriteRepository.inactiveAllByBook(book);
         book.initBook(); // 다시 entity manager가 관리하도록
     }
 
@@ -308,13 +310,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<RepeatBookLineResponse> getAllRepeatBookLine(final String bookKey, final CategoryType categoryType) {
         Book book = findBook(bookKey);
+        Category lineCategory = categoryRepository.findByType(categoryType)
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
 
-        Category lineCategory = categoryRepository.findByType(categoryType).orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
-
-        return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory).stream().map(RepeatBookLineResponse::new).collect(Collectors.toList());
+        return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory)
+            .stream()
+            .filter(this::shouldKeepBookLine)
+            .map(RepeatBookLineResponse::new)
+            .toList();
     }
 
     private void validateAlreadyJoined(final CodeJoinRequest request, final String userEmail) {
@@ -332,6 +338,18 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
+    private boolean shouldKeepBookLine(RepeatBookLine repeatBookLine) {
+        boolean keepBookLine = bookLineRepository.existsBookLineByStatusAndRepeatBookLine(ACTIVE, repeatBookLine);
+
+        if (!keepBookLine) {
+            repeatBookLine.inactive();
+            repeatBookLineRepository.save(repeatBookLine);
+            return false;
+        }
+        return true;
+
+    }
+
     private void validateJoinByBookUserCapacity(Book book) {
         final int memberCount = bookUserRepository.countByBookExclusively(book);
         book.validateCanJoinMember(memberCount);
@@ -344,6 +362,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void inactiveAllBy(final Book book) {
+        favoriteRepository.inactiveAllByBook(book);
         alarmRepository.inactiveAllByBook(book);
         bookLineRepository.inactiveAllByBook(book);
         bookLineCategoryRepository.inactiveAllByBook(book);

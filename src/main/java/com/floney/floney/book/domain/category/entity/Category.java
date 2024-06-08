@@ -23,6 +23,8 @@ import static com.floney.floney.book.domain.category.CategoryType.OUTCOME;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Category extends BaseEntity {
 
+    public static final int FAVORITE_MAX_SIZE = 5;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private CategoryType name;
@@ -39,7 +41,7 @@ public class Category extends BaseEntity {
         return OUTCOME.equals(name);
     }
 
-    public boolean isLine() {
-        return CategoryType.isLine(name);
+    public void validateLine() {
+        name.validateLineType();
     }
 }

@@ -21,4 +21,18 @@ public class BookRequestDtoFixture {
             .build();
     }
 
+    public static BookLineRequest createBookLineRequest(LocalDate lineDate, String bookKey, String lineCategory, String subCategory, String assetSubCategory, RepeatDuration repeatDuration) {
+        return BookLineRequest.builder()
+            .money(1000)
+            .line(subCategory)
+            .bookKey(bookKey)
+            .flow(lineCategory)
+            .asset(assetSubCategory)
+            .lineDate(lineDate)
+            .description("예시")
+            .except(false)
+            .repeatDuration(repeatDuration)
+            .build();
+    }
+
 }

@@ -56,7 +56,8 @@ public class BookLine extends BaseEntity {
                      final Double money,
                      final LocalDate lineDate,
                      final String description,
-                     final Boolean exceptStatus, final RepeatBookLine repeatBookLine) {
+                     final Boolean exceptStatus,
+                     final RepeatBookLine repeatBookLine) {
 
         categories.setBookLine(this);
 
@@ -126,5 +127,9 @@ public class BookLine extends BaseEntity {
 
     public boolean isOutcome() {
         return categories.isOutcome();
+    }
+
+    public void updateDate(final LocalDate date) {
+        this.lineDate = date;
     }
 }

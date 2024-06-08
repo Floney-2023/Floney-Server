@@ -115,6 +115,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.lineSubcategory.status.eq(ACTIVE),
                 bookLineCategory.assetSubcategory.status.eq(ACTIVE)
             )
+            .orderBy(bookLine.createdAt.desc())
             .fetch();
     }
 
@@ -540,10 +541,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     }
 
     private void validateLineSubcategory(final Subcategory subcategory) {
-        // TODO: 리팩토링
-        if (!subcategory.getParent().isLine()) {
-            throw new RuntimeException("LineSubcategory가 아닙니다.");
-        }
+        subcategory.getParent().validateLine();
     }
 
     private double totalMoneyByDurationAndCategoryTypeExceptAsset(final Book targetBook,

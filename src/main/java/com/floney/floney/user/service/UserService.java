@@ -184,7 +184,7 @@ public class UserService {
     }
 
     private String generatePassword(final String email) {
-        final String newPassword = RandomStringUtils.random(User.PASSWORD_MAX_LENGTH, true, true);
+        final String newPassword = RandomStringUtils.random(User.PASSWORD_MIN_LENGTH, true, true);
         final RegeneratePasswordMail mail = RegeneratePasswordMail.create(email, newPassword);
         mailProvider.sendMail(mail);
         return newPassword;
