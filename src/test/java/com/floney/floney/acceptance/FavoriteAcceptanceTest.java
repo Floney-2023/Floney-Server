@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.*;
 public class FavoriteAcceptanceTest {
 
     @Nested
-    @DisplayName("즐겨찾기를 추가할 때")
+    @DisplayName("즐겨찾기를 추가할때")
     class Describe_createFavorite {
 
         @Nested
