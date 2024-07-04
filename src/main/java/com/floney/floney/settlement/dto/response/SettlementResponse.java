@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.floney.floney.settlement.domain.entity.Settlement;
 import com.floney.floney.settlement.domain.entity.SettlementUser;
+import com.floney.floney.user.entity.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,25 +29,25 @@ public class SettlementResponse {
 
     public static SettlementResponse from(Settlement settlement) {
         return SettlementResponse.builder()
-                .id(settlement.getId())
-                .startDate(settlement.getStartDate())
-                .endDate(settlement.getEndDate())
-                .userCount(settlement.getUserCount())
-                .totalOutcome(settlement.getTotalOutcome())
-                .outcome(settlement.getAvgOutcome())
-                .build();
+            .id(settlement.getId())
+            .startDate(settlement.getStartDate())
+            .endDate(settlement.getEndDate())
+            .userCount(settlement.getUserCount())
+            .totalOutcome(settlement.getTotalOutcome())
+            .outcome(settlement.getAvgOutcome())
+            .build();
     }
 
     public static SettlementResponse of(Settlement settlement, List<SettlementUser> settlementUsers) {
         return SettlementResponse.builder()
-                .id(settlement.getId())
-                .startDate(settlement.getStartDate())
-                .endDate(settlement.getEndDate())
-                .userCount(settlement.getUserCount())
-                .totalOutcome(settlement.getTotalOutcome())
-                .outcome(settlement.getAvgOutcome())
-                .details(settlementUsers.stream().map(DetailResponse::from).toList())
-                .build();
+            .id(settlement.getId())
+            .startDate(settlement.getStartDate())
+            .endDate(settlement.getEndDate())
+            .userCount(settlement.getUserCount())
+            .totalOutcome(settlement.getTotalOutcome())
+            .outcome(settlement.getAvgOutcome())
+            .details(settlementUsers.stream().map(DetailResponse::from).toList())
+            .build();
     }
 
     @Getter
@@ -58,12 +59,19 @@ public class SettlementResponse {
         private String userProfileImg;
         private Double money;
 
-        private static DetailResponse from(SettlementUser settlementUser) {
-            return DetailResponse.builder()
-                    .userNickname(settlementUser.getUser().getNickname())
-                    .userProfileImg(settlementUser.getUser().getProfileImg())
+        private static DetailResponse from(final SettlementUser settlementUser) {
+            if (settlementUser.getUser() == null) {
+                return DetailResponse.builder()
+                    .userNickname(User.DELETE_VALUE)
+                    .userProfileImg(null)
                     .money(settlementUser.getMoney())
                     .build();
+            }
+            return DetailResponse.builder()
+                .userNickname(settlementUser.getUser().getNickname())
+                .userProfileImg(settlementUser.getUser().getProfileImg())
+                .money(settlementUser.getMoney())
+                .build();
         }
     }
 }

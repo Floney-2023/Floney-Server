@@ -23,6 +23,7 @@ import com.floney.floney.book.repository.favorite.FavoriteRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
+import com.floney.floney.settlement.repository.SettlementUserRepository;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -59,6 +60,7 @@ public class BookServiceImpl implements BookService {
     private final AlarmRepository alarmRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
     private final FavoriteRepository favoriteRepository;
+    private final SettlementUserRepository settlementUserRepository;
 
     @Override
     @Transactional
@@ -380,6 +382,7 @@ public class BookServiceImpl implements BookService {
         });
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
         repeatBookLineRepository.inactiveAllByBookUser(bookUser);
+        settlementUserRepository.inactiveAllByBookAndUser(bookUser.getBook(), bookUser.getUser());
     }
 
     private void saveDefaultCategories(final Book book) {
