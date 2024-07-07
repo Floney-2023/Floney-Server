@@ -301,12 +301,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteRepeatLine(final long repeatLineId) {
-        final RepeatBookLine repeatBookLine = repeatBookLineRepository.findByIdAndStatus(repeatLineId, ACTIVE).orElseThrow(NotFoundRepeatBookLineException::new);
+        final RepeatBookLine repeatBookLine = repeatBookLineRepository.findByIdAndStatus(repeatLineId, ACTIVE)
+            .orElseThrow(NotFoundRepeatBookLineException::new);
 
         repeatBookLine.inactive();
 
         //TODO : 이벤트 처리
-        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(repeatBookLine.getLineDate(), repeatBookLine);
+        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLine(repeatBookLine);
         bookLines.forEach(BookLine::inactive);
         bookLineRepository.saveAll(bookLines);
     }

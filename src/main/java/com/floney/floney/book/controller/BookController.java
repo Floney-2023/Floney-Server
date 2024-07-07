@@ -294,7 +294,7 @@ public class BookController {
     /**
      * 반복 내역 삭제
      *
-     * @param repeatLineId 가계부 내역 PK
+     * @param repeatLineId 반복 내역 PK
      */
     @DeleteMapping("/repeat")
     public ResponseEntity<?> deleteRepeatLine(@RequestParam long repeatLineId) {
