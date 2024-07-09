@@ -159,6 +159,7 @@ public class BookUserRepositoryImpl implements BookUserCustomRepository {
                 ))
             .from(bookUser)
             .where(
+                bookUser.status.eq(ACTIVE),
                 bookUser.book.id.in(booksByUser)
             )
             .groupBy(bookUser.book)
