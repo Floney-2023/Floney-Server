@@ -306,7 +306,7 @@ public class BookServiceImpl implements BookService {
         repeatBookLine.inactive();
 
         //TODO : 이벤트 처리
-        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLineByEqualOrAfter(repeatBookLine.getLineDate(), repeatBookLine);
+        List<BookLine> bookLines = bookLineRepository.findAllRepeatBookLine(repeatBookLine);
         bookLines.forEach(BookLine::inactive);
         bookLineRepository.saveAll(bookLines);
     }
