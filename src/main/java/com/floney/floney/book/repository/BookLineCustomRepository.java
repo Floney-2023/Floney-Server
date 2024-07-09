@@ -34,6 +34,8 @@ public interface BookLineCustomRepository {
 
     List<BookLine> findAllRepeatBookLineByEqualOrAfter(LocalDate localDate, RepeatBookLine repeatBookLine);
 
+    List<BookLine> findAllRepeatBookLine(RepeatBookLine repeatBookLine);
+
     List<BookLineWithWriterView> findAllOutcomes(AllOutcomesRequest request);
 
     double totalExpenseForBeforeMonth(AnalyzeByCategoryRequest request);
