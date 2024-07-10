@@ -203,6 +203,16 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .fetch();
     }
 
+
+    @Override
+    public List<BookLine> findAllRepeatBookLine(final RepeatBookLine repeatBookLine) {
+        return jpaQueryFactory.selectFrom(bookLine)
+            .where(
+                bookLine.repeatBookLine.eq(repeatBookLine),
+                bookLine.status.eq(ACTIVE))
+            .fetch();
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<BookLineWithWriterView> findAllOutcomes(final AllOutcomesRequest request) {

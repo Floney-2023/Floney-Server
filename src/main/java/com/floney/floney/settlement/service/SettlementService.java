@@ -41,9 +41,9 @@ public class SettlementService {
         final Book book = findBookByBookKey(bookKey);
 
         return findSettlementsOrderByRecentTime(book)
-                .stream()
-                .map(SettlementResponse::from)
-                .toList();
+            .stream()
+            .map(SettlementResponse::from)
+            .toList();
     }
 
     public SettlementResponse find(final String email, final Long id) {
@@ -79,7 +79,7 @@ public class SettlementService {
 
     private Settlement findSettlementById(final Long id) {
         return settlementRepository.findById(id)
-                .orElseThrow(() -> new SettlementNotFoundException(id));
+            .orElseThrow(() -> new SettlementNotFoundException(id));
     }
 
     private List<Settlement> findSettlementsOrderByRecentTime(final Book book) {
@@ -87,12 +87,13 @@ public class SettlementService {
     }
 
     private List<SettlementUser> findSettlementUsersBySettlement(final Settlement settlement) {
-        return settlementUserRepository.findAllBySettlementAndStatus(settlement, Status.ACTIVE);
+        // 정산은 탈퇴 혹은 가계부를 나간 사용자도 조회한다.
+        return settlementUserRepository.findAllBySettlement(settlement);
     }
 
     private Book findBookByBookKey(final String bookKey) {
         return bookRepository.findBookByBookKeyAndStatus(bookKey, Status.ACTIVE)
-                .orElseThrow(() -> new NotFoundBookException(bookKey));
+            .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
     private void validateBookUsers(final String bookKey, final Set<String> emails) {
@@ -129,6 +130,6 @@ public class SettlementService {
 
     private User findUserByEmail(final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+            .orElseThrow(() -> new UserNotFoundException(email));
     }
 }
