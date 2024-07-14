@@ -20,10 +20,6 @@ jobs:
           token: ${{ secrets.ACTIONS_TOKEN }}
           submodules: true
 
-      - name: 운영 환경 설정 추가
-        run: |
-          echo "${{ secrets.PROD_START_SH }}" | base64 --decode > ./script/start.sh
-
       - name: JDK 17 추가
         uses: actions/setup-java@v3
         with:
