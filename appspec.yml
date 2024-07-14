@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/Floney-Server
+    destination: ~/Floney-Server
     overwrite: yes
 
 file_exists_behavior: OVERWRITE
@@ -11,16 +11,16 @@ file_exists_behavior: OVERWRITE
 permissions:
   - object: /
     pattern: "**"
-    owner: ubuntu
-    group: ubuntu
+    owner: root
+    group: root
     mode: 777
 
 hooks:
   AfterInstall:
     - location: script/stop.sh
       timeout: 60
-      runsas: ubuntu
+      runsas: root
   ApplicationStart:
     - location: script/start.sh
       timeout: 60
-      runsas: ubuntu
+      runsas: root
