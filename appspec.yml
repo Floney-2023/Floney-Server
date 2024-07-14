@@ -3,7 +3,7 @@ os: linux
 
 files:
   - source: /
-    destination: ~/Floney-Server
+    destination: /home/ubuntu/Floney-Server
     overwrite: yes
 
 file_exists_behavior: OVERWRITE
