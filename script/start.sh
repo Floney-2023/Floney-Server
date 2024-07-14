@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_ROOT="$HOME/Floney-Server"
+PROJECT_ROOT="/home/ubuntu/Floney-Server"
 JAR_FILE="$PROJECT_ROOT/build/libs/Floney-0.0.1-SNAPSHOT.jar"
 
 APP_LOG="$PROJECT_ROOT/application.log"

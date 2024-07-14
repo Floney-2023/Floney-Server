@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ROOT_PATH="$HOME/Floney-Server"
+ROOT_PATH="/home/ubuntu/Floney-Server"
 DEPLOY_LOG="$ROOT_PATH/deploy.log"
 
 SERVICE_PID=$(pgrep -f Floney-Server)
