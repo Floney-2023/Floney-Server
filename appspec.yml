@@ -11,16 +11,16 @@ file_exists_behavior: OVERWRITE
 permissions:
   - object: /
     pattern: "**"
-    owner: root
-    group: root
+    owner: ubuntu
+    group: ubuntu
     mode: 777
 
 hooks:
   AfterInstall:
     - location: script/stop.sh
       timeout: 60
-      runsas: root
+      runsas: ubuntu
   ApplicationStart:
     - location: script/start.sh
       timeout: 60
-      runsas: root
+      runsas: ubuntu
