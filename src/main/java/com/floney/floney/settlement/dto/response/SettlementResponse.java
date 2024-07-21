@@ -60,7 +60,7 @@ public class SettlementResponse {
         private Double money;
 
         private static DetailResponse from(final SettlementUser settlementUser) {
-            if (settlementUser.getUser() == null) {
+            if (settlementUser.getUser() == null || !settlementUser.isActive()) {
                 return DetailResponse.builder()
                     .userNickname(User.DELETE_VALUE)
                     .userProfileImg(null)
