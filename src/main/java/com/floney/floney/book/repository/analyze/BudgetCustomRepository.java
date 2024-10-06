@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BudgetCustomRepository {
 
-    void deleteAllBy(Book book);
+    void inactiveAllBy(Book book);
 
     List<BudgetYearResponse> findBudgetByYear(String bookKey, DateDuration duration);
 }
