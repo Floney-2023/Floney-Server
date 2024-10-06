@@ -6,7 +6,7 @@
 
 - 🔗 서비스 소개: https://github.com/Floney-2023
 - 🔗 iOS 다운: [앱스토어 링크](https://apps.apple.com/kr/app/%ED%94%8C%EB%A1%9C%EB%8B%88-floney/id6462989500)
-- 🔗 안드로이드 다운: 출시 예정
+- 🔗 안드로이드 다운: [구글플레이 링크](https://play.google.com/store/apps/details?id=com.aos.floney&hl=ko)
 - 📅 개발 기간: 2023.04 ~ *current*
 
 ### 👩‍💻 팀원 목록
