@@ -10,11 +10,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.floney.floney.book.domain.entity.QBook.book;
 import static com.floney.floney.book.domain.entity.QBudget.budget;
 import static com.floney.floney.common.constant.Status.ACTIVE;
+import static com.floney.floney.common.constant.Status.INACTIVE;
 
 @Repository
 @Transactional(readOnly = true)
@@ -26,8 +28,10 @@ public class BudgetCustomRepositoryImpl implements BudgetCustomRepository {
 
     @Override
     @Transactional
-    public void deleteAllBy(final Book book) {
-        jpaQueryFactory.delete(budget)
+    public void inactiveAllBy(final Book book) {
+        jpaQueryFactory.update(budget)
+            .set(budget.status, INACTIVE)
+            .set(budget.updatedAt, LocalDateTime.now())
             .where(
                 budget.book.eq(book),
                 budget.status.eq(ACTIVE)
