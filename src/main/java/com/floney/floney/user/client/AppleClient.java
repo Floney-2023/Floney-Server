@@ -1,10 +1,12 @@
 package com.floney.floney.user.client;
 
+import com.apple.itunes.storekit.model.HistoryResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.util.AppleJwtProvider;
+import com.floney.floney.subscribe.dto.GetAppleTransactionResponse;
 import com.floney.floney.user.client.dto.ApplePublicKeys;
 import com.floney.floney.user.client.dto.AppleTokenHeader;
 import com.floney.floney.user.client.util.AppleOAuthPublicKeyGenerator;
@@ -15,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
@@ -37,7 +38,8 @@ public class AppleClient implements ClientProxy {
     private final AppleOAuthPublicKeyGenerator publicKeyGenerator;
     private final AppleJwtProvider appleJwtProvider;
 
-    public Object getTransaction(String transactionId) throws IOException {
+    public GetAppleTransactionResponse getTransaction(String transactionId) throws IOException {
+        
         String token = appleJwtProvider.getAppleJwt();
 
         Map<String, String> params = new HashMap<>();
@@ -51,14 +53,12 @@ public class AppleClient implements ClientProxy {
         String url = "https://api.storekit.itunes.apple.com/inApps/v2/history/{transactionId}";
 
         try {
-            ResponseEntity<Object> response = restTemplate.exchange(url, HttpMethod.GET, entity, Object.class, params);
-
-
+            restTemplate.exchange(url, HttpMethod.GET, entity, HistoryResponse.class, params);
+            return new GetAppleTransactionResponse(true);
         } catch (Exception exception) {
-
-            logger.error("apple transactione error occured {},  {} ", transactionId, exception.getMessage(), exception.getLocalizedMessage());
+            logger.error("apple get transaction error transaction id = {} ,{}", transactionId, exception.getMessage());
+            return new GetAppleTransactionResponse(false);
         }
-
     }
 
     @Override
@@ -84,6 +84,7 @@ public class AppleClient implements ClientProxy {
             return parseAuthId(authToken, publicKey);
         } catch (final JsonProcessingException exception) {
             throw new OAuthTokenNotValidException();
+
         }
     }
 
