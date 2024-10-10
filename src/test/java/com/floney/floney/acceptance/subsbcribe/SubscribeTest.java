@@ -33,7 +33,7 @@ public class SubscribeTest {
             @Test
             @DisplayName("valid가 false이다")
             void it_return_code() throws IOException {
-                GetAppleTransactionResponse response = appleClient.getTransaction("1234");
+                GetAppleTransactionResponse response = appleClient.getTransaction("1234", "userEmail");
                 Assertions.assertThat(response.isValid).isFalse();
             }
         }
