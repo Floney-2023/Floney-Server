@@ -38,8 +38,8 @@ public class AppleClient implements ClientProxy {
     private final AppleOAuthPublicKeyGenerator publicKeyGenerator;
     private final AppleJwtProvider appleJwtProvider;
 
-    public GetAppleTransactionResponse getTransaction(String transactionId) throws IOException {
-        
+    public GetAppleTransactionResponse getTransaction(String transactionId, String userName) throws IOException {
+
         String token = appleJwtProvider.getAppleJwt();
 
         Map<String, String> params = new HashMap<>();
@@ -56,7 +56,7 @@ public class AppleClient implements ClientProxy {
             restTemplate.exchange(url, HttpMethod.GET, entity, HistoryResponse.class, params);
             return new GetAppleTransactionResponse(true);
         } catch (Exception exception) {
-            logger.error("apple get transaction error transaction id = {} ,{}", transactionId, exception.getMessage());
+            logger.error("apple get transaction error transaction id = {} email = {},{}", transactionId, userName, exception.getMessage());
             return new GetAppleTransactionResponse(false);
         }
     }
