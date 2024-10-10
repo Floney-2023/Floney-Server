@@ -1,6 +1,5 @@
 package com.floney.floney.user.client;
 
-import com.apple.itunes.storekit.model.HistoryResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.user.OAuthResponseException;
@@ -53,7 +52,7 @@ public class AppleClient implements ClientProxy {
         String url = "https://api.storekit.itunes.apple.com/inApps/v2/history/{transactionId}";
 
         try {
-            restTemplate.exchange(url, HttpMethod.GET, entity, HistoryResponse.class, params);
+            restTemplate.exchange(url, HttpMethod.GET, entity, Object.class, params);
             return new GetAppleTransactionResponse(true);
         } catch (Exception exception) {
             logger.error("apple get transaction error transaction id = {} email = {},{}", transactionId, userName, exception.getMessage());
