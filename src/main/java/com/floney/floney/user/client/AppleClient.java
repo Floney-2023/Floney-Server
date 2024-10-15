@@ -51,7 +51,6 @@ public class AppleClient implements ClientProxy {
 
         Map<String, String> params = new HashMap<>();
         params.put("transactionId", transactionId);
-
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "Bearer " + token);
         header.set("Content-Type", "application/json");
