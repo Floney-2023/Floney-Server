@@ -1,6 +1,7 @@
 package com.floney.floney.acceptance.subsbcribe;
 
 
+import com.floney.floney.fixture.UserFixture;
 import com.floney.floney.subscribe.dto.GetAppleTransactionResponse;
 import com.floney.floney.user.client.AppleClient;
 import org.assertj.core.api.Assertions;
@@ -33,7 +34,7 @@ public class SubscribeTest {
             @Test
             @DisplayName("valid가 false이다")
             void it_return_code() throws IOException {
-                GetAppleTransactionResponse response = appleClient.getTransaction("1234", "userEmail");
+                GetAppleTransactionResponse response = appleClient.getTransaction("2000000742492545", UserFixture.emailUser());
                 Assertions.assertThat(response.isValid).isFalse();
             }
         }

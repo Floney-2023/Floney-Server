@@ -22,6 +22,6 @@ public class SubscribeController {
 
     @GetMapping("/transaction/apple")
     public ResponseEntity<?> getTransaction(@RequestParam String transactionId, @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
-        return new ResponseEntity<>(appleClient.getTransaction(transactionId, userDetails.getUsername()), HttpStatus.OK);
+        return new ResponseEntity<>(appleClient.getTransaction(transactionId, userDetails.getUser()), HttpStatus.OK);
     }
 }

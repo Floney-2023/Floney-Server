@@ -1,5 +1,9 @@
 package com.floney.floney.common.util;
 
+import com.apple.itunes.storekit.model.Environment;
+import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
+import com.apple.itunes.storekit.verification.SignedDataVerifier;
+import com.apple.itunes.storekit.verification.VerificationException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +22,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,17 +32,24 @@ public class AppleJwtProvider {
     private final String appleTokenFileName;
     private String issuer;
     private String claim;
+    private String appleId;
+
+    private String env;
 
     public AppleJwtProvider(
         @Value("${apple.kid}") String appleKid,
         @Value("${apple.tokenFileName}") String tokenFileName,
         @Value("${apple.issuer}") String issuer,
-        @Value("${apple.bundle-id}") String claim
+        @Value("${apple.bundle-id}") String claim,
+        @Value("{apple.app-apple-id}") String appleId,
+        @Value("{apple.env}") String env
     ) {
         this.appleKid = appleKid;
         this.appleTokenFileName = "secrets/" + tokenFileName;
         this.issuer = issuer;
         this.claim = claim;
+        this.appleId = appleId;
+        this.env = env;
     }
 
     public String getAppleJwt() throws IOException {
@@ -95,6 +103,24 @@ public class AppleJwtProvider {
             throw new RuntimeException("Java did not support the algorithm: " + "EC", e);
         } catch (InvalidKeySpecException e) {
             throw new RuntimeException("Invalid key format", e);
+        }
+    }
+
+    public JWSTransactionDecodedPayload parseNotification(String notificationPayload) throws IOException, VerificationException {
+        String bundleId = this.claim;
+        ClassPathResource resource = new ClassPathResource("/secrets/AppleRootCA-G2.cer");
+        ClassPathResource resource2 = new ClassPathResource("/secrets/AppleRootCA-G3.cer");
+        Set<InputStream> rootCAs = Set.of(
+            resource.getInputStream(),
+            resource2.getInputStream()
+        );
+
+        SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, Long.parseLong(this.appleId), Environment.fromValue(this.env), true);
+
+        try {
+            return signedPayloadVerifier.verifyAndDecodeTransaction(notificationPayload);
+        } catch (VerificationException e) {
+            throw e;
         }
     }
 
