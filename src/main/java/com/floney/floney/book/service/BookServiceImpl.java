@@ -240,7 +240,7 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.inactiveAllBy(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
         settlementRepository.inactiveAllBy(book);
-        budgetRepository.inactiveAllBy(book);
+        budgetRepository.deleteAllBy(book);
         repeatBookLineRepository.inactiveAllByBook(book);
         favoriteRepository.inactiveAllByBook(book);
         book.initBook(); // 다시 entity manager가 관리하도록
@@ -369,7 +369,7 @@ public class BookServiceImpl implements BookService {
         bookLineRepository.inactiveAllByBook(book);
         bookLineCategoryRepository.inactiveAllByBook(book);
         bookUserRepository.inactiveAllByBook(book);
-        budgetRepository.inactiveAllBy(book);
+        budgetRepository.deleteAllBy(book);
         categoryRepository.inactiveAllByBook(book);
         repeatBookLineRepository.inactiveAllByBook(book);
     }
