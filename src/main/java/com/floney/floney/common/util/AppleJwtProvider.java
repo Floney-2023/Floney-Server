@@ -110,6 +110,7 @@ public class AppleJwtProvider {
         String bundleId = this.claim;
         ClassPathResource resource = new ClassPathResource("/secrets/AppleRootCA-G2.cer");
         ClassPathResource resource2 = new ClassPathResource("/secrets/AppleRootCA-G3.cer");
+
         Set<InputStream> rootCAs = Set.of(
             resource.getInputStream(),
             resource2.getInputStream()
