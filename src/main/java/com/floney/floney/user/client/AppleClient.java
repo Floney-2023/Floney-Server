@@ -114,5 +114,6 @@ public class AppleClient implements ClientProxy {
         String payload = responseBodyV2.getSignedPayload();
         JWSTransactionDecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
         System.out.println(decodedPayload);
+        //find 로직
     }
 }
