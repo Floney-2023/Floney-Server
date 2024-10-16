@@ -2,6 +2,8 @@ package com.floney.floney.user.client;
 
 import com.apple.itunes.storekit.model.HistoryResponse;
 import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
+import com.apple.itunes.storekit.model.ResponseBodyV2;
+import com.apple.itunes.storekit.verification.VerificationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.user.OAuthResponseException;
@@ -106,5 +108,11 @@ public class AppleClient implements ClientProxy {
     private String extractHeaderFrom(final String token) {
         final String header = token.split("\\.")[0];
         return new String(Base64Utils.decodeFromString(header));
+    }
+
+    public void callback(ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
+        String payload = responseBodyV2.getSignedPayload();
+        JWSTransactionDecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
+        System.out.println(decodedPayload);
     }
 }
