@@ -32,7 +32,7 @@ public class AppleJwtProvider {
     private final String appleTokenFileName;
     private String issuer;
     private String claim;
-    private String appleId;
+    private Long appleId;
 
     private String env;
 
@@ -41,14 +41,14 @@ public class AppleJwtProvider {
         @Value("${apple.tokenFileName}") String tokenFileName,
         @Value("${apple.issuer}") String issuer,
         @Value("${apple.bundle-id}") String claim,
-        @Value("{apple.app-apple-id}") String appleId,
-        @Value("{apple.env}") String env
+        @Value("${apple.app-apple-id}") String appleId,
+        @Value("${apple.env}") String env
     ) {
         this.appleKid = appleKid;
         this.appleTokenFileName = "secrets/" + tokenFileName;
         this.issuer = issuer;
         this.claim = claim;
-        this.appleId = appleId;
+        this.appleId = Long.parseLong(appleId);
         this.env = env;
     }
 
@@ -116,7 +116,7 @@ public class AppleJwtProvider {
             resource2.getInputStream()
         );
 
-        SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, Long.parseLong(this.appleId), Environment.fromValue(this.env), true);
+        SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, this.appleId, Environment.fromValue(this.env), true);
 
         try {
             return signedPayloadVerifier.verifyAndDecodeTransaction(notificationPayload);
