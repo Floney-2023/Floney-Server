@@ -114,7 +114,12 @@ public class AppleClient implements ClientProxy {
     public void callback(ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
         String payload = responseBodyV2.getSignedPayload();
         ResponseBodyV2DecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
+
         System.out.println("result callback"+decodedPayload);
-        //find 로직
+        String transaction = decodedPayload.getData().getSignedTransactionInfo();
+        if(transaction != null) {
+            JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
+            System.out.println("result callback 2 = " + result);
+        }
     }
 }
