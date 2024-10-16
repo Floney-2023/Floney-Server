@@ -25,7 +25,7 @@ public class SubscribeController {
     }
 
     @PostMapping("/apple/notification")
-    public ResponseEntity<?> callbackApple(ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
+    public ResponseEntity<?> callbackApple(@RequestBody ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
         appleClient.callback(responseBodyV2);
         return new ResponseEntity<>(HttpStatus.OK);
     }
