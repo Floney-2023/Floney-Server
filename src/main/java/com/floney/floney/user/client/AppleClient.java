@@ -3,6 +3,7 @@ package com.floney.floney.user.client;
 import com.apple.itunes.storekit.model.HistoryResponse;
 import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
 import com.apple.itunes.storekit.model.ResponseBodyV2;
+import com.apple.itunes.storekit.model.ResponseBodyV2DecodedPayload;
 import com.apple.itunes.storekit.verification.VerificationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,7 @@ public class AppleClient implements ClientProxy {
 
     public GetAppleTransactionResponse getTransaction(String transactionId, User user) throws IOException {
         String token = appleJwtProvider.getAppleJwt();
-
+        System.out.println(token);
         Map<String, String> params = new HashMap<>();
         params.put("transactionId", transactionId);
         HttpHeaders header = new HttpHeaders();
@@ -61,7 +62,7 @@ public class AppleClient implements ClientProxy {
 
         try {
             HistoryResponse response = restTemplate.exchange(this.transactionUrl, HttpMethod.GET, entity, HistoryResponse.class, params).getBody();
-            JWSTransactionDecodedPayload payload = this.appleJwtProvider.parseNotification(response.getSignedTransactions().get(0));
+            JWSTransactionDecodedPayload payload = this.appleJwtProvider.parseTransaction(response.getSignedTransactions().get(0));
             AppleSubscribe subscribe = new AppleSubscribe(payload, user);
             this.subscribeRepository.save(subscribe);
             return new GetAppleTransactionResponse(true);
@@ -112,8 +113,8 @@ public class AppleClient implements ClientProxy {
 
     public void callback(ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
         String payload = responseBodyV2.getSignedPayload();
-        JWSTransactionDecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
-        System.out.println(decodedPayload);
+        ResponseBodyV2DecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
+        System.out.println("result callback"+decodedPayload);
         //find 로직
     }
 }

@@ -2,6 +2,7 @@ package com.floney.floney.common.util;
 
 import com.apple.itunes.storekit.model.Environment;
 import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;
+import com.apple.itunes.storekit.model.ResponseBodyV2DecodedPayload;
 import com.apple.itunes.storekit.verification.SignedDataVerifier;
 import com.apple.itunes.storekit.verification.VerificationException;
 import io.jsonwebtoken.Jwts;
@@ -106,7 +107,7 @@ public class AppleJwtProvider {
         }
     }
 
-    public JWSTransactionDecodedPayload parseNotification(String notificationPayload) throws IOException, VerificationException {
+    public JWSTransactionDecodedPayload parseTransaction(String notificationPayload) throws IOException, VerificationException {
         String bundleId = this.claim;
         ClassPathResource resource = new ClassPathResource("/secrets/AppleRootCA-G2.cer");
         ClassPathResource resource2 = new ClassPathResource("/secrets/AppleRootCA-G3.cer");
@@ -124,5 +125,25 @@ public class AppleJwtProvider {
             throw e;
         }
     }
+
+    public ResponseBodyV2DecodedPayload parseNotification(String notificationPayload) throws IOException, VerificationException {
+        String bundleId = this.claim;
+        ClassPathResource resource = new ClassPathResource("/secrets/AppleRootCA-G2.cer");
+        ClassPathResource resource2 = new ClassPathResource("/secrets/AppleRootCA-G3.cer");
+
+        Set<InputStream> rootCAs = Set.of(
+            resource.getInputStream(),
+            resource2.getInputStream()
+        );
+
+        SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, this.appleId, Environment.fromValue(this.env), true);
+
+        try {
+            return signedPayloadVerifier.verifyAndDecodeNotification(notificationPayload);
+        } catch (VerificationException e) {
+            throw e;
+        }
+    }
+
 
 }
