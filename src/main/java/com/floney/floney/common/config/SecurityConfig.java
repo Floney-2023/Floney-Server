@@ -52,7 +52,8 @@ public class SecurityConfig {
                 "/users/reissue",
                 "/users/email/**",
                 "/auth/**",
-                "/actuator/prometheus"
+                "/actuator/prometheus",
+                "/subscribe/apple/notification"
             ).permitAll()
             .anyRequest().authenticated()
 
