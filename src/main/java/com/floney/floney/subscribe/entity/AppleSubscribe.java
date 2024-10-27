@@ -1,4 +1,4 @@
-package com.floney.floney.subscribe;
+package com.floney.floney.subscribe.entity;
 
 
 import com.apple.itunes.storekit.model.JWSTransactionDecodedPayload;

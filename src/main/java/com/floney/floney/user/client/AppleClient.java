@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.util.AppleJwtProvider;
-import com.floney.floney.subscribe.AppleSubscribe;
-import com.floney.floney.subscribe.AppleSubscribeRepository;
-import com.floney.floney.subscribe.dto.GetAppleTransactionResponse;
+import com.floney.floney.subscribe.entity.AppleSubscribe;
+import com.floney.floney.subscribe.repository.AppleSubscribeRepository;
+import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.user.client.dto.ApplePublicKeys;
 import com.floney.floney.user.client.dto.AppleTokenHeader;
 import com.floney.floney.user.client.util.AppleOAuthPublicKeyGenerator;
@@ -49,7 +49,7 @@ public class AppleClient implements ClientProxy {
     @Value("${apple.transaction-url}")
     private String transactionUrl;
 
-    public GetAppleTransactionResponse getTransaction(String transactionId, User user) throws IOException {
+    public GetTransactionResponse getTransaction(String transactionId, User user) throws IOException {
         String token = appleJwtProvider.getAppleJwt();
         System.out.println(token);
         Map<String, String> params = new HashMap<>();
@@ -65,10 +65,10 @@ public class AppleClient implements ClientProxy {
             JWSTransactionDecodedPayload payload = this.appleJwtProvider.parseTransaction(response.getSignedTransactions().get(0));
             AppleSubscribe subscribe = new AppleSubscribe(payload, user);
             this.subscribeRepository.save(subscribe);
-            return new GetAppleTransactionResponse(true);
+            return new GetTransactionResponse(true);
         } catch (Exception exception) {
             logger.error("apple get transaction error transaction id = {} email = {},{}", transactionId, user.getEmail(), exception.getMessage());
-            return new GetAppleTransactionResponse(false);
+            return new GetTransactionResponse(false);
         }
     }
 
@@ -115,6 +115,7 @@ public class AppleClient implements ClientProxy {
         String payload = responseBodyV2.getSignedPayload();
         ResponseBodyV2DecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
 
+        //타입별로
         System.out.println("result callback"+decodedPayload);
         String transaction = decodedPayload.getData().getSignedTransactionInfo();
         if(transaction != null) {

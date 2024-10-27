@@ -1,4 +1,6 @@
 truncate table `alarm`;
+truncate table `android_subscribe`;
+truncate table `apple_subscribe`;
 truncate table `book`;
 truncate table `book_line`;
 truncate table `book_line_category`;
