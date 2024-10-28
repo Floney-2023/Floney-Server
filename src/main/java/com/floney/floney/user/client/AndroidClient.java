@@ -28,8 +28,7 @@ public class AndroidClient {
     private final AndroidSubscribeRepository androidSubscribeRepository;
 
     public GetTransactionResponse getTransaction(User user,String tokenId) throws java.io.IOException {
-        String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/products/{productId}/tokens/{token}";
-
+        String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}";
         String authToken = this.getToken();
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "Bearer " + authToken);
@@ -37,14 +36,13 @@ public class AndroidClient {
 
         Map<String, String> params = new HashMap<>();
         params.put("packageName", "com.aos.floney");
-        params.put("productId","floney_plus");
         params.put("token",tokenId);
+        params.put("subscriptionId","floney_plus");
 
         HttpEntity<String> entity = new HttpEntity<>(header);
 
         AndroidSubscriptionPurchase androidSubscriptionPurchase = restTemplate.exchange(url, HttpMethod.GET, entity, AndroidSubscriptionPurchase.class,params).getBody();
 
-        // TODO : 취소된 상태
         if (androidSubscriptionPurchase.getPaymentState() == 1){
             AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase, user);
             androidSubscribeRepository.save(subscribe);

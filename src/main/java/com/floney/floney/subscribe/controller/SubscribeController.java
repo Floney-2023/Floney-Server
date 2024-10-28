@@ -34,6 +34,6 @@ public class SubscribeController {
 
     @GetMapping("/android/transaction")
     public ResponseEntity<?> getAndroidTransaction(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam String transactionId) throws IOException {
-    return new ResponseEntity<>(androidClient.getTransaction(userDetails.getUser(),transactionId),HttpStatus.OK);
+        return new ResponseEntity<>(androidClient.getTransaction(userDetails.getUser(),transactionId),HttpStatus.OK);
     }
 }
