@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS apple_subscribe (
+CREATE TABLE apple_subscribe (
                                 id BIGINT AUTO_INCREMENT PRIMARY KEY,  -- BaseEntity로부터 상속된 기본 키
                                 user_id BIGINT,  -- User와의 OneToOne 관계로 외래 키 설정
                                 transaction_id VARCHAR(255),
