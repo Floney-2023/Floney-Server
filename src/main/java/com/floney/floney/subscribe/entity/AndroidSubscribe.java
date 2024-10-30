@@ -34,8 +34,6 @@ public class AndroidSubscribe extends BaseEntity {
 
     private String orderId;
 
-    private String productId;
-
     public AndroidSubscribe(final Map<String,String> payload, final User user) {
         this.expiryTimeMillis = payload.get("expiryTimeMillis");
         this.paymentState = Integer.valueOf(payload.get("paymentState"));
