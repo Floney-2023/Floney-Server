@@ -7,14 +7,20 @@ import com.floney.floney.subscribe.dto.AndroidSubscriptionPurchase;
 import com.floney.floney.user.entity.User;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.pubsub.v1.PubsubMessage;
 import io.jsonwebtoken.io.IOException;
+import io.lettuce.core.pubsub.PubSubMessage;
+import io.netty.handler.codec.base64.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,19 +42,21 @@ public class AndroidClient {
 
         Map<String, String> params = new HashMap<>();
         params.put("packageName", "com.aos.floney");
-        params.put("token",tokenId);
-        params.put("subscriptionId","floney_plus");
+        params.put("token", tokenId);
+        params.put("subscriptionId", "floney_plus");
 
         HttpEntity<String> entity = new HttpEntity<>(header);
 
-        AndroidSubscriptionPurchase androidSubscriptionPurchase = restTemplate.exchange(url, HttpMethod.GET, entity, AndroidSubscriptionPurchase.class,params).getBody();
+        ResponseEntity<Map> androidSubscriptionPurchase = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
 
-        if (androidSubscriptionPurchase.getPaymentState() == 1){
-            AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase, user);
-            androidSubscribeRepository.save(subscribe);
+        if (androidSubscriptionPurchase.getBody().get("paymentState") == "1") {
+          AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
+          androidSubscribeRepository.save(subscribe);
             return new GetTransactionResponse(true);
+        } else {
+            return new GetTransactionResponse(false);
         }
-        return new GetTransactionResponse(false);
+
     }
 
     private String getToken() throws IOException, java.io.IOException {
@@ -59,4 +67,16 @@ public class AndroidClient {
         AccessToken accessToken =  credentials.refreshAccessToken();
         return accessToken.getTokenValue();
     }
+
+    public void callback(PubsubMessage payload){
+        byte[] decodedBytes = payload.getData().toByteArray();
+        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+
+        System.out.println("Decoded data: " + decodedString);
+
+
+
+
+    }
+
 }

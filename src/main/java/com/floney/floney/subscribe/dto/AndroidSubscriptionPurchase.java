@@ -43,7 +43,7 @@ public class AndroidSubscriptionPurchase extends GenericJson {
     @Key
     private String orderId;
     @Key
-    private Integer paymentState;
+    private int paymentState;
     @Key
     private String priceAmountMicros;
     @Key
@@ -204,7 +204,7 @@ public class AndroidSubscriptionPurchase extends GenericJson {
         return this;
     }
 
-    public Integer getPaymentState() {
+    public int getPaymentState() {
         return this.paymentState;
     }
 

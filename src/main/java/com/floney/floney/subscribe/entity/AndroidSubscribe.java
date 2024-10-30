@@ -14,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -33,11 +34,13 @@ public class AndroidSubscribe extends BaseEntity {
 
     private String orderId;
 
-    public AndroidSubscribe(final AndroidSubscriptionPurchase payload, final User user) {
-        this.expiryTimeMillis = payload.getExpiryTimeMillis();
-        this.paymentState = payload.getPaymentState();
-        this.cancelReason = payload.getCancelReason();
-        this.orderId = payload.getOrderId();
+    private String productId;
+
+    public AndroidSubscribe(final Map<String,String> payload, final User user) {
+        this.expiryTimeMillis = payload.get("expiryTimeMillis");
+        this.paymentState = Integer.valueOf(payload.get("paymentState"));
+        this.cancelReason = Integer.valueOf(payload.get("cancelReason"));
+        this.orderId =  payload.get("orderId");
         this.user = user;
     }
 

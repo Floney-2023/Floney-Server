@@ -53,7 +53,8 @@ public class SecurityConfig {
                 "/users/email/**",
                 "/auth/**",
                 "/actuator/prometheus",
-                "/subscribe/apple/notification"
+                "/subscribe/apple/notification",
+                "/subscribe/android/notification"
             ).permitAll()
             .anyRequest().authenticated()
 

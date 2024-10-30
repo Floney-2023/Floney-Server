@@ -5,6 +5,8 @@ import com.apple.itunes.storekit.verification.VerificationException;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.dto.security.CustomUserDetails;
+import com.google.pubsub.v1.PubsubMessage;
+import io.lettuce.core.pubsub.PubSubMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/subscribe")
@@ -36,4 +39,15 @@ public class SubscribeController {
     public ResponseEntity<?> getAndroidTransaction(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam String transactionId) throws IOException {
         return new ResponseEntity<>(androidClient.getTransaction(userDetails.getUser(),transactionId),HttpStatus.OK);
     }
+
+    @PostMapping("/android/notification")
+    public ResponseEntity<?> callbackAndroid(@RequestBody PubsubMessage payload) throws VerificationException, IOException {
+        androidClient.callback(payload);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
+
+
 }
