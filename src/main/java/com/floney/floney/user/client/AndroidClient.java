@@ -1,17 +1,19 @@
 package com.floney.floney.user.client;
 
+import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.subscribe.entity.AndroidSubscribe;
 import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
-import com.floney.floney.subscribe.dto.AndroidSubscriptionPurchase;
 import com.floney.floney.user.entity.User;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.pubsub.v1.PubsubMessage;
 import io.jsonwebtoken.io.IOException;
 import io.lettuce.core.pubsub.PubSubMessage;
-import io.netty.handler.codec.base64.Base64;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +34,7 @@ public class AndroidClient {
 
     private final RestTemplate restTemplate;
     private final AndroidSubscribeRepository androidSubscribeRepository;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     public GetTransactionResponse getTransaction(User user,String tokenId) throws java.io.IOException {
         String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}";
@@ -68,15 +71,12 @@ public class AndroidClient {
         return accessToken.getTokenValue();
     }
 
-    public void callback(PubsubMessage payload){
-        byte[] decodedBytes = payload.getData().toByteArray();
-        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
-
-        System.out.println("Decoded data: " + decodedString);
-
-
-
-
+    public void callback(GoogleCallbackDto payload){
+        byte[] dataBytes = payload.getMessage().getData().getBytes();
+        String encodedData = new String(dataBytes, StandardCharsets.UTF_8);
+        byte[] decodedBytes = Base64.getDecoder().decode(encodedData);
+        String decodedString = new String(decodedBytes);
+       logger.info("Decoded string: " + decodedString);
     }
 
 }
