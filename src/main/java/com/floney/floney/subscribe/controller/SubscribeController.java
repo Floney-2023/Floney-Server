@@ -6,8 +6,6 @@ import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.dto.security.CustomUserDetails;
-import com.google.pubsub.v1.PubsubMessage;
-import io.lettuce.core.pubsub.PubSubMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

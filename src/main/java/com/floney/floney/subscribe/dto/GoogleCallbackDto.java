@@ -15,17 +15,12 @@ public class GoogleCallbackDto {
     @RequiredArgsConstructor
     @ToString
     @Getter
-
     public static class Message {
         private String data;
         private String messageId;
-
         private String message_id;
-
         private String publishTime;
         private String publish_time;
-
-        // Getter, Setter
     }
 
 }
