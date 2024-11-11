@@ -87,7 +87,7 @@ public class AndroidClient {
 
         // 결과 로그 출력
         logger.info("Decoded DTO: " + dto);
-        logger.info("subscription" + dto.getSubscriptionNotification())
+        logger.info("subscription" + dto.getSubscriptionNotification());
         logger.info(dto.getSubscriptionNotification().getPurchaseToken());
     }
 
