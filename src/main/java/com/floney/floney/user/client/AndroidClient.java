@@ -1,16 +1,18 @@
 package com.floney.floney.user.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
+import com.floney.floney.subscribe.dto.GoogleRtndDto;
 import com.floney.floney.subscribe.entity.AndroidSubscribe;
 import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.user.entity.User;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.pubsub.v1.PubsubMessage;
 import io.jsonwebtoken.io.IOException;
-import io.lettuce.core.pubsub.PubSubMessage;
 import java.util.Base64;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,7 @@ public class AndroidClient {
     private final AndroidSubscribeRepository androidSubscribeRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    public GetTransactionResponse getTransaction(User user,String tokenId) throws java.io.IOException {
+    public GetTransactionResponse getTransaction(User user, String tokenId) throws java.io.IOException {
         String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}";
         String authToken = this.getToken();
         HttpHeaders header = new HttpHeaders();
@@ -53,8 +55,8 @@ public class AndroidClient {
         ResponseEntity<Map> androidSubscriptionPurchase = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
 
         if (androidSubscriptionPurchase.getBody().get("paymentState") == "1") {
-          AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
-          androidSubscribeRepository.save(subscribe);
+            AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
+            androidSubscribeRepository.save(subscribe);
             return new GetTransactionResponse(true);
         } else {
             return new GetTransactionResponse(false);
@@ -67,16 +69,26 @@ public class AndroidClient {
         GoogleCredentials credentials = GoogleCredentials.fromStream(resource.getInputStream())
             .createScoped(Collections.singleton("https://www.googleapis.com/auth/androidpublisher"));
 
-        AccessToken accessToken =  credentials.refreshAccessToken();
+        AccessToken accessToken = credentials.refreshAccessToken();
         return accessToken.getTokenValue();
     }
 
-    public void callback(GoogleCallbackDto payload){
-        byte[] dataBytes = payload.getMessage().getData().getBytes();
+    public void callback(GoogleCallbackDto payload) throws JsonProcessingException {
+        byte[] dataBytes = payload.getMessage().getData().getBytes(StandardCharsets.UTF_8);
         String encodedData = new String(dataBytes, StandardCharsets.UTF_8);
         byte[] decodedBytes = Base64.getDecoder().decode(encodedData);
-        String decodedString = new String(decodedBytes);
-       logger.info("Decoded string: " + decodedString);
+
+        // 디코딩된 바이트 배열을 문자열로 변환
+        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+
+        // JSON 문자열을 DTO 클래스에 매핑
+        ObjectMapper objectMapper = new ObjectMapper();
+        GoogleRtndDto dto = objectMapper.readValue(decodedString, GoogleRtndDto.class);
+
+        // 결과 로그 출력
+        logger.info("Decoded DTO: " + dto);
+        logger.info("subscription" + dto.getSubscriptionNotification())
+        logger.info(dto.getSubscriptionNotification().getPurchaseToken());
     }
 
 }
