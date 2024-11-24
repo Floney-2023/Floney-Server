@@ -86,7 +86,7 @@ public class AndroidClient {
         GoogleRtndDto dto = objectMapper.readValue(decodedString, GoogleRtndDto.class);
 
         // 결과 로그 출력
-        logger.info("Decoded DTO : " + dto);
+        logger.info("Decoded DTO 결과: " + dto);
         logger.info("subscription" + dto.getSubscriptionNotification());
         // logger.info(dto.getSubscriptionNotification().getPurchaseToken());
     }
