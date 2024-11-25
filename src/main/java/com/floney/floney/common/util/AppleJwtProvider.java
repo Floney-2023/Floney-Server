@@ -8,6 +8,8 @@ import com.apple.itunes.storekit.verification.VerificationException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class AppleJwtProvider {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
     private final String appleKid;
     private final String appleTokenFileName;
     private String issuer;
@@ -137,9 +141,9 @@ public class AppleJwtProvider {
         );
 
 
-        System.out.println("bundleId: " + bundleId);
-        System.out.println("appleId: " + this.appleId);
-        System.out.println("env: " + Environment.fromValue(this.env));
+  logger.info("bundleId: " + bundleId);
+     logger.info("appleId: " + this.appleId);
+       logger.info("env: " + Environment.fromValue(this.env));
 
         SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, this.appleId, Environment.fromValue(this.env), true);
 
