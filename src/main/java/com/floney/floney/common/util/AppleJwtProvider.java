@@ -136,9 +136,15 @@ public class AppleJwtProvider {
             resource2.getInputStream()
         );
 
+
+        System.out.println("bundleId: " + bundleId);
+        System.out.println("appleId: " + this.appleId);
+        System.out.println("env: " + Environment.fromValue(this.env));
+
         SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, this.appleId, Environment.fromValue(this.env), true);
 
         try {
+
             return signedPayloadVerifier.verifyAndDecodeNotification(notificationPayload);
         } catch (VerificationException e) {
             throw e;
