@@ -139,14 +139,7 @@ public class AppleJwtProvider {
             resource.getInputStream(),
             resource2.getInputStream()
         );
-
-
-  logger.info("bundleId: " + bundleId);
-     logger.info("appleId: " + this.appleId);
-       logger.info("env: " + Environment.fromValue(this.env));
-
         SignedDataVerifier signedPayloadVerifier = new SignedDataVerifier(rootCAs, bundleId, this.appleId, Environment.fromValue(this.env), true);
-
         try {
             return signedPayloadVerifier.verifyAndDecodeNotification(notificationPayload);
         } catch (VerificationException e) {
