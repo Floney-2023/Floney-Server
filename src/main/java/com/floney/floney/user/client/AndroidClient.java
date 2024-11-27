@@ -81,13 +81,13 @@ public class AndroidClient {
         // 디코딩된 바이트 배열을 문자열로 변환
         String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
 
-        // JSON 문자열을 DTO 클래스에 매핑
-        ObjectMapper objectMapper = new ObjectMapper();
-        GoogleRtndDto dto = objectMapper.readValue(decodedString, GoogleRtndDto.class);
+//        // JSON 문자열을 DTO 클래스에 매핑
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        GoogleRtndDto dto = objectMapper.readValue(decodedString, GoogleRtndDto.class);
 
         // 결과 로그 출력
-        logger.info("Decoded DTO 결과: " + dto);
-        logger.info("subscription" + dto.getSubscriptionNotification());
+        logger.info("Decoded DTO 결과: " + decodedString);
+        //logger.info("subscription" + dto.getSubscriptionNotification());
         // logger.info(dto.getSubscriptionNotification().getPurchaseToken());
     }
 
