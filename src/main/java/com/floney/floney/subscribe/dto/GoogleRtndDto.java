@@ -16,6 +16,8 @@ public class GoogleRtndDto {
 
     TestNotification testNotification;
 
+    VoidedPurchaseNotification voidedPurchaseNotification;
+
     String version;
 }
 
