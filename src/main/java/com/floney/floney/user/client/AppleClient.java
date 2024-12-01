@@ -34,6 +34,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.security.PublicKey;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -68,22 +72,37 @@ public class AppleClient implements ClientProxy {
 
             Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(payload.getTransactionId());
 
-            if(appleSubscribe.isEmpty()) {
-                AppleSubscribe subscribe = new AppleSubscribe(payload, user);
+            AppleSubscribe subscribe;
+            if (appleSubscribe.isEmpty()) {
+                subscribe = new AppleSubscribe(payload, user);
                 this.subscribeRepository.save(subscribe);
                 logger.info("create success in get tx");
-            }
-            else {
-                AppleSubscribe subscribe = appleSubscribe.get();
+            } else {
+                subscribe = appleSubscribe.get();
                 subscribe.update(payload);
                 this.subscribeRepository.save(subscribe);
                 logger.info("update success in get tx");
             }
-            return new GetTransactionResponse(true);
+
+            if (isValidSubscribe(subscribe.getExpiresDate())) {
+                return new GetTransactionResponse(true);
+            }
+            return new GetTransactionResponse(false);
         } catch (Exception exception) {
             logger.error("apple get transaction error transaction id = {} email = {},{}", transactionId, user.getEmail(), exception.getMessage());
             return new GetTransactionResponse(false);
         }
+    }
+
+    private boolean isValidSubscribe(Long timestampMillis) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        LocalDateTime timestampTime = Instant.ofEpochMilli(timestampMillis)
+            .atZone(ZoneId.systemDefault()) // 현재 시스템의 시간대 사용
+            .toLocalDateTime();
+
+        // 날짜 비교
+        return !timestampTime.isBefore(currentTime);
     }
 
     @Override
@@ -127,16 +146,16 @@ public class AppleClient implements ClientProxy {
 
     public void callback(ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
         String payload = responseBodyV2.getSignedPayload();
-        ResponseBodyV2DecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
+        ResponseBodyV2DecodedPayload decodedPayload = this.appleJwtProvider.parseNotification(payload);
 
         String transaction = decodedPayload.getData().getSignedTransactionInfo();
-        if(transaction != null) {
+        if (transaction != null) {
             logger.info("transaction 존재");
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
-            AppleSubscribe  appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
+            AppleSubscribe appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
             appleSubscribe.update(result);
             this.subscribeRepository.save(appleSubscribe);
-            logger.info("success to save transaction",result);
+            logger.info("success to save transaction", result);
         }
     }
 }
