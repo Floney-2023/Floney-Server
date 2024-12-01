@@ -95,14 +95,9 @@ public class AppleClient implements ClientProxy {
     }
 
     private boolean isValidSubscribe(Long timestampMillis) {
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        LocalDateTime timestampTime = Instant.ofEpochMilli(timestampMillis)
-            .atZone(ZoneId.systemDefault()) // 현재 시스템의 시간대 사용
-            .toLocalDateTime();
-
-        // 날짜 비교
-        return !timestampTime.isBefore(currentTime);
+        long currentTime = System.currentTimeMillis();
+        logger.info("currnet {} , noti {} ",currentTime,timestampMillis);
+        return currentTime <= timestampMillis;
     }
 
     @Override
@@ -152,8 +147,10 @@ public class AppleClient implements ClientProxy {
         if (transaction != null) {
             logger.info("transaction 존재");
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
+            logger.info("tx",result);
             AppleSubscribe appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
             appleSubscribe.update(result);
+            logger.info("appleSubscribe",appleSubscribe);
             this.subscribeRepository.save(appleSubscribe);
             logger.info("success to save transaction", result);
         }
