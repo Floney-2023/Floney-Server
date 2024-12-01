@@ -71,9 +71,13 @@ public class AppleClient implements ClientProxy {
             if(appleSubscribe.isEmpty()) {
                 AppleSubscribe subscribe = new AppleSubscribe(payload, user);
                 this.subscribeRepository.save(subscribe);
+                logger.info("create success in get tx");
             }
             else {
-                appleSubscribe.get().update(payload);
+                AppleSubscribe subscribe = appleSubscribe.get();
+                subscribe.update(payload);
+                this.subscribeRepository.save(subscribe);
+                logger.info("update success in get tx");
             }
             return new GetTransactionResponse(true);
         } catch (Exception exception) {
@@ -131,6 +135,7 @@ public class AppleClient implements ClientProxy {
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
             AppleSubscribe  appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
             appleSubscribe.update(result);
+            this.subscribeRepository.save(appleSubscribe);
             logger.info("success to save transaction",result);
         }
     }
