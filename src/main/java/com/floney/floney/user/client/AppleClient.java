@@ -34,13 +34,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.security.PublicKey;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -60,6 +55,7 @@ public class AppleClient implements ClientProxy {
         System.out.println(token);
         Map<String, String> params = new HashMap<>();
         params.put("transactionId", transactionId);
+        params.put("sort","DESCENDING");
         HttpHeaders header = new HttpHeaders();
         header.set("Authorization", "Bearer " + token);
         header.set("Content-Type", "application/json");
@@ -68,7 +64,20 @@ public class AppleClient implements ClientProxy {
 
         try {
             HistoryResponse response = restTemplate.exchange(this.transactionUrl, HttpMethod.GET, entity, HistoryResponse.class, params).getBody();
-            JWSTransactionDecodedPayload payload = this.appleJwtProvider.parseTransaction(response.getSignedTransactions().get(0));
+            List<String> allTransactions = response.getSignedTransactions();
+
+            JWSTransactionDecodedPayload payload= allTransactions.stream()
+                .map(tx -> {
+                    try {
+                        return this.appleJwtProvider.parseTransaction(tx);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (VerificationException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .max(Comparator.comparing(JWSTransactionDecodedPayload::getSignedDate))
+                .get();
 
             Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(payload.getTransactionId());
 
@@ -147,7 +156,6 @@ public class AppleClient implements ClientProxy {
         if (transaction != null) {
             logger.info("transaction 존재");
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
-            logger.info("tx",result);
             AppleSubscribe appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getOriginalTransactionId()).orElseThrow(NotFoundBookLineException::new);
             appleSubscribe.update(result);
             logger.info("appleSubscribe",appleSubscribe);
