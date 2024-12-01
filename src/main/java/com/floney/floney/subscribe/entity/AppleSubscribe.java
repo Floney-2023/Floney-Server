@@ -6,6 +6,7 @@ import com.floney.floney.common.entity.BaseEntity;
 import com.floney.floney.user.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.common.aliasing.qual.Unique;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -32,6 +33,7 @@ public class AppleSubscribe extends BaseEntity {
 
     private String currency;
 
+    @Unique
     private String originalTransactionId;
 
     private Integer revocationReason;
@@ -48,6 +50,13 @@ public class AppleSubscribe extends BaseEntity {
         this.purchaseDate = payload.getPurchaseDate();
         this.signedDate = payload.getSignedDate();
         this.user = user;
+    }
+
+    public void update(final JWSTransactionDecodedPayload payload){
+        this.expiresDate = payload.getPurchaseDate();
+        this.transactionReason = String.valueOf(payload.getTransactionReason());
+        this.transactionId = payload.getTransactionId();
+        this.signedDate = payload.getSignedDate();
     }
 
 }

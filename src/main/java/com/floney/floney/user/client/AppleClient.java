@@ -7,6 +7,7 @@ import com.apple.itunes.storekit.model.ResponseBodyV2DecodedPayload;
 import com.apple.itunes.storekit.verification.VerificationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.util.AppleJwtProvider;
@@ -35,6 +36,7 @@ import java.net.URI;
 import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -115,12 +117,12 @@ public class AppleClient implements ClientProxy {
         String payload = responseBodyV2.getSignedPayload();
         ResponseBodyV2DecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
 
-        //타입별로
-       logger.info("result callback"+decodedPayload);
         String transaction = decodedPayload.getData().getSignedTransactionInfo();
         if(transaction != null) {
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
-            logger.info("result callback 2 = " + result);
+            AppleSubscribe  appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
+            appleSubscribe.update(result);
+            logger.info("success to save transaction",result);
         }
     }
 }
