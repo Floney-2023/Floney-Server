@@ -148,7 +148,7 @@ public class AppleClient implements ClientProxy {
             logger.info("transaction 존재");
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
             logger.info("tx",result);
-            AppleSubscribe appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
+            AppleSubscribe appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getOriginalTransactionId()).orElseThrow(NotFoundBookLineException::new);
             appleSubscribe.update(result);
             logger.info("appleSubscribe",appleSubscribe);
             this.subscribeRepository.save(appleSubscribe);
