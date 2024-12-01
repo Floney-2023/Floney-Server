@@ -65,8 +65,16 @@ public class AppleClient implements ClientProxy {
         try {
             HistoryResponse response = restTemplate.exchange(this.transactionUrl, HttpMethod.GET, entity, HistoryResponse.class, params).getBody();
             JWSTransactionDecodedPayload payload = this.appleJwtProvider.parseTransaction(response.getSignedTransactions().get(0));
-            AppleSubscribe subscribe = new AppleSubscribe(payload, user);
-            this.subscribeRepository.save(subscribe);
+
+            Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(payload.getTransactionId());
+
+            if(appleSubscribe.isEmpty()) {
+                AppleSubscribe subscribe = new AppleSubscribe(payload, user);
+                this.subscribeRepository.save(subscribe);
+            }
+            else {
+                appleSubscribe.get().update(payload);
+            }
             return new GetTransactionResponse(true);
         } catch (Exception exception) {
             logger.error("apple get transaction error transaction id = {} email = {},{}", transactionId, user.getEmail(), exception.getMessage());
@@ -119,6 +127,7 @@ public class AppleClient implements ClientProxy {
 
         String transaction = decodedPayload.getData().getSignedTransactionInfo();
         if(transaction != null) {
+            logger.info("transaction 존재");
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
             AppleSubscribe  appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(result.getTransactionId()).orElseThrow(NotFoundBookLineException::new);
             appleSubscribe.update(result);
