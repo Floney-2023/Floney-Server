@@ -116,11 +116,11 @@ public class AppleClient implements ClientProxy {
         ResponseBodyV2DecodedPayload decodedPayload= this.appleJwtProvider.parseNotification(payload);
 
         //타입별로
-        System.out.println("result callback"+decodedPayload);
+       logger.info("result callback"+decodedPayload);
         String transaction = decodedPayload.getData().getSignedTransactionInfo();
         if(transaction != null) {
             JWSTransactionDecodedPayload result = this.appleJwtProvider.parseTransaction(transaction);
-            System.out.println("result callback 2 = " + result);
+            logger.info("result callback 2 = " + result);
         }
     }
 }
