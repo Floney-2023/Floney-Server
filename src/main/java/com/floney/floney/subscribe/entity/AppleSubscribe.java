@@ -54,6 +54,8 @@ public class AppleSubscribe extends BaseEntity {
 
     public void update(final JWSTransactionDecodedPayload payload) {
         if (this.signedDate >= payload.getSignedDate()) return;
+        if(this.expiresDate >= payload.getExpiresDate()) return;
+
         this.expiresDate = payload.getExpiresDate();
         this.transactionReason = String.valueOf(payload.getTransactionReason());
         this.transactionId = payload.getTransactionId();
