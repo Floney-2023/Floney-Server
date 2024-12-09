@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.NoResultException;
 import java.nio.charset.StandardCharsets;
 
 
@@ -37,7 +38,8 @@ public class AndroidClient {
     private final AndroidSubscribeRepository androidSubscribeRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    public GetTransactionResponse getTransaction(User user, String tokenId) throws java.io.IOException {
+
+    public ResponseEntity<Map> getSubscriptionsFromAndroid(String tokenId) throws java.io.IOException {
         String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}";
         String authToken = this.getToken();
         HttpHeaders header = new HttpHeaders();
@@ -51,8 +53,13 @@ public class AndroidClient {
 
         HttpEntity<String> entity = new HttpEntity<>(header);
 
-        ResponseEntity<Map> androidSubscriptionPurchase = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
-        logger.info("callback {} ",androidSubscriptionPurchase);
+        return restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
+    }
+
+    public GetTransactionResponse getTransaction(User user, String tokenId) throws java.io.IOException {
+        ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
+        logger.info("callback {} ", androidSubscriptionPurchase);
+
         Object paymentState = androidSubscriptionPurchase.getBody().get("paymentState");
         if (paymentState.equals(1)) {
             Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
@@ -73,7 +80,20 @@ public class AndroidClient {
         } else {
             return new GetTransactionResponse(false);
         }
+    }
 
+    public void getTransaction(String tokenId) throws java.io.IOException {
+        ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
+        logger.info("callback {} ", androidSubscriptionPurchase);
+
+        Object paymentState = androidSubscriptionPurchase.getBody().get("paymentState");
+        if (paymentState.equals(1)) {
+            Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
+            AndroidSubscribe savedSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString()).orElseThrow(NoResultException::new);
+            savedSubscribe.update(androidSubscriptionPurchase.getBody());
+            this.androidSubscribeRepository.save(savedSubscribe);
+            logger.info("update success in get tx");
+        }
     }
 
     private String getToken() throws IOException, java.io.IOException {
@@ -85,7 +105,7 @@ public class AndroidClient {
         return accessToken.getTokenValue();
     }
 
-    public void callback(GoogleCallbackDto payload) throws JsonProcessingException {
+    public void callback(GoogleCallbackDto payload) throws java.io.IOException {
         byte[] dataBytes = payload.getMessage().getData().getBytes(StandardCharsets.UTF_8);
         String encodedData = new String(dataBytes, StandardCharsets.UTF_8);
         byte[] decodedBytes = Base64.getDecoder().decode(encodedData);
@@ -93,14 +113,22 @@ public class AndroidClient {
         // 디코딩된 바이트 배열을 문자열로 변환
         String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
 
-//        // JSON 문자열을 DTO 클래스에 매핑
+        // JSON 문자열을 DTO 클래스에 매핑
         ObjectMapper objectMapper = new ObjectMapper();
         GoogleRtndDto dto = objectMapper.readValue(decodedString, GoogleRtndDto.class);
 
-        // 결과 로그 출력
-        logger.info("Decoded DTO 결과: " + decodedString);
-        logger.info("subscription" + dto.getVoidedPurchaseNotification());
+        String purchaseToken = "";
+        if (dto.getSubscriptionNotification() != null) {
+            purchaseToken = dto.getSubscriptionNotification().getPurchaseToken();
+        } else if (dto.getVoidedPurchaseNotification() != null) {
+            purchaseToken = dto.getVoidedPurchaseNotification().getPurchaseToken();
+        }
+        else{
+            return;
+        }
 
+        this.getTransaction(purchaseToken);
+        logger.info("Decoded DTO 결과: " + decodedString);
     }
 
 }
