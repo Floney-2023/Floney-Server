@@ -26,7 +26,7 @@ public class AndroidSubscribe extends BaseEntity {
     @OneToOne
     private User user;
 
-    private Integer paymentState;
+    private String paymentState;
 
     private String expiryTimeMillis;
 
@@ -34,12 +34,23 @@ public class AndroidSubscribe extends BaseEntity {
 
     private String orderId;
 
-    public AndroidSubscribe(final Map<String,String> payload, final User user) {
+    private String eventTimeMillis;
+
+    public AndroidSubscribe(final Map<String, String> payload, final User user) {
         this.expiryTimeMillis = payload.get("expiryTimeMillis");
-        this.paymentState = Integer.valueOf(payload.get("paymentState"));
-        this.cancelReason = Integer.valueOf(payload.get("cancelReason"));
-        this.orderId =  payload.get("orderId");
+        this.paymentState = String.valueOf(payload.get("paymentState"));
+        this.orderId = payload.get("orderId");
         this.user = user;
+        this.eventTimeMillis = payload.get("eventTimeMillis");
+    }
+
+    public void update(final Map<String, String> payload) {
+        if (Long.parseLong(this.expiryTimeMillis) <= Long.parseLong(payload.get("expiryTimeMillis"))) {
+            this.expiryTimeMillis = payload.get("expiryTimeMillis");
+        }
+        this.paymentState = String.valueOf(payload.get("paymentState"));
+        this.orderId = payload.get("orderId");
+        this.eventTimeMillis = payload.get("eventTimeMillis");
     }
 
 }

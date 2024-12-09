@@ -5,13 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.subscribe.dto.GoogleRtndDto;
 import com.floney.floney.subscribe.entity.AndroidSubscribe;
+import com.floney.floney.subscribe.entity.AppleSubscribe;
 import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.user.entity.User;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import io.jsonwebtoken.io.IOException;
-import java.util.Base64;
+
+import java.util.*;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,9 +27,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Component
@@ -53,10 +52,23 @@ public class AndroidClient {
         HttpEntity<String> entity = new HttpEntity<>(header);
 
         ResponseEntity<Map> androidSubscriptionPurchase = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
+        logger.info("callback {} ",androidSubscriptionPurchase);
+        Object paymentState = androidSubscriptionPurchase.getBody().get("paymentState");
+        if (paymentState.equals(1)) {
+            Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
+            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString());
 
-        if (androidSubscriptionPurchase.getBody().get("paymentState") == "1") {
-            AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
-            androidSubscribeRepository.save(subscribe);
+            AndroidSubscribe savedSubscribe;
+            if (androidSubscribe.isEmpty()) {
+                AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
+                androidSubscribeRepository.save(subscribe);
+                logger.info("create success in get tx");
+            } else {
+                savedSubscribe = androidSubscribe.get();
+                savedSubscribe.update(androidSubscriptionPurchase.getBody());
+                this.androidSubscribeRepository.save(savedSubscribe);
+                logger.info("update success in get tx");
+            }
             return new GetTransactionResponse(true);
         } else {
             return new GetTransactionResponse(false);
