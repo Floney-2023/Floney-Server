@@ -89,8 +89,11 @@ public class AndroidClient {
         ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
         logger.info("callback {} ", androidSubscriptionPurchase);
 
-        Object paymentState = androidSubscriptionPurchase.getBody().get("paymentState");
-        if (paymentState.equals(1)) {
+        Map body = androidSubscriptionPurchase.getBody();
+
+        Object cancelReason = body != null ? body.get("cancelReason") : null;
+        Object paymentState = body != null ? body.get("paymentState") : null;
+        if ((paymentState != null && paymentState.equals(1)) || cancelReason !=null) {
             Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
             AndroidSubscribe savedSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString()).orElseThrow(NoResultException::new);
             savedSubscribe.update(androidSubscriptionPurchase.getBody());
