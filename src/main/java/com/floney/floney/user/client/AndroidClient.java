@@ -64,7 +64,7 @@ public class AndroidClient {
         Object cancelReason = body != null ? body.get("cancelReason") : null;
         Object paymentState = body != null ? body.get("paymentState") : null;
 
-        if ((paymentState != null && paymentState.equals(1)) || cancelReason !=null) {
+        if ((paymentState != null && paymentState.equals(1)) || cancelReason != null) {
             Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
             Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString());
 
@@ -75,30 +75,13 @@ public class AndroidClient {
                 logger.info("create success in get tx");
             } else {
                 savedSubscribe = androidSubscribe.get();
-                savedSubscribe.update(androidSubscriptionPurchase.getBody());
+                savedSubscribe.update(user,androidSubscriptionPurchase.getBody());
                 this.androidSubscribeRepository.save(savedSubscribe);
                 logger.info("update success in get tx");
             }
             return new GetTransactionResponse(true);
         } else {
             return new GetTransactionResponse(false);
-        }
-    }
-
-    public void getTransaction(String tokenId) throws java.io.IOException {
-        ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
-        logger.info("callback {} ", androidSubscriptionPurchase);
-
-        Map body = androidSubscriptionPurchase.getBody();
-
-        Object cancelReason = body != null ? body.get("cancelReason") : null;
-        Object paymentState = body != null ? body.get("paymentState") : null;
-        if ((paymentState != null && paymentState.equals(1)) || cancelReason !=null) {
-            Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
-            AndroidSubscribe savedSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString()).orElseThrow(NoResultException::new);
-            savedSubscribe.update(androidSubscriptionPurchase.getBody());
-            this.androidSubscribeRepository.save(savedSubscribe);
-            logger.info("update success in get tx");
         }
     }
 
@@ -133,7 +116,7 @@ public class AndroidClient {
             return;
         }
 
-        this.getTransaction(purchaseToken);
+        this.getTransaction(null,purchaseToken);
         logger.info("Decoded DTO 결과: " + decodedString);
     }
 

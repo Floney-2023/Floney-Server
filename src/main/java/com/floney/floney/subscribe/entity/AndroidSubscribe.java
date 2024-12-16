@@ -44,12 +44,13 @@ public class AndroidSubscribe extends BaseEntity {
         this.eventTimeMillis = payload.get("eventTimeMillis");
     }
 
-    public void update(final Map<String, String> payload) {
+    public void update(User user, final Map<String, String> payload) {
         if (Long.parseLong(this.expiryTimeMillis) <= Long.parseLong(payload.get("expiryTimeMillis"))) {
             this.expiryTimeMillis = payload.get("expiryTimeMillis");
         }
         this.paymentState = String.valueOf(payload.get("paymentState"));
         this.orderId = payload.get("orderId");
+        this.user = user;
         this.eventTimeMillis = payload.get("eventTimeMillis");
     }
 
