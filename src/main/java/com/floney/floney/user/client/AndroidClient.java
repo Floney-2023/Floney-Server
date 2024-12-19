@@ -75,7 +75,7 @@ public class AndroidClient {
                 logger.info("create success in get tx");
             } else {
                 savedSubscribe = androidSubscribe.get();
-                savedSubscribe.update(user,androidSubscriptionPurchase.getBody());
+                savedSubscribe.update(user, androidSubscriptionPurchase.getBody());
                 this.androidSubscribeRepository.save(savedSubscribe);
                 logger.info("update success in get tx");
             }
@@ -111,13 +111,26 @@ public class AndroidClient {
             purchaseToken = dto.getSubscriptionNotification().getPurchaseToken();
         } else if (dto.getVoidedPurchaseNotification() != null) {
             purchaseToken = dto.getVoidedPurchaseNotification().getPurchaseToken();
-        }
-        else{
+        } else {
             return;
         }
 
-        this.getTransaction(null,purchaseToken);
+        this.getTransaction(null, purchaseToken);
         logger.info("Decoded DTO 결과: " + decodedString);
+    }
+
+    public GetTransactionResponse isSubscribe(User user) {
+        Optional<AndroidSubscribe> subscribe = this.androidSubscribeRepository.findAndroidSubscribeByUserOrderByUpdatedAtDesc(user);
+        long currentTimeMillis = new Date().getTime();
+
+        if (subscribe.isPresent()) {
+            if (subscribe.get().getExpiryTimeMillis() != null
+                && Long.parseLong(subscribe.get().getExpiryTimeMillis()) >= currentTimeMillis) {
+                return new GetTransactionResponse(true);
+            }
+        }
+
+        return new GetTransactionResponse(false);
     }
 
 }

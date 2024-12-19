@@ -11,6 +11,7 @@ import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.user.OAuthResponseException;
 import com.floney.floney.common.exception.user.OAuthTokenNotValidException;
 import com.floney.floney.common.util.AppleJwtProvider;
+import com.floney.floney.subscribe.entity.AndroidSubscribe;
 import com.floney.floney.subscribe.entity.AppleSubscribe;
 import com.floney.floney.subscribe.repository.AppleSubscribeRepository;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
@@ -162,5 +163,22 @@ public class AppleClient implements ClientProxy {
             this.subscribeRepository.save(appleSubscribe);
             logger.info("success to save transaction", result);
         }
+    }
+
+    public GetTransactionResponse isSubscribe(User user){
+        Optional<AppleSubscribe> subscribe  = this.subscribeRepository.findAppleSubscribeByUserOrderByUpdatedAtDesc(user);
+
+        long currentTimeMillis = System.currentTimeMillis();
+
+        if (subscribe.isPresent()) {
+            AppleSubscribe subscription = subscribe.get();
+
+            if (subscription.getExpiresDate() != null
+                && subscription.getExpiresDate() >= currentTimeMillis) {
+                return new GetTransactionResponse(true);
+            }
+        }
+
+        return new GetTransactionResponse(false);
     }
 }
