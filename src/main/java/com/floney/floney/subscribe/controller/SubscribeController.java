@@ -2,6 +2,8 @@ package com.floney.floney.subscribe.controller;
 
 import com.apple.itunes.storekit.model.ResponseBodyV2;
 import com.apple.itunes.storekit.verification.VerificationException;
+import com.floney.floney.subscribe.Device;
+import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
@@ -13,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/subscribe")
@@ -35,8 +36,8 @@ public class SubscribeController {
     }
 
     @GetMapping("/android/transaction")
-    public ResponseEntity<?> getAndroidTransaction(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam String transactionId) throws IOException {
-        return new ResponseEntity<>(androidClient.getTransaction(userDetails.getUser(),transactionId),HttpStatus.OK);
+    public ResponseEntity<?> getAndroidTransaction(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam String transactionId) throws IOException {
+        return new ResponseEntity<>(androidClient.getTransaction(userDetails.getUser(), transactionId), HttpStatus.OK);
     }
 
     @PostMapping("/android/notification")
@@ -45,4 +46,12 @@ public class SubscribeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping
+    public GetTransactionResponse isSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if (device.equals(Device.ANDROID.value)) {
+            return androidClient.isSubscribe(userDetails.getUser());
+        } else {
+            return appleClient.isSubscribe(userDetails.getUser());
+        }
+    }
 }
