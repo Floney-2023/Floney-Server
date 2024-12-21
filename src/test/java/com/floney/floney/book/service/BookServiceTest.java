@@ -107,7 +107,7 @@ public class BookServiceTest {
             @Test
             @DisplayName("기계부 참여에 성공한다")
             void it_return_code() {
-                assertThat(bookService.joinWithCode(CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
+                assertThat(bookService.joinWithCode("android",CustomUserDetails.of(testUser), codeJoinRequest()).getCode())
                     .isEqualTo(testBook.getCode());
             }
         }
@@ -214,7 +214,7 @@ public class BookServiceTest {
             @Test
             @DisplayName("에러를 반환한다")
             void it_returns_exception() {
-                assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
+                assertThatThrownBy(() -> bookService.joinWithCode("android",customUserDetails, codeJoinRequest()))
                     .isInstanceOf(LimitRequestException.class);
 
             }
@@ -266,7 +266,7 @@ public class BookServiceTest {
             @Test
             @DisplayName("예외를 반환한다")
             void it_returns_exception() {
-                assertThatThrownBy(() -> bookService.joinWithCode(customUserDetails, codeJoinRequest()))
+                assertThatThrownBy(() -> bookService.joinWithCode("android",customUserDetails, codeJoinRequest()))
                     .isInstanceOf(MaxMemberException.class);
             }
         }
