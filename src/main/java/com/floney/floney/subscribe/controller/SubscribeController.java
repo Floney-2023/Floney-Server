@@ -5,6 +5,7 @@ import com.apple.itunes.storekit.verification.VerificationException;
 import com.floney.floney.subscribe.Device;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
+import com.floney.floney.subscribe.service.SubscribeService;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.dto.security.CustomUserDetails;
@@ -23,6 +24,7 @@ public class SubscribeController {
 
     private final AppleClient appleClient;
     private final AndroidClient androidClient;
+    private final SubscribeService subscribeService;
 
     @GetMapping("/apple/transaction")
     public ResponseEntity<?> getTransaction(@RequestParam String transactionId, @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
@@ -47,11 +49,17 @@ public class SubscribeController {
     }
 
     @GetMapping
-    public GetTransactionResponse isSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public GetTransactionResponse isUserSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (device.equals(Device.ANDROID.value)) {
             return androidClient.isSubscribe(userDetails.getUser());
         } else {
             return appleClient.isSubscribe(userDetails.getUser());
         }
     }
+
+    @GetMapping("/book")
+    public GetTransactionResponse isBookSubscribe(@RequestParam String bookKey) {
+        return subscribeService.isBookSubscribe(bookKey);
+    }
+
 }
