@@ -15,7 +15,7 @@ public interface BookService {
 
     CreateBookResponse createBook(final User user, final CreateBookRequest request);
 
-    CreateBookResponse joinWithCode(final CustomUserDetails userDetails, final CodeJoinRequest code);
+    CreateBookResponse joinWithCode(final String device,final CustomUserDetails userDetails, final CodeJoinRequest code);
 
     void changeBookName(final BookNameChangeRequest request);
 

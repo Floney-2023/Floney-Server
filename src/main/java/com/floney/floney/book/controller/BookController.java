@@ -41,9 +41,10 @@ public class BookController {
      * @body CodeJoinRequest 초대 코드
      */
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code,
+    public ResponseEntity<?> joinWithCode(
+        @RequestHeader("device") String device,@RequestBody CodeJoinRequest code,
                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.joinWithCode(userDetails, code), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(bookService.joinWithCode(device,userDetails, code), HttpStatus.ACCEPTED);
     }
 
     /**
