@@ -24,6 +24,7 @@ import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
 import com.floney.floney.settlement.repository.SettlementUserRepository;
+import com.floney.floney.subscribe.service.SubscribeService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -37,6 +38,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
+import static com.floney.floney.book.domain.BookCapacity.SUBSCRIBE;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -61,11 +63,12 @@ public class BookServiceImpl implements BookService {
     private final RepeatBookLineRepository repeatBookLineRepository;
     private final FavoriteRepository favoriteRepository;
     private final SettlementUserRepository settlementUserRepository;
+    private final SubscribeService subscribeService;
 
     @Override
     @Transactional
-    public CreateBookResponse createBook(final User user, final CreateBookRequest request) {
-        validateJoinByBookCapacity(user);
+    public CreateBookResponse createBook(final String device, final User user, final CreateBookRequest request) {
+        validateJoinByBookCapacity(device, user);
 
         final Book book = request.to(user.getEmail());
         bookRepository.save(book);
@@ -78,7 +81,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
+    public CreateBookResponse joinWithCode(String device, CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         String userEmail = userDetails.getUsername();
         User user = userDetails.getUser();
@@ -87,7 +90,7 @@ public class BookServiceImpl implements BookService {
             .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
-        validateJoinByBookCapacity(user);
+        validateJoinByBookCapacity(device, user);
         // 참여 희망 가계부 정원 체크
         validateJoinByBookUserCapacity(book);
         // 이미 존재하는 가계부 유저인지 체크
@@ -354,7 +357,12 @@ public class BookServiceImpl implements BookService {
 
     private void validateJoinByBookUserCapacity(Book book) {
         final int memberCount = bookUserRepository.countByBookExclusively(book);
-        book.validateCanJoinMember(memberCount);
+        int maxCapacity = 4;
+        if (this.subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+            maxCapacity = 10;
+        }
+
+        book.validateCanJoinMember(memberCount, maxCapacity);
     }
 
     private void deleteBook(final Book book) {
@@ -434,13 +442,21 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-    private void validateJoinByBookCapacity(User user) {
-        // 유저가 참여중인 가게부 개수
+    private void validateJoinByBookCapacity(String device, User user) {
+        int availableMax;
+
+        // 구독한 유저인 경우 4개 생성 가능
+        if (this.subscribeService.isUserSubscribe(device, user).isValid()) {
+            availableMax = SUBSCRIBE.getValue();
+        } else {
+            availableMax = DEFAULT.getValue();
+        }
+
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
         // 이미 최대로 가계부들에 참여한 경우
         // TODO: currentJoinBook > DEFAULT_MAX_BOOK.getValue() 이면 서버 에러 발생
-        if (currentJoinBook >= DEFAULT.getValue()) {
+        if (currentJoinBook >= availableMax) {
             throw new LimitRequestException();
         }
     }

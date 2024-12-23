@@ -12,6 +12,7 @@ import com.floney.floney.book.repository.BookUserRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
 import com.floney.floney.book.repository.favorite.FavoriteRepository;
 import com.floney.floney.common.exception.book.*;
+import com.floney.floney.subscribe.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
     private final CategoryRepository categoryRepository;
+    private final SubscribeService subscribeService;
 
     @Override
     public FavoriteResponse createFavorite(final String bookKey,
@@ -117,11 +119,15 @@ public class FavoriteServiceImpl implements FavoriteService {
 
     private void validateFavoriteSize(final Book book, final Category category) {
         final int favoriteSize = favoriteRepository.findAllExclusivelyByBookAndLineCategoryAndStatus(book, category, ACTIVE).size();
-        if (favoriteSize == Category.FAVORITE_MAX_SIZE) {
-            throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
-        } else if (favoriteSize > Category.FAVORITE_MAX_SIZE) {
-            log.error("가계부({})의 {} 카테고리의 즐겨찾기 개수가 이미 {}개를 초과", book.getBookKey(), category.getName(), Category.FAVORITE_MAX_SIZE);
-            throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
+
+        // 구독자는 무제한 생성
+        if (!this.subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+            if (favoriteSize == Category.FAVORITE_MAX_SIZE) {
+                throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
+            } else if (favoriteSize > Category.FAVORITE_MAX_SIZE) {
+                log.error("가계부({})의 {} 카테고리의 즐겨찾기 개수가 이미 {}개를 초과", book.getBookKey(), category.getName(), Category.FAVORITE_MAX_SIZE);
+                throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
+            }
         }
     }
 

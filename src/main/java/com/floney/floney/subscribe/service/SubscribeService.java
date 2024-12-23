@@ -4,6 +4,7 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.subscribe.Device;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.subscribe.repository.AppleSubscribeRepository;
@@ -43,4 +44,11 @@ public class SubscribeService {
         }
     }
 
+    public GetTransactionResponse isUserSubscribe(String device,User user){
+        if (device.equals(Device.ANDROID.value)) {
+            return androidClient.isSubscribe(user);
+        } else {
+            return appleClient.isSubscribe(user);
+        }
+    }
 }

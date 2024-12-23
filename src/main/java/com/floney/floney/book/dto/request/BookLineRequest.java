@@ -25,6 +25,7 @@ public class BookLineRequest {
     private String description;
     private Boolean except;
     private RepeatDuration repeatDuration;
+    private String memo;
 
     public BookLine to(final BookUser bookUser, final BookLineCategory bookLineCategory) {
         return BookLine.builder()
@@ -35,6 +36,7 @@ public class BookLineRequest {
             .description(description)
             .exceptStatus(except)
             .categories(bookLineCategory)
+            .memo(memo)
             .build();
     }
 }

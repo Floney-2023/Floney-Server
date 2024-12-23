@@ -50,11 +50,7 @@ public class SubscribeController {
 
     @GetMapping
     public GetTransactionResponse isUserSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (device.equals(Device.ANDROID.value)) {
-            return androidClient.isSubscribe(userDetails.getUser());
-        } else {
-            return appleClient.isSubscribe(userDetails.getUser());
-        }
+        return subscribeService.isUserSubscribe(device,userDetails.getUser());
     }
 
     @GetMapping("/book")
