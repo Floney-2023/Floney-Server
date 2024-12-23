@@ -240,7 +240,7 @@ public class BookServiceTest {
             @Test
             @DisplayName("성공한다")
             void it_returns_success() {
-                assertThatNoException().isThrownBy(() -> bookService.createBook(UserFixture.emailUser(), createBookRequest()));
+                assertThatNoException().isThrownBy(() -> bookService.createBook("androird",UserFixture.emailUser(), createBookRequest()));
             }
         }
 

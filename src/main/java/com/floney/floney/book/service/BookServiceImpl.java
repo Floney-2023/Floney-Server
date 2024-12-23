@@ -67,8 +67,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse createBook(final User user, final CreateBookRequest request) {
-        validateJoinByBookCapacity(user);
+    public CreateBookResponse createBook(final String device, final User user, final CreateBookRequest request) {
+        validateJoinByBookCapacity(device, user);
 
         final Book book = request.to(user.getEmail());
         bookRepository.save(book);
@@ -357,7 +357,12 @@ public class BookServiceImpl implements BookService {
 
     private void validateJoinByBookUserCapacity(Book book) {
         final int memberCount = bookUserRepository.countByBookExclusively(book);
-        book.validateCanJoinMember(memberCount);
+        int maxCapacity = 4;
+        if (this.subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+            maxCapacity = 10;
+        }
+
+        book.validateCanJoinMember(memberCount, maxCapacity);
     }
 
     private void deleteBook(final Book book) {
@@ -438,9 +443,9 @@ public class BookServiceImpl implements BookService {
     }
 
     private void validateJoinByBookCapacity(String device, User user) {
-        // 유저가 참여중인 가게부 개수
-
         int availableMax;
+
+        // 구독한 유저인 경우 4개 생성 가능
         if (this.subscribeService.isUserSubscribe(device, user).isValid()) {
             availableMax = SUBSCRIBE.getValue();
         } else {

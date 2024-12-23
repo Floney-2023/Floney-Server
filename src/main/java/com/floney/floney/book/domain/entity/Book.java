@@ -123,9 +123,8 @@ public class Book extends BaseEntity {
         this.lastSettlementDate = null;
     }
 
-    public void validateCanJoinMember(final int memberCount) {
-        // TODO: memberCount > userCapacity인 경우는 서버 에러로 변경
-        if (memberCount >= userCapacity) {
+    public void validateCanJoinMember(final int memberCount, final int maxCapacity) {
+        if (memberCount >= maxCapacity) {
             throw new MaxMemberException(bookKey, memberCount);
         }
     }

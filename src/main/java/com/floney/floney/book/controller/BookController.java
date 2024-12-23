@@ -29,9 +29,10 @@ public class BookController {
      * @body CreateBootRequest 가계부 생성 요청용 기본 정보
      */
     @PostMapping
-    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
+    public ResponseEntity<?> addBook(@RequestHeader("device") String device,
+                                     @RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.createBook(userDetails.getUser(), request), HttpStatus.CREATED);
+        return new ResponseEntity<>(bookService.createBook(device, userDetails.getUser(), request), HttpStatus.CREATED);
     }
 
     /**
@@ -42,9 +43,9 @@ public class BookController {
      */
     @PostMapping("/join")
     public ResponseEntity<?> joinWithCode(
-        @RequestHeader("device") String device,@RequestBody CodeJoinRequest code,
-                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(bookService.joinWithCode(device,userDetails, code), HttpStatus.ACCEPTED);
+        @RequestHeader("device") String device, @RequestBody CodeJoinRequest code,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(bookService.joinWithCode(device, userDetails, code), HttpStatus.ACCEPTED);
     }
 
     /**
