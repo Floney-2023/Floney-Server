@@ -49,6 +49,13 @@ public class BookLine extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private RepeatBookLine repeatBookLine;
 
+    @Column
+    @Lob
+    private String memo;
+
+    @Column
+    private String imageUrl;
+
     @Builder
     private BookLine(final BookUser writer,
                      final Book book,
@@ -57,7 +64,8 @@ public class BookLine extends BaseEntity {
                      final LocalDate lineDate,
                      final String description,
                      final Boolean exceptStatus,
-                     final RepeatBookLine repeatBookLine) {
+                     final RepeatBookLine repeatBookLine,
+                     final String memo) {
 
         categories.setBookLine(this);
 
@@ -69,6 +77,7 @@ public class BookLine extends BaseEntity {
         this.description = description;
         this.exceptStatus = exceptStatus;
         this.repeatBookLine = repeatBookLine;
+        this.memo = memo;
     }
 
     public static BookLine createByRepeatBookLine(LocalDate date, RepeatBookLine repeatBookLine) {
@@ -83,6 +92,7 @@ public class BookLine extends BaseEntity {
             .exceptStatus(repeatBookLine.getExceptStatus())
             .writer(repeatBookLine.getWriter())
             .repeatBookLine(repeatBookLine)
+            .memo(repeatBookLine.getMemo())
             .build();
     }
 
@@ -91,6 +101,7 @@ public class BookLine extends BaseEntity {
         this.lineDate = request.getLineDate();
         this.description = request.getDescription();
         this.exceptStatus = request.getExcept();
+        this.memo = request.getMemo();
     }
 
     public RepeatDuration getRepeatDuration() {
