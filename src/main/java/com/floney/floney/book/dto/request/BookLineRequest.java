@@ -26,6 +26,7 @@ public class BookLineRequest {
     private Boolean except;
     private RepeatDuration repeatDuration;
     private String memo;
+    private String imageUrl;
 
     public BookLine to(final BookUser bookUser, final BookLineCategory bookLineCategory) {
         return BookLine.builder()
@@ -37,6 +38,7 @@ public class BookLineRequest {
             .exceptStatus(except)
             .categories(bookLineCategory)
             .memo(memo)
+            .imageUrl(imageUrl)
             .build();
     }
 }

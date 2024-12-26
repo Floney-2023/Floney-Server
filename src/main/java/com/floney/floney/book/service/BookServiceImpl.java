@@ -358,7 +358,7 @@ public class BookServiceImpl implements BookService {
     private void validateJoinByBookUserCapacity(Book book) {
         final int memberCount = bookUserRepository.countByBookExclusively(book);
         int maxCapacity = 4;
-        if (this.subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+        if (subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
             maxCapacity = 10;
         }
 
@@ -446,7 +446,7 @@ public class BookServiceImpl implements BookService {
         int availableMax;
 
         // 구독한 유저인 경우 4개 생성 가능
-        if (this.subscribeService.isUserSubscribe(device, user).isValid()) {
+        if (subscribeService.isUserSubscribe(device, user).isValid()) {
             availableMax = SUBSCRIBE.getValue();
         } else {
             availableMax = DEFAULT.getValue();

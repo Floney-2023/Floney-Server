@@ -22,6 +22,8 @@ public class BookLineResponse {
     private final Boolean except;
     private final String nickname;
     private final RepeatDuration repeatDuration;
+    private final String memo;
+    private final String imageUrl;
 
     public static BookLineResponse from(final BookLine bookLine) {
         return BookLineResponse.builder()
@@ -35,6 +37,8 @@ public class BookLineResponse {
             .except(bookLine.getExceptStatus())
             .nickname(bookLine.getWriterNickName())
             .repeatDuration(bookLine.getRepeatDuration())
+            .memo(bookLine.getMemo())
+            .imageUrl(bookLine.getImageUrl())
             .build();
     }
 }
