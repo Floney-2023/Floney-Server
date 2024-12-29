@@ -53,6 +53,7 @@ public class SubscribeService {
     }
 
     public PresignedUrlDto getPresignedUrl(String bookKey) {
+
         String code = CodeFactory.generateCode();
         String fileName = bookKey + "/" + code;
         String url = this.awsService.generatePreSignedUrl(fileName);
