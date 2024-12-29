@@ -88,6 +88,9 @@ dependencies {
     implementation 'com.google.cloud:google-cloud-pubsub:1.134.1'
     implementation 'com.google.apis:google-api-services-androidpublisher:v3-rev20241016-2.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // AWS SDK S3 의존성
+    implementation 'software.amazon.awssdk:s3:2.20.91'
+    implementation 'software.amazon.awssdk:auth:2.20.91'
 }
 
 //querydsl

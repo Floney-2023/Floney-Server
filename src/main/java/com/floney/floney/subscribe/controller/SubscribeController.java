@@ -2,7 +2,6 @@ package com.floney.floney.subscribe.controller;
 
 import com.apple.itunes.storekit.model.ResponseBodyV2;
 import com.apple.itunes.storekit.verification.VerificationException;
-import com.floney.floney.subscribe.Device;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.subscribe.service.SubscribeService;
@@ -50,7 +49,7 @@ public class SubscribeController {
 
     @GetMapping
     public GetTransactionResponse isUserSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return subscribeService.isUserSubscribe(device,userDetails.getUser());
+        return subscribeService.isUserSubscribe(device, userDetails.getUser());
     }
 
     @GetMapping("/book")
@@ -58,4 +57,8 @@ public class SubscribeController {
         return subscribeService.isBookSubscribe(bookKey);
     }
 
+    @GetMapping("/url")
+    public ResponseEntity<?> getResignedUrl(@RequestParam String bookKey) {
+        return new ResponseEntity<>(subscribeService.getPresignedUrl(bookKey), HttpStatus.OK);
+    }
 }
