@@ -79,6 +79,7 @@ public class RepeatBookLine extends BaseEntity {
             .repeatDuration(repeatDuration)
             .exceptStatus(bookLine.getExceptStatus())
             .memo(bookLine.getMemo())
+            .imageUrl(bookLine.getImageUrl())
             .build();
     }
 

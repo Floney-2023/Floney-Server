@@ -121,7 +121,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         final int favoriteSize = favoriteRepository.findAllExclusivelyByBookAndLineCategoryAndStatus(book, category, ACTIVE).size();
 
         // 구독자는 무제한 생성
-        if (!this.subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+        if (!subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
             if (favoriteSize == Category.FAVORITE_MAX_SIZE) {
                 throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
             } else if (favoriteSize > Category.FAVORITE_MAX_SIZE) {

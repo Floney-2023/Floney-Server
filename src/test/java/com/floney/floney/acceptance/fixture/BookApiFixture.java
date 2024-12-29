@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 public class BookApiFixture {
 
@@ -17,6 +18,7 @@ public class BookApiFixture {
         return RestAssured.given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .header("device", "android")
             .body("""
                 {
                     "name": "name",
@@ -34,6 +36,7 @@ public class BookApiFixture {
             .given()
             .auth().oauth2(accessToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .header("device", "android")
             .body("""
                 {
                     "code": "%s"

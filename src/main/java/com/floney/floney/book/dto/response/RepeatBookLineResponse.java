@@ -21,6 +21,10 @@ public class RepeatBookLineResponse {
 
     private double money;
 
+    private String memo;
+
+    private String imageUrl;
+
     public RepeatBookLineResponse(final RepeatBookLine repeatBookLine) {
         this.id = repeatBookLine.getId();
         this.description = repeatBookLine.getDescription();
@@ -28,5 +32,7 @@ public class RepeatBookLineResponse {
         this.lineSubCategory = repeatBookLine.getLineSubcategory().getName();
         this.assetSubCategory = repeatBookLine.getAssetSubcategory().getName();
         this.money = repeatBookLine.getMoney();
+        this.memo = repeatBookLine.getMemo();
+        this.imageUrl = repeatBookLine.getImageUrl();
     }
 }
