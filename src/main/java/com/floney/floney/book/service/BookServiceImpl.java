@@ -48,6 +48,8 @@ public class BookServiceImpl implements BookService {
 
     private static final int ONLY_OWNER_COUNT = 1;
     private static final double DEFAULT_BUDGET = 0.0;
+    private static final int MAX_BOOK_USER = 10;
+    public static final int DEFAULT_BOOK_USER = 4;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
@@ -357,9 +359,9 @@ public class BookServiceImpl implements BookService {
 
     private void validateJoinByBookUserCapacity(Book book) {
         final int memberCount = bookUserRepository.countByBookExclusively(book);
-        int maxCapacity = 4;
+        int maxCapacity = DEFAULT_BOOK_USER;
         if (subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
-            maxCapacity = 10;
+            maxCapacity = MAX_BOOK_USER;
         }
 
         book.validateCanJoinMember(memberCount, maxCapacity);
