@@ -14,6 +14,7 @@ import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.subscribe.Device;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeBookResponse;
+import com.floney.floney.subscribe.dto.IsSubscribeUserResponse;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.entity.User;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.book.domain.category.entity.Category.FAVORITE_MAX_SIZE;
 import static com.floney.floney.book.service.BookServiceImpl.DEFAULT_BOOK_USER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -99,5 +101,16 @@ public class SubscribeService {
         }
 
         return new IsSubscribeBookResponse(maxFavorite,overBookUser);
+    }
+
+    public IsSubscribeUserResponse isBenefitUser(User user){
+        boolean maxBook = false;
+        int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
+
+        if(currentJoinBook > DEFAULT.getValue()){
+            maxBook = true;
+        }
+
+        return new IsSubscribeUserResponse(maxBook);
     }
 }
