@@ -3,6 +3,7 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
+import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -11,6 +12,8 @@ import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.MailProvider;
+import com.floney.floney.subscribe.Device;
+import com.floney.floney.subscribe.service.SubscribeService;
 import com.floney.floney.user.domain.vo.RegeneratePasswordMail;
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
@@ -55,6 +58,7 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
+    private final SubscribeService subscribeService;
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
@@ -149,9 +153,31 @@ public class UserService {
                 continue;
             }
 
-            final Optional<String> newOwner = bookUserRepository.findOldestBookUserEmailExceptOwner(user, book);
-            if (newOwner.isPresent()) {
-                book.delegateOwner(newOwner.get());
+            final Optional<String> teamMember = bookUserRepository.findOldestBookUserEmailExceptOwner(user, book);
+            String newOwner = "";
+            boolean findNewOwner = false;
+
+            // 위임할 팀원이 있다면
+            if (teamMember.isPresent()) {
+                newOwner = teamMember.get();
+                findNewOwner = true;
+
+                // 가계부가 구독 중이라면, 구독한 팀원에게 우선순위
+                if (subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+                    List<OurBookUser> bookUsers = bookUserRepository.findAllUser(book.getBookKey());
+
+                    for (OurBookUser bookUser : bookUsers) {
+                        boolean isMemberSubscribe = subscribeService.isUserSubscribe(bookUser.getEmail()).isValid();
+                        if (isMemberSubscribe) {
+                            newOwner = bookUser.getEmail();
+                        }
+                    }
+                }
+            }
+
+            // 구독 로직
+            if (findNewOwner) {
+                book.delegateOwner(newOwner);
                 notDeletedBookKeys.add(book.getBookKey());
                 continue;
             }

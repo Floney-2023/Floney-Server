@@ -6,6 +6,7 @@ import com.floney.floney.book.util.CodeFactory;
 import com.floney.floney.common.config.AwsService;
 import com.floney.floney.common.dto.PresignedUrlDto;
 import com.floney.floney.common.exception.book.NotFoundBookException;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.subscribe.Device;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.user.client.AndroidClient;
@@ -50,6 +51,17 @@ public class SubscribeService {
         } else {
             return appleClient.isSubscribe(user);
         }
+    }
+
+    public GetTransactionResponse isUserSubscribe(String email) {
+        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new NotFoundBookUserException(email, null));
+
+        if (this.appleClient.isSubscribe(user).isValid()) {
+            return this.appleClient.isSubscribe(user);
+        } else {
+            return this.androidClient.isSubscribe(user);
+        }
+
     }
 
     public PresignedUrlDto getPresignedUrl(String bookKey) {
