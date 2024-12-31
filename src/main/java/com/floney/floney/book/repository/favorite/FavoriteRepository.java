@@ -16,4 +16,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long>, Favor
     List<Favorite> findAllExclusivelyByBookAndLineCategoryAndStatus(final Book book, final Category lineCategory, final Status status);
 
     List<Favorite> findAllByBookAndLineCategoryAndStatusOrderByIdDesc(final Book book, final Category lineCategory, final Status status);
+
+    List<Favorite> findAllByBookAndStatus(final Book book,final Status status);
 }

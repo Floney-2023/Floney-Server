@@ -2,6 +2,7 @@ package com.floney.floney.user.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.subscribe.dto.GoogleRtndDto;
 import com.floney.floney.subscribe.entity.AndroidSubscribe;
@@ -9,6 +10,7 @@ import com.floney.floney.subscribe.entity.AppleSubscribe;
 import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.user.entity.User;
+import com.floney.floney.user.repository.UserRepository;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import io.jsonwebtoken.io.IOException;
@@ -36,6 +38,7 @@ public class AndroidClient {
 
     private final RestTemplate restTemplate;
     private final AndroidSubscribeRepository androidSubscribeRepository;
+    private final UserRepository userRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 

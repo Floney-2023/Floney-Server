@@ -61,4 +61,9 @@ public class SubscribeController {
     public ResponseEntity<?> getResignedUrl(@RequestParam String bookKey) {
         return new ResponseEntity<>(subscribeService.getPresignedUrl(bookKey), HttpStatus.OK);
     }
+
+    @GetMapping("/benefit")
+    public ResponseEntity<?> isBenefitSubscribe(@RequestParam String bookKey){
+        return new ResponseEntity<>(subscribeService.isBenefitBook(bookKey),HttpStatus.OK);
+    }
 }
