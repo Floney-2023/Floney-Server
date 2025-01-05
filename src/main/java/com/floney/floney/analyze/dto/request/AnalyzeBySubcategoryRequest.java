@@ -15,7 +15,7 @@ public class AnalyzeBySubcategoryRequest {
     private String bookKey;
     private String category;
     private String subcategory;
-    private List<Long> userIds;
+    private List<String> emails;
     private BookLineSortingType sortingType;
     private YearMonth yearMonth;
 }

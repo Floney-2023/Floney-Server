@@ -557,7 +557,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                                                                         final DateDuration duration,
                                                                         final String categoryName,
                                                                         final String lineSubcategoryName,
-                                                                        final List<Long> bookUserIds) {
+                                                                        final List<String> writerEmails) {
         final JPAQuery<BookLine> query = jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -579,10 +579,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 category.status.eq(ACTIVE)
             );
 
-        if (bookUserIds.isEmpty()) {
+        if (writerEmails.isEmpty()) {
             return query.fetch();
         }
-        return query.where(bookUser.id.in(bookUserIds), bookUser.status.eq(ACTIVE)).fetch();
+        return query
+            .innerJoin(bookUser.user, user)
+            .where(bookUser.user.email.in(writerEmails), bookUser.status.eq(ACTIVE), user.status.eq(ACTIVE))
+            .fetch();
     }
 
     private void validateLineSubcategory(final Subcategory subcategory) {
