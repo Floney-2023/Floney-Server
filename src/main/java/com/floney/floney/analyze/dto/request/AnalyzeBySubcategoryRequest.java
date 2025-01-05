@@ -13,6 +13,7 @@ import java.util.List;
 public class AnalyzeBySubcategoryRequest {
 
     private String bookKey;
+    private String category;
     private String subcategory;
     private List<Long> userIds;
     private BookLineSortingType sortingType;

@@ -32,7 +32,7 @@ public class AnalyzeController {
      * @return AnalyzeResponse 해당 자식 카테고리 분석 결과
      * @body AnalyzeByCategoryRequest 자식 카테고리 별 분석 요청
      */
-    @PostMapping("/line-subcategory/")
+    @PostMapping("/line-subcategory")
     public ResponseEntity<?> analyzeByLineSubcategory(@RequestBody AnalyzeBySubcategoryRequest request) {
         return new ResponseEntity<>(analyzeService.analyzeByLineSubcategory(request), HttpStatus.OK);
     }

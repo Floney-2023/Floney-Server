@@ -64,5 +64,5 @@ public interface BookLineCustomRepository {
 
     double outcomeMoneyByMonth(Book book, YearMonth month);
 
-    List<BookLine> findAllByDurationAndLineSubcategoryAndWriters(String bookKey, DateDuration duration, String lineSubcategoryName, List<Long> bookUserIds);
+    List<BookLine> findAllByDurationAndLineSubcategoryAndWriters(String bookKey, DateDuration duration, String categoryName, String lineSubcategoryName, List<Long> bookUserIds);
 }

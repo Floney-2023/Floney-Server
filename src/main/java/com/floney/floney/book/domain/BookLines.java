@@ -30,7 +30,7 @@ public class BookLines {
             return bookLines.stream().sorted(Comparator.comparing(BookLine::getWriterNickName)).toList();
         }
         if (sortingType == BookLineSortingType.LINE_SUBCATEGORY_NAME) {
-            return bookLines.stream().sorted(Comparator.comparing(o -> o.getCategories().getLineSubcategory().getName())).toList();
+            return bookLines.stream().sorted(Comparator.comparing(BookLine::getDescription)).toList();
         }
         log.error("존재하지 않는 BookLineSortingType 입니다. sortingType: {}", sortingType);
         return bookLines;

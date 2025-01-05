@@ -103,7 +103,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     public AnalyzeResponseBySubcategory analyzeByLineSubcategory(final AnalyzeBySubcategoryRequest request) {
         final DateDuration duration = DateDuration.startAndEndOfMonth(request.getYearMonth());
         final List<BookLine> bookLines = bookLineRepository.findAllByDurationAndLineSubcategoryAndWriters(
-            request.getBookKey(), duration, request.getSubcategory(), request.getUserIds()
+            request.getBookKey(), duration, request.getCategory(), request.getSubcategory(), request.getUserIds()
         );
         final List<BookLine> sortedBookLines = BookLines.from(bookLines).sort(request.getSortingType());
         final List<BookLineResponse> bookLineResponses = sortedBookLines.stream().map(BookLineResponse::from).toList();

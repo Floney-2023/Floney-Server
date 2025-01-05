@@ -10,12 +10,11 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.RepeatBookLine;
-import com.floney.floney.book.dto.process.BookLineExpense;
-import com.floney.floney.book.dto.process.BookLineWithWriterView;
-import com.floney.floney.book.dto.process.TotalExpense;
+import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -556,18 +555,20 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Transactional(readOnly = true)
     public List<BookLine> findAllByDurationAndLineSubcategoryAndWriters(final String bookKey,
                                                                         final DateDuration duration,
+                                                                        final String categoryName,
                                                                         final String lineSubcategoryName,
                                                                         final List<Long> bookUserIds) {
-        return jpaQueryFactory.selectFrom(bookLine)
+        final JPAQuery<BookLine> query = jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
             .innerJoin(bookLineCategory.lineSubcategory, subcategory)
             .innerJoin(bookLine.writer, bookUser)
             .where(
                 book.bookKey.eq(bookKey),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
+                category.name.eq(CategoryType.findLineByMeaning(categoryName)),
                 bookLineCategory.lineSubcategory.name.eq(lineSubcategoryName),
-                bookUser.id.in(bookUserIds),
                 bookUser.book.eq(book)
             )
             .where(
@@ -575,9 +576,13 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLine.status.eq(ACTIVE),
                 bookLineCategory.status.eq(ACTIVE),
                 bookLineCategory.lineSubcategory.status.eq(ACTIVE),
-                bookUser.status.eq(ACTIVE)
-            )
-            .fetch();
+                category.status.eq(ACTIVE)
+            );
+
+        if (bookUserIds.isEmpty()) {
+            return query.fetch();
+        }
+        return query.where(bookUser.id.in(bookUserIds), bookUser.status.eq(ACTIVE)).fetch();
     }
 
     private void validateLineSubcategory(final Subcategory subcategory) {
