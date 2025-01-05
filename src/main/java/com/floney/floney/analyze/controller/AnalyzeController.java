@@ -1,6 +1,7 @@
 package com.floney.floney.analyze.controller;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.analyze.dto.request.AnalyzeBySubcategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
 import com.floney.floney.analyze.service.AnalyzeService;
@@ -25,6 +26,15 @@ public class AnalyzeController {
     @PostMapping("/category")
     public ResponseEntity<?> analyzeByCategory(@RequestBody AnalyzeByCategoryRequest request) {
         return new ResponseEntity<>(analyzeService.analyzeByCategory(request), HttpStatus.OK);
+    }
+
+    /**
+     * @return AnalyzeResponse 해당 자식 카테고리 분석 결과
+     * @body AnalyzeByCategoryRequest 자식 카테고리 별 분석 요청
+     */
+    @PostMapping("/line-subcategory/")
+    public ResponseEntity<?> analyzeByLineSubcategory(@RequestBody AnalyzeBySubcategoryRequest request) {
+        return new ResponseEntity<>(analyzeService.analyzeByLineSubcategory(request), HttpStatus.OK);
     }
 
     /**

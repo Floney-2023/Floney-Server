@@ -10,7 +10,9 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.domain.entity.RepeatBookLine;
-import com.floney.floney.book.dto.process.*;
+import com.floney.floney.book.dto.process.BookLineExpense;
+import com.floney.floney.book.dto.process.BookLineWithWriterView;
+import com.floney.floney.book.dto.process.TotalExpense;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.querydsl.core.types.dsl.Expressions;
@@ -548,6 +550,34 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
             .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLine> findAllByDurationAndLineSubcategoryAndWriters(final String bookKey,
+                                                                        final DateDuration duration,
+                                                                        final String lineSubcategoryName,
+                                                                        final List<Long> bookUserIds) {
+        return jpaQueryFactory.selectFrom(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory)
+            .innerJoin(bookLine.writer, bookUser)
+            .where(
+                book.bookKey.eq(bookKey),
+                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
+                bookLineCategory.lineSubcategory.name.eq(lineSubcategoryName),
+                bookUser.id.in(bookUserIds),
+                bookUser.book.eq(book)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                bookUser.status.eq(ACTIVE)
+            )
+            .fetch();
     }
 
     private void validateLineSubcategory(final Subcategory subcategory) {

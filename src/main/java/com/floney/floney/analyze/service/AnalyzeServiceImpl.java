@@ -1,17 +1,17 @@
 package com.floney.floney.analyze.service;
 
 import com.floney.floney.analyze.dto.request.AnalyzeByCategoryRequest;
+import com.floney.floney.analyze.dto.request.AnalyzeBySubcategoryRequest;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByAsset;
 import com.floney.floney.analyze.dto.request.AnalyzeRequestByBudget;
-import com.floney.floney.analyze.dto.response.AnalyzeResponse;
-import com.floney.floney.analyze.dto.response.AnalyzeResponseByAsset;
-import com.floney.floney.analyze.dto.response.AnalyzeResponseByBudget;
-import com.floney.floney.analyze.dto.response.AnalyzeResponseByCategory;
+import com.floney.floney.analyze.dto.response.*;
 import com.floney.floney.analyze.vo.Assets;
+import com.floney.floney.book.domain.BookLines;
 import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.category.entity.Subcategory;
 import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.Budget;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
@@ -96,6 +96,18 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         final double outcomeOfThisMonth = bookLineRepository.outcomeMoneyByMonth(book, currentMonth);
 
         return AnalyzeResponseByAsset.of(incomeOfThisMonth - outcomeOfThisMonth, book.getAsset(), assets);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AnalyzeResponseBySubcategory analyzeByLineSubcategory(final AnalyzeBySubcategoryRequest request) {
+        final DateDuration duration = DateDuration.startAndEndOfMonth(request.getYearMonth());
+        final List<BookLine> bookLines = bookLineRepository.findAllByDurationAndLineSubcategoryAndWriters(
+            request.getBookKey(), duration, request.getSubcategory(), request.getUserIds()
+        );
+        final List<BookLine> sortedBookLines = BookLines.from(bookLines).sort(request.getSortingType());
+        final List<BookLineResponse> bookLineResponses = sortedBookLines.stream().map(BookLineResponse::from).toList();
+        return AnalyzeResponseBySubcategory.of(request.getSubcategory(), bookLineResponses);
     }
 
     private void validateCanAnalyze(final Category category) {
