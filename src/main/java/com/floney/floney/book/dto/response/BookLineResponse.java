@@ -5,6 +5,7 @@ import com.floney.floney.book.domain.entity.BookLine;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @ToString
@@ -23,9 +24,9 @@ public class BookLineResponse {
     private final String nickname;
     private final RepeatDuration repeatDuration;
     private final String memo;
-    private final String imageUrl;
+    private final List<String> imageUrls;
 
-    public static BookLineResponse from(final BookLine bookLine) {
+    public static BookLineResponse from(final BookLine bookLine,final List<String> imgUrls) {
         return BookLineResponse.builder()
             .id(bookLine.getId())
             .money(bookLine.getMoney())
@@ -38,7 +39,7 @@ public class BookLineResponse {
             .nickname(bookLine.getWriterNickName())
             .repeatDuration(bookLine.getRepeatDuration())
             .memo(bookLine.getMemo())
-            .imageUrl(bookLine.getImageUrl())
+            .imageUrls(imgUrls)
             .build();
     }
 }

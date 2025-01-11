@@ -2,10 +2,14 @@ package com.floney.floney.book.dto.process;
 
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.category.CategoryType;
+import com.floney.floney.book.domain.entity.BookLine;
+import com.floney.floney.book.dto.response.BookLineImgResponse;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 @ToString
@@ -35,7 +39,7 @@ public class BookLineWithWriterView {
 
     private final String memo;
 
-    private final String imageUrl;
+    private List<BookLineImgResponse> imageUrls;
 
     @Builder
     @QueryProjection
@@ -50,8 +54,7 @@ public class BookLineWithWriterView {
                                   final String writerNickname,
                                   final String writerProfileImg,
                                   final RepeatDuration repeatDuration,
-                                  final String memo,
-                                  final String imageUrl) {
+                                  final String memo) {
         this.id = id;
         this.money = money;
         this.description = description;
@@ -64,6 +67,9 @@ public class BookLineWithWriterView {
         this.writerNickname = writerNickname;
         this.repeatDuration = repeatDuration;
         this.memo = memo;
-        this.imageUrl = imageUrl;
+    }
+
+    public void updateImgUrls(final List<BookLineImgResponse> imgUrls) {
+        this.imageUrls = imgUrls;
     }
 }

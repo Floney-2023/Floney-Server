@@ -92,8 +92,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.nickname,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
                     repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration),
-                    bookLine.memo,
-                    bookLine.imageUrl
+                    bookLine.memo
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -233,8 +232,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.nickname,
                     user.profileImg,
                     repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration),
-                    bookLine.memo,
-                    bookLine.imageUrl
+                    bookLine.memo
                 )
             )
             .from(bookLine)

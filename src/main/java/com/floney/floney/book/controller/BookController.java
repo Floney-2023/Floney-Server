@@ -314,6 +314,11 @@ public class BookController {
         return new ResponseEntity<>(bookService.getAllRepeatBookLine(bookKey, categoryType), HttpStatus.OK);
     }
 
+    @DeleteMapping("/img")
+    public ResponseEntity<?> deleteImgUrl(@RequestParam long id){
+        bookLineService.deleteImg(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     /**
      * 가계부 화폐정보 조회

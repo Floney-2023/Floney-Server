@@ -61,8 +61,6 @@ public class RepeatBookLine extends BaseEntity {
     @Lob
     private String memo;
 
-    @Column
-    private String imageUrl;
 
     public static RepeatBookLine of(BookLine bookLine, RepeatDuration repeatDuration) {
         BookLineCategory bookLineCategory = bookLine.getCategories();
@@ -79,7 +77,6 @@ public class RepeatBookLine extends BaseEntity {
             .repeatDuration(repeatDuration)
             .exceptStatus(bookLine.getExceptStatus())
             .memo(bookLine.getMemo())
-            .imageUrl(bookLine.getImageUrl())
             .build();
     }
 

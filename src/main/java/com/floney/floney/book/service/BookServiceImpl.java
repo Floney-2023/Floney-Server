@@ -10,10 +10,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.RepeatBookLineRepository;
+import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
@@ -36,6 +33,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.book.domain.BookCapacity.SUBSCRIBE;
@@ -66,6 +64,7 @@ public class BookServiceImpl implements BookService {
     private final FavoriteRepository favoriteRepository;
     private final SettlementUserRepository settlementUserRepository;
     private final SubscribeService subscribeService;
+    private final BookLineImgRepository bookLineImgRepository;
 
     @Override
     @Transactional
@@ -326,7 +325,12 @@ public class BookServiceImpl implements BookService {
         return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory)
             .stream()
             .filter(this::shouldKeepBookLine)
-            .map(RepeatBookLineResponse::new)
+            .map((repeatBookLine) -> {
+                List<BookLineImgResponse> urls = bookLineImgRepository.findAllByRepeatBookLineAndStatus(repeatBookLine,ACTIVE).stream()
+                    .map(BookLineImgResponse::new)
+                    .toList();
+                return new RepeatBookLineResponse(repeatBookLine,urls);
+            })
             .toList();
     }
 

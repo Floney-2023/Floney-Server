@@ -53,9 +53,6 @@ public class BookLine extends BaseEntity {
     @Lob
     private String memo;
 
-    @Column
-    private String imageUrl;
-
     @Builder
     private BookLine(final BookUser writer,
                      final Book book,
@@ -65,8 +62,7 @@ public class BookLine extends BaseEntity {
                      final String description,
                      final Boolean exceptStatus,
                      final RepeatBookLine repeatBookLine,
-                     final String memo,
-                     final String imageUrl) {
+                     final String memo) {
 
         categories.setBookLine(this);
 
@@ -79,7 +75,6 @@ public class BookLine extends BaseEntity {
         this.exceptStatus = exceptStatus;
         this.repeatBookLine = repeatBookLine;
         this.memo = memo;
-        this.imageUrl = imageUrl;
     }
 
     public static BookLine createByRepeatBookLine(LocalDate date, RepeatBookLine repeatBookLine) {
@@ -95,7 +90,6 @@ public class BookLine extends BaseEntity {
             .writer(repeatBookLine.getWriter())
             .repeatBookLine(repeatBookLine)
             .memo(repeatBookLine.getMemo())
-            .imageUrl(repeatBookLine.getImageUrl())
             .build();
     }
 
@@ -105,7 +99,6 @@ public class BookLine extends BaseEntity {
         this.description = request.getDescription();
         this.exceptStatus = request.getExcept();
         this.memo = request.getMemo();
-        this.imageUrl = request.getImageUrl();
     }
 
     public RepeatDuration getRepeatDuration() {

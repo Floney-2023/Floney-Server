@@ -5,6 +5,8 @@ import com.floney.floney.book.domain.entity.RepeatBookLine;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 public class RepeatBookLineResponse {
@@ -23,9 +25,9 @@ public class RepeatBookLineResponse {
 
     private String memo;
 
-    private String imageUrl;
+    private List<BookLineImgResponse> imageUrls;
 
-    public RepeatBookLineResponse(final RepeatBookLine repeatBookLine) {
+    public RepeatBookLineResponse(final RepeatBookLine repeatBookLine,final List<BookLineImgResponse> imageUrls) {
         this.id = repeatBookLine.getId();
         this.description = repeatBookLine.getDescription();
         this.repeatDuration = repeatBookLine.getRepeatDuration();
@@ -33,6 +35,6 @@ public class RepeatBookLineResponse {
         this.assetSubCategory = repeatBookLine.getAssetSubcategory().getName();
         this.money = repeatBookLine.getMoney();
         this.memo = repeatBookLine.getMemo();
-        this.imageUrl = repeatBookLine.getImageUrl();
+        this.imageUrls = imageUrls;
     }
 }

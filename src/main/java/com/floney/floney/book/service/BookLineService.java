@@ -24,4 +24,6 @@ public interface BookLineService {
     void deleteLine(Long bookLineId);
 
     void deleteAllAfterBookLineByRepeat(long bookLineId);
+
+    void deleteImg(Long id);
 }
