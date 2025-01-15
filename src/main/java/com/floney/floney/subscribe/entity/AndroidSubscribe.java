@@ -36,22 +36,41 @@ public class AndroidSubscribe extends BaseEntity {
 
     private String eventTimeMillis;
 
-    public AndroidSubscribe(final Map<String, String> payload, final User user) {
-        this.expiryTimeMillis = payload.get("expiryTimeMillis");
+    private String startTimeMillis;
+
+    private String autoResumeTimeMillis;
+
+    private Boolean autoRenewing;
+
+    private String priceCurrencyCode;
+
+    private String priceAmountMicros;
+
+    public AndroidSubscribe(final Map<String, Object> payload, final User user) {
+        this.expiryTimeMillis = (String) payload.get("expiryTimeMillis");
         this.paymentState = String.valueOf(payload.get("paymentState"));
-        this.orderId = payload.get("orderId");
+        this.orderId = (String) payload.get("orderId");
         this.user = user;
-        this.eventTimeMillis = payload.get("eventTimeMillis");
+        this.eventTimeMillis = (String) payload.get("eventTimeMillis");
+        this.startTimeMillis = (String) payload.get("startTimeMillis");
+        this.autoResumeTimeMillis= (String) payload.get("autoResumeTimeMillis");
+        this.autoRenewing = (boolean) payload.get("autoRenewing");
+        this.priceCurrencyCode = (String) payload.get("priceCurrencyCode");
+        this.priceAmountMicros = (String) payload.get("priceAmountMicros");
     }
 
-    public void update(User user, final Map<String, String> payload) {
-        if (Long.parseLong(this.expiryTimeMillis) <= Long.parseLong(payload.get("expiryTimeMillis"))) {
-            this.expiryTimeMillis = payload.get("expiryTimeMillis");
+    public void update(User user, final Map<String, Object> payload) {
+        if (Long.parseLong(this.expiryTimeMillis) <= Long.parseLong((String) payload.get("expiryTimeMillis"))) {
+            this.expiryTimeMillis = (String) payload.get("expiryTimeMillis");
         }
         this.paymentState = String.valueOf(payload.get("paymentState"));
-        this.orderId = payload.get("orderId");
+        this.orderId = (String) payload.get("orderId");
         this.user = user;
-        this.eventTimeMillis = payload.get("eventTimeMillis");
+        this.eventTimeMillis = (String) payload.get("eventTimeMillis");
+        this.startTimeMillis = (String) payload.get("startTimeMillis");
+        this.autoRenewing = (boolean) payload.get("autoRenewing");
+        this.priceCurrencyCode = (String) payload.get("priceCurrencyCode");
+        this.priceAmountMicros = (String) payload.get("priceAmountMicros");
     }
 
 }

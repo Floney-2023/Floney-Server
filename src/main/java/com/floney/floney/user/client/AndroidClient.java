@@ -2,6 +2,8 @@ package com.floney.floney.user.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floney.floney.common.exception.book.NotFoundAlarmException;
+import com.floney.floney.common.exception.book.NotFoundBookLineException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.subscribe.dto.GoogleCallbackDto;
 import com.floney.floney.subscribe.dto.GoogleRtndDto;
@@ -11,6 +13,7 @@ import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
+import com.google.api.gax.rpc.NotFoundException;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import io.jsonwebtoken.io.IOException;
@@ -134,6 +137,12 @@ public class AndroidClient {
         }
 
         return new GetTransactionResponse(false);
+    }
+
+    public AndroidSubscribe getAndroidSubscribe(User user){
+        AndroidSubscribe and =  this.androidSubscribeRepository.findAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
+            .orElseThrow(NotFoundBookLineException::new);
+        return and;
     }
 
 }

@@ -63,12 +63,17 @@ public class SubscribeController {
     }
 
     @GetMapping("/benefit")
-    public ResponseEntity<?> isBenefitSubscribe(@RequestParam String bookKey){
-        return new ResponseEntity<>(subscribeService.isBenefitBook(bookKey),HttpStatus.OK);
+    public ResponseEntity<?> isBenefitSubscribe(@RequestParam String bookKey) {
+        return new ResponseEntity<>(subscribeService.isBenefitBook(bookKey), HttpStatus.OK);
     }
 
     @GetMapping("/user/benefit")
-    public ResponseEntity<?> isUserBenefitSubscribe(    @AuthenticationPrincipal final CustomUserDetails userDetails){
-        return new ResponseEntity<>(subscribeService.isBenefitUser(userDetails.getUser()),HttpStatus.OK);
+    public ResponseEntity<?> isUserBenefitSubscribe(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.isBenefitUser(userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("/android/info")
+    public ResponseEntity<?> getSubscribeInfo(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.getAndroidSubscribeInfo(userDetails.getUser()), HttpStatus.OK);
     }
 }

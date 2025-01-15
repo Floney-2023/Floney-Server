@@ -12,6 +12,7 @@ import com.floney.floney.common.dto.PresignedUrlDto;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.subscribe.Device;
+import com.floney.floney.subscribe.dto.GetAndroidSubscribeInfoResponse;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeBookResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeUserResponse;
@@ -112,5 +113,10 @@ public class SubscribeService {
         }
 
         return new IsSubscribeUserResponse(maxBook);
+    }
+
+    public GetAndroidSubscribeInfoResponse getAndroidSubscribeInfo(User user){
+        GetAndroidSubscribeInfoResponse res =  new GetAndroidSubscribeInfoResponse(this.androidClient.getAndroidSubscribe(user));
+    return res;
     }
 }
