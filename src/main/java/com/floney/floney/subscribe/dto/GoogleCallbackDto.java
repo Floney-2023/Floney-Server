@@ -7,7 +7,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 @Getter
-public class GoogleCallbackDto {
+public class  GoogleCallbackDto {
 
     private Message message;
     private String subscription;
