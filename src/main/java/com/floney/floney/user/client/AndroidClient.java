@@ -81,34 +81,10 @@ public class AndroidClient {
                 logger.info("create success in get tx");
             } else {
                 savedSubscribe = androidSubscribe.get();
-                savedSubscribe.update(user, androidSubscriptionPurchase.getBody());
+                savedSubscribe.update(androidSubscriptionPurchase.getBody());
                 this.androidSubscribeRepository.save(savedSubscribe);
                 logger.info("update success in get tx");
             }
-            return new GetTransactionResponse(true);
-        } else {
-            return new GetTransactionResponse(false);
-        }
-    }
-
-    public GetTransactionResponse getTransaction(String tokenId) throws java.io.IOException {
-        ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
-        logger.info("callback {} ", androidSubscriptionPurchase);
-
-        Map<String, Object> body = androidSubscriptionPurchase.getBody();
-        Object cancelReason = body != null ? body.get("cancelReason") : null;
-        Object paymentState = body != null ? body.get("paymentState") : null;
-
-        if ((paymentState != null && paymentState.equals(1)) || cancelReason != null) {
-            Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
-            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString());
-
-            AndroidSubscribe savedSubscribe;
-
-            savedSubscribe = androidSubscribe.get();
-            savedSubscribe.update(androidSubscriptionPurchase.getBody());
-            this.androidSubscribeRepository.save(savedSubscribe);
-            logger.info("update success in get tx");
             return new GetTransactionResponse(true);
         } else {
             return new GetTransactionResponse(false);
@@ -145,11 +121,7 @@ public class AndroidClient {
             return;
         }
 
-        if (this.androidSubscribeRepository.findAndroidSubscribeByOrderId(purchaseToken).isPresent()) {
-            this.getTransaction(purchaseToken);
-        }
         this.getTransaction(null, purchaseToken);
-
         logger.info("Decoded DTO 결과: " + decodedString);
     }
 
@@ -167,8 +139,8 @@ public class AndroidClient {
         return new GetTransactionResponse(false);
     }
 
-    public AndroidSubscribe getAndroidSubscribe(User user) {
-        AndroidSubscribe and = this.androidSubscribeRepository.findAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
+    public AndroidSubscribe getAndroidSubscribe(User user){
+        AndroidSubscribe and =  this.androidSubscribeRepository.findAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
             .orElseThrow(NotFoundBookLineException::new);
         return and;
     }
