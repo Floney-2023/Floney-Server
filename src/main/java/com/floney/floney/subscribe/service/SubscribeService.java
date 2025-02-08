@@ -60,10 +60,10 @@ public class SubscribeService {
     }
 
     public GetTransactionResponse isUserSubscribe(String device, User user) {
-        if (device.equals(Device.ANDROID.value)) {
-            return androidClient.isSubscribe(user);
+        if (this.appleClient.isSubscribe(user).isValid()) {
+            return this.appleClient.isSubscribe(user);
         } else {
-            return appleClient.isSubscribe(user);
+            return this.androidClient.isSubscribe(user);
         }
     }
 
@@ -84,39 +84,39 @@ public class SubscribeService {
         String fileName = bookKey + "/" + code;
         String url = this.awsService.generatePreSignedUrl(fileName);
         String viewUrl = "https://floney-images.s3.ap-northeast-2.amazonaws.com/" + fileName;
-        return new PresignedUrlDto(fileName, url,viewUrl);
+        return new PresignedUrlDto(fileName, url, viewUrl);
     }
 
-    public IsSubscribeBookResponse isBenefitBook(String bookKey){
+    public IsSubscribeBookResponse isBenefitBook(String bookKey) {
         boolean maxFavorite = false;
         boolean overBookUser = false;
-        Book book=  bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
-        List<Favorite> favorite = this.favoriteRepository.findAllByBookAndStatus(book,ACTIVE);
-        if(favorite.size() >= FAVORITE_MAX_SIZE){
+        Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
+        List<Favorite> favorite = this.favoriteRepository.findAllByBookAndStatus(book, ACTIVE);
+        if (favorite.size() >= FAVORITE_MAX_SIZE) {
             maxFavorite = true;
         }
         // 2. 팀원 수
         List<OurBookUser> bookUsers = this.bookUserRepository.findAllUser(bookKey);
-        if(bookUsers.size() >= DEFAULT_BOOK_USER) {
+        if (bookUsers.size() >= DEFAULT_BOOK_USER) {
             overBookUser = true;
         }
 
-        return new IsSubscribeBookResponse(maxFavorite,overBookUser);
+        return new IsSubscribeBookResponse(maxFavorite, overBookUser);
     }
 
-    public IsSubscribeUserResponse isBenefitUser(User user){
+    public IsSubscribeUserResponse isBenefitUser(User user) {
         boolean maxBook = false;
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
-        if(currentJoinBook > DEFAULT.getValue()){
+        if (currentJoinBook > DEFAULT.getValue()) {
             maxBook = true;
         }
 
         return new IsSubscribeUserResponse(maxBook);
     }
 
-    public GetAndroidSubscribeInfoResponse getAndroidSubscribeInfo(User user){
-        GetAndroidSubscribeInfoResponse res =  new GetAndroidSubscribeInfoResponse(this.androidClient.getAndroidSubscribe(user));
-    return res;
+    public GetAndroidSubscribeInfoResponse getAndroidSubscribeInfo(User user) {
+        GetAndroidSubscribeInfoResponse res = new GetAndroidSubscribeInfoResponse(this.androidClient.getAndroidSubscribe(user));
+        return res;
     }
 }

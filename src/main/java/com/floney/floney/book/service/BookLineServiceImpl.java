@@ -60,6 +60,8 @@ public class BookLineServiceImpl implements BookLineService {
         final BookLineCategory bookLineCategory = findCategories(request, book);
 
         final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
+
+        if(request.getImageUrl()
         saveImgUrls(bookLine, request.getImageUrl());
 
         // 반복 내역인 경우
@@ -142,6 +144,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private void saveImgUrls(BookLine bookLine, List<String> requestImgUrls) {
+        if(requestImgUrls.isEmpty()) return;
         List<BookLineImg> savedUrls = bookLineImgRepository.findAllByBookLineAndStatus(bookLine, ACTIVE);
 
         List<String> savedImgUrls = savedUrls.stream()
