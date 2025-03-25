@@ -49,7 +49,7 @@ public class SubscribeController {
 
     @GetMapping
     public GetTransactionResponse isUserSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return subscribeService.isUserSubscribe(device, userDetails.getUser());
+        return subscribeService.isUserSubscribe(userDetails.getUser());
     }
 
     @GetMapping("/book")

@@ -68,8 +68,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse createBook(final String device, final User user, final CreateBookRequest request) {
-        validateJoinByBookCapacity(device, user);
+    public CreateBookResponse createBook(final User user, final CreateBookRequest request) {
+        validateJoinByBookCapacity(user);
 
         final Book book = request.to(user.getEmail());
         bookRepository.save(book);
@@ -82,7 +82,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public CreateBookResponse joinWithCode(String device, CustomUserDetails userDetails, CodeJoinRequest request) {
+    public CreateBookResponse joinWithCode(CustomUserDetails userDetails, CodeJoinRequest request) {
         String code = request.getCode();
         String userEmail = userDetails.getUsername();
         User user = userDetails.getUser();
@@ -91,7 +91,7 @@ public class BookServiceImpl implements BookService {
             .orElseThrow(() -> new NotFoundBookException(code));
 
         // 현 유저의 가계부 참여 개수 체크
-        validateJoinByBookCapacity(device, user);
+        validateJoinByBookCapacity(user);
         // 참여 희망 가계부 정원 체크
         validateJoinByBookUserCapacity(book);
         // 이미 존재하는 가계부 유저인지 체크
@@ -448,11 +448,11 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-    private void validateJoinByBookCapacity(String device, User user) {
+    private void validateJoinByBookCapacity( User user) {
         int availableMax;
 
         // 구독한 유저인 경우 4개 생성 가능
-        if (subscribeService.isUserSubscribe(device, user).isValid()) {
+        if (subscribeService.isUserSubscribe(user).isValid()) {
             availableMax = SUBSCRIBE.getValue();
         } else {
             availableMax = DEFAULT.getValue();

@@ -59,7 +59,7 @@ public class SubscribeService {
         }
     }
 
-    public GetTransactionResponse isUserSubscribe(String device, User user) {
+    public GetTransactionResponse isUserSubscribe(User user) {
         if (this.appleClient.isSubscribe(user).isValid()) {
             return this.appleClient.isSubscribe(user);
         } else {
