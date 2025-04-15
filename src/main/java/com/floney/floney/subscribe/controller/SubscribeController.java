@@ -48,7 +48,7 @@ public class SubscribeController {
     }
 
     @GetMapping
-    public GetTransactionResponse isUserSubscribe(@RequestHeader("device") String device, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public GetTransactionResponse isUserSubscribe(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return subscribeService.isUserSubscribe(userDetails.getUser());
     }
 

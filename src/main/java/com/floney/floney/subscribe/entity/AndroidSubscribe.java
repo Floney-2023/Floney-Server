@@ -53,7 +53,7 @@ public class AndroidSubscribe extends BaseEntity {
         this.user = user;
         this.eventTimeMillis = (String) payload.get("eventTimeMillis");
         this.startTimeMillis = (String) payload.get("startTimeMillis");
-        this.autoResumeTimeMillis= (String) payload.get("autoResumeTimeMillis");
+        this.autoResumeTimeMillis = (String) payload.get("autoResumeTimeMillis");
         this.autoRenewing = (boolean) payload.get("autoRenewing");
         this.priceCurrencyCode = (String) payload.get("priceCurrencyCode");
         this.priceAmountMicros = (String) payload.get("priceAmountMicros");
@@ -73,9 +73,12 @@ public class AndroidSubscribe extends BaseEntity {
         this.priceAmountMicros = (String) payload.get("priceAmountMicros");
     }
 
-    public void update(final Map<String, Object> payload) {
+    public void update(final Map<String, Object> payload, User user) {
         if (Long.parseLong(this.expiryTimeMillis) <= Long.parseLong((String) payload.get("expiryTimeMillis"))) {
             this.expiryTimeMillis = (String) payload.get("expiryTimeMillis");
+        }
+        if (this.user == null) {
+            this.user = user;
         }
         this.paymentState = String.valueOf(payload.get("paymentState"));
         this.orderId = (String) payload.get("orderId");

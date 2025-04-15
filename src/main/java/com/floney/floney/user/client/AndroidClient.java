@@ -81,7 +81,7 @@ public class AndroidClient {
                 logger.info("create success in get tx");
             } else {
                 savedSubscribe = androidSubscribe.get();
-                savedSubscribe.update(androidSubscriptionPurchase.getBody());
+                savedSubscribe.update(androidSubscriptionPurchase.getBody(),user);
                 this.androidSubscribeRepository.save(savedSubscribe);
                 logger.info("update success in get tx");
             }
