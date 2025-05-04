@@ -92,12 +92,12 @@ public class SubscribeService {
         boolean overBookUser = false;
         Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
         List<Favorite> favorite = this.favoriteRepository.findAllByBookAndStatus(book, ACTIVE);
-        if (favorite.size() >= FAVORITE_MAX_SIZE) {
+        if (favorite.size() > FAVORITE_MAX_SIZE) {
             maxFavorite = true;
         }
         // 2. 팀원 수
         List<OurBookUser> bookUsers = this.bookUserRepository.findAllUser(bookKey);
-        if (bookUsers.size() >= DEFAULT_BOOK_USER) {
+        if (bookUsers.size() > DEFAULT_BOOK_USER) {
             overBookUser = true;
         }
 
