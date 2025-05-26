@@ -63,37 +63,35 @@ public class AndroidClient {
     }
 
     public GetTransactionResponse getTransaction(User user, String tokenId) throws java.io.IOException {
-//        ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
-//        logger.info("callback {} ", androidSubscriptionPurchase);
-//
-//        Map<String, Object> body = androidSubscriptionPurchase.getBody();
-//        Object cancelReason = body != null ? body.get("cancelReason") : null;
-//        Object paymentState = body != null ? body.get("paymentState") : null;
-//
-//        if ((paymentState != null && paymentState.equals(1)) || cancelReason != null) {
-//            Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
-//            String orderIdWithoutIndex = orderId.toString().replaceAll("\\.+[0-9]+$", "");
-//            logger.info("orderIdWithoutIndex {} ",orderIdWithoutIndex);
-//
-//            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderIdWithoutIndex);
-//
-//            AndroidSubscribe savedSubscribe;
-//            if (androidSubscribe.isEmpty()) {
-//                AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
-//                androidSubscribeRepository.save(subscribe);
-//                logger.info("create success in get tx");
-//            } else {
-//                savedSubscribe = androidSubscribe.get();
-//                savedSubscribe.update(androidSubscriptionPurchase.getBody(),user);
-//                this.androidSubscribeRepository.save(savedSubscribe);
-//                logger.info("update success in get tx");
-//            }
-//            return new GetTransactionResponse(true);
-//        } else {
-//            return new GetTransactionResponse(false);
-//        }
+        ResponseEntity<Map> androidSubscriptionPurchase = getSubscriptionsFromAndroid(tokenId);
+        logger.info("callback {} ", androidSubscriptionPurchase);
 
-        return null;
+        Map<String, Object> body = androidSubscriptionPurchase.getBody();
+        Object cancelReason = body != null ? body.get("cancelReason") : null;
+        Object paymentState = body != null ? body.get("paymentState") : null;
+
+        if ((paymentState != null && paymentState.equals(1)) || cancelReason != null) {
+            Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
+            String orderIdWithoutIndex = orderId.toString().replaceAll("\\.+[0-9]+$", "");
+            logger.info("orderIdWithoutIndex {} ",orderIdWithoutIndex);
+
+            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderIdWithoutIndex);
+
+            AndroidSubscribe savedSubscribe;
+            if (androidSubscribe.isEmpty()) {
+                AndroidSubscribe subscribe = new AndroidSubscribe(androidSubscriptionPurchase.getBody(), user);
+                androidSubscribeRepository.save(subscribe);
+                logger.info("create success in get tx");
+            } else {
+                savedSubscribe = androidSubscribe.get();
+                savedSubscribe.update(androidSubscriptionPurchase.getBody(),user);
+                this.androidSubscribeRepository.save(savedSubscribe);
+                logger.info("update success in get tx");
+            }
+            return new GetTransactionResponse(true);
+        } else {
+            return new GetTransactionResponse(false);
+        }
     }
 
     private String getToken() throws IOException, java.io.IOException {
