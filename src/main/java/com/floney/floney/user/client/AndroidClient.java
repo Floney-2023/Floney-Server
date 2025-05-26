@@ -46,20 +46,21 @@ public class AndroidClient {
 
 
     public ResponseEntity<Map> getSubscriptionsFromAndroid(String tokenId) throws java.io.IOException {
-        String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}";
-        String authToken = this.getToken();
-        HttpHeaders header = new HttpHeaders();
-        header.set("Authorization", "Bearer " + authToken);
-        header.set("Content-Type", "application/json");
-
-        Map<String, String> params = new HashMap<>();
-        params.put("packageName", "com.aos.floney");
-        params.put("token", tokenId);
-        params.put("subscriptionId", "floney_plus");
-
-        HttpEntity<String> entity = new HttpEntity<>(header);
-
-        return restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
+//        String url = "https://androidpublisher.googleapis.com/androidpublisher/v3/applications/{packageName}/purchases/subscriptions/{subscriptionId}/tokens/{token}";
+//        String authToken = this.getToken();
+//        HttpHeaders header = new HttpHeaders();
+//        header.set("Authorization", "Bearer " + authToken);
+//        header.set("Content-Type", "application/json");
+//
+//        Map<String, String> params = new HashMap<>();
+//        params.put("packageName", "com.aos.floney");
+//        params.put("token", tokenId);
+//        params.put("subscriptionId", "floney_plus");
+//
+//        HttpEntity<String> entity = new HttpEntity<>(header);
+//
+//        return restTemplate.exchange(url, HttpMethod.GET, entity, Map.class, params);
+        return null;
     }
 
     public GetTransactionResponse getTransaction(User user, String tokenId) throws java.io.IOException {
