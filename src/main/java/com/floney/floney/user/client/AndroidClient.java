@@ -72,7 +72,10 @@ public class AndroidClient {
 
         if ((paymentState != null && paymentState.equals(1)) || cancelReason != null) {
             Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
-            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderId.toString());
+            String orderIdWithoutIndex = orderId.toString().replaceAll("\\.+[0-9]+$", "");
+            logger.info("orderIdWithoutIndex {} ",orderIdWithoutIndex);
+
+            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderIdWithoutIndex);
 
             AndroidSubscribe savedSubscribe;
             if (androidSubscribe.isEmpty()) {

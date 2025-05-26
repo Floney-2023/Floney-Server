@@ -94,7 +94,7 @@ public class SubscribeService {
         List<Favorite> favorite = this.favoriteRepository.findAllByBookAndStatus(book, ACTIVE);
 
         //1. 즐겨찾기 수       
-        if (favorite.size() > FAVORITE_MAX_SIZE) {
+        if (favorite.size() > FAVORITE_MAX_SIZE * 3) {
             maxFavorite = true;
         }
         // 2. 팀원 수
