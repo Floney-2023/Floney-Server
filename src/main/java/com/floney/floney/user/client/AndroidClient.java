@@ -129,7 +129,7 @@ public class AndroidClient {
     }
 
     public GetTransactionResponse isSubscribe(User user) {
-        Optional<AndroidSubscribe> subscribe = this.androidSubscribeRepository.findAndroidSubscribeByUserOrderByUpdatedAtDesc(user);
+        Optional<AndroidSubscribe> subscribe = this.androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user);
         long currentTimeMillis = new Date().getTime();
 
         if (subscribe.isPresent()) {
@@ -143,7 +143,7 @@ public class AndroidClient {
     }
 
     public AndroidSubscribe getAndroidSubscribe(User user){
-        AndroidSubscribe and =  this.androidSubscribeRepository.findAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
+        AndroidSubscribe and =  this.androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
             .orElseThrow(NotFoundBookLineException::new);
         return and;
     }

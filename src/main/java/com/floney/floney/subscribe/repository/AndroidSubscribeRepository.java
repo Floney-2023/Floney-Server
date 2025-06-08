@@ -11,6 +11,6 @@ public interface AndroidSubscribeRepository extends JpaRepository<AndroidSubscri
 
     Optional<AndroidSubscribe> findAndroidSubscribeByOrderId(String orderId);
 
-    Optional<AndroidSubscribe> findAndroidSubscribeByUserOrderByUpdatedAtDesc(User user);
+    Optional<AndroidSubscribe> findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(User user);
 
 }
