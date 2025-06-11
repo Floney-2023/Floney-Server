@@ -49,7 +49,7 @@ public class AndroidSubscribe extends BaseEntity {
     public AndroidSubscribe(final Map<String, Object> payload, final User user) {
         this.expiryTimeMillis = (String) payload.get("expiryTimeMillis");
         this.paymentState = String.valueOf(payload.get("paymentState"));
-        this.orderId = (String) payload.get("orderId");
+        this.orderId = (String) payload.get("orderId").toString().replaceAll("\\.+[0-9]+$", "");
         this.user = user;
         this.eventTimeMillis = (String) payload.get("eventTimeMillis");
         this.startTimeMillis = (String) payload.get("startTimeMillis");
@@ -64,7 +64,7 @@ public class AndroidSubscribe extends BaseEntity {
             this.expiryTimeMillis = (String) payload.get("expiryTimeMillis");
         }
         this.paymentState = String.valueOf(payload.get("paymentState"));
-        this.orderId = (String) payload.get("orderId");
+        this.orderId = (String) payload.get("orderId").toString().replaceAll("\\.+[0-9]+$", "");
         this.user = user;
         this.eventTimeMillis = (String) payload.get("eventTimeMillis");
         this.startTimeMillis = (String) payload.get("startTimeMillis");
@@ -81,7 +81,7 @@ public class AndroidSubscribe extends BaseEntity {
             this.user = user;
         }
         this.paymentState = String.valueOf(payload.get("paymentState"));
-        this.orderId = (String) payload.get("orderId");
+        this.orderId = (String) payload.get("orderId").toString().replaceAll("\\.+[0-9]+$", "");
         this.eventTimeMillis = (String) payload.get("eventTimeMillis");
         this.startTimeMillis = (String) payload.get("startTimeMillis");
         this.autoRenewing = (boolean) payload.get("autoRenewing");
