@@ -1,5 +1,6 @@
 package com.floney.floney.subscribe.service;
 
+import com.floney.floney.book.domain.category.entity.Category;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.favorite.Favorite;
 import com.floney.floney.book.dto.process.OurBookUser;
@@ -25,6 +26,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.book.domain.category.entity.Category.FAVORITE_MAX_SIZE;
@@ -93,10 +96,13 @@ public class SubscribeService {
         Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
         List<Favorite> favorite = this.favoriteRepository.findAllByBookAndStatus(book, ACTIVE);
 
-        //1. 즐겨찾기 수       
-        if (favorite.size() > FAVORITE_MAX_SIZE * 3) {
-            maxFavorite = true;
-        }
+        //1. 즐겨찾기 수 - 카테고리별 5개 제한 확인
+        Map<Category, Long> favoriteCountByCategory = favorite.stream()
+            .collect(Collectors.groupingBy(f -> f.getLineCategory(), Collectors.counting()));
+        
+        maxFavorite = favoriteCountByCategory.values().stream()
+            .anyMatch(count -> count > FAVORITE_MAX_SIZE);
+
         // 2. 팀원 수
         List<OurBookUser> bookUsers = this.bookUserRepository.findAllUser(bookKey);
         if (bookUsers.size() > DEFAULT_BOOK_USER) {
