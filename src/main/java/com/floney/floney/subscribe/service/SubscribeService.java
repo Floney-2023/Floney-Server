@@ -51,7 +51,7 @@ public class SubscribeService {
             .orElseThrow(() -> new NotFoundBookException(bookKey));
 
         String ownerEmail = book.getOwner();
-        User owner = userRepository.findByEmail(ownerEmail)
+        User owner = userRepository.findByEmailAndStatus(ownerEmail, ACTIVE)
             .orElseThrow(() -> new UsernameNotFoundException(ownerEmail));
 
         // TODO : owner device 저장
@@ -71,7 +71,7 @@ public class SubscribeService {
     }
 
     public GetTransactionResponse isUserSubscribe(String email) {
-        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new NotFoundBookUserException(email, null));
+        User user = this.userRepository.findByEmailAndStatus(email, ACTIVE).orElseThrow(() -> new NotFoundBookUserException(email, null));
 
         if (this.appleClient.isSubscribe(user).isValid()) {
             return this.appleClient.isSubscribe(user);
@@ -125,6 +125,12 @@ public class SubscribeService {
 
     public GetAndroidSubscribeInfoResponse getAndroidSubscribeInfo(User user) {
         GetAndroidSubscribeInfoResponse res = new GetAndroidSubscribeInfoResponse(this.androidClient.getAndroidSubscribe(user));
+        
+        // 현재 시간과 만료 시간 비교하여 구독 상태 설정
+        long currentTimeMillis = System.currentTimeMillis();
+        boolean isCurrentSubscribe = Long.parseLong(res.getExpiryTimeMillis()) >= currentTimeMillis;
+        res.setCurrentSubscribe(isCurrentSubscribe);
+        
         return res;
     }
 }

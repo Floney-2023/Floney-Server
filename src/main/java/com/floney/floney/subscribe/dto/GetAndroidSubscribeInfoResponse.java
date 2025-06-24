@@ -17,6 +17,7 @@ public class GetAndroidSubscribeInfoResponse {
     private String priceCurrencyCode;
     private String priceAmountMicros;
     private boolean active;
+    private boolean isCurrentSubscribe;
 
     public GetAndroidSubscribeInfoResponse(AndroidSubscribe response) {
         this.id = response.getId();
@@ -33,4 +34,7 @@ public class GetAndroidSubscribeInfoResponse {
         this.active = response.isActive();
     }
 
+    public void setCurrentSubscribe(boolean isCurrentSubscribe) {
+        this.isCurrentSubscribe = isCurrentSubscribe;
+    }
 }

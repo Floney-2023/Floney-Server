@@ -167,9 +167,15 @@ public class UserService {
                     List<OurBookUser> bookUsers = bookUserRepository.findAllUser(book.getBookKey());
 
                     for (OurBookUser bookUser : bookUsers) {
+                        // 탈퇴하는 사용자는 제외
+                        if (bookUser.getEmail().equals(user.getEmail())) {
+                            continue;
+                        }
+                        
                         boolean isMemberSubscribe = subscribeService.isUserSubscribe(bookUser.getEmail()).isValid();
                         if (isMemberSubscribe) {
                             newOwner = bookUser.getEmail();
+                            break; // 구독 중인 팀원을 찾으면 즉시 중단
                         }
                     }
                 }
