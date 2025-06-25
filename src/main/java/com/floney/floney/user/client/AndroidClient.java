@@ -124,8 +124,35 @@ public class AndroidClient {
             return;
         }
 
+        // 새 토큰으로 Google Play API 호출하여 linkedPurchaseToken 확인
+        ResponseEntity<Map> subscriptionInfo = getSubscriptionsFromAndroid(purchaseToken);
+        Map<String, Object> body = subscriptionInfo.getBody();
+        
+        if (body != null && body.containsKey("linkedPurchaseToken")) {
+            String linkedPurchaseToken = (String) body.get("linkedPurchaseToken");
+            
+            // linkedPurchaseToken으로 기존 구독 찾기
+            Optional<AndroidSubscribe> existingSubscription = findSubscriptionByPurchaseToken(linkedPurchaseToken);
+            
+            if (existingSubscription.isPresent()) {
+                // 기존 구독을 새 토큰으로 업데이트
+                AndroidSubscribe subscription = existingSubscription.get();
+                subscription.update(body, subscription.getUser());
+                androidSubscribeRepository.save(subscription);
+                logger.info("Subscription renewed with new token: {} -> {}", linkedPurchaseToken, purchaseToken);
+                return;
+            }
+        }
+
+        // linkedPurchaseToken이 없거나 기존 구독을 찾지 못한 경우 기존 로직 수행
         this.getTransaction(null, purchaseToken);
         logger.info("Decoded DTO 결과: " + decodedString);
+    }
+    
+    private Optional<AndroidSubscribe> findSubscriptionByPurchaseToken(String purchaseToken) {
+        return androidSubscribeRepository.findAll().stream()
+            .filter(subscription -> purchaseToken.equals(subscription.getOrderId()))
+            .findFirst();
     }
 
     public GetTransactionResponse isSubscribe(User user) {
