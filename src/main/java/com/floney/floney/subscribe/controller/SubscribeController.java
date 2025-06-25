@@ -73,7 +73,13 @@ public class SubscribeController {
     }
 
     @GetMapping("/android/info")
-    public ResponseEntity<?> getSubscribeInfo(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+    public ResponseEntity<?> getAndroidSubscribeInfo(@AuthenticationPrincipal final CustomUserDetails userDetails) {
         return new ResponseEntity<>(subscribeService.getAndroidSubscribeInfo(userDetails.getUser()), HttpStatus.OK);
     }
+    
+    @GetMapping("/info")
+    public ResponseEntity<?> getSubscribeInfo(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.getSubscribeInfo(userDetails.getUser()), HttpStatus.OK);
+    }
+
 }

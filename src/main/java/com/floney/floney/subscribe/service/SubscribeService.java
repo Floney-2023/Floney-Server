@@ -14,9 +14,12 @@ import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookUserException;
 import com.floney.floney.subscribe.Device;
 import com.floney.floney.subscribe.dto.GetAndroidSubscribeInfoResponse;
+import com.floney.floney.subscribe.dto.GetSubscribeInfoResponse;
 import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeBookResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeUserResponse;
+import com.floney.floney.subscribe.entity.AppleSubscribe;
+import com.floney.floney.subscribe.repository.AppleSubscribeRepository;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.entity.User;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
@@ -45,6 +49,7 @@ public class SubscribeService {
     private final AwsService awsService;
     private final FavoriteRepository favoriteRepository;
     private final BookUserRepository bookUserRepository;
+    private final AppleSubscribeRepository appleSubscribeRepository;
 
     public GetTransactionResponse isBookSubscribe(String bookKey) {
         final Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
@@ -132,5 +137,27 @@ public class SubscribeService {
         res.setCurrentSubscribe(isCurrentSubscribe);
         
         return res;
+    }
+    
+    public GetSubscribeInfoResponse getSubscribeInfo(User user) {
+        // iOS 구독 확인
+        GetTransactionResponse appleSubscribe = this.appleClient.isSubscribe(user);
+        if (appleSubscribe.isValid()) {
+            Optional<AppleSubscribe> appleSubscription = this.appleSubscribeRepository.findAppleSubscribeByUserOrderByUpdatedAtDesc(user);
+            if (appleSubscription.isPresent()) {
+                AppleSubscribe subscription = appleSubscription.get();
+                return new GetSubscribeInfoResponse(true, subscription.getExpiresDate(), subscription.getCurrency(), null);
+            }
+        }
+        
+        // Android 구독 확인
+        GetTransactionResponse androidSubscribe = this.androidClient.isSubscribe(user);
+        if (androidSubscribe.isValid()) {
+            GetAndroidSubscribeInfoResponse androidResponse = this.getAndroidSubscribeInfo(user);
+            return new GetSubscribeInfoResponse(androidResponse);
+        }
+        
+        // 구독이 없는 경우 기본값 반환
+        return new GetSubscribeInfoResponse(false, null, null, null);
     }
 }
