@@ -43,7 +43,7 @@ public class AppleSubscribe extends BaseEntity {
     public AppleSubscribe(final JWSTransactionDecodedPayload payload, final User user) {
         this.expiresDate = payload.getExpiresDate();
         this.currency = payload.getCurrency();
-        this.transactionId = payload.getTransactionId();
+        this.transactionId = payload.getOriginalTransactionId();
         this.originalTransactionId = payload.getOriginalTransactionId();
         this.transactionReason = payload.getRawTransactionReason();
         this.revocationReason = payload.getRawRevocationReason();
@@ -58,7 +58,7 @@ public class AppleSubscribe extends BaseEntity {
 
         this.expiresDate = payload.getExpiresDate();
         this.transactionReason = String.valueOf(payload.getTransactionReason());
-        this.transactionId = payload.getTransactionId();
+        this.transactionId = payload.getOriginalTransactionId();
         this.signedDate = payload.getSignedDate();
     }
 

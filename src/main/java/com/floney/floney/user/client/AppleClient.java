@@ -80,7 +80,7 @@ public class AppleClient implements ClientProxy {
                 .max(Comparator.comparing(JWSTransactionDecodedPayload::getSignedDate))
                 .get();
 
-            Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(payload.getTransactionId());
+            Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(payload.getOriginalTransactionId());
 
             AppleSubscribe subscribe;
             if (appleSubscribe.isEmpty()) {
