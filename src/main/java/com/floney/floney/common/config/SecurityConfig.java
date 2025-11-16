@@ -54,7 +54,8 @@ public class SecurityConfig {
                 "/auth/**",
                 "/actuator/prometheus",
                 "/subscribe/apple/notification",
-                "/subscribe/android/notification"
+                "/subscribe/android/notification",
+                "/.well-known/acme-challenge/**"
             ).permitAll()
             .anyRequest().authenticated()
 
