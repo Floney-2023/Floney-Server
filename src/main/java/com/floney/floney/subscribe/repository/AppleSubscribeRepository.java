@@ -10,6 +10,6 @@ public interface AppleSubscribeRepository extends JpaRepository<AppleSubscribe, 
 
     Optional<AppleSubscribe> findAppleSubscribeByOriginalTransactionId(String originalTransactionId);
 
-    Optional<AppleSubscribe> findAppleSubscribeByUserOrderByUpdatedAtDesc(User user);
+    Optional<AppleSubscribe> findFirstByUserOrderByUpdatedAtDesc(User user);
 
 }

@@ -166,7 +166,7 @@ public class AppleClient implements ClientProxy {
     }
 
     public GetTransactionResponse isSubscribe(User user){
-        Optional<AppleSubscribe> subscribe  = this.subscribeRepository.findAppleSubscribeByUserOrderByUpdatedAtDesc(user);
+        Optional<AppleSubscribe> subscribe  = this.subscribeRepository.findFirstByUserOrderByUpdatedAtDesc(user);
 
         long currentTimeMillis = System.currentTimeMillis();
 
