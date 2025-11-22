@@ -69,13 +69,22 @@ public class AndroidClient {
         Map<String, Object> body = androidSubscriptionPurchase.getBody();
         Object cancelReason = body != null ? body.get("cancelReason") : null;
         Object paymentState = body != null ? body.get("paymentState") : null;
+        Object obfuscatedExternalAccountId = body != null ? body.get("obfuscatedExternalAccountId") : null;
+
+        // obfuscatedExternalAccountId로 유저 찾기 (이메일을 뒤집은 값)
+        if (obfuscatedExternalAccountId != null && user == null) {
+            String reversedEmail = new StringBuilder(obfuscatedExternalAccountId.toString()).reverse().toString();
+            user = userRepository.findByEmail(reversedEmail).orElse(null);
+        }
 
         if ((paymentState != null && paymentState.equals(1)) || cancelReason != null) {
             Object orderId = androidSubscriptionPurchase.getBody().get("orderId");
             String orderIdWithoutIndex = orderId.toString().replaceAll("\\.+[0-9]+$", "");
             logger.info("orderIdWithoutIndex {} ",orderIdWithoutIndex);
 
-            Optional<AndroidSubscribe> androidSubscribe = this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderIdWithoutIndex);
+            Optional<AndroidSubscribe> androidSubscribe = user != null ? 
+                this.androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user) :
+                this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderIdWithoutIndex);
 
             AndroidSubscribe savedSubscribe;
             if (androidSubscribe.isEmpty()) {
