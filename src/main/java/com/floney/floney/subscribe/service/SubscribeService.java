@@ -19,7 +19,9 @@ import com.floney.floney.subscribe.dto.GetTransactionResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeBookResponse;
 import com.floney.floney.subscribe.dto.IsSubscribeUserResponse;
 import com.floney.floney.subscribe.entity.AppleSubscribe;
+import com.floney.floney.subscribe.entity.AndroidSubscribe;
 import com.floney.floney.subscribe.repository.AppleSubscribeRepository;
+import com.floney.floney.subscribe.repository.AndroidSubscribeRepository;
 import com.floney.floney.user.client.AndroidClient;
 import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.entity.User;
@@ -50,6 +52,7 @@ public class SubscribeService {
     private final FavoriteRepository favoriteRepository;
     private final BookUserRepository bookUserRepository;
     private final AppleSubscribeRepository appleSubscribeRepository;
+    private final AndroidSubscribeRepository androidSubscribeRepository;
 
     public GetTransactionResponse isBookSubscribe(String bookKey) {
         final Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
@@ -159,5 +162,21 @@ public class SubscribeService {
         
         // 구독이 없는 경우 기본값 반환
         return new GetSubscribeInfoResponse(false, null, null, null);
+    }
+    
+    public void inactiveUserSubscription(User user) {
+        // Apple 구독 비활성화
+        appleSubscribeRepository.findFirstByUserOrderByUpdatedAtDesc(user)
+            .ifPresent(subscription -> {
+                subscription.inactive();
+                appleSubscribeRepository.save(subscription);
+            });
+        
+        // Android 구독 비활성화
+        androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
+            .ifPresent(subscription -> {
+                subscription.inactive();
+                androidSubscribeRepository.save(subscription);
+            });
     }
 }

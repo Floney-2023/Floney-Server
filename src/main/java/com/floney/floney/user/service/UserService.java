@@ -75,6 +75,9 @@ public class UserService {
         final List<String> notDeletedBookKeys = new ArrayList<>();
 
         leaveBooks(user, deletedBookKeys, notDeletedBookKeys);
+        
+        // 구독 DB를 inactive로 업데이트
+        subscribeService.inactiveUserSubscription(user);
 
         user.signout();
         addSignoutReason(request);
