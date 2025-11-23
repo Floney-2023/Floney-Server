@@ -31,8 +31,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.NoResultException;
 import java.nio.charset.StandardCharsets;
+
+import static com.floney.floney.common.constant.Status.ACTIVE;
 
 
 @Component
@@ -83,8 +84,8 @@ public class AndroidClient {
             logger.info("orderIdWithoutIndex {} ",orderIdWithoutIndex);
 
             Optional<AndroidSubscribe> androidSubscribe = user != null ? 
-                this.androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user) :
-                this.androidSubscribeRepository.findAndroidSubscribeByOrderId(orderIdWithoutIndex);
+                this.androidSubscribeRepository.findFirstAndroidSubscribeByUserAndStatusOrderByUpdatedAtDesc(user, ACTIVE) :
+                this.androidSubscribeRepository.findAndroidSubscribeByOrderIdAndStatus(orderIdWithoutIndex, ACTIVE);
 
             AndroidSubscribe savedSubscribe;
             if (androidSubscribe.isEmpty()) {
@@ -165,7 +166,7 @@ public class AndroidClient {
     }
 
     public GetTransactionResponse isSubscribe(User user) {
-        Optional<AndroidSubscribe> subscribe = this.androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user);
+        Optional<AndroidSubscribe> subscribe = this.androidSubscribeRepository.findFirstAndroidSubscribeByUserAndStatusOrderByUpdatedAtDesc(user, ACTIVE);
         long currentTimeMillis = new Date().getTime();
 
         if (subscribe.isPresent()) {
@@ -179,7 +180,7 @@ public class AndroidClient {
     }
 
     public AndroidSubscribe getAndroidSubscribe(User user){
-        AndroidSubscribe and =  this.androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
+        AndroidSubscribe and =  this.androidSubscribeRepository.findFirstAndroidSubscribeByUserAndStatusOrderByUpdatedAtDesc(user, ACTIVE)
             .orElseThrow(NotFoundBookLineException::new);
         return and;
     }

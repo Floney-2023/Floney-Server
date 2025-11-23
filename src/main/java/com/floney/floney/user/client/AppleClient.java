@@ -38,6 +38,8 @@ import java.security.PublicKey;
 
 import java.util.*;
 
+import static com.floney.floney.common.constant.Status.ACTIVE;
+
 @Component
 @RequiredArgsConstructor
 public class AppleClient implements ClientProxy {
@@ -80,7 +82,7 @@ public class AppleClient implements ClientProxy {
                 .max(Comparator.comparing(JWSTransactionDecodedPayload::getSignedDate))
                 .get();
 
-            Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionId(payload.getOriginalTransactionId());
+            Optional<AppleSubscribe> appleSubscribe = this.subscribeRepository.findAppleSubscribeByOriginalTransactionIdAndStatus(payload.getOriginalTransactionId(), ACTIVE);
 
             AppleSubscribe subscribe;
             if (appleSubscribe.isEmpty()) {
@@ -166,7 +168,7 @@ public class AppleClient implements ClientProxy {
     }
 
     public GetTransactionResponse isSubscribe(User user){
-        Optional<AppleSubscribe> subscribe  = this.subscribeRepository.findFirstByUserOrderByUpdatedAtDesc(user);
+        Optional<AppleSubscribe> subscribe  = this.subscribeRepository.findFirstByUserAndStatusOrderByUpdatedAtDesc(user, ACTIVE);
 
         long currentTimeMillis = System.currentTimeMillis();
 

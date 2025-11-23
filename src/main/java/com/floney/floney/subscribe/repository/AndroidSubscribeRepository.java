@@ -1,5 +1,6 @@
 package com.floney.floney.subscribe.repository;
 
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.subscribe.entity.AndroidSubscribe;
 import com.floney.floney.subscribe.entity.AppleSubscribe;
 import com.floney.floney.user.entity.User;
@@ -9,8 +10,10 @@ import java.util.Optional;
 
 public interface AndroidSubscribeRepository extends JpaRepository<AndroidSubscribe, Long> {
 
-    Optional<AndroidSubscribe> findAndroidSubscribeByOrderId(String orderId);
-
     Optional<AndroidSubscribe> findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(User user);
+    
+    Optional<AndroidSubscribe> findFirstAndroidSubscribeByUserAndStatusOrderByUpdatedAtDesc(User user, Status status);
+    
+    Optional<AndroidSubscribe> findAndroidSubscribeByOrderIdAndStatus(String orderId, Status status);
 
 }

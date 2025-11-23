@@ -146,7 +146,7 @@ public class SubscribeService {
         // iOS 구독 확인
         GetTransactionResponse appleSubscribe = this.appleClient.isSubscribe(user);
         if (appleSubscribe.isValid()) {
-            Optional<AppleSubscribe> appleSubscription = this.appleSubscribeRepository.findFirstByUserOrderByUpdatedAtDesc(user);
+            Optional<AppleSubscribe> appleSubscription = this.appleSubscribeRepository.findFirstByUserAndStatusOrderByUpdatedAtDesc(user, ACTIVE);
             if (appleSubscription.isPresent()) {
                 AppleSubscribe subscription = appleSubscription.get();
                 return new GetSubscribeInfoResponse(true, subscription.getExpiresDate(), subscription.getCurrency(), null);
