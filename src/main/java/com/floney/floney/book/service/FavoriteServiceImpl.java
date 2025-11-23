@@ -43,7 +43,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         final Book book = findBook(bookKey);
         final Category lineCategory = findLineCategory(request.lineCategoryName());
-        validateFavoriteSize(book, lineCategory);
+        validateFavoriteSize(book);
 
         final Subcategory lineSubcategory = findLineSubcategory(request.lineSubcategoryName(), lineCategory, book);
         final Subcategory assetSubcategory = findAssetSubcategory(book, request.assetSubcategoryName());
@@ -117,7 +117,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         }
     }
 
-    private void validateFavoriteSize(final Book book, final Category category) {
+    private void validateFavoriteSize(final Book book) {
         final int favoriteSize = favoriteRepository.findAllByBookAndStatus(book, ACTIVE).size();
 
         // 구독자는 무제한 생성
