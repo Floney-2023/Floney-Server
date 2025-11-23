@@ -118,15 +118,15 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     private void validateFavoriteSize(final Book book, final Category category) {
-        final int favoriteSize = favoriteRepository.findAllExclusivelyByBookAndLineCategoryAndStatus(book, category, ACTIVE).size();
+        final int favoriteSize = favoriteRepository.findAllByBookAndStatus(book, ACTIVE).size();
 
         // 구독자는 무제한 생성
         if (!subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
             if (favoriteSize == Category.FAVORITE_MAX_SIZE) {
-                throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
+                throw new FavoriteSizeInvalidException(book.getBookKey());
             } else if (favoriteSize > Category.FAVORITE_MAX_SIZE) {
-                log.error("가계부({})의 {} 카테고리의 즐겨찾기 개수가 이미 {}개를 초과", book.getBookKey(), category.getName(), Category.FAVORITE_MAX_SIZE);
-                throw new FavoriteSizeInvalidException(book.getBookKey(), category.getName());
+                log.error("가계부({})의 카테고리의 즐겨찾기 개수가 이미 {}개를 초과", book.getBookKey(),Category.FAVORITE_MAX_SIZE);
+                throw new FavoriteSizeInvalidException(book.getBookKey());
             }
         }
     }
