@@ -154,42 +154,38 @@ public class UserService {
             }
 
             final Optional<String> teamMember = bookUserRepository.findOldestBookUserEmailExceptOwner(user, book);
-            String newOwner = "";
-            boolean findNewOwner = false;
+            
+            // 위임할 팀원이 없으면 가계부 삭제
+            if (teamMember.isEmpty()) {
+                deletedBookKeys.add(book.getBookKey());
+                book.inactive();
+                bookRepository.save(book);
+                continue;
+            }
 
-            // 위임할 팀원이 있다면
-            if (teamMember.isPresent()) {
-                newOwner = teamMember.get();
-                findNewOwner = true;
-
-                // 가계부가 구독 중이라면, 구독한 팀원에게 우선순위
-                if (subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
-                    List<OurBookUser> bookUsers = bookUserRepository.findAllUser(book.getBookKey());
-
-                    for (OurBookUser bookUser : bookUsers) {
-                        // 탈퇴하는 사용자는 제외
-                        if (bookUser.getEmail().equals(user.getEmail())) {
-                            continue;
-                        }
-                        
-                        boolean isMemberSubscribe = subscribeService.isUserSubscribe(bookUser.getEmail()).isValid();
-                        if (isMemberSubscribe) {
-                            newOwner = bookUser.getEmail();
-                            break; // 구독 중인 팀원을 찾으면 즉시 중단
-                        }
+            String newOwner = teamMember.get(); // 기본값: 가장 오래된 팀원
+            
+            // 방장이 구독 중이고 만료 전인 경우, 구독한 팀원에게 우선 위임
+            boolean isOwnerSubscribed = subscribeService.isUserSubscribe(user.getEmail()).isValid();
+            if (isOwnerSubscribed) {
+                List<OurBookUser> bookUsers = bookUserRepository.findAllUser(book.getBookKey());
+                
+                for (OurBookUser bookUser : bookUsers) {
+                    // 탈퇴하는 사용자는 제외
+                    if (bookUser.getEmail().equals(user.getEmail())) {
+                        continue;
+                    }
+                    
+                    boolean isMemberSubscribe = subscribeService.isUserSubscribe(bookUser.getEmail()).isValid();
+                    if (isMemberSubscribe) {
+                        newOwner = bookUser.getEmail();
+                        break; // 구독 중인 팀원을 찾으면 즉시 중단
                     }
                 }
             }
-
-            // 구독 로직
-            if (findNewOwner) {
-                book.delegateOwner(newOwner);
-                notDeletedBookKeys.add(book.getBookKey());
-                continue;
-            }
-            deletedBookKeys.add(book.getBookKey());
-            book.inactive();
-            bookRepository.save(book);
+            
+            book.delegateOwner(newOwner);
+            notDeletedBookKeys.add(book.getBookKey());
         }
     }
 
