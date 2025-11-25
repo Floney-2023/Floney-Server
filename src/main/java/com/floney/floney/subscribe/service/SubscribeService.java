@@ -165,16 +165,16 @@ public class SubscribeService {
     }
     
     public void inactiveUserSubscription(User user) {
-        // Apple 구독 비활성화
-        appleSubscribeRepository.findFirstByUserOrderByUpdatedAtDesc(user)
-            .ifPresent(subscription -> {
+        // Apple 모든 구독 비활성화
+        appleSubscribeRepository.findByUser(user)
+            .forEach(subscription -> {
                 subscription.inactive();
                 appleSubscribeRepository.save(subscription);
             });
         
-        // Android 구독 비활성화
-        androidSubscribeRepository.findFirstAndroidSubscribeByUserOrderByUpdatedAtDesc(user)
-            .ifPresent(subscription -> {
+        // Android 모든 구독 비활성화
+        androidSubscribeRepository.findByUser(user)
+            .forEach(subscription -> {
                 subscription.inactive();
                 androidSubscribeRepository.save(subscription);
             });

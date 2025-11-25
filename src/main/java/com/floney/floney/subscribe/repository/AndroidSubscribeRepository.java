@@ -6,6 +6,7 @@ import com.floney.floney.subscribe.entity.AppleSubscribe;
 import com.floney.floney.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AndroidSubscribeRepository extends JpaRepository<AndroidSubscribe, Long> {
@@ -15,5 +16,7 @@ public interface AndroidSubscribeRepository extends JpaRepository<AndroidSubscri
     Optional<AndroidSubscribe> findFirstAndroidSubscribeByUserAndStatusOrderByUpdatedAtDesc(User user, Status status);
     
     Optional<AndroidSubscribe> findAndroidSubscribeByOrderIdAndStatus(String orderId, Status status);
+    
+    List<AndroidSubscribe> findByUser(User user);
 
 }
