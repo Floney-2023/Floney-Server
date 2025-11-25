@@ -46,7 +46,7 @@ public class BookServiceImpl implements BookService {
 
     private static final int ONLY_OWNER_COUNT = 1;
     private static final double DEFAULT_BUDGET = 0.0;
-    private static final int MAX_BOOK_USER = 10;
+    public static final int MAX_BOOK_USER = 10;
     public static final int DEFAULT_BOOK_USER = 4;
 
     private final BookRepository bookRepository;

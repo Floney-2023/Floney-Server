@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
 import static com.floney.floney.book.domain.category.entity.Category.FAVORITE_MAX_SIZE;
 import static com.floney.floney.book.service.BookServiceImpl.DEFAULT_BOOK_USER;
+import static com.floney.floney.book.service.BookServiceImpl.MAX_BOOK_USER;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -113,7 +114,7 @@ public class SubscribeService {
 
         // 2. 팀원 수
         List<OurBookUser> bookUsers = this.bookUserRepository.findAllUser(bookKey);
-        if (bookUsers.size() > DEFAULT_BOOK_USER) {
+        if (bookUsers.size() > MAX_BOOK_USER) {
             overBookUser = true;
         }
 
