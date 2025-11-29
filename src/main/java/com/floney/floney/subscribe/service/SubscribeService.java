@@ -105,12 +105,10 @@ public class SubscribeService {
         Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE).orElseThrow(() -> new NotFoundBookException(bookKey));
         List<Favorite> favorite = this.favoriteRepository.findAllByBookAndStatus(book, ACTIVE);
 
-        //1. 즐겨찾기 수 - 카테고리별 5개 제한 확인
-        Map<Category, Long> favoriteCountByCategory = favorite.stream()
-            .collect(Collectors.groupingBy(f -> f.getLineCategory(), Collectors.counting()));
-        
-        maxFavorite = favoriteCountByCategory.values().stream()
-            .anyMatch(count -> count > FAVORITE_MAX_SIZE);
+        //1. 즐겨찾기 총 개수 체크
+        if (favorite.size() > FAVORITE_MAX_SIZE) {
+            maxFavorite = true;
+        }
 
         // 2. 팀원 수
         List<OurBookUser> bookUsers = this.bookUserRepository.findAllUser(bookKey);
