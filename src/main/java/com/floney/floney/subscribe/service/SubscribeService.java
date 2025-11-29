@@ -114,7 +114,7 @@ public class SubscribeService {
 
         // 2. 팀원 수
         List<OurBookUser> bookUsers = this.bookUserRepository.findAllUser(bookKey);
-        if (bookUsers.size() > MAX_BOOK_USER) {
+        if (bookUsers.size() > DEFAULT_BOOK_USER) {
             overBookUser = true;
         }
 
