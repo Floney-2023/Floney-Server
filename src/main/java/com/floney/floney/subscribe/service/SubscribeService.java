@@ -84,7 +84,7 @@ public class SubscribeService {
     }
 
     public GetTransactionResponse isUserSubscribe(String email) {
-        logger.info("isUserSubscribe {}",email);
+        logger.info("isUserSubscribe = email {}",email);
         User user = this.userRepository.findByEmailAndStatus(email, ACTIVE).orElseThrow(() -> new NotFoundBookUserException(email, null));
 
         if (this.appleClient.isSubscribe(user).isValid()) {
