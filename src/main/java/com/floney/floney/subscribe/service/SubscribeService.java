@@ -27,6 +27,8 @@ import com.floney.floney.user.client.AppleClient;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +56,8 @@ public class SubscribeService {
     private final BookUserRepository bookUserRepository;
     private final AppleSubscribeRepository appleSubscribeRepository;
     private final AndroidSubscribeRepository androidSubscribeRepository;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
 
     public GetTransactionResponse isBookSubscribe(String bookKey) {
         final Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
@@ -80,6 +84,7 @@ public class SubscribeService {
     }
 
     public GetTransactionResponse isUserSubscribe(String email) {
+        logger.info("isUserSubscribe {}",email);
         User user = this.userRepository.findByEmailAndStatus(email, ACTIVE).orElseThrow(() -> new NotFoundBookUserException(email, null));
 
         if (this.appleClient.isSubscribe(user).isValid()) {
