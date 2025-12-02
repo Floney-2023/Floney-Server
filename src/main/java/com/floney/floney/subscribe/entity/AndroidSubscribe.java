@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import java.util.Map;
@@ -46,6 +47,9 @@ public class AndroidSubscribe extends BaseEntity {
 
     private String priceAmountMicros;
 
+    @Column(columnDefinition = "TEXT")
+    private String rawPayload;
+
     public AndroidSubscribe(final Map<String, Object> payload, final User user) {
         this.expiryTimeMillis = (String) payload.get("expiryTimeMillis");
         this.paymentState = String.valueOf(payload.get("paymentState"));
@@ -57,6 +61,7 @@ public class AndroidSubscribe extends BaseEntity {
         this.autoRenewing = (boolean) payload.get("autoRenewing");
         this.priceCurrencyCode = (String) payload.get("priceCurrencyCode");
         this.priceAmountMicros = (String) payload.get("priceAmountMicros");
+        this.rawPayload = convertToJson(payload);
     }
 
     public void update(User user, final Map<String, Object> payload) {
@@ -71,6 +76,7 @@ public class AndroidSubscribe extends BaseEntity {
         this.autoRenewing = (boolean) payload.get("autoRenewing");
         this.priceCurrencyCode = (String) payload.get("priceCurrencyCode");
         this.priceAmountMicros = (String) payload.get("priceAmountMicros");
+        this.rawPayload = convertToJson(payload);
     }
 
     public void update(final Map<String, Object> payload, User user) {
@@ -87,6 +93,15 @@ public class AndroidSubscribe extends BaseEntity {
         this.autoRenewing = (boolean) payload.get("autoRenewing");
         this.priceCurrencyCode = (String) payload.get("priceCurrencyCode");
         this.priceAmountMicros = (String) payload.get("priceAmountMicros");
+        this.rawPayload = convertToJson(payload);
+    }
+
+    private String convertToJson(Map<String, Object> payload) {
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(payload);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
