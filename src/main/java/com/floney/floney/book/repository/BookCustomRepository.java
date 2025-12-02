@@ -11,6 +11,4 @@ public interface BookCustomRepository {
     Optional<Book> findByBookUserEmailAndBookKey(String userEmail, String bookKey);
 
     List<Book> findAllByUserEmail(String userEmail);
-
-    List<Book> findAllByUserEmailAndStatus(String userEmail, Status status);
 }
