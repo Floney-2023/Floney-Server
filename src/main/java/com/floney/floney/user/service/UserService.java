@@ -80,6 +80,7 @@ public class UserService {
         subscribeService.inactiveUserSubscription(user);
 
         user.signout();
+        userRepository.save(user);
         addSignoutReason(request);
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
@@ -149,8 +150,12 @@ public class UserService {
     private void leaveBooks(final User user,
                             final List<String> deletedBookKeys,
                             final List<String> notDeletedBookKeys) {
-        final List<Book> involvedBooks = bookRepository.findAllByUserEmail(user.getEmail());
+
+        // 유저가 만든 가계부 모두 조회
+        final List<Book> involvedBooks = bookRepository.findAllByUserEmailAndStatus(user.getEmail(), ACTIVE);
         for (final Book book : involvedBooks) {
+
+            // 유저가 owner가 아니면 삭제 X
             if (!book.isOwner(user.getEmail())) {
                 notDeletedBookKeys.add(book.getBookKey());
                 continue;
@@ -169,8 +174,13 @@ public class UserService {
             String newOwner = teamMember.get(); // 기본값: 가장 오래된 팀원
             
             // 방장이 구독 중이고 만료 전인 경우, 구독한 팀원에게 우선 위임
+
+            // 방장은 지금 구독 중인가?
             boolean isOwnerSubscribed = subscribeService.isUserSubscribe(user.getEmail()).isValid();
+
+            // 구독중이라면
             if (isOwnerSubscribed) {
+                // 그 가계부의 모든 유저를 찾아서
                 List<OurBookUser> bookUsers = bookUserRepository.findAllUser(book.getBookKey());
                 
                 for (OurBookUser bookUser : bookUsers) {
