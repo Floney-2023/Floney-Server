@@ -152,7 +152,7 @@ public class UserService {
                             final List<String> notDeletedBookKeys) {
 
         // 유저가 만든 가계부 모두 조회
-        final List<Book> involvedBooks = bookRepository.findAllByUserEmailAndStatus(user.getEmail(), ACTIVE);
+        final List<Book> involvedBooks = bookRepository.findAllByUserEmail(user.getEmail());
         for (final Book book : involvedBooks) {
 
             // 유저가 owner가 아니면 삭제 X
