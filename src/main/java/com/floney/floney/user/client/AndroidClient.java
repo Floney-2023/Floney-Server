@@ -138,31 +138,44 @@ public class AndroidClient {
         ResponseEntity<Map> subscriptionInfo = getSubscriptionsFromAndroid(purchaseToken);
         Map<String, Object> body = subscriptionInfo.getBody();
         
+        User user = null;
+        
+        // linkedPurchaseToken이 있으면 기존 구독에서 유저 정보 가져오기
         if (body != null && body.containsKey("linkedPurchaseToken")) {
             String linkedPurchaseToken = (String) body.get("linkedPurchaseToken");
             
-            // linkedPurchaseToken으로 기존 구독 찾기
-            Optional<AndroidSubscribe> existingSubscription = findSubscriptionByPurchaseToken(linkedPurchaseToken);
-            
-            if (existingSubscription.isPresent()) {
-                // 기존 구독을 새 토큰으로 업데이트
-                AndroidSubscribe subscription = existingSubscription.get();
-                subscription.update(body, subscription.getUser());
-                androidSubscribeRepository.save(subscription);
-                logger.info("Subscription renewed with new token: {} -> {}", linkedPurchaseToken, purchaseToken);
-                return;
+            // linkedPurchaseToken으로 기존 구독의 orderId 조회
+            String linkedOrderId = getOrderIdFromToken(linkedPurchaseToken);
+            if (linkedOrderId != null) {
+                Optional<AndroidSubscribe> linkedSubscription = 
+                    androidSubscribeRepository.findAndroidSubscribeByOrderIdAndStatus(linkedOrderId, ACTIVE);
+                
+                if (linkedSubscription.isPresent()) {
+                    user = linkedSubscription.get().getUser();
+                    // 기존 구독 만료 처리
+                    linkedSubscription.get().inactive();
+                    androidSubscribeRepository.save(linkedSubscription.get());
+                    logger.info("Linked subscription expired: {}", linkedOrderId);
+                }
             }
         }
-
-        // linkedPurchaseToken이 없거나 기존 구독을 찾지 못한 경우 기존 로직 수행
-        this.getTransaction(null, purchaseToken);
+        
+        // 새 구독 생성 또는 업데이트
+        this.getTransaction(user, purchaseToken);
         logger.info("Decoded DTO 결과: " + decodedString);
     }
     
-    private Optional<AndroidSubscribe> findSubscriptionByPurchaseToken(String purchaseToken) {
-        return androidSubscribeRepository.findAll().stream()
-            .filter(subscription -> purchaseToken.equals(subscription.getOrderId()))
-            .findFirst();
+    private String getOrderIdFromToken(String purchaseToken) {
+        try {
+            ResponseEntity<Map> response = getSubscriptionsFromAndroid(purchaseToken);
+            Map<String, Object> body = response.getBody();
+            if (body != null && body.containsKey("orderId")) {
+                return body.get("orderId").toString().replaceAll("\\.+[0-9]+$", "");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to get orderId from purchaseToken: {}", purchaseToken, e);
+        }
+        return null;
     }
 
     public GetTransactionResponse isSubscribe(User user) {
