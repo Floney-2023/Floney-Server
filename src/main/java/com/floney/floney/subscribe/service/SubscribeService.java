@@ -29,6 +29,7 @@ import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +58,9 @@ public class SubscribeService {
     private final AppleSubscribeRepository appleSubscribeRepository;
     private final AndroidSubscribeRepository androidSubscribeRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+
+    @Value("${aws.s3.bucket-url}")
+    private String s3BucketUrl;
 
 
     public GetTransactionResponse isBookSubscribe(String bookKey) {
@@ -100,7 +104,7 @@ public class SubscribeService {
         String code = CodeFactory.generateCode();
         String fileName = bookKey + "/" + code;
         String url = this.awsService.generatePreSignedUrl(fileName);
-        String viewUrl = "https://floney-images.s3.ap-northeast-2.amazonaws.com/" + fileName;
+        String viewUrl = s3BucketUrl + "/" + fileName;
         return new PresignedUrlDto(fileName, url, viewUrl);
     }
 
