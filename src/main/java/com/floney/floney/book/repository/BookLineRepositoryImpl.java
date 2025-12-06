@@ -14,6 +14,7 @@ import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -90,7 +91,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     bookUser.profileImg.coalesce(book.bookImg).as(book.bookImg),
-                    repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration)
+                    repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration),
+                    bookLine.memo
                 ))
             .from(bookLine)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -229,7 +231,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                     user.email,
                     user.nickname,
                     user.profileImg,
-                    repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration)
+                    repeatBookLine.repeatDuration.coalesce(Expressions.asString(String.valueOf(RepeatDuration.NONE))).as(repeatBookLine.repeatDuration),
+                    bookLine.memo
                 )
             )
             .from(bookLine)
@@ -548,6 +551,43 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.lineCategory.status.eq(ACTIVE)
             )
             .fetchOne()).orElse(0.0);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookLine> findAllByDurationAndLineSubcategoryAndWriters(final String bookKey,
+                                                                        final DateDuration duration,
+                                                                        final String categoryName,
+                                                                        final String lineSubcategoryName,
+                                                                        final List<String> writerEmails) {
+        final JPAQuery<BookLine> query = jpaQueryFactory.selectFrom(bookLine)
+            .innerJoin(bookLine.book, book)
+            .innerJoin(bookLine.categories, bookLineCategory)
+            .innerJoin(bookLineCategory.lineCategory, category)
+            .innerJoin(bookLineCategory.lineSubcategory, subcategory)
+            .innerJoin(bookLine.writer, bookUser)
+            .where(
+                book.bookKey.eq(bookKey),
+                bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
+                category.name.eq(CategoryType.findLineByMeaning(categoryName)),
+                bookLineCategory.lineSubcategory.name.eq(lineSubcategoryName),
+                bookUser.book.eq(book)
+            )
+            .where(
+                book.status.eq(ACTIVE),
+                bookLine.status.eq(ACTIVE),
+                bookLineCategory.status.eq(ACTIVE),
+                bookLineCategory.lineSubcategory.status.eq(ACTIVE),
+                category.status.eq(ACTIVE)
+            );
+
+        if (writerEmails.isEmpty()) {
+            return query.fetch();
+        }
+        return query
+            .innerJoin(bookUser.user, user)
+            .where(bookUser.user.email.in(writerEmails), bookUser.status.eq(ACTIVE), user.status.eq(ACTIVE))
+            .fetch();
     }
 
     private void validateLineSubcategory(final Subcategory subcategory) {

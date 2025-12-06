@@ -1,0 +1,85 @@
+package com.floney.floney.subscribe.controller;
+
+import com.apple.itunes.storekit.model.ResponseBodyV2;
+import com.apple.itunes.storekit.verification.VerificationException;
+import com.floney.floney.subscribe.dto.GetTransactionResponse;
+import com.floney.floney.subscribe.dto.GoogleCallbackDto;
+import com.floney.floney.subscribe.service.SubscribeService;
+import com.floney.floney.user.client.AndroidClient;
+import com.floney.floney.user.client.AppleClient;
+import com.floney.floney.user.dto.security.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("/subscribe")
+@RequiredArgsConstructor
+public class SubscribeController {
+
+    private final AppleClient appleClient;
+    private final AndroidClient androidClient;
+    private final SubscribeService subscribeService;
+
+    @GetMapping("/apple/transaction")
+    public ResponseEntity<?> getTransaction(@RequestParam String transactionId, @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
+        return new ResponseEntity<>(appleClient.getTransaction(transactionId, userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @PostMapping("/apple/notification")
+    public ResponseEntity<?> callbackApple(@RequestBody ResponseBodyV2 responseBodyV2) throws VerificationException, IOException {
+        appleClient.callback(responseBodyV2);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/android/transaction")
+    public ResponseEntity<?> getAndroidTransaction(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam String transactionId) throws IOException {
+        return new ResponseEntity<>(androidClient.getTransaction(userDetails.getUser(), transactionId), HttpStatus.OK);
+    }
+
+    @PostMapping("/android/notification")
+    public ResponseEntity<?> callbackAndroid(@RequestBody GoogleCallbackDto payload) throws VerificationException, IOException {
+        androidClient.callback(payload);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping
+    public GetTransactionResponse isUserSubscribe(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return subscribeService.isUserSubscribe(userDetails.getUser());
+    }
+
+    @GetMapping("/book")
+    public GetTransactionResponse isBookSubscribe(@RequestParam String bookKey) {
+        return subscribeService.isBookSubscribe(bookKey);
+    }
+
+    @GetMapping("/url")
+    public ResponseEntity<?> getResignedUrl(@RequestParam String bookKey) {
+        return new ResponseEntity<>(subscribeService.getPresignedUrl(bookKey), HttpStatus.OK);
+    }
+
+    @GetMapping("/benefit")
+    public ResponseEntity<?> isBenefitSubscribe(@RequestParam String bookKey) {
+        return new ResponseEntity<>(subscribeService.isBenefitBook(bookKey), HttpStatus.OK);
+    }
+
+    @GetMapping("/user/benefit")
+    public ResponseEntity<?> isUserBenefitSubscribe(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.isBenefitUser(userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @GetMapping("/android/info")
+    public ResponseEntity<?> getAndroidSubscribeInfo(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.getAndroidSubscribeInfo(userDetails.getUser()), HttpStatus.OK);
+    }
+    
+    @GetMapping("/info")
+    public ResponseEntity<?> getSubscribeInfo(@AuthenticationPrincipal final CustomUserDetails userDetails) {
+        return new ResponseEntity<>(subscribeService.getSubscribeInfo(userDetails.getUser()), HttpStatus.OK);
+    }
+
+}

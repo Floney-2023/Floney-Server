@@ -3,6 +3,7 @@ package com.floney.floney.user.service;
 import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookUser;
 import com.floney.floney.book.dto.process.MyBookInfo;
+import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.SaveRecentBookKeyRequest;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
@@ -11,6 +12,8 @@ import com.floney.floney.common.exception.user.PasswordSameException;
 import com.floney.floney.common.exception.user.UserFoundException;
 import com.floney.floney.common.exception.user.UserNotFoundException;
 import com.floney.floney.common.util.MailProvider;
+import com.floney.floney.subscribe.Device;
+import com.floney.floney.subscribe.service.SubscribeService;
 import com.floney.floney.user.domain.vo.RegeneratePasswordMail;
 import com.floney.floney.user.dto.constant.SignoutType;
 import com.floney.floney.user.dto.request.LoginRequest;
@@ -55,6 +58,7 @@ public class UserService {
     private final SignoutReasonRepository signoutReasonRepository;
     private final SignoutOtherReasonRepository signoutOtherReasonRepository;
     private final MailProvider mailProvider;
+    private final SubscribeService subscribeService;
 
     public LoginRequest signup(SignupRequest request) {
         validateUserExistByEmail(request.getEmail());
@@ -71,8 +75,12 @@ public class UserService {
         final List<String> notDeletedBookKeys = new ArrayList<>();
 
         leaveBooks(user, deletedBookKeys, notDeletedBookKeys);
+        
+        // 구독 DB를 inactive로 업데이트
+        subscribeService.inactiveUserSubscription(user);
 
         user.signout();
+        userRepository.save(user);
         addSignoutReason(request);
 
         return SignoutResponse.of(deletedBookKeys, notDeletedBookKeys);
@@ -142,22 +150,55 @@ public class UserService {
     private void leaveBooks(final User user,
                             final List<String> deletedBookKeys,
                             final List<String> notDeletedBookKeys) {
+
+        // 유저가 만든 가계부 모두 조회
         final List<Book> involvedBooks = bookRepository.findAllByUserEmail(user.getEmail());
         for (final Book book : involvedBooks) {
+
+            // 유저가 owner가 아니면 삭제 X
             if (!book.isOwner(user.getEmail())) {
                 notDeletedBookKeys.add(book.getBookKey());
                 continue;
             }
 
-            final Optional<String> newOwner = bookUserRepository.findOldestBookUserEmailExceptOwner(user, book);
-            if (newOwner.isPresent()) {
-                book.delegateOwner(newOwner.get());
-                notDeletedBookKeys.add(book.getBookKey());
+            final Optional<String> teamMember = bookUserRepository.findOldestBookUserEmailExceptOwner(user, book);
+            
+            // 위임할 팀원이 없으면 가계부 삭제
+            if (teamMember.isEmpty()) {
+                deletedBookKeys.add(book.getBookKey());
+                book.inactive();
+                bookRepository.save(book);
                 continue;
             }
-            deletedBookKeys.add(book.getBookKey());
-            book.inactive();
-            bookRepository.save(book);
+
+            String newOwner = teamMember.get(); // 기본값: 가장 오래된 팀원
+            
+            // 방장이 구독 중이고 만료 전인 경우, 구독한 팀원에게 우선 위임
+
+            // 방장은 지금 구독 중인가?
+            boolean isOwnerSubscribed = subscribeService.isUserSubscribe(user.getEmail()).isValid();
+
+            // 구독중이라면
+            if (isOwnerSubscribed) {
+                // 그 가계부의 모든 유저를 찾아서
+                List<OurBookUser> bookUsers = bookUserRepository.findAllUser(book.getBookKey());
+                
+                for (OurBookUser bookUser : bookUsers) {
+                    // 탈퇴하는 사용자는 제외
+                    if (bookUser.getEmail().equals(user.getEmail())) {
+                        continue;
+                    }
+                    
+                    boolean isMemberSubscribe = subscribeService.isUserSubscribe(bookUser.getEmail()).isValid();
+                    if (isMemberSubscribe) {
+                        newOwner = bookUser.getEmail();
+                        break; // 구독 중인 팀원을 찾으면 즉시 중단
+                    }
+                }
+            }
+            
+            book.delegateOwner(newOwner);
+            notDeletedBookKeys.add(book.getBookKey());
         }
     }
 

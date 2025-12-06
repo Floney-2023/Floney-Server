@@ -155,7 +155,7 @@ public class User extends BaseEntity {
         email = DELETE_VALUE;
         password = DELETE_VALUE;
         nickname = DELETE_VALUE;
-        profileImg = null;
+        profileImg = DEFAULT_PROFILE_IMG;
         providerId = null;
         recentBookKey = null;
     }

@@ -10,14 +10,13 @@ import com.floney.floney.book.domain.vo.MonthLinesResponse;
 import com.floney.floney.book.dto.process.*;
 import com.floney.floney.book.dto.request.AllOutcomesRequest;
 import com.floney.floney.book.dto.request.BookLineRequest;
+import com.floney.floney.book.dto.response.BookLineImgResponse;
 import com.floney.floney.book.dto.response.BookLineResponse;
 import com.floney.floney.book.dto.response.TotalDayLinesResponse;
-import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.RepeatBookLineRepository;
+import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.category.CategoryCustomRepository;
 import com.floney.floney.book.util.DateUtil;
+import com.floney.floney.common.constant.Status;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.NotFoundBookException;
 import com.floney.floney.common.exception.book.NotFoundBookLineException;
@@ -30,9 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.category.CategoryType.*;
 import static com.floney.floney.common.constant.Status.ACTIVE;
@@ -49,6 +50,7 @@ public class BookLineServiceImpl implements BookLineService {
     private final CategoryCustomRepository categoryRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
     private final CarryOverService carryOverService;
+    private final BookLineImgRepository bookLineImgRepository;
 
     @Override
     @Transactional
@@ -59,11 +61,13 @@ public class BookLineServiceImpl implements BookLineService {
 
         final BookLine bookLine = bookLineRepository.save(request.to(bookUser, bookLineCategory));
 
+        saveImgUrls(bookLine, request.getImageUrl());
+
         // 반복 내역인 경우
         if (request.getRepeatDuration() != RepeatDuration.NONE) {
-            return createBookLineByRepeat(bookLine, request.getRepeatDuration());
+            return createBookLineByRepeat(bookLine, request.getRepeatDuration(), request.getImageUrl());
         } else {
-            return createBookLineByNotRepeat(bookLine);
+            return createBookLineByNotRepeat(bookLine, request.getImageUrl());
         }
     }
 
@@ -83,6 +87,23 @@ public class BookLineServiceImpl implements BookLineService {
         final LocalDate day = parse(date);
 
         final List<BookLineWithWriterView> bookLinesOfDay = bookLineRepository.allLinesByDay(day, bookKey);
+
+        Map<Long, BookLine> bookLineMap = new HashMap<>();
+        bookLinesOfDay.stream()
+            .forEach((bookLine) -> {
+                bookLineMap.put(bookLine.getId(), bookLineRepository.findByIdAndStatus(bookLine.getId(), ACTIVE).get());
+            });
+
+
+        bookLinesOfDay.stream()
+            .forEach((res) -> {
+                final List<BookLineImgResponse> imgUrls = bookLineImgRepository.findAllByBookLineAndStatus(bookLineMap.get(res.getId()), ACTIVE)
+                    .stream()
+                    .map(BookLineImgResponse::new)
+                    .toList();
+
+                res.updateImgUrls(imgUrls);
+            });
 
         final List<TotalExpense> totalExpensesOfDay = List.of(bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, INCOME), bookLineRepository.totalMoneyByDateAndCategoryType(bookKey, day, OUTCOME));
         final CarryOverInfo carryOverInfo = new CarryOverInfo(book.getCarryOverStatus(), carryOverService.getCarryOver(bookKey, date));
@@ -116,7 +137,40 @@ public class BookLineServiceImpl implements BookLineService {
         // TODO: CategoryService 로 이동
         updateCategory(bookLine.getCategories(), request.getLine(), request.getAsset());
         bookLineRepository.save(bookLine);
-        return BookLineResponse.from(bookLine);
+
+        saveImgUrls(bookLine, request.getImageUrl());
+        return BookLineResponse.from(bookLine, request.getImageUrl());
+    }
+
+    private void saveImgUrls(BookLine bookLine, List<String> requestImgUrls) {
+        if (requestImgUrls.isEmpty()) return;
+        List<BookLineImg> savedUrls = bookLineImgRepository.findAllByBookLineAndStatus(bookLine, ACTIVE);
+
+        List<String> savedImgUrls = savedUrls.stream()
+            .map(BookLineImg::getImgUrl)
+            .toList();
+
+        List<BookLineImg> imgUrls = requestImgUrls.stream()
+            .filter(imgUrl -> !savedImgUrls.contains(imgUrl))
+            .map(imgUrl -> new BookLineImg(bookLine, imgUrl))
+            .collect(Collectors.toList());
+
+        bookLineImgRepository.saveAll(imgUrls);
+    }
+
+    private void saveImgUrls(RepeatBookLine repeatBookLine, List<String> requestImgUrls) {
+        List<BookLineImg> savedUrls = bookLineImgRepository.findAllByRepeatBookLineAndStatus(repeatBookLine, ACTIVE);
+
+        List<String> savedImgUrls = savedUrls.stream()
+            .map(BookLineImg::getImgUrl)
+            .toList();
+
+        List<BookLineImg> imgUrls = requestImgUrls.stream()
+            .filter(imgUrl -> !savedImgUrls.contains(imgUrl))
+            .map(imgUrl -> new BookLineImg(repeatBookLine, imgUrl))
+            .collect(Collectors.toList());
+
+        bookLineImgRepository.saveAll(imgUrls);
     }
 
     @Override
@@ -143,11 +197,11 @@ public class BookLineServiceImpl implements BookLineService {
         bookLineRepository.saveAll(bookLines);
     }
 
-    private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine) {
+    private BookLineResponse createBookLineByNotRepeat(final BookLine bookLine, final List<String> urls) {
         Book book = bookLine.getBook();
         bookLineRepository.save(bookLine);
 
-        return BookLineResponse.from(bookLine);
+        return BookLineResponse.from(bookLine, urls);
     }
 
     private void checkDateByRepeatDuration(RepeatDuration repeatDuration, final BookLine bookLine) {
@@ -166,7 +220,7 @@ public class BookLineServiceImpl implements BookLineService {
         }
     }
 
-    private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration) {
+    private BookLineResponse createBookLineByRepeat(final BookLine bookLine, final RepeatDuration requestRepeatDuration, final List<String> imgUrls) {
         // 1. 날짜와 반복 주기 정합성 체크
         checkDateByRepeatDuration(requestRepeatDuration, bookLine);
 
@@ -184,7 +238,10 @@ public class BookLineServiceImpl implements BookLineService {
         repeatBookLineRepository.save(repeatBookLine);
         bookLineRepository.saveAll(bookLines);
 
-        return BookLineResponse.from(bookLine);
+        // 5. 이미지 URL 생성
+        saveImgUrls(repeatBookLine, imgUrls);
+
+        return BookLineResponse.from(bookLine, imgUrls);
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
@@ -255,5 +312,11 @@ public class BookLineServiceImpl implements BookLineService {
         final double outcome = bookLineRepository.totalMoneyByDurationAndCategoryType(bookKey, dates, OUTCOME);
         // TODO: Map 대신 새로운 객체 생성
         return Map.of(INCOME.getMeaning(), income, OUTCOME.getMeaning(), outcome);
+    }
+
+    public void deleteImg(Long id) {
+        BookLineImg bookLineImg = bookLineImgRepository.findByIdAndStatus(id, ACTIVE).get();
+        bookLineImg.inactive();
+        bookLineImgRepository.save(bookLineImg);
     }
 }

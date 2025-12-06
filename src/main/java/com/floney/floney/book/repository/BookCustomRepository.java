@@ -1,6 +1,7 @@
 package com.floney.floney.book.repository;
 
 import com.floney.floney.book.domain.entity.Book;
+import com.floney.floney.common.constant.Status;
 
 import java.util.List;
 import java.util.Optional;

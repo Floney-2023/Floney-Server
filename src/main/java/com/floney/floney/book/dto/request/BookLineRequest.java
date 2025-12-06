@@ -3,10 +3,12 @@ package com.floney.floney.book.dto.request;
 import com.floney.floney.book.domain.RepeatDuration;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
+import com.floney.floney.book.domain.entity.BookLineImg;
 import com.floney.floney.book.domain.entity.BookUser;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @ToString
@@ -25,6 +27,8 @@ public class BookLineRequest {
     private String description;
     private Boolean except;
     private RepeatDuration repeatDuration;
+    private String memo;
+    private List<String> imageUrl;
 
     public BookLine to(final BookUser bookUser, final BookLineCategory bookLineCategory) {
         return BookLine.builder()
@@ -35,6 +39,7 @@ public class BookLineRequest {
             .description(description)
             .exceptStatus(except)
             .categories(bookLineCategory)
+            .memo(memo)
             .build();
     }
 }

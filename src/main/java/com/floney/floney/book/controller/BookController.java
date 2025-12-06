@@ -29,7 +29,8 @@ public class BookController {
      * @body CreateBootRequest 가계부 생성 요청용 기본 정보
      */
     @PostMapping
-    public ResponseEntity<?> addBook(@RequestBody CreateBookRequest request,
+    public ResponseEntity<?> addBook(
+                                     @RequestBody CreateBookRequest request,
                                      @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.createBook(userDetails.getUser(), request), HttpStatus.CREATED);
     }
@@ -41,8 +42,9 @@ public class BookController {
      * @body CodeJoinRequest 초대 코드
      */
     @PostMapping("/join")
-    public ResponseEntity<?> joinWithCode(@RequestBody CodeJoinRequest code,
-                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<?> joinWithCode(
+        @RequestBody CodeJoinRequest code,
+        @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(bookService.joinWithCode(userDetails, code), HttpStatus.ACCEPTED);
     }
 
@@ -312,6 +314,11 @@ public class BookController {
         return new ResponseEntity<>(bookService.getAllRepeatBookLine(bookKey, categoryType), HttpStatus.OK);
     }
 
+    @DeleteMapping("/img")
+    public ResponseEntity<?> deleteImgUrl(@RequestParam long id){
+        bookLineService.deleteImg(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     /**
      * 가계부 화폐정보 조회

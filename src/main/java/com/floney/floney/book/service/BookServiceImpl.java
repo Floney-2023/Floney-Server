@@ -10,10 +10,7 @@ import com.floney.floney.book.dto.process.OurBookInfo;
 import com.floney.floney.book.dto.process.OurBookUser;
 import com.floney.floney.book.dto.request.*;
 import com.floney.floney.book.dto.response.*;
-import com.floney.floney.book.repository.BookLineRepository;
-import com.floney.floney.book.repository.BookRepository;
-import com.floney.floney.book.repository.BookUserRepository;
-import com.floney.floney.book.repository.RepeatBookLineRepository;
+import com.floney.floney.book.repository.*;
 import com.floney.floney.book.repository.analyze.BudgetRepository;
 import com.floney.floney.book.repository.category.BookLineCategoryRepository;
 import com.floney.floney.book.repository.category.CategoryRepository;
@@ -23,6 +20,8 @@ import com.floney.floney.book.repository.favorite.FavoriteRepository;
 import com.floney.floney.common.domain.vo.DateDuration;
 import com.floney.floney.common.exception.book.*;
 import com.floney.floney.settlement.repository.SettlementRepository;
+import com.floney.floney.settlement.repository.SettlementUserRepository;
+import com.floney.floney.subscribe.service.SubscribeService;
 import com.floney.floney.user.dto.security.CustomUserDetails;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
@@ -34,8 +33,10 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.floney.floney.book.domain.BookCapacity.DEFAULT;
+import static com.floney.floney.book.domain.BookCapacity.SUBSCRIBE;
 import static com.floney.floney.common.constant.Status.ACTIVE;
 
 @Service
@@ -45,6 +46,8 @@ public class BookServiceImpl implements BookService {
 
     private static final int ONLY_OWNER_COUNT = 1;
     private static final double DEFAULT_BUDGET = 0.0;
+    public static final int MAX_BOOK_USER = 10;
+    public static final int DEFAULT_BOOK_USER = 4;
 
     private final BookRepository bookRepository;
     private final BookUserRepository bookUserRepository;
@@ -59,6 +62,9 @@ public class BookServiceImpl implements BookService {
     private final AlarmRepository alarmRepository;
     private final RepeatBookLineRepository repeatBookLineRepository;
     private final FavoriteRepository favoriteRepository;
+    private final SettlementUserRepository settlementUserRepository;
+    private final SubscribeService subscribeService;
+    private final BookLineImgRepository bookLineImgRepository;
 
     @Override
     @Transactional
@@ -319,7 +325,12 @@ public class BookServiceImpl implements BookService {
         return repeatBookLineRepository.findAllByBookAndStatusAndLineCategory(book, ACTIVE, lineCategory)
             .stream()
             .filter(this::shouldKeepBookLine)
-            .map(RepeatBookLineResponse::new)
+            .map((repeatBookLine) -> {
+                List<BookLineImgResponse> urls = bookLineImgRepository.findAllByRepeatBookLineAndStatus(repeatBookLine,ACTIVE).stream()
+                    .map(BookLineImgResponse::new)
+                    .toList();
+                return new RepeatBookLineResponse(repeatBookLine,urls);
+            })
             .toList();
     }
 
@@ -352,7 +363,12 @@ public class BookServiceImpl implements BookService {
 
     private void validateJoinByBookUserCapacity(Book book) {
         final int memberCount = bookUserRepository.countByBookExclusively(book);
-        book.validateCanJoinMember(memberCount);
+        int maxCapacity = DEFAULT_BOOK_USER;
+        if (subscribeService.isBookSubscribe(book.getBookKey()).isValid()) {
+            maxCapacity = MAX_BOOK_USER;
+        }
+
+        book.validateCanJoinMember(memberCount, maxCapacity);
     }
 
     private void deleteBook(final Book book) {
@@ -380,6 +396,7 @@ public class BookServiceImpl implements BookService {
         });
         bookLineCategoryRepository.inactiveAllByBookUser(bookUser);
         repeatBookLineRepository.inactiveAllByBookUser(bookUser);
+        settlementUserRepository.inactiveAllByBookId(bookUser.getBook().getId());
     }
 
     private void saveDefaultCategories(final Book book) {
@@ -431,13 +448,21 @@ public class BookServiceImpl implements BookService {
         userRepository.save(user);
     }
 
-    private void validateJoinByBookCapacity(User user) {
-        // 유저가 참여중인 가게부 개수
+    private void validateJoinByBookCapacity( User user) {
+        int availableMax;
+
+        // 구독한 유저인 경우 4개 생성 가능
+        if (subscribeService.isUserSubscribe(user).isValid()) {
+            availableMax = SUBSCRIBE.getValue();
+        } else {
+            availableMax = DEFAULT.getValue();
+        }
+
         int currentJoinBook = bookUserRepository.countBookUserByUserAndStatus(user, ACTIVE);
 
         // 이미 최대로 가계부들에 참여한 경우
         // TODO: currentJoinBook > DEFAULT_MAX_BOOK.getValue() 이면 서버 에러 발생
-        if (currentJoinBook >= DEFAULT.getValue()) {
+        if (currentJoinBook >= availableMax) {
             throw new LimitRequestException();
         }
     }

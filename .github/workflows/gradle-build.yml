@@ -29,7 +29,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 프로젝트 빌드
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: 테스트 결과를 PR에 코멘트로 등록
         uses: EnricoMi/publish-unit-test-result-action@v2

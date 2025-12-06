@@ -80,6 +80,17 @@ dependencies {
     //monitor
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    implementation 'com.apple.itunes.storekit:app-store-server-library:3.1.0'
+    implementation("com.google.api-client:google-api-client:2.6.0")
+    compile "com.google.api-client:google-api-client:1.33.0"
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.6.0'
+    implementation 'com.google.cloud:google-cloud-pubsub:1.134.1'
+    implementation 'com.google.apis:google-api-services-androidpublisher:v3-rev20241016-2.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    // AWS SDK S3 의존성
+    implementation 'software.amazon.awssdk:s3:2.20.91'
+    implementation 'software.amazon.awssdk:auth:2.20.91'
 }
 
 //querydsl

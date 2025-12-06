@@ -66,8 +66,8 @@ public class BookAcceptanceTest {
             void it_returns_book_key_and_code() {
                 final CreateBookResponse response = RestAssured
                     .given()
-
                     .auth().oauth2(token)
+                    .header("device", "android")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .body(request)
                     .when().post("/books")
@@ -104,6 +104,7 @@ public class BookAcceptanceTest {
                     .given()
                     .auth().oauth2(token)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header("device", "android")
                     .body(request)
                     .when().post("/books")
                     .then()
@@ -144,6 +145,7 @@ public class BookAcceptanceTest {
                     .given()
                     .auth().oauth2(token)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .header("device", "android")
                     .body(request)
                     .when().post("/books/join")
                     .then()

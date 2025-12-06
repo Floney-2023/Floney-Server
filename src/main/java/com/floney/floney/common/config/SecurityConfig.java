@@ -52,7 +52,10 @@ public class SecurityConfig {
                 "/users/reissue",
                 "/users/email/**",
                 "/auth/**",
-                "/actuator/prometheus"
+                "/actuator/prometheus",
+                "/subscribe/apple/notification",
+                "/subscribe/android/notification",
+                "/.well-known/acme-challenge/**"
             ).permitAll()
             .anyRequest().authenticated()
 

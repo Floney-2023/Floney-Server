@@ -6,6 +6,7 @@ import com.floney.floney.common.exception.book.LimitRequestException;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 import static com.floney.floney.book.util.DateUtil.getDateBeforeMonth;
@@ -31,6 +32,12 @@ public class DateDuration {
     public static DateDuration startAndEndOfMonth(String currentDate) {
         LocalDate startDate = LocalDate.parse(currentDate, DateTimeFormatter.ISO_DATE);
         LocalDate endDate = DateUtil.getLastDateOfMonth(startDate);
+        return new DateDuration(startDate, endDate);
+    }
+
+    public static DateDuration startAndEndOfMonth(final YearMonth yearMonth) {
+        final LocalDate startDate = yearMonth.atDay(1);
+        final LocalDate endDate = yearMonth.atEndOfMonth();
         return new DateDuration(startDate, endDate);
     }
 

@@ -57,6 +57,11 @@ public class RepeatBookLine extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean exceptStatus;
 
+    @Column
+    @Lob
+    private String memo;
+
+
     public static RepeatBookLine of(BookLine bookLine, RepeatDuration repeatDuration) {
         BookLineCategory bookLineCategory = bookLine.getCategories();
 
@@ -71,6 +76,7 @@ public class RepeatBookLine extends BaseEntity {
             .lineDate(bookLine.getLineDate())
             .repeatDuration(repeatDuration)
             .exceptStatus(bookLine.getExceptStatus())
+            .memo(bookLine.getMemo())
             .build();
     }
 

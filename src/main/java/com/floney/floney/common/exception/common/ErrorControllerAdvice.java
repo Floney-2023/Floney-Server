@@ -124,10 +124,16 @@ public class ErrorControllerAdvice {
     }
 
     @ExceptionHandler(NotEmailUserException.class)
-    protected ResponseEntity<ErrorResponse> notEmailUser(NotEmailUserException exception) {
+    ResponseEntity<Map<String, Object>> notEmailUser(NotEmailUserException exception) {
         logger.warn("이메일 유저가 아니라 간편 유저({})임", exception.getProvider());
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("code", exception.getErrorType().getCode());
+        body.put("message", exception.getErrorType().getMessage());
+        body.put("provider", exception.getProvider());
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(ErrorResponse.of(exception.getErrorType()));
+            .body(body);
     }
 
     @ExceptionHandler(PasswordSameException.class)
