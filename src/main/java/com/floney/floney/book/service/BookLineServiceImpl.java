@@ -143,7 +143,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private void saveImgUrls(BookLine bookLine, List<String> requestImgUrls) {
-        if (requestImgUrls.isEmpty()) return;
+        if (requestImgUrls == null || requestImgUrls.isEmpty()) return;
         List<BookLineImg> savedUrls = bookLineImgRepository.findAllByBookLineAndStatus(bookLine, ACTIVE);
 
         List<String> savedImgUrls = savedUrls.stream()
