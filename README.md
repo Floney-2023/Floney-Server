@@ -11,10 +11,10 @@
 
 ### 👩‍💻 팀원 목록
 
-|                   Backend                    |                      Backend                       |                     Backend                      | 
-| :------------------------------------------: | :------------------------------------------------: | :----------------------------------------------: |
-| ![](https://github.com/dahyen0o.png?size=120) | ![](https://github.com/sienna011022.png?size=120) | <img src="https://github.com/sejeongsong.png" width="120"> |
-|  [최세은](https://github.com/dahyen0o)  |  [김성윤](https://github.com/sienna011022)  |  [송세정](https://github.com/sejeongsong)  |
+|                   Backend                    |                      Backend                       |
+| :------------------------------------------: | :------------------------------------------------: | 
+| ![](https://github.com/dahyen0o.png?size=120) | ![](https://github.com/sienna011022.png?size=120) | 
+|  [최세은](https://github.com/dahyen0o)  |  [김성윤](https://github.com/sienna011022)  |  
 
 <br/>
 

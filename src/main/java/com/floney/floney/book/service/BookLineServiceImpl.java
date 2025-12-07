@@ -159,6 +159,7 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private void saveImgUrls(RepeatBookLine repeatBookLine, List<String> requestImgUrls) {
+        if (requestImgUrls == null || requestImgUrls.isEmpty()) return;
         List<BookLineImg> savedUrls = bookLineImgRepository.findAllByRepeatBookLineAndStatus(repeatBookLine, ACTIVE);
 
         List<String> savedImgUrls = savedUrls.stream()
