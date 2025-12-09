@@ -38,7 +38,7 @@ public class BookLineResponse {
             .except(bookLine.getExceptStatus())
             .nickname(bookLine.getWriterNickName())
             .repeatDuration(bookLine.getRepeatDuration())
-            .memo(bookLine.getMemo())
+            .memo(bookLine.getMemo() != null ? bookLine.getMemo() : "")
             .imageUrls(imgUrls)
             .build();
     }

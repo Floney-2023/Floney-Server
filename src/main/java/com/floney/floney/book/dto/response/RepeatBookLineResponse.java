@@ -34,7 +34,7 @@ public class RepeatBookLineResponse {
         this.lineSubCategory = repeatBookLine.getLineSubcategory().getName();
         this.assetSubCategory = repeatBookLine.getAssetSubcategory().getName();
         this.money = repeatBookLine.getMoney();
-        this.memo = repeatBookLine.getMemo();
+        this.memo = repeatBookLine.getMemo() != null ? repeatBookLine.getMemo() : "";
         this.imageUrls = imageUrls;
     }
 }
