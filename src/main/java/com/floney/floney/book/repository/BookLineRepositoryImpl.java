@@ -17,6 +17,8 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,7 @@ import static com.floney.floney.user.entity.QUser.user;
 @RequiredArgsConstructor
 public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
 
@@ -219,6 +222,11 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Transactional(readOnly = true)
     public List<BookLineWithWriterView> findAllOutcomes(final AllOutcomesRequest request) {
         final DateDuration duration = request.getDuration();
+        logger.info("[정산 기간 조회] bookKey={}, startDate={}, endDate={}, userEmails={}",
+            request.getBookKey(),
+            duration.getStartDate(),
+            duration.getEndDate(),
+            request.getUsersEmails());
         return jpaQueryFactory.select(
                 new QBookLineWithWriterView(
                     bookLine.id,
