@@ -114,6 +114,10 @@ class CategoryCustomRepositoryTest {
                 assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
                     .containsExactlyInAnyOrder(incomeSubCategoryName1, incomeSubCategoryName2);
+                // 사용자 정의 카테고리는 categoryKey가 null
+                assertThat(subCategories)
+                    .extracting(CategoryInfo::getCategoryKey)
+                    .containsExactlyInAnyOrder(null, null);
             }
         }
 
@@ -141,6 +145,10 @@ class CategoryCustomRepositoryTest {
                 assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
                     .containsExactlyInAnyOrder(outcomeSubCategoryName1, outcomeSubCategoryName2);
+                // 사용자 정의 카테고리는 categoryKey가 null
+                assertThat(subCategories)
+                    .extracting(CategoryInfo::getCategoryKey)
+                    .containsExactlyInAnyOrder(null, null);
             }
         }
 
@@ -169,6 +177,10 @@ class CategoryCustomRepositoryTest {
                 assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
                     .containsExactlyInAnyOrder(assetSubCategoryName1, assetSubCategoryName2);
+                // 사용자 정의 카테고리는 categoryKey가 null
+                assertThat(subCategories)
+                    .extracting(CategoryInfo::getCategoryKey)
+                    .containsExactlyInAnyOrder(null, null);
             }
         }
 
@@ -194,6 +206,10 @@ class CategoryCustomRepositoryTest {
                 assertThat(subCategories)
                     .extracting(CategoryInfo::getName)
                     .containsExactlyInAnyOrder(transferSubCategoryName1, transferSubCategoryName2);
+                // 사용자 정의 카테고리는 categoryKey가 null
+                assertThat(subCategories)
+                    .extracting(CategoryInfo::getCategoryKey)
+                    .containsExactlyInAnyOrder(null, null);
             }
         }
     }
