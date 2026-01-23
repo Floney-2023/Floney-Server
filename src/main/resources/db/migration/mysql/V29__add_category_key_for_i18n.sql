@@ -63,9 +63,9 @@ SET s.category_key = ds.category_key
 WHERE s.status = 'ACTIVE' AND ds.category_key IS NOT NULL;
 
 -- Step 5: Add unique constraint for category_key in default_subcategory
--- Note: category_key can be NULL for future custom categories, but must be unique when not NULL
+-- Note: category_key can be NULL for future custom categories, but must be unique per parent when not NULL
 ALTER TABLE `default_subcategory`
-ADD UNIQUE KEY `unique_category_key_status_in_default_subcategory` (`category_key`, `status`);
+ADD UNIQUE KEY `unique_category_key_status_in_default_subcategory` (`parent_id`, `category_key`, `status`);
 
 -- Step 6: Add index on category_key for better query performance
 ALTER TABLE `subcategory`
