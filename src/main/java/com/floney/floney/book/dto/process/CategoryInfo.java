@@ -12,11 +12,13 @@ public class CategoryInfo {
 
     private boolean isDefault; // TODO: 삭제
     private String name;
+    private String categoryKey;
 
     @Builder
     @QueryProjection
-    public CategoryInfo(final boolean isDefault, final String name) {
+    public CategoryInfo(final boolean isDefault, final String name, final String categoryKey) {
         this.isDefault = isDefault;
         this.name = name;
+        this.categoryKey = categoryKey;
     }
 }

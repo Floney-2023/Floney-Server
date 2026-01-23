@@ -22,4 +22,7 @@ public class DefaultSubcategory extends BaseEntity {
     
     @Column(nullable = false)
     private String name;
+
+    @Column(length = 100, name = "category_key")
+    private String categoryKey;
 }

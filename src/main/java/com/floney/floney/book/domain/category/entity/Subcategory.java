@@ -29,6 +29,9 @@ public class Subcategory extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(length = 100, name = "category_key")
+    private String categoryKey;
+
     public static Subcategory of(final Category parent, final Book book, final String name) {
         return Subcategory.builder()
             .parent(parent)
@@ -42,6 +45,7 @@ public class Subcategory extends BaseEntity {
             .parent(defaultSubcategory.getParent())
             .book(book)
             .name(defaultSubcategory.getName())
+            .categoryKey(defaultSubcategory.getCategoryKey())
             .build();
     }
 }

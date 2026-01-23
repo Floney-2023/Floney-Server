@@ -62,6 +62,23 @@ public class CategoryAcceptanceTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body("name", is(name));
             }
+
+            @Test
+            @DisplayName("사용자 정의 카테고리는 categoryKey가 null이다.")
+            void custom_category_has_null_categoryKey() {
+                // 사용자가 직접 추가한 카테고리 생성
+                CategoryApiFixture.createSubcategory(accessToken, bookKey, "수입", name);
+
+                // 조회하여 categoryKey가 null인지 확인
+                RestAssured.given()
+                    .auth().oauth2(accessToken)
+                    .param("parent", "수입")
+                    .when()
+                    .get("/books/{key}/categories", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("find { it.name == '%s' }.categoryKey".formatted(name), is((String) null));
+            }
         }
 
         @Nested
@@ -167,6 +184,22 @@ public class CategoryAcceptanceTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", is(8));
+            }
+
+            @Test
+            @DisplayName("자식 카테고리들의 categoryKey를 반환한다.")
+            void it_returns_categories_with_categoryKey() {
+                RestAssured.given()
+                    .auth().oauth2(accessToken)
+                    .param("parent", parentName)
+                    .when()
+                    .get("/books/{key}/categories", bookKey)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", is(8))
+                    .body("[0].categoryKey", is("SALARY"))
+                    .body("[1].categoryKey", is("SIDE_INCOME"))
+                    .body("[2].categoryKey", is("ALLOWANCE"));
             }
         }
 
