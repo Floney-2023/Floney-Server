@@ -62,7 +62,6 @@ public class SubscribeService {
     @Value("${aws.s3.bucket-url}")
     private String s3BucketUrl;
 
-
     public GetTransactionResponse isBookSubscribe(String bookKey) {
         final Book book = bookRepository.findBookByBookKeyAndStatus(bookKey, ACTIVE)
             .orElseThrow(() -> new NotFoundBookException(bookKey));
