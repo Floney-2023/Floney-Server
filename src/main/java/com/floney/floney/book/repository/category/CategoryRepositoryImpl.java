@@ -42,7 +42,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     @Transactional(readOnly = true)
     public List<CategoryInfo> findSubcategoryInfos(final CategoryType parent, final String bookKey) {
         return jpaQueryFactory.select(
-                new QCategoryInfo(constant(true), subcategory.name)
+                new QCategoryInfo(constant(true), subcategory.name, subcategory.categoryKey)
             )
             .from(subcategory)
             .innerJoin(subcategory.parent, category)
