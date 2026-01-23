@@ -64,7 +64,7 @@ public class BookApiFixture {
 
     public static long createBookLine(final String accessToken,
                                       final String bookKey,
-                                      final String lineCategoryName,
+                                      final CategoryType lineCategory,
                                       final String lineSubcategoryName,
                                       final String assetSubcategoryName) {
         return RestAssured.given()
@@ -74,14 +74,14 @@ public class BookApiFixture {
                 {
                     "bookKey": "%s",
                     "money": 1000,
-                    "flow": "%s",
+                    "lineType": "%s",
                     "asset": "%s",
                     "line": "%s",
                     "lineDate": "2000-01-01",
                     "except": false,
                     "repeatDuration": "NONE"
                 }
-                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName))
+                """.formatted(bookKey, lineCategory, assetSubcategoryName, lineSubcategoryName))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -92,7 +92,7 @@ public class BookApiFixture {
 
     public static long createBookLine(final String accessToken,
                                       final String bookKey,
-                                      final String lineCategoryName,
+                                      final CategoryType lineCategory,
                                       final String lineSubcategoryName,
                                       final String assetSubcategoryName,
                                       final LocalDate date) {
@@ -103,14 +103,14 @@ public class BookApiFixture {
                 {
                     "bookKey": "%s",
                     "money": 1000,
-                    "flow": "%s",
+                    "lineType": "%s",
                     "asset": "%s",
                     "line": "%s",
                     "lineDate": "%s",
                     "except": false,
                     "repeatDuration": "NONE"
                 }
-                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, date))
+                """.formatted(bookKey, lineCategory, assetSubcategoryName, lineSubcategoryName, date))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -121,7 +121,7 @@ public class BookApiFixture {
 
     public static long createBookLine(final String accessToken,
                                       final String bookKey,
-                                      final String lineCategoryName,
+                                      final CategoryType lineCategory,
                                       final String lineSubcategoryName,
                                       final String assetSubcategoryName,
                                       final RepeatDuration repeatDuration) {
@@ -132,14 +132,14 @@ public class BookApiFixture {
                 {
                     "bookKey": "%s",
                     "money": 1000,
-                    "flow": "%s",
+                    "lineType": "%s",
                     "asset": "%s",
                     "line": "%s",
                     "lineDate": "2000-01-01",
                     "except": false,
                     "repeatDuration": "%s"
                 }
-                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, repeatDuration))
+                """.formatted(bookKey, lineCategory, assetSubcategoryName, lineSubcategoryName, repeatDuration))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())
@@ -150,7 +150,7 @@ public class BookApiFixture {
 
     public static long createBookLine(final String accessToken,
                                       final String bookKey,
-                                      final String lineCategoryName,
+                                      final CategoryType lineCategory,
                                       final String lineSubcategoryName,
                                       final String assetSubcategoryName,
                                       final LocalDate lineDate,
@@ -162,14 +162,14 @@ public class BookApiFixture {
                 {
                     "bookKey": "%s",
                     "money": 1000,
-                    "flow": "%s",
+                    "lineType": "%s",
                     "asset": "%s",
                     "line": "%s",
                     "lineDate": "%s",
                     "except": false,
                     "repeatDuration": "%s"
                 }
-                """.formatted(bookKey, lineCategoryName, assetSubcategoryName, lineSubcategoryName, lineDate, repeatDuration))
+                """.formatted(bookKey, lineCategory, assetSubcategoryName, lineSubcategoryName, lineDate, repeatDuration))
             .when().post("/books/lines")
             .then()
             .statusCode(HttpStatus.CREATED.value())

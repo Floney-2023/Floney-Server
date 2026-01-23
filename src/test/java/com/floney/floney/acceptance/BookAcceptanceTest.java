@@ -177,7 +177,7 @@ public class BookAcceptanceTest {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 String bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
 
@@ -218,7 +218,7 @@ public class BookAcceptanceTest {
             @BeforeEach
             public void init() {
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
                 LocalDate weekdayDate = LocalDate.of(2024, 4, 10);
@@ -257,7 +257,7 @@ public class BookAcceptanceTest {
             @BeforeEach
             public void init() {
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
                 LocalDate weekendDate = LocalDate.of(2024, 4, 13);
@@ -296,7 +296,7 @@ public class BookAcceptanceTest {
             @BeforeEach
             public void init() {
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
                 LocalDate weekendDate = LocalDate.of(2024, 5, 26);
@@ -342,7 +342,7 @@ public class BookAcceptanceTest {
 
                 bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
 
@@ -389,7 +389,7 @@ public class BookAcceptanceTest {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
 
@@ -443,7 +443,7 @@ public class BookAcceptanceTest {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 String bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
 
                 changeSubCategory = "용돈";
@@ -459,7 +459,7 @@ public class BookAcceptanceTest {
                     .bookKey(bookKey)
                     .line(changeSubCategory)
                     .asset(changeAssetSubCategory)
-                    .flow(incomeLineCategory)
+                    .lineType(incomeLineCategory)
                     .lineDate(LocalDate.parse(changeDate))
                     .description(changeDescription)
                     .except(false)
@@ -514,7 +514,7 @@ public class BookAcceptanceTest {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 String bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                String incomeLineCategory = "수입";
+                CategoryType incomeLineCategory = CategoryType.INCOME;
                 String subCategory = "급여";
                 String assetSubCategory = "체크카드";
                 String date = "2024-02-14";
@@ -734,7 +734,7 @@ public class BookAcceptanceTest {
         @DisplayName("지출 내역이 존재하는 경우")
         class Context_With_ExistOutcomes {
 
-            private static final String outcomeLineCategory = "지출";
+            private static final CategoryType outcomeLineCategory = CategoryType.OUTCOME;
             private static final String subCategory = "식비";
             private static final String assetSubCategory = "체크카드";
             final User user = UserFixture.emailUser();
@@ -1467,7 +1467,7 @@ public class BookAcceptanceTest {
 
             @BeforeEach
             public void init() {
-                lineId = BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(),
+                lineId = BookApiFixture.createBookLine(accessToken, bookKey, CategoryType.INCOME, "급여", "은행", LocalDate.now(),
                     WEEKEND);
             }
 
@@ -1536,7 +1536,7 @@ public class BookAcceptanceTest {
                 final User user = UserFixture.emailUser();
                 accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 bookKey = BookApiFixture.createBook(accessToken).getBookKey();
-                BookApiFixture.createBookLine(accessToken, bookKey, "수입", "급여", "은행", LocalDate.now(), MONTH);
+                BookApiFixture.createBookLine(accessToken, bookKey, CategoryType.INCOME, "급여", "은행", LocalDate.now(), MONTH);
 
                 RepeatBookLineResponse[] response = BookApiFixture.getRepeatBookLineList(accessToken, INCOME, bookKey);
                 repeatBookLineId = response[0].getId();
@@ -1606,8 +1606,8 @@ public class BookAcceptanceTest {
                 accessToken = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 bookKey = BookApiFixture.createBook(accessToken).getBookKey();
 
-                BookApiFixture.createBookLine(accessToken, bookKey, INCOME.getMeaning(), "급여", "은행", MONTH);
-                BookApiFixture.createBookLine(accessToken, bookKey, INCOME.getMeaning(), "급여", "은행", WEEKEND);
+                BookApiFixture.createBookLine(accessToken, bookKey, INCOME, "급여", "은행", MONTH);
+                BookApiFixture.createBookLine(accessToken, bookKey, INCOME, "급여", "은행", WEEKEND);
             }
 
             @Test
@@ -1643,7 +1643,7 @@ public class BookAcceptanceTest {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                BookApiFixture.createBookLine(token, bookKey, INCOME.getMeaning(), "급여", "은행");
+                BookApiFixture.createBookLine(token, bookKey, INCOME, "급여", "은행");
                 FavoriteApiFixture.createFavorite(token, bookKey);
             }
 
@@ -1683,7 +1683,7 @@ public class BookAcceptanceTest {
                 token = UserApiFixture.loginAfterSignup(user).getAccessToken();
                 bookKey = BookApiFixture.createBook(token).getBookKey();
 
-                BookApiFixture.createBookLine(token, bookKey, INCOME.getMeaning(), "급여", "은행");
+                BookApiFixture.createBookLine(token, bookKey, INCOME, "급여", "은행");
             }
 
             @Test

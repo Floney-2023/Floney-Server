@@ -1,6 +1,7 @@
 package com.floney.floney.book.dto.response;
 
 import com.floney.floney.book.domain.RepeatDuration;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.entity.BookLine;
 import lombok.*;
 
@@ -15,7 +16,7 @@ public class BookLineResponse {
 
     private final long id;
     private final double money;
-    private final String flow;
+    private final CategoryType lineType;
     private final String asset;
     private final String line;
     private final LocalDate lineDate;
@@ -30,7 +31,7 @@ public class BookLineResponse {
         return BookLineResponse.builder()
             .id(bookLine.getId())
             .money(bookLine.getMoney())
-            .flow(bookLine.getCategories().getLineCategory().getName().getMeaning())
+            .lineType(bookLine.getCategories().getLineCategory().getName())
             .asset(bookLine.getCategories().getAssetSubcategory().getName())
             .line(bookLine.getCategories().getLineSubcategory().getName())
             .lineDate(bookLine.getLineDate())
