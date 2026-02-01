@@ -1,6 +1,7 @@
 package com.floney.floney.book.dto.request;
 
 import com.floney.floney.book.domain.RepeatDuration;
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.domain.entity.BookLineCategory;
 import com.floney.floney.book.domain.entity.BookLineImg;
@@ -20,7 +21,7 @@ public class BookLineRequest {
     private long lineId;
     private String bookKey;
     private double money;
-    private String flow; // TODO: 차후에 변수명 lineType으로 변경
+    private CategoryType lineType;
     private String asset;
     private String line; // TODO: 차후에 변수명 subType으로 변경
     private LocalDate lineDate;

@@ -105,7 +105,7 @@ public class BookLineServiceTest {
             void it_returns_bookLine() {
                 final BookLineRequest request = BookLineRequest.builder()
                     .bookKey(bookKey)
-                    .flow(CategoryType.INCOME.getMeaning())
+                    .lineType(CategoryType.INCOME)
                     .line("급여")
                     .asset("현금")
                     .lineDate(LocalDate.now())

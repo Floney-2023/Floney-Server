@@ -246,8 +246,8 @@ public class BookLineServiceImpl implements BookLineService {
     }
 
     private BookLineCategory findCategories(final BookLineRequest request, final Book book) {
-        final String categoryName = request.getFlow(); //LineType
-        final Category lineCategory = findLineCategory(categoryName);
+        final CategoryType categoryType = request.getLineType();
+        final Category lineCategory = findLineCategory(categoryType);
 
         final Subcategory lineSubcategory = findLineSubCategory(request.getLine(), lineCategory, book);
         final Subcategory assetSubcategory = findAssetSubCategory(book, request.getAsset());
@@ -272,10 +272,10 @@ public class BookLineServiceImpl implements BookLineService {
         bookLineCategory.updateLineSubCategory(lineSubcategory);
     }
 
-    private Category findLineCategory(final String categoryName) {
-        final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
+    private Category findLineCategory(final CategoryType categoryType) {
+        categoryType.validateLineType();
         return categoryRepository.findByType(categoryType)
-            .orElseThrow(() -> new NotFoundCategoryException(categoryName));
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
     }
 
     private Subcategory findLineSubCategory(final String lineSubCategoryName, final Category lineCategory, final Book book) {
