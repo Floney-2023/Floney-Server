@@ -57,7 +57,6 @@ public class RepeatBookLineRepositoryTest {
         @Nested
         @DisplayName("반복 내역이 존재하는 경우")
         class Context_With_RepeatBookLine {
-
             Book book;
 
             @BeforeEach
