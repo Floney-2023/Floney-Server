@@ -76,7 +76,8 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     public Optional<Subcategory> findSubcategory(final String name,
                                                  final Book targetBook,
                                                  final CategoryType parentName) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
+        // Try to find by name first (for backward compatibility and user-defined categories)
+        Subcategory result = jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
             .where(
@@ -89,7 +90,27 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                 category.status.eq(ACTIVE),
                 book.status.eq(ACTIVE)
             )
-            .fetchOne());
+            .fetchOne();
+
+        // If not found by name, try to find by categoryKey (for i18n support)
+        if (result == null) {
+            result = jpaQueryFactory.selectFrom(subcategory)
+                .innerJoin(subcategory.parent, category)
+                .innerJoin(subcategory.book, book)
+                .where(
+                    subcategory.categoryKey.eq(name),
+                    category.name.eq(parentName),
+                    book.eq(targetBook)
+                )
+                .where(
+                    subcategory.status.eq(ACTIVE),
+                    category.status.eq(ACTIVE),
+                    book.status.eq(ACTIVE)
+                )
+                .fetchOne();
+        }
+
+        return Optional.ofNullable(result);
     }
 
     @Override
@@ -113,7 +134,8 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     public Optional<Subcategory> findSubcategory(final Category parent,
                                                  final Book targetBook,
                                                  final String name) {
-        return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
+        // Try to find by name first (for backward compatibility and user-defined categories)
+        Subcategory result = jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
             .where(
@@ -126,7 +148,27 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                 book.status.eq(ACTIVE),
                 category.status.eq(ACTIVE)
             )
-            .fetchOne());
+            .fetchOne();
+
+        // If not found by name, try to find by categoryKey (for i18n support)
+        if (result == null) {
+            result = jpaQueryFactory.selectFrom(subcategory)
+                .innerJoin(subcategory.parent, category)
+                .innerJoin(subcategory.book, book)
+                .where(
+                    category.eq(parent),
+                    book.eq(targetBook),
+                    subcategory.categoryKey.eq(name)
+                )
+                .where(
+                    subcategory.status.eq(ACTIVE),
+                    book.status.eq(ACTIVE),
+                    category.status.eq(ACTIVE)
+                )
+                .fetchOne();
+        }
+
+        return Optional.ofNullable(result);
     }
 
     @Override
