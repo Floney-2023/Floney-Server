@@ -32,8 +32,8 @@ public class BookLineResponse {
             .id(bookLine.getId())
             .money(bookLine.getMoney())
             .lineType(bookLine.getCategories().getLineCategory().getName())
-            .asset(bookLine.getCategories().getAssetSubcategory().getName())
-            .line(bookLine.getCategories().getLineSubcategory().getName())
+            .asset(getCategoryKey(bookLine.getCategories().getAssetSubcategory()))
+            .line(getCategoryKey(bookLine.getCategories().getLineSubcategory()))
             .lineDate(bookLine.getLineDate())
             .description(bookLine.getDescription())
             .except(bookLine.getExceptStatus())
@@ -42,5 +42,14 @@ public class BookLineResponse {
             .memo(bookLine.getMemo() != null ? bookLine.getMemo() : "")
             .imageUrls(imgUrls)
             .build();
+    }
+
+    /**
+     * Returns categoryKey if available (for default categories),
+     * otherwise returns name (for user-defined categories)
+     */
+    private static String getCategoryKey(final com.floney.floney.book.domain.category.entity.Subcategory subcategory) {
+        String categoryKey = subcategory.getCategoryKey();
+        return categoryKey != null ? categoryKey : subcategory.getName();
     }
 }
