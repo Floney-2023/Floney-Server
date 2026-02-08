@@ -1,42 +1,12 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: floney-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: 1022
-      MYSQL_DATABASE: floney_dev
-      MYSQL_CHARACTER_SET_SERVER: utf8mb4
-      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p1022"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-
   app:
     image: ghcr.io/floney-2023/floney-server:feat-migrate-to-oci
     container_name: floney-app
     restart: unless-stopped
-    depends_on:
-      mysql:
-        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/floney_dev?rewriteBatchedStatements=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1022
     volumes:
       - /home/ubuntu/secrets:/app/secrets:ro
     healthcheck:
@@ -45,7 +15,3 @@ services:
       timeout: 3s
       retries: 3
       start_period: 40s
-
-volumes:
-  mysql_data:
-    driver: local
