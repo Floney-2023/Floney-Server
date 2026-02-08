@@ -107,7 +107,22 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         );
         final List<BookLine> sortedBookLines = BookLines.from(bookLines).sort(request.getSortingType());
         final List<BookLineResponse> bookLineResponses = sortedBookLines.stream().map(BookLineResponse::from).toList();
-        return AnalyzeResponseBySubcategory.of(request.getSubcategory(), bookLineResponses);
+
+        // Get categoryKey from first bookLine if available, otherwise use request value
+        final String subcategoryKey = bookLines.isEmpty()
+            ? request.getSubcategory()
+            : getCategoryKey(bookLines.get(0).getCategories().getLineSubcategory());
+
+        return AnalyzeResponseBySubcategory.of(subcategoryKey, bookLineResponses);
+    }
+
+    /**
+     * Returns categoryKey if available (for default categories),
+     * otherwise returns name (for user-defined categories)
+     */
+    private String getCategoryKey(final com.floney.floney.book.domain.category.entity.Subcategory subcategory) {
+        String categoryKey = subcategory.getCategoryKey();
+        return categoryKey != null ? categoryKey : subcategory.getName();
     }
 
     private void validateCanAnalyze(final Category category) {

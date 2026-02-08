@@ -306,7 +306,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
 
         return jpaQueryFactory.select(
                 new QAnalyzeResponseByCategory(
-                    bookLineCategory.lineSubcategory.name,
+                    bookLineCategory.lineSubcategory.categoryKey.coalesce(bookLineCategory.lineSubcategory.name),
                     bookLine.money.sum().coalesce(0.0)
                 )
             )
@@ -325,7 +325,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 bookLineCategory.lineSubcategory.status.eq(ACTIVE),
                 book.status.eq(ACTIVE)
             )
-            .groupBy(bookLineCategory.lineSubcategory.name)
+            .groupBy(bookLineCategory.lineSubcategory.categoryKey.coalesce(bookLineCategory.lineSubcategory.name))
             .fetch();
     }
 
