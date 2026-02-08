@@ -2,7 +2,7 @@ name: CD 자동화 (개발 서버 - OCI Docker)
 
 on:
   push:
-    branches: 'develop'
+    branches: 'feat/migrate-to-oci'
 
 permissions:
   contents: read
@@ -65,7 +65,7 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
             # 새 이미지 Pull
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:feat-migrate-to-oci
 
             # 컨테이너 실행
             docker run -d \
@@ -74,7 +74,7 @@ jobs:
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=dev \
               -v /home/ubuntu/secrets:/app/secrets:ro \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:feat-migrate-to-oci
 
             # 헬스체크 (최대 60초 대기)
             echo "Waiting for application to start..."
