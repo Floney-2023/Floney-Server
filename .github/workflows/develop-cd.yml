@@ -49,6 +49,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: docker-compose.yml 복사
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.OCI_DEV_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_DEV_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ubuntu/"
+
       - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
         with:
@@ -56,37 +65,40 @@ jobs:
           username: ubuntu
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
           script: |
-            # 기존 컨테이너 중지 및 제거
-            docker stop floney-app || true
-            docker rm floney-app || true
-            docker image prune -af || true
+            cd /home/ubuntu
 
             # GitHub Container Registry 로그인
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-            # 새 이미지 Pull
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:feat-migrate-to-oci
+            # 환경변수 설정
+            export GITHUB_REPOSITORY="${{ env.IMAGE_NAME }}"
 
-            # 컨테이너 실행
-            docker run -d \
-              --name floney-app \
-              --restart unless-stopped \
-              -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE=dev \
-              -v /home/ubuntu/secrets:/app/secrets:ro \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:feat-migrate-to-oci
+            # 기존 컨테이너 중지 및 제거
+            docker-compose down || true
 
-            # 헬스체크 (최대 60초 대기)
+            # 새 이미지 Pull 및 컨테이너 시작
+            docker-compose pull
+            docker-compose up -d
+
+            # MySQL이 준비될 때까지 대기
+            echo "Waiting for MySQL to be ready..."
+            sleep 10
+
+            # 헬스체크 (최대 90초 대기 - MySQL 시작 시간 포함)
             echo "Waiting for application to start..."
-            for i in {1..12}; do
+            for i in {1..18}; do
               if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health 2>/dev/null; then
                 echo "✅ Application is healthy!"
+                docker-compose ps
                 exit 0
               fi
-              echo "Waiting... ($i/12)"
+              echo "Waiting... ($i/18)"
               sleep 5
             done
 
             echo "❌ Application failed to start"
+            echo "=== App logs ==="
             docker logs floney-app --tail 50
+            echo "=== MySQL logs ==="
+            docker logs floney-mysql --tail 30
             exit 1
