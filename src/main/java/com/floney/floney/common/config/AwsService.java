@@ -8,7 +8,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.S3PresignerBuilder;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class AwsService {
 
     public String generatePreSignedUrl(String fileName) {
         // Presigner 빌더 생성 (동적 region 사용)
-        S3PresignerBuilder presignerBuilder = S3Presigner.builder()
+        S3Presigner.Builder presignerBuilder = S3Presigner.builder()
             .region(Region.of(region))  // 하드코딩된 AP_NORTHEAST_2 대신 동적 사용
             .credentialsProvider(StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(accessKeyId, secretAccessKey)));
