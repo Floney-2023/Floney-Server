@@ -62,6 +62,7 @@ jobs:
           host: ${{ secrets.OCI_DEV_HOST }}
           username: ubuntu
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
+          command_timeout: 20m
           script: |
             cd /home/ubuntu
 
@@ -82,16 +83,16 @@ jobs:
             echo "Waiting for MySQL to be ready..."
             sleep 10
 
-            # 헬스체크 (최대 90초 대기 - MySQL 시작 시간 포함)
+            # 헬스체크 (최대 10분 대기 - 1GB 인스턴스는 시작이 느림)
             echo "Waiting for application to start..."
-            for i in {1..18}; do
+            for i in {1..40}; do
               if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health 2>/dev/null; then
                 echo "✅ Application is healthy!"
                 docker compose ps
                 exit 0
               fi
-              echo "Waiting... ($i/18)"
-              sleep 5
+              echo "Waiting... ($i/40)"
+              sleep 15
             done
 
             echo "❌ Application failed to start"
