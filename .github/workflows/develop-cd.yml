@@ -93,7 +93,7 @@ jobs:
                   start_period: 60s
 
               app:
-                image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:feat-migrate-to-oci
+                image: ghcr.io/floney-2023/floney-server:feat-migrate-to-oci
                 container_name: floney-app
                 restart: unless-stopped
                 depends_on:
