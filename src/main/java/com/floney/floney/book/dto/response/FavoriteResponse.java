@@ -16,9 +16,18 @@ public record FavoriteResponse(long id,
             favorite.getMoney(),
             favorite.getDescription(),
             favorite.getLineCategory().getName().getMeaning(),
-            favorite.getLineSubcategory().getName(),
-            favorite.getAssetSubcategory().getName(),
+            getCategoryKey(favorite.getLineSubcategory()),
+            getCategoryKey(favorite.getAssetSubcategory()),
             favorite.isExceptStatus()
         );
+    }
+
+    /**
+     * Returns categoryKey if available (for default categories),
+     * otherwise returns name (for user-defined categories)
+     */
+    private static String getCategoryKey(final com.floney.floney.book.domain.category.entity.Subcategory subcategory) {
+        String categoryKey = subcategory.getCategoryKey();
+        return categoryKey != null ? categoryKey : subcategory.getName();
     }
 }

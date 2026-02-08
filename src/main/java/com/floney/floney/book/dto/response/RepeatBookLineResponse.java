@@ -31,10 +31,19 @@ public class RepeatBookLineResponse {
         this.id = repeatBookLine.getId();
         this.description = repeatBookLine.getDescription();
         this.repeatDuration = repeatBookLine.getRepeatDuration();
-        this.lineSubCategory = repeatBookLine.getLineSubcategory().getName();
-        this.assetSubCategory = repeatBookLine.getAssetSubcategory().getName();
+        this.lineSubCategory = getCategoryKey(repeatBookLine.getLineSubcategory());
+        this.assetSubCategory = getCategoryKey(repeatBookLine.getAssetSubcategory());
         this.money = repeatBookLine.getMoney();
         this.memo = repeatBookLine.getMemo() != null ? repeatBookLine.getMemo() : "";
         this.imageUrls = imageUrls;
+    }
+
+    /**
+     * Returns categoryKey if available (for default categories),
+     * otherwise returns name (for user-defined categories)
+     */
+    private static String getCategoryKey(final com.floney.floney.book.domain.category.entity.Subcategory subcategory) {
+        String categoryKey = subcategory.getCategoryKey();
+        return categoryKey != null ? categoryKey : subcategory.getName();
     }
 }
