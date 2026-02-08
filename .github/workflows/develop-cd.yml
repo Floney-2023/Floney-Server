@@ -1,4 +1,4 @@
-name: CD 자동화 (개발 서버 - OCI)
+name: CD 자동화 (개발 서버 - OCI Docker)
 
 on:
   push:
@@ -6,10 +6,11 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 env:
-  OCI_BUCKET: floney-build-artifacts
-  DEPLOY_PATH: /home/ubuntu/Floney-Server
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-deploy:
@@ -22,94 +23,70 @@ jobs:
           token: ${{ secrets.ACTIONS_TOKEN }}
           submodules: true
 
-      - name: JDK 17 설정
-        uses: actions/setup-java@v3
+      - name: Docker 메타데이터 추출
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
 
-      - name: Gradlew 실행 권한 부여
-        run: chmod +x gradlew
+      - name: GitHub Container Registry 로그인
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 프로젝트 빌드
-        run: ./gradlew clean build -x test
+      - name: Docker 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: 배포 패키지 생성
-        run: |
-          mkdir -p deploy-package
-          cp -r build/libs/*.jar deploy-package/
-          cp -r script deploy-package/
-          cp appspec.yml deploy-package/ || true
-          cd deploy-package
-          zip -r ../floney-dev-${{ github.sha }}.zip .
-          cd ..
-
-      - name: OCI CLI 설치
-        run: |
-          curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh -o install-oci-cli.sh
-          chmod +x install-oci-cli.sh
-          ./install-oci-cli.sh --accept-all-defaults
-          echo "$HOME/bin" >> $GITHUB_PATH
-
-      - name: OCI CLI 설정
-        run: |
-          mkdir -p ~/.oci
-          echo "${{ secrets.OCI_CLI_CONFIG }}" > ~/.oci/config
-          echo "${{ secrets.OCI_CLI_KEY }}" > ~/.oci/oci_api_key.pem
-          chmod 600 ~/.oci/oci_api_key.pem
-
-      - name: OCI Object Storage에 업로드
-        run: |
-          $HOME/bin/oci os object put \
-            --bucket-name ${{ env.OCI_BUCKET }} \
-            --file floney-dev-${{ github.sha }}.zip \
-            --name floney-dev-build/floney-dev-${{ github.sha }}.zip \
-            --force
-
-      - name: OCI Compute Instance에 배포
+      - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.OCI_DEV_HOST }}
           username: ubuntu
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
           script: |
-            # OCI CLI로 배포 패키지 다운로드
-            cd /tmp
-            oci os object get \
-              --bucket-name ${{ env.OCI_BUCKET }} \
-              --name floney-dev-build/floney-dev-${{ github.sha }}.zip \
-              --file floney-dev-${{ github.sha }}.zip
+            # 기존 컨테이너 중지 및 제거
+            docker stop floney-app || true
+            docker rm floney-app || true
+            docker image prune -af || true
 
-            # 기존 애플리케이션 중지
-            sudo -u ubuntu ${{ env.DEPLOY_PATH }}/script/stop.sh || true
+            # GitHub Container Registry 로그인
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-            # 새 버전 압축 해제
-            sudo rm -rf ${{ env.DEPLOY_PATH }}/*
-            sudo unzip -o floney-dev-${{ github.sha }}.zip -d ${{ env.DEPLOY_PATH }}/
-            sudo chown -R ubuntu:ubuntu ${{ env.DEPLOY_PATH }}/
+            # 새 이미지 Pull
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
 
-            # 애플리케이션 시작
-            sudo -u ubuntu ${{ env.DEPLOY_PATH }}/script/start.sh
+            # 컨테이너 실행
+            docker run -d \
+              --name floney-app \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=dev \
+              -v /home/ubuntu/secrets:/app/secrets:ro \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
 
-            # 임시 파일 정리
-            rm floney-dev-${{ github.sha }}.zip
+            # 헬스체크 (최대 60초 대기)
+            echo "Waiting for application to start..."
+            for i in {1..12}; do
+              if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health 2>/dev/null; then
+                echo "✅ Application is healthy!"
+                exit 0
+              fi
+              echo "Waiting... ($i/12)"
+              sleep 5
+            done
 
-      - name: 배포 검증
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.OCI_DEV_HOST }}
-          username: ubuntu
-          key: ${{ secrets.OCI_DEV_SSH_KEY }}
-          script: |
-            # 애플리케이션 시작 대기
-            sleep 15
-
-            # 프로세스 확인
-            if pgrep -f "Floney-0.0.1-SNAPSHOT.jar" > /dev/null; then
-              echo "✅ 애플리케이션 배포 성공"
-              exit 0
-            else
-              echo "❌ 애플리케이션 배포 실패"
-              cat ${{ env.DEPLOY_PATH }}/deploy-error.log || true
-              exit 1
-            fi
+            echo "❌ Application failed to start"
+            docker logs floney-app --tail 50
+            exit 1
