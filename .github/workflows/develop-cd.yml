@@ -72,11 +72,11 @@ jobs:
             export GITHUB_REPOSITORY="${{ env.IMAGE_NAME }}"
 
             # 기존 컨테이너 중지 및 제거
-            docker-compose down || true
+            docker compose down || true
 
             # 새 이미지 Pull 및 컨테이너 시작
-            docker-compose pull
-            docker-compose up -d
+            docker compose pull
+            docker compose up -d
 
             # MySQL이 준비될 때까지 대기
             echo "Waiting for MySQL to be ready..."
@@ -87,7 +87,7 @@ jobs:
             for i in {1..18}; do
               if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health 2>/dev/null; then
                 echo "✅ Application is healthy!"
-                docker-compose ps
+                docker compose ps
                 exit 0
               fi
               echo "Waiting... ($i/18)"
