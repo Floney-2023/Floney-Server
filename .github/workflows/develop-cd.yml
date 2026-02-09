@@ -86,8 +86,8 @@ jobs:
                   start_period: 40s
             EOF
 
-            # 기존 컨테이너 중지 및 제거
-            docker compose down || true
+            # 기존 컨테이너 중지 및 제거 (orphan containers 포함)
+            docker compose down --remove-orphans || true
 
             # 새 이미지 Pull 및 컨테이너 시작
             docker compose pull
