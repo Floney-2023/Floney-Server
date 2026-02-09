@@ -14,12 +14,19 @@
         </root>
     </springProfile>
 
-    <!-- develop profile 사용 시 (콘솔 로그 출력) -->
+    <!-- develop profile 사용 시 (콘솔 로그 출력 + 슬랙 에러 알림) -->
     <springProfile name="develop">
         <include resource="console-appender.xml"/>
+        <include resource="slack-error-appender.xml"/>
+
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
+
+        <logger name="ErrorControllerAdvice" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_SLACK"/>
+        </logger>
     </springProfile>
 
     <!-- production profile 사용 시 (파일 로그) -->
