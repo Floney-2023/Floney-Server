@@ -1,12 +1,30 @@
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: floney-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   app:
     image: ghcr.io/floney-2023/floney-server:feat-migrate-to-oci
     container_name: floney-app
     restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     volumes:
       - /home/ubuntu/secrets:/app/secrets:ro
     healthcheck:
