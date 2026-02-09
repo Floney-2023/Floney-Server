@@ -52,7 +52,6 @@ public class SecurityConfig {
                 "/users/reissue",
                 "/users/email/**",
                 "/auth/**",
-                "/actuator/health",
                 "/actuator/prometheus",
                 "/subscribe/apple/notification",
                 "/subscribe/android/notification",

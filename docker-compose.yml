@@ -28,7 +28,7 @@ services:
     volumes:
       - /home/ubuntu/secrets:/app/secrets:ro
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health-check"]
       interval: 30s
       timeout: 3s
       retries: 3
