@@ -14,8 +14,16 @@
         </root>
     </springProfile>
 
-    <!-- develop,production profile 사용 시 -->
-    <springProfile name="develop,production">
+    <!-- develop profile 사용 시 (콘솔 로그 출력) -->
+    <springProfile name="develop">
+        <include resource="console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- production profile 사용 시 (파일 로그) -->
+    <springProfile name="production">
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
