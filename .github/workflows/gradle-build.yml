@@ -2,7 +2,7 @@ name: CI 자동화
 
 on:
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: [ 'feat/prod-oci-migration' ]
 
 permissions:
   contents: read

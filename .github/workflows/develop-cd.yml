@@ -2,7 +2,7 @@ name: CD 자동화 (개발 서버)
 
 on:
   push:
-    branches: 'develop'
+    branches: 'feat/prod-oci-migration'
 
 permissions:
   contents: read
