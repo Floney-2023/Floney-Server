@@ -568,6 +568,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                                                                         final String categoryName,
                                                                         final String lineSubcategoryName,
                                                                         final List<String> writerEmails) {
+        // Support both name and categoryKey for subcategory filtering
+        // This allows the analyze API to work with categoryKey inputs
         final JPAQuery<BookLine> query = jpaQueryFactory.selectFrom(bookLine)
             .innerJoin(bookLine.book, book)
             .innerJoin(bookLine.categories, bookLineCategory)
@@ -578,7 +580,8 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
                 book.bookKey.eq(bookKey),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
                 category.name.eq(CategoryType.findLineByMeaning(categoryName)),
-                bookLineCategory.lineSubcategory.name.eq(lineSubcategoryName),
+                bookLineCategory.lineSubcategory.name.eq(lineSubcategoryName)
+                    .or(bookLineCategory.lineSubcategory.categoryKey.eq(lineSubcategoryName)),
                 bookUser.book.eq(book)
             )
             .where(

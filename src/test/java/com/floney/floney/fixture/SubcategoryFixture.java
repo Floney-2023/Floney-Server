@@ -28,4 +28,16 @@ public class SubcategoryFixture {
         return subCategory;
     }
 
+    public static Subcategory createDefaultSubcategory(final Book book,
+                                                       final Category parent,
+                                                       final String name,
+                                                       final String categoryKey) {
+        return Subcategory.builder()
+            .book(book)
+            .parent(parent)
+            .name(name)
+            .categoryKey(categoryKey)
+            .build();
+    }
+
 }

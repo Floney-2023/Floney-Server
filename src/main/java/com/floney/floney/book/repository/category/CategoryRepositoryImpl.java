@@ -7,6 +7,7 @@ import com.floney.floney.book.domain.entity.Book;
 import com.floney.floney.book.domain.entity.BookLine;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.process.QCategoryInfo;
+import com.floney.floney.common.exception.book.InvalidCategoryRequestException;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -37,6 +38,26 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager entityManager;
+
+    /**
+     * Detects if the given text contains Korean (Hangul) characters.
+     * Used to identify when clients send Korean names instead of categoryKey for default categories.
+     *
+     * @param text The text to check
+     * @return true if the text contains Korean characters, false otherwise
+     */
+    private static boolean containsKorean(String text) {
+        if (text == null || text.isEmpty()) {
+            return false;
+        }
+        for (char c : text.toCharArray()) {
+            // Check for Hangul Syllables (AC00-D7AF) and Hangul Jamo (1100-11FF)
+            if ((c >= '\uAC00' && c <= '\uD7AF') || (c >= '\u1100' && c <= '\u11FF')) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -76,12 +97,39 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     public Optional<Subcategory> findSubcategory(final String name,
                                                  final Book targetBook,
                                                  final CategoryType parentName) {
-        // Try to find by name first (for backward compatibility and user-defined categories)
+        // Strict validation: reject Korean names for default categories
+        if (containsKorean(name)) {
+            // Try to find by name (for user-defined categories)
+            Subcategory result = jpaQueryFactory.selectFrom(subcategory)
+                .innerJoin(subcategory.parent, category)
+                .innerJoin(subcategory.book, book)
+                .where(
+                    subcategory.name.eq(name),
+                    category.name.eq(parentName),
+                    book.eq(targetBook)
+                )
+                .where(
+                    subcategory.status.eq(ACTIVE),
+                    category.status.eq(ACTIVE),
+                    book.status.eq(ACTIVE)
+                )
+                .fetchOne();
+
+            // If found and has categoryKey, it's a default category - reject Korean name
+            if (result != null && result.getCategoryKey() != null) {
+                throw new InvalidCategoryRequestException(name, result.getCategoryKey());
+            }
+
+            // If found with no categoryKey, it's a valid user-defined category
+            return Optional.ofNullable(result);
+        }
+
+        // For English/alphanumeric input, try categoryKey first (for default categories)
         Subcategory result = jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
             .where(
-                subcategory.name.eq(name),
+                subcategory.categoryKey.eq(name),
                 category.name.eq(parentName),
                 book.eq(targetBook)
             )
@@ -92,13 +140,13 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             )
             .fetchOne();
 
-        // If not found by name, try to find by categoryKey (for i18n support)
+        // If not found by categoryKey, try to find by name (for user-defined categories with English names)
         if (result == null) {
             result = jpaQueryFactory.selectFrom(subcategory)
                 .innerJoin(subcategory.parent, category)
                 .innerJoin(subcategory.book, book)
                 .where(
-                    subcategory.categoryKey.eq(name),
+                    subcategory.name.eq(name),
                     category.name.eq(parentName),
                     book.eq(targetBook)
                 )
@@ -134,14 +182,41 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
     public Optional<Subcategory> findSubcategory(final Category parent,
                                                  final Book targetBook,
                                                  final String name) {
-        // Try to find by name first (for backward compatibility and user-defined categories)
+        // Strict validation: reject Korean names for default categories
+        if (containsKorean(name)) {
+            // Try to find by name (for user-defined categories)
+            Subcategory result = jpaQueryFactory.selectFrom(subcategory)
+                .innerJoin(subcategory.parent, category)
+                .innerJoin(subcategory.book, book)
+                .where(
+                    category.eq(parent),
+                    book.eq(targetBook),
+                    subcategory.name.eq(name)
+                )
+                .where(
+                    subcategory.status.eq(ACTIVE),
+                    book.status.eq(ACTIVE),
+                    category.status.eq(ACTIVE)
+                )
+                .fetchOne();
+
+            // If found and has categoryKey, it's a default category - reject Korean name
+            if (result != null && result.getCategoryKey() != null) {
+                throw new InvalidCategoryRequestException(name, result.getCategoryKey());
+            }
+
+            // If found with no categoryKey, it's a valid user-defined category
+            return Optional.ofNullable(result);
+        }
+
+        // For English/alphanumeric input, try categoryKey first (for default categories)
         Subcategory result = jpaQueryFactory.selectFrom(subcategory)
             .innerJoin(subcategory.parent, category)
             .innerJoin(subcategory.book, book)
             .where(
                 category.eq(parent),
                 book.eq(targetBook),
-                subcategory.name.eq(name)
+                subcategory.categoryKey.eq(name)
             )
             .where(
                 subcategory.status.eq(ACTIVE),
@@ -150,7 +225,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
             )
             .fetchOne();
 
-        // If not found by name, try to find by categoryKey (for i18n support)
+        // If not found by categoryKey, try to find by name (for user-defined categories with English names)
         if (result == null) {
             result = jpaQueryFactory.selectFrom(subcategory)
                 .innerJoin(subcategory.parent, category)
@@ -158,7 +233,7 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
                 .where(
                     category.eq(parent),
                     book.eq(targetBook),
-                    subcategory.categoryKey.eq(name)
+                    subcategory.name.eq(name)
                 )
                 .where(
                     subcategory.status.eq(ACTIVE),
@@ -169,6 +244,27 @@ public class CategoryRepositoryImpl implements CategoryCustomRepository {
         }
 
         return Optional.ofNullable(result);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Subcategory> findSubcategoryByCategoryKey(final String categoryKey,
+                                                              final Book targetBook,
+                                                              final CategoryType parentName) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(subcategory)
+            .innerJoin(subcategory.parent, category)
+            .innerJoin(subcategory.book, book)
+            .where(
+                subcategory.categoryKey.eq(categoryKey),
+                category.name.eq(parentName),
+                book.eq(targetBook)
+            )
+            .where(
+                subcategory.status.eq(ACTIVE),
+                category.status.eq(ACTIVE),
+                book.status.eq(ACTIVE)
+            )
+            .fetchOne());
     }
 
     @Override

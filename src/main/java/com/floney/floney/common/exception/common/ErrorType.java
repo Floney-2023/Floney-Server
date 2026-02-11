@@ -47,6 +47,7 @@ public enum ErrorType {
     NOT_FOUND_REPEAT_LINE("B013", "존재하지 않는 반복 내역입니다"),
     INVALID_FAVORITE_SIZE("B014", "즐겨찾기 개수가 초과되었습니다"),
     FAVORITE_NOT_FOUND("BO15", "즐겨찾기를 찾을 수 없습니다"),
+    INVALID_CATEGORY_REQUEST("B016", "기본 카테고리는 한글 이름 대신 categoryKey를 사용해야 합니다"),
 
     LIMIT("S002", "제공하지 않는 서비스입니다"),
 
