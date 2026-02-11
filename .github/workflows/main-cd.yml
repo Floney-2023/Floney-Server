@@ -1,4 +1,4 @@
-name: CD 자동화 (운영 서버)
+name: CD 자동화 (운영 서버 - OCI)
 
 on:
   push:
@@ -8,49 +8,107 @@ permissions:
   contents: read
 
 env:
-  AWS_S3_BUCKET: floney-server-build-bucket
+  OCI_BUCKET: floney-build-artifacts-prod
+  DEPLOY_PATH: /home/ubuntu/Floney-Server
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: 코드 체크아웃
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.ACTIONS_TOKEN }}
           submodules: true
 
-      - name: 운영 환경 설정 추가
-        run: |
-          echo "${{ secrets.PROD_START_SH }}" | base64 --decode > ./script/start.sh
-
-      - name: JDK 17 추가
+      - name: JDK 17 설정
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: AWS 인증
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_DEPLOY }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_KEY_DEPLOY }}
-          aws-region: ap-northeast-2
-
-      - name: gradlew에 실행 권한 부여
+      - name: Gradlew 실행 권한 부여
         run: chmod +x gradlew
 
       - name: 프로젝트 빌드
         run: ./gradlew clean build -x test
 
-      - name: S3에 업로드
-        run: aws deploy push --application-name floney-server
-          --ignore-hidden-files
-          --s3-location s3://$AWS_S3_BUCKET/floney-build/$GITHUB_SHA.zip --source .
+      - name: 배포 패키지 생성
+        run: |
+          mkdir -p deploy-package
+          cp -r build/libs/*.jar deploy-package/
+          cp -r script deploy-package/
+          cd deploy-package
+          zip -r ../floney-prod-${{ github.sha }}.zip .
+          cd ..
 
-      - name: EC2에 배포
-        run: aws deploy create-deployment
-          --application-name floney-server
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name floney-server-deploy-group
-          --s3-location bucket=$AWS_S3_BUCKET,key=floney-build/$GITHUB_SHA.zip,bundleType=zip
+      - name: OCI CLI 설치
+        run: |
+          curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh -o install-oci-cli.sh
+          chmod +x install-oci-cli.sh
+          ./install-oci-cli.sh --accept-all-defaults
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: OCI CLI 설정
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CLI_CONFIG }}" > ~/.oci/config
+          echo "${{ secrets.OCI_CLI_KEY }}" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+      - name: OCI Object Storage에 업로드
+        run: |
+          $HOME/bin/oci os object put \
+            --bucket-name ${{ env.OCI_BUCKET }} \
+            --file floney-prod-${{ github.sha }}.zip \
+            --name floney-prod-build/floney-prod-${{ github.sha }}.zip \
+            --force
+
+      - name: OCI Compute Instance에 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.OCI_PROD_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_PROD_SSH_KEY }}
+          script: |
+            # OCI CLI로 배포 패키지 다운로드
+            cd /tmp
+            oci os object get \
+              --bucket-name ${{ env.OCI_BUCKET }} \
+              --name floney-prod-build/floney-prod-${{ github.sha }}.zip \
+              --file floney-prod-${{ github.sha }}.zip
+
+            # 기존 애플리케이션 중지
+            sudo -u ubuntu ${{ env.DEPLOY_PATH }}/script/stop.sh || true
+
+            # 새 버전 압축 해제
+            sudo rm -rf ${{ env.DEPLOY_PATH }}/*
+            sudo unzip -o floney-prod-${{ github.sha }}.zip -d ${{ env.DEPLOY_PATH }}/
+            sudo chown -R ubuntu:ubuntu ${{ env.DEPLOY_PATH }}/
+
+            # 애플리케이션 시작
+            sudo -u ubuntu ${{ env.DEPLOY_PATH }}/script/start.sh
+
+            # 임시 파일 정리
+            rm floney-prod-${{ github.sha }}.zip
+
+      - name: 배포 검증
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.OCI_PROD_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_PROD_SSH_KEY }}
+          script: |
+            # 애플리케이션 시작 대기
+            sleep 20
+
+            # 프로세스 확인
+            if pgrep -f "Floney-0.0.1-SNAPSHOT.jar" > /dev/null; then
+              echo "✅ 애플리케이션 배포 성공"
+              exit 0
+            else
+              echo "❌ 애플리케이션 배포 실패"
+              cat ${{ env.DEPLOY_PATH }}/deploy-error.log || true
+              exit 1
+            fi
