@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English Category Translations (Android) - from Figma -->
+<resources>
+    <!-- Income Categories -->
+    <string name="category_SALARY">Salary</string>
+    <string name="category_SIDE_INCOME">Extra Income</string>
+    <string name="category_ALLOWANCE">Allowance</string>
+    <string name="category_FINANCIAL_INCOME">Financial Income</string>
+    <string name="category_BUSINESS_INCOME">Business Income</string>
+    <string name="category_BONUS">Bonus</string>
+    <string name="category_OTHER_INCOME">Other</string>
+    <string name="category_UNCATEGORIZED_INCOME">Uncategorized</string>
+
+    <!-- Expense Categories -->
+    <string name="category_FOOD">Food</string>
+    <string name="category_CAFE_SNACK">Cafe/Snacks</string>
+    <string name="category_TRANSPORTATION">Transport</string>
+    <string name="category_HOUSING_COMMUNICATION">Housing/Phone</string>
+    <string name="category_MEDICAL_HEALTH">Health</string>
+    <string name="category_CULTURE">Culture</string>
+    <string name="category_TRAVEL_ACCOMMODATION">Travel/Stay</string>
+    <string name="category_LIVING">Living</string>
+    <string name="category_FASHION_BEAUTY">Style/Beauty</string>
+    <string name="category_CHILDCARE">Family</string>
+    <string name="category_EDUCATION">Education</string>
+    <string name="category_OCCASIONS">Events</string>
+    <string name="category_OTHER_EXPENSE">Other</string>
+    <string name="category_UNCATEGORIZED_EXPENSE">Uncategorized</string>
+
+    <!-- Transfer Categories -->
+    <string name="category_TRANSFER_GENERAL">Transfer</string>
+    <string name="category_SAVINGS">Savings</string>
+    <string name="category_CASH_TRANSFER">Cash</string>
+    <string name="category_INVESTMENT">Investment</string>
+    <string name="category_INSURANCE">Insurance</string>
+    <string name="category_CARD_PAYMENT">Card Payment</string>
+    <string name="category_LOAN">Loan</string>
+    <string name="category_OTHER_TRANSFER">Other</string>
+    <string name="category_UNCATEGORIZED_TRANSFER">Uncategorized</string>
+
+    <!-- Asset Categories -->
+    <string name="category_CASH">Cash</string>
+    <string name="category_DEBIT_CARD">Debit Card</string>
+    <string name="category_CREDIT_CARD">Credit Card</string>
+    <string name="category_BANK">Bank</string>
+</resources>

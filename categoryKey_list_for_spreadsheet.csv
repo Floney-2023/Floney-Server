@@ -1,0 +1,36 @@
+Parent Category,Korean Name,Category Key (Figma English)
+수입,급여,Salary
+수입,부수입,Extra Income
+수입,용돈,Allowance
+수입,금융소득,Financial Income
+수입,사업소득,Business Income
+수입,상여금,Bonus
+수입,기타,Other
+수입,미분류,Uncategorized
+지출,식비,Food
+지출,카페/간식,Cafe/Snacks
+지출,교통,Transport
+지출,주거/통신,Housing/Phone
+지출,의료/건강,Health
+지출,문화,Culture
+지출,여행/숙박,Travel/Stay
+지출,생활,Living
+지출,패션/미용,Style/Beauty
+지출,육아,Family
+지출,교육,Education
+지출,경조사,Events
+지출,기타,Other
+지출,미분류,Uncategorized
+이체,이체,Transfer
+이체,저축,Savings
+이체,현금,Cash
+이체,투자,Investment
+이체,보험,Insurance
+이체,카드대금,Card Payment
+이체,대출,Loan
+이체,기타,Other
+이체,미분류,Uncategorized
+자산,현금,Cash
+자산,체크카드,Debit Card
+자산,신용카드,Credit Card
+자산,은행,Bank

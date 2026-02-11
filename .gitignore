@@ -39,3 +39,8 @@ out/
 /log
 /was-logs
 
+### H2 Database ###
+/data/
+*.mv.db
+*.trace.db
+
