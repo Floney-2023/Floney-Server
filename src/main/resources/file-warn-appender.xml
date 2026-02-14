@@ -1,6 +1,6 @@
 <included>
     <appender name="FILE-WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/home/ubuntu/Floney-Server/log/warn/warn-${BY_DATE}.log</file>
+        <file>/app/log/warn/warn-${BY_DATE}.log</file>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>WARN</level>
             <onMatch>ACCEPT</onMatch>
@@ -9,7 +9,7 @@
             <pattern>${LOG_FILE_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>/home/ubuntu/Floney-Server/backup/warn/warn-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <fileNamePattern>/app/backup/warn/warn-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>

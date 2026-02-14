@@ -26,6 +26,9 @@ RUN addgroup -g 1000 appuser && \
 # Copy JAR from build stage
 COPY --from=build /app/build/libs/*.jar app.jar
 
+# Create log directories
+RUN mkdir -p /app/log/info /app/log/warn /app/log/error /app/backup/info /app/backup/warn /app/backup/error
+
 # Change ownership
 RUN chown -R appuser:appuser /app
 

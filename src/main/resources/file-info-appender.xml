@@ -1,6 +1,6 @@
 <included>
     <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/home/ubuntu/Floney-Server/log/info/info-${BY_DATE}.log</file>
+        <file>/app/log/info/info-${BY_DATE}.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
@@ -8,7 +8,7 @@
             <pattern>${LOG_FILE_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>/home/ubuntu/Floney-Server/backup/info/info-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <fileNamePattern>/app/backup/info/info-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>

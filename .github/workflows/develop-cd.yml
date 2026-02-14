@@ -79,6 +79,7 @@ jobs:
             docker run -d \
               --name floney-app \
               --restart unless-stopped \
+              --network ubuntu_default \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=dev \
               -v /home/ubuntu/secrets:/app/secrets:ro \
