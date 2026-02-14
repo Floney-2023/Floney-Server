@@ -1,56 +1,112 @@
-name: CD 자동화 (운영 서버)
+name: CD 자동화 (개발 서버 - OCI Docker)
 
 on:
   push:
-    branches: 'main'
+    branches: 'feat/toOciProd'
 
 permissions:
   contents: read
+  packages: write
 
 env:
-  AWS_S3_BUCKET: floney-server-build-bucket
+  REGISTRY: ghcr.io
+  IMAGE_NAME: floney-2023/floney-server
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: 코드 체크아웃
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.ACTIONS_TOKEN }}
           submodules: true
 
-      - name: 운영 환경 설정 추가
-        run: |
-          echo "${{ secrets.PROD_START_SH }}" | base64 --decode > ./script/start.sh
-
-      - name: JDK 17 추가
-        uses: actions/setup-java@v3
+      - name: Docker 메타데이터 추출
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
 
-      - name: AWS 인증
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: GitHub Container Registry 로그인
+        uses: docker/login-action@v3
         with:
-          aws-access-key-id: ${{ secrets.PROD_AWS_ACCESS_KEY_DEPLOY }}
-          aws-secret-access-key: ${{ secrets.PROD_AWS_SECRET_KEY_DEPLOY }}
-          aws-region: ap-northeast-2
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: gradlew에 실행 권한 부여
-        run: chmod +x gradlew
+      - name: Docker 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: 프로젝트 빌드
-        run: ./gradlew clean build -x test
+      - name: OCI 인스턴스에 배포
+        uses: appleboy/ssh-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:production
+        with:
+          host: ${{ secrets.OCI_PROD_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_PROD_SSH_KEY }}
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_TAG
+          script: |
+            # 기존 컨테이너 중지 및 제거
+            docker stop floney-app || true
+            docker rm floney-app || true
 
-      - name: S3에 업로드
-        run: aws deploy push --application-name floney-server
-          --ignore-hidden-files
-          --s3-location s3://$AWS_S3_BUCKET/floney-build/$GITHUB_SHA.zip --source .
+            # 이전 floney 이미지만 제거 (dangling 이미지만)
+            docker image prune -f || true
 
-      - name: EC2에 배포
-        run: aws deploy create-deployment
-          --application-name floney-server
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --deployment-group-name floney-server-deploy-group
-          --s3-location bucket=$AWS_S3_BUCKET,key=floney-build/$GITHUB_SHA.zip,bundleType=zip
+            # GitHub Container Registry 로그인
+            echo "$GITHUB_TOKEN" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
+
+            # 새 이미지 Pull
+            docker pull $IMAGE_TAG
+
+            # 컨테이너 실행
+            docker run -d \
+              --name floney-app \
+              --restart unless-stopped \
+              --network ubuntu_default \
+              -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=production \
+              -v /home/ubuntu/secrets:/app/secrets:ro \
+              $IMAGE_TAG
+
+            # 헬스체크 (최대 60초 대기)
+            echo "Waiting for application to start..."
+            for i in {1..60}; do
+              # 컨테이너가 실행 중인지 먼저 확인
+              if ! docker ps --format '{{.Names}}' | grep -q '^floney-app$'; then
+                echo "❌ Container stopped unexpectedly"
+                echo "Container logs:"
+                docker logs floney-app --tail 100 || echo "Failed to get logs"
+                exit 1
+              fi
+
+              if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/health-check 2>/dev/null; then
+                echo "✅ Application is healthy!"
+                exit 0
+              fi
+              echo "Waiting... ($i/60)"
+              sleep 5
+            done
+
+            echo "❌ Application failed to start (health check timeout)"
+            echo "Container status:"
+            docker ps -a | grep floney-app || echo "Container not found"
+            echo "Container logs:"
+            docker logs floney-app --tail 100 || echo "Failed to get logs"
+            exit 1
