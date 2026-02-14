@@ -14,8 +14,8 @@
         </root>
     </springProfile>
 
-    <!-- develop profile 사용 시 -->
-    <springProfile name="develop">
+    <!-- dev profile 사용 시 -->
+    <springProfile name="dev">
         <include resource="console-appender.xml"/>
         <include resource="slack-error-appender.xml"/>
 
