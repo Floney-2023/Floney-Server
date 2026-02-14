@@ -51,21 +51,29 @@ jobs:
 
       - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
         with:
           host: ${{ secrets.OCI_DEV_HOST }}
           username: ubuntu
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_TAG
           script: |
             # 기존 컨테이너 중지 및 제거
             docker stop floney-app || true
             docker rm floney-app || true
-            docker image prune -af || true
+
+            # 이전 floney 이미지만 제거 (dangling 이미지만)
+            docker image prune -f || true
 
             # GitHub Container Registry 로그인
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            echo "$GITHUB_TOKEN" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
             # 새 이미지 Pull
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+            docker pull $IMAGE_TAG
 
             # 컨테이너 실행
             docker run -d \
@@ -74,11 +82,19 @@ jobs:
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=dev \
               -v /home/ubuntu/secrets:/app/secrets:ro \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
+              $IMAGE_TAG
 
             # 헬스체크 (최대 60초 대기)
             echo "Waiting for application to start..."
             for i in {1..12}; do
+              # 컨테이너가 실행 중인지 먼저 확인
+              if ! docker ps --format '{{.Names}}' | grep -q '^floney-app$'; then
+                echo "❌ Container stopped unexpectedly"
+                echo "Container logs:"
+                docker logs floney-app --tail 100 || echo "Failed to get logs"
+                exit 1
+              fi
+
               if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health 2>/dev/null; then
                 echo "✅ Application is healthy!"
                 exit 0
@@ -87,6 +103,9 @@ jobs:
               sleep 5
             done
 
-            echo "❌ Application failed to start"
-            docker logs floney-app --tail 50
+            echo "❌ Application failed to start (health check timeout)"
+            echo "Container status:"
+            docker ps -a | grep floney-app || echo "Container not found"
+            echo "Container logs:"
+            docker logs floney-app --tail 100 || echo "Failed to get logs"
             exit 1
