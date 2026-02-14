@@ -274,7 +274,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Transactional(readOnly = true)
     public double totalExpenseForBeforeMonth(final AnalyzeByCategoryRequest request) {
         final DateDuration duration = DateDuration.firstAndLastDayFromLastMonth(request.getLocalDate());
-        final CategoryType categoryType = CategoryType.findLineByMeaning(request.getRoot());
+        final CategoryType categoryType = request.getRoot();
 
         return Optional.ofNullable(jpaQueryFactory.select(bookLine.money.sum())
             .from(bookLine)
@@ -565,7 +565,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
     @Transactional(readOnly = true)
     public List<BookLine> findAllByDurationAndLineSubcategoryAndWriters(final String bookKey,
                                                                         final DateDuration duration,
-                                                                        final String categoryName,
+                                                                        final CategoryType categoryType,
                                                                         final String lineSubcategoryName,
                                                                         final List<String> writerEmails) {
         // Support both name and categoryKey for subcategory filtering
@@ -579,7 +579,7 @@ public class BookLineRepositoryImpl implements BookLineCustomRepository {
             .where(
                 book.bookKey.eq(bookKey),
                 bookLine.lineDate.between(duration.getStartDate(), duration.getEndDate()),
-                category.name.eq(CategoryType.findLineByMeaning(categoryName)),
+                category.name.eq(categoryType),
                 bookLineCategory.lineSubcategory.name.eq(lineSubcategoryName)
                     .or(bookLineCategory.lineSubcategory.categoryKey.eq(lineSubcategoryName)),
                 bookUser.book.eq(book)

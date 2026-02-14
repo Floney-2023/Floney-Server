@@ -45,7 +45,7 @@ public class AnalyzeServiceImpl implements AnalyzeService {
     @Transactional(readOnly = true)
     public AnalyzeResponse analyzeByCategory(final AnalyzeByCategoryRequest request) {
         // lineCategory 가 지출 또는 수입일 때만 분석
-        final Category category = findCategory(request.getRoot());
+        final Category category = findCategoryByType(request.getRoot());
         validateCanAnalyze(category);
 
         final DateDuration duration = DateDuration.startAndEndOfMonth(request.getDate());
@@ -131,10 +131,9 @@ public class AnalyzeServiceImpl implements AnalyzeService {
         }
     }
 
-    private Category findCategory(final String name) {
-        CategoryType categoryType = CategoryType.findByMeaning(name);
+    private Category findCategoryByType(final CategoryType categoryType) {
         return categoryRepository.findByType(categoryType)
-            .orElseThrow(() -> new NotFoundCategoryException(name));
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
     }
 
     private Book findBook(String bookKey) {

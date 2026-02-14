@@ -1,5 +1,6 @@
 package com.floney.floney.book.dto.request;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,6 @@ import lombok.*;
 public class CreateCategoryRequest {
 
     // TODO: validation 추가
-    private String parent;
+    private CategoryType parent;
     private String name;
 }

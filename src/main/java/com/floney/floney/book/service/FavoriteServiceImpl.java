@@ -136,12 +136,6 @@ public class FavoriteServiceImpl implements FavoriteService {
             .orElseThrow(() -> new NotFoundBookException(bookKey));
     }
 
-    private Category findLineCategory(final String categoryName) {
-        final CategoryType categoryType = CategoryType.findLineByMeaning(categoryName);
-        return categoryRepository.findByType(categoryType)
-            .orElseThrow(() -> new NotFoundCategoryException(categoryName));
-    }
-
     private Subcategory findLineSubcategory(final String lineSubCategoryName, final Category lineCategory, final Book book) {
         return categoryRepository.findSubcategory(lineSubCategoryName, book, lineCategory.getName())
             .orElseThrow(() -> new NotFoundCategoryException(lineSubCategoryName));

@@ -1,5 +1,6 @@
 package com.floney.floney.book.controller;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.dto.request.CreateCategoryRequest;
 import com.floney.floney.book.dto.request.DeleteCategoryRequest;
@@ -35,13 +36,13 @@ public class CategoryController {
      * 카테고리 조회
      *
      * @param bookKey 가계부 식별키
-     * @param parent  부모 카테고리
+     * @param parent  부모 카테고리 (INCOME, OUTCOME, TRANSFER, ASSET)
      * @return List<CategoryInfo> 부모와 연관된 모든 자식 카테고리
      */
     @GetMapping("/books/{key}/categories")
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryInfo> findAllSubcategoriesByCategory(@PathVariable("key") final String bookKey,
-                                                             @RequestParam final String parent) {
+                                                             @RequestParam final CategoryType parent) {
         return categoryService.findAllSubcategoriesByCategory(bookKey, parent);
     }
 
