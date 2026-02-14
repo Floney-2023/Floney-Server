@@ -87,7 +87,7 @@ jobs:
 
             # 헬스체크 (최대 60초 대기)
             echo "Waiting for application to start..."
-            for i in {1..12}; do
+            for i in {1..40}; do
               # 컨테이너가 실행 중인지 먼저 확인
               if ! docker ps --format '{{.Names}}' | grep -q '^floney-app$'; then
                 echo "❌ Container stopped unexpectedly"
