@@ -52,7 +52,7 @@ jobs:
       - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
           GITHUB_ACTOR: ${{ github.actor }}
           REGISTRY: ${{ env.REGISTRY }}
           IMAGE_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
