@@ -9,7 +9,7 @@
             <pattern>${LOG_FILE_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>/home/ubuntu/Floney-Server/backup/error/error-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <fileNamePattern>/app/backup/error/error-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
             <maxFileSize>50MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>2GB</totalSizeCap>
