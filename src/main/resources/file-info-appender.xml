@@ -1,6 +1,6 @@
 <included>
     <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/home/ubuntu/Floney-Server/log/info/info-${BY_DATE}.log</file>
+        <file>/app/log/info/info-${BY_DATE}.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>

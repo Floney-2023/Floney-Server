@@ -14,8 +14,23 @@
         </root>
     </springProfile>
 
-    <!-- develop,production profile 사용 시 -->
-    <springProfile name="develop,production">
+    <!-- dev profile 사용 시 -->
+    <springProfile name="develop">
+        <include resource="console-appender.xml"/>
+        <include resource="slack-error-appender.xml"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+
+        <logger name="ErrorControllerAdvice" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_SLACK"/>
+        </logger>
+    </springProfile>
+
+    <!-- production profile 사용 시 -->
+    <springProfile name="production">
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
@@ -25,6 +40,7 @@
             <appender-ref ref="FILE-INFO"/>
             <appender-ref ref="FILE-WARN"/>
             <appender-ref ref="FILE-ERROR"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
 
         <logger name="LogByAop" additivity="false">
