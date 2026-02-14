@@ -81,7 +81,7 @@ jobs:
               --restart unless-stopped \
               --network ubuntu_default \
               -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE=dev \
+              -e SPRING_PROFILES_ACTIVE=develop \
               -v /home/ubuntu/secrets:/app/secrets:ro \
               $IMAGE_TAG
 
