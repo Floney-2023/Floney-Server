@@ -22,6 +22,7 @@ public class BookLineResponse {
             .asset(getCategoryKey(bookLine.getCategories().getAssetSubcategory()))
             .lineDate(bookLine.getLineDate())
             .description(bookLine.getDescription())
+            .userProfileImg(bookLine.getWriter().getProfileImg())
             .build();
     }
 
