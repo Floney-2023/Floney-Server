@@ -61,6 +61,16 @@ jobs:
           source: "docker-compose.yml"
           target: "/home/ubuntu"
 
+      - name: deploy.sh 서버에 복사
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.OCI_DEV_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_DEV_SSH_KEY }}
+          source: "script/deploy.sh"
+          target: "/home/ubuntu"
+          strip_components: 1
+
       - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
         env:
@@ -76,31 +86,5 @@ jobs:
             # GitHub Container Registry 로그인
             echo "$GITHUB_TOKEN" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
-            cd /home/ubuntu
-
-            # 기존 컨테이너 강제 정리 (docker run으로 실행된 컨테이너 포함)
-            docker stop floney-app || true
-            docker rm floney-app || true
-
-            # 새 이미지 Pull 및 컨테이너 재시작
-            docker compose pull
-            docker compose up -d
-
-            # dangling 이미지 정리
-            docker image prune -f || true
-
-            # 헬스체크 (최대 60초 대기)
-            echo "Waiting for application to start..."
-            for i in {1..12}; do
-              if docker compose ps floney-app | grep -q "healthy"; then
-                echo "✅ Application is healthy!"
-                exit 0
-              fi
-              echo "Waiting... ($i/12)"
-              sleep 5
-            done
-
-            echo "❌ Application failed to start (health check timeout)"
-            docker compose ps
-            docker compose logs --tail 100
-            exit 1
+            chmod +x /home/ubuntu/deploy.sh
+            /home/ubuntu/deploy.sh
