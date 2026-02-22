@@ -57,9 +57,10 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
     // db
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.mysql:mysql-connector-j'  // production용 유지
     runtimeOnly 'com.h2database:h2'
-    implementation 'org.flywaydb:flyway-mysql'
+    implementation 'org.flywaydb:flyway-mysql'  // MySQL migration 스크립트 호환성 유지
+    implementation 'org.flywaydb:flyway-core'   // H2용 추가
 
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

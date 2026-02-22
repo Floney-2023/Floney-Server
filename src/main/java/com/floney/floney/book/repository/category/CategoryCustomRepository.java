@@ -22,6 +22,8 @@ public interface CategoryCustomRepository {
 
     Optional<Subcategory> findSubcategory(Category parent, Book targetBook, String name);
 
+    Optional<Subcategory> findSubcategoryByCategoryKey(String categoryKey, Book book, CategoryType parentType);
+
     List<Subcategory> findSubcategories(Category parent, String bookKey);
 
     void inactiveAllByBook(Book book);

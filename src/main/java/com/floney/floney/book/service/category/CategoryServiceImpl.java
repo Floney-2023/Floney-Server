@@ -57,8 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryInfo> findAllSubcategoriesByCategory(final String bookKey, final String categoryName) {
-        final CategoryType categoryType = CategoryType.findByMeaning(categoryName);
+    public List<CategoryInfo> findAllSubcategoriesByCategory(final String bookKey, final CategoryType categoryType) {
         return categoryRepository.findSubcategoryInfos(categoryType, bookKey);
     }
 
@@ -86,10 +85,9 @@ public class CategoryServiceImpl implements CategoryService {
         bookLineCategoryRepository.inactiveAllByBookLineId(bookLineId);
     }
 
-    private Category findCategory(final String name) {
-        CategoryType categoryType = CategoryType.findByMeaning(name);
+    private Category findCategory(final CategoryType categoryType) {
         return categoryRepository.findByType(categoryType)
-            .orElseThrow(() -> new NotFoundCategoryException(name));
+            .orElseThrow(() -> new NotFoundCategoryException(categoryType.getMeaning()));
     }
 
     private Book findBook(final String bookKey) {

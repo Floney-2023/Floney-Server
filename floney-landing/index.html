@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floney - Shared Household Budget Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        header .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .logo {
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .header-image {
+            max-width: 800px;
+            margin: 30px auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .header-image img {
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .download-badges {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .download-badges a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: white;
+            color: #10b981;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .download-badges a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Section */
+        section {
+            background: white;
+            margin: 40px 0;
+            padding: 60px 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #10b981;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin: 30px 0 15px;
+            color: #059669;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .card ul {
+            margin-left: 20px;
+        }
+
+        .card li {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Problem-Solution */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .problem, .solution {
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .problem {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+        }
+
+        .solution {
+            background: #f0fff4;
+            border-left: 4px solid #10b981;
+        }
+
+        .problem h3 {
+            color: #f56565;
+        }
+
+        .solution h3 {
+            color: #10b981;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 10px 0;
+        }
+
+        /* Demo Section */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .demo-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .demo-item h3 {
+            margin-bottom: 20px;
+            color: #10b981;
+        }
+
+        .demo-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Team */
+        .team-members {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .team-member {
+            text-align: center;
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 4px solid #10b981;
+        }
+
+        .team-member h4 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .team-member p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            header .tagline {
+                font-size: 1.2rem;
+            }
+
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+
+            .download-badges {
+                flex-direction: column;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .highlight h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .architecture-image {
+            max-width: 100%;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="https://github.com/Floney-2023.png?size=200" alt="Floney Logo">
+            </div>
+            <h1>Floney</h1>
+            <p class="tagline">Shared Household Budget Management Made Simple</p>
+            <p>Collaborative expense tracking for families, couples, and groups</p>
+
+            <div class="header-image">
+                <img src="https://github.com/Floney-2023/Floney-Server/assets/64001680/928b5b86-2eea-4083-80e4-1d0cff3ec675" alt="Floney App">
+            </div>
+
+            <div class="download-badges">
+                <a href="https://apps.apple.com/kr/app/%ED%94%8C%EB%A1%9C%EB%8B%88-floney/id6462989500" target="_blank">📱 Download on App Store</a>
+                <a href="https://play.google.com/store/apps/details?id=com.aos.floney&hl=ko" target="_blank">🤖 Get it on Google Play</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Overview -->
+        <section>
+            <h2>About Floney</h2>
+            <p>Floney is a collaborative household budget management application that enables families, couples, and groups to track and manage their shared expenses together in real-time. Since launching in April 2023, we've been helping users gain transparency and control over their shared finances.</p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">2023.04</div>
+                    <div class="stat-label">Founded</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Platforms (iOS & Android)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">Live</div>
+                    <div class="stat-label">Production Status</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Videos -->
+        <section>
+            <h2>Product Demo</h2>
+            <p style="text-align: center; margin-bottom: 20px;">See Floney in action</p>
+
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h3>📝 Add Expense Entry</h3>
+                    <img src="https://github.com/Floney-2023/Floney-Server/assets/70848762/159cb204-a8ff-4c0e-8a05-dfbdcc6a6b8e" alt="Add Expense">
+                    <p style="margin-top: 15px; color: #666;">Quick and easy expense tracking with categorization</p>
+                </div>
+                <div class="demo-item">
+                    <h3>💰 Smart Settlement</h3>
+                    <img src="https://github.com/Floney-2023/Floney-Server/assets/70848762/1ccb065e-c15a-4672-af3b-820ca4d43439" alt="Settlement">
+                    <p style="margin-top: 15px; color: #666;">Automatic calculation and fair distribution</p>
+                </div>
+                <div class="demo-item">
+                    <h3>📊 Analytics Dashboard</h3>
+                    <img src="https://github.com/Floney-2023/Floney-Server/assets/70848762/476f0589-ef1c-466b-915d-e39289624f14" alt="Analytics">
+                    <p style="margin-top: 15px; color: #666;">Visual insights into spending patterns</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem & Solution -->
+        <section>
+            <h2>The Challenge We're Solving</h2>
+            <div class="problem-solution">
+                <div class="problem">
+                    <h3>❌ Problems</h3>
+                    <ul>
+                        <li>Lack of transparency in shared expenses</li>
+                        <li>Tedious manual settlement calculations</li>
+                        <li>Poor tracking of spending patterns</li>
+                        <li>Communication gaps in financial decisions</li>
+                        <li>No centralized expense management</li>
+                    </ul>
+                </div>
+                <div class="solution">
+                    <h3>✅ Our Solution</h3>
+                    <ul>
+                        <li>Real-time collaborative expense tracking</li>
+                        <li>Automatic settlement calculations</li>
+                        <li>Visual analytics and insights</li>
+                        <li>Multi-user management system</li>
+                        <li>Centralized financial platform</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section>
+            <h2>Core Features</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>📊 Real-time Tracking</h3>
+                    <ul>
+                        <li>Multiple users add expenses simultaneously</li>
+                        <li>Instant synchronization across devices</li>
+                        <li>Categorized expense management</li>
+                        <li>Custom category creation</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>💰 Smart Settlement</h3>
+                    <ul>
+                        <li>Automatic calculation of balances</li>
+                        <li>Fair distribution algorithms</li>
+                        <li>One-tap settlement requests</li>
+                        <li>Settlement history tracking</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>📈 Financial Analytics</h3>
+                    <ul>
+                        <li>Visual spending patterns</li>
+                        <li>Category-based analysis</li>
+                        <li>Monthly/yearly reports</li>
+                        <li>Budget comparisons</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>👥 Multi-user Support</h3>
+                    <ul>
+                        <li>Role-based access control</li>
+                        <li>Household/group creation</li>
+                        <li>Member invitation system</li>
+                        <li>Activity notifications</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section>
+            <h2>Technology Stack</h2>
+
+            <h3>Backend Infrastructure</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">Java 17</span>
+                <span class="tech-badge">Spring Boot 2.7</span>
+                <span class="tech-badge">MySQL</span>
+                <span class="tech-badge">Redis</span>
+                <span class="tech-badge">JPA + QueryDSL</span>
+                <span class="tech-badge">JWT</span>
+                <span class="tech-badge">OAuth2</span>
+            </div>
+
+            <h3>Cloud & DevOps</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">AWS S3</span>
+                <span class="tech-badge">AWS RDS</span>
+                <span class="tech-badge">Flyway</span>
+                <span class="tech-badge">Prometheus</span>
+                <span class="tech-badge">Grafana</span>
+            </div>
+
+            <h3>Integration & Services</h3>
+            <div class="tech-stack">
+                <span class="tech-badge">Google Login</span>
+                <span class="tech-badge">Apple Login</span>
+                <span class="tech-badge">App Store API</span>
+                <span class="tech-badge">Google Play API</span>
+                <span class="tech-badge">SMTP Mail</span>
+            </div>
+        </section>
+
+        <!-- Team -->
+        <section>
+            <h2>Our Team</h2>
+            <p style="text-align: center; margin-bottom: 40px;">A dedicated team of engineers building the future of collaborative finance</p>
+            <div class="team-members">
+                <div class="team-member">
+                    <img src="https://github.com/sienna011022.png?size=150" alt="Kim Sung Yoon">
+                    <h4>Kim Sung Yoon</h4>
+                    <p>Lead Backend Engineer</p>
+                    <p><a href="https://github.com/sienna011022" target="_blank">@sienna011022</a></p>
+                </div>
+                <div class="team-member">
+                    <img src="https://github.com/devzoe.png?size=150" alt="iOS Developer">
+                    <h4>Zoe</h4>
+                    <p>iOS Developer</p>
+                    <p><a href="https://github.com/devzoe" target="_blank">@devzoe</a></p>
+                </div>
+                <div class="team-member">
+                    <img src="https://github.com/wnsgml517.png?size=150" alt="Android Developer">
+                    <h4>Android Developer</h4>
+                    <p>Android Developer</p>
+                    <p><a href="https://github.com/wnsgml517" target="_blank">@wnsgml517</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Architecture -->
+        <section>
+            <h2>System Architecture</h2>
+            <p>Our production-grade architecture is designed for scalability, reliability, and performance:</p>
+            <ul>
+                <li><strong>Multi-tier Architecture:</strong> Separation of concerns with distinct layers</li>
+                <li><strong>Database Replication:</strong> High availability and disaster recovery</li>
+                <li><strong>Caching Layer:</strong> Redis for improved performance</li>
+                <li><strong>RESTful API Design:</strong> Clean and documented APIs</li>
+                <li><strong>OAuth2 Integration:</strong> Secure social login (Google, Apple)</li>
+                <li><strong>Comprehensive Testing:</strong> Unit and integration tests with JUnit</li>
+            </ul>
+            <p style="margin-top: 30px;">
+                <a href="https://docs.google.com/spreadsheets/d/1dYrJyME0qMLKuLyS1l5VZkP54tgOKujcHlnroN7nLoA/edit?usp=sharing" target="_blank" style="color: #10b981; font-weight: 600;">📝 View Our API Documentation →</a>
+            </p>
+        </section>
+
+        <!-- Team Values -->
+        <section>
+            <h2>Our Engineering Culture</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>💫 Code Ownership</h3>
+                    <p>Every line of code has a purpose. We can explain why we wrote it that way.</p>
+                </div>
+                <div class="card">
+                    <h3>💫 Shared Responsibility</h3>
+                    <p>After merge, it's everyone's code. We solve problems together.</p>
+                </div>
+                <div class="card">
+                    <h3>💫 Documentation First</h3>
+                    <p>If it's not documented, it didn't happen. We maintain comprehensive logs.</p>
+                </div>
+                <div class="card">
+                    <h3>💫 Quality & Testing</h3>
+                    <p>People make mistakes, tests don't. Service stability is our priority.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section style="text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+            <h2 style="color: white; border-bottom: 3px solid white;">Let's Build Together</h2>
+            <p style="font-size: 1.3rem; color: white; margin: 30px 0;">Floney is building the future of collaborative financial management. We're committed to delivering a world-class experience to our users.</p>
+            <div style="margin-top: 40px;">
+                <a href="https://github.com/Floney-2023" target="_blank" style="display: inline-block; padding: 15px 40px; background: white; color: #10b981; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 1.1rem; margin: 0 10px;">Visit Our GitHub</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p><strong>Floney - Shared Household Budget Management</strong></p>
+            <p style="margin: 20px 0;">
+                <a href="https://github.com/Floney-2023" target="_blank">GitHub</a> |
+                <a href="https://apps.apple.com/kr/app/%ED%94%8C%EB%A1%9C%EB%8B%88-floney/id6462989500" target="_blank">iOS App</a> |
+                <a href="https://play.google.com/store/apps/details?id=com.aos.floney&hl=ko" target="_blank">Android App</a> |
+                <a href="https://docs.google.com/spreadsheets/d/1dYrJyME0qMLKuLyS1l5VZkP54tgOKujcHlnroN7nLoA/edit?usp=sharing" target="_blank">API Docs</a>
+            </p>
+            <p style="margin-top: 20px; opacity: 0.8;">© 2023-2026 Floney. Built with ❤️ for better financial collaboration.</p>
+        </div>
+    </footer>
+</body>
+</html>

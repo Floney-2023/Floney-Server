@@ -1,5 +1,6 @@
 package com.floney.floney.analyze.dto.request;
 
+import com.floney.floney.book.domain.category.CategoryType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ public class AnalyzeByCategoryRequest {
 
     // TODO: validation 추가
     private String bookKey;
-    private String root;
+    private CategoryType root;
     private String date; // TODO: LocalDate 형으로 받기
 
     public LocalDate getLocalDate() {

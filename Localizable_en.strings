@@ -1,0 +1,43 @@
+/* English Category Translations (from Figma) */
+/* Income Categories */
+"category.SALARY" = "Salary";
+"category.SIDE_INCOME" = "Extra Income";
+"category.ALLOWANCE" = "Allowance";
+"category.FINANCIAL_INCOME" = "Financial Income";
+"category.BUSINESS_INCOME" = "Business Income";
+"category.BONUS" = "Bonus";
+"category.OTHER_INCOME" = "Other";
+"category.UNCATEGORIZED_INCOME" = "Uncategorized";
+
+/* Expense Categories */
+"category.FOOD" = "Food";
+"category.CAFE_SNACK" = "Cafe/Snacks";
+"category.TRANSPORTATION" = "Transport";
+"category.HOUSING_COMMUNICATION" = "Housing/Phone";
+"category.MEDICAL_HEALTH" = "Health";
+"category.CULTURE" = "Culture";
+"category.TRAVEL_ACCOMMODATION" = "Travel/Stay";
+"category.LIVING" = "Living";
+"category.FASHION_BEAUTY" = "Style/Beauty";
+"category.CHILDCARE" = "Family";
+"category.EDUCATION" = "Education";
+"category.OCCASIONS" = "Events";
+"category.OTHER_EXPENSE" = "Other";
+"category.UNCATEGORIZED_EXPENSE" = "Uncategorized";
+
+/* Transfer Categories */
+"category.TRANSFER_GENERAL" = "Transfer";
+"category.SAVINGS" = "Savings";
+"category.CASH_TRANSFER" = "Cash";
+"category.INVESTMENT" = "Investment";
+"category.INSURANCE" = "Insurance";
+"category.CARD_PAYMENT" = "Card Payment";
+"category.LOAN" = "Loan";
+"category.OTHER_TRANSFER" = "Other";
+"category.UNCATEGORIZED_TRANSFER" = "Uncategorized";
+
+/* Asset Categories */
+"category.CASH" = "Cash";
+"category.DEBIT_CARD" = "Debit Card";
+"category.CREDIT_CARD" = "Credit Card";
+"category.BANK" = "Bank";

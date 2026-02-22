@@ -651,7 +651,7 @@ class BookLineCustomRepositoryTest {
             @Test
             @DisplayName("이전 달의 지출 총합을 반환한다.")
             void it_returns_double() {
-                final AnalyzeByCategoryRequest request = new AnalyzeByCategoryRequest(bookKey, OUTCOME.getMeaning(), date.toString());
+                final AnalyzeByCategoryRequest request = new AnalyzeByCategoryRequest(bookKey, OUTCOME, date.toString());
 
                 assertThat(bookLineRepository.totalExpenseForBeforeMonth(request))
                     .isCloseTo(DEFAULT_MONEY * 2, Percentage.withPercentage(99.9));
@@ -685,7 +685,7 @@ class BookLineCustomRepositoryTest {
             @Test
             @DisplayName("0.0을 반환한다.")
             void it_returns_double() {
-                final AnalyzeByCategoryRequest request = new AnalyzeByCategoryRequest(bookKey, OUTCOME.getMeaning(), date.toString());
+                final AnalyzeByCategoryRequest request = new AnalyzeByCategoryRequest(bookKey, OUTCOME, date.toString());
 
                 assertThat(bookLineRepository.totalExpenseForBeforeMonth(request))
                     .isCloseTo(0.0, Percentage.withPercentage(99.9));
@@ -719,7 +719,7 @@ class BookLineCustomRepositoryTest {
             @Test
             @DisplayName("0.0을 반환한다.")
             void it_returns_double() {
-                final AnalyzeByCategoryRequest request = new AnalyzeByCategoryRequest(bookKey, OUTCOME.getMeaning(), date.toString());
+                final AnalyzeByCategoryRequest request = new AnalyzeByCategoryRequest(bookKey, OUTCOME, date.toString());
 
                 assertThat(bookLineRepository.totalExpenseForBeforeMonth(request))
                     .isCloseTo(0.0, Percentage.withPercentage(99.9));

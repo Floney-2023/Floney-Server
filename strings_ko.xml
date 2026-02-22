@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Korean Category Translations (Android) -->
+<resources>
+    <!-- Income Categories -->
+    <string name="category_SALARY">급여</string>
+    <string name="category_SIDE_INCOME">부수입</string>
+    <string name="category_ALLOWANCE">용돈</string>
+    <string name="category_FINANCIAL_INCOME">금융소득</string>
+    <string name="category_BUSINESS_INCOME">사업소득</string>
+    <string name="category_BONUS">상여금</string>
+    <string name="category_OTHER_INCOME">기타</string>
+    <string name="category_UNCATEGORIZED_INCOME">미분류</string>
+
+    <!-- Expense Categories -->
+    <string name="category_FOOD">식비</string>
+    <string name="category_CAFE_SNACK">카페/간식</string>
+    <string name="category_TRANSPORTATION">교통</string>
+    <string name="category_HOUSING_COMMUNICATION">주거/통신</string>
+    <string name="category_MEDICAL_HEALTH">의료/건강</string>
+    <string name="category_CULTURE">문화</string>
+    <string name="category_TRAVEL_ACCOMMODATION">여행/숙박</string>
+    <string name="category_LIVING">생활</string>
+    <string name="category_FASHION_BEAUTY">패션/미용</string>
+    <string name="category_CHILDCARE">육아</string>
+    <string name="category_EDUCATION">교육</string>
+    <string name="category_OCCASIONS">경조사</string>
+    <string name="category_OTHER_EXPENSE">기타</string>
+    <string name="category_UNCATEGORIZED_EXPENSE">미분류</string>
+
+    <!-- Transfer Categories -->
+    <string name="category_TRANSFER_GENERAL">이체</string>
+    <string name="category_SAVINGS">저축</string>
+    <string name="category_CASH_TRANSFER">현금</string>
+    <string name="category_INVESTMENT">투자</string>
+    <string name="category_INSURANCE">보험</string>
+    <string name="category_CARD_PAYMENT">카드대금</string>
+    <string name="category_LOAN">대출</string>
+    <string name="category_OTHER_TRANSFER">기타</string>
+    <string name="category_UNCATEGORIZED_TRANSFER">미분류</string>
+
+    <!-- Asset Categories -->
+    <string name="category_CASH">현금</string>
+    <string name="category_DEBIT_CARD">체크카드</string>
+    <string name="category_CREDIT_CARD">신용카드</string>
+    <string name="category_BANK">은행</string>
+</resources>

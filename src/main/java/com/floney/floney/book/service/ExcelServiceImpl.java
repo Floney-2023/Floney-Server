@@ -32,11 +32,12 @@ public class ExcelServiceImpl implements ExcelService {
         validateBookUser(userEmail, bookKey);
 
         final List<BookLine> bookLines = getBookLinesByDuration(downloadRequest);
+        final String language = downloadRequest.getLanguage();
 
         final Workbook workbook = new XSSFWorkbook();
         final Sheet sheet = workbook.createSheet();
 
-        final List<String> headers = List.of("사용자", "날짜", "수입/지출", "금액", "화폐", "자산", "분류", "내용");
+        final List<String> headers = getHeaders(language);
         final Row headerRow = sheet.createRow(0);
         final CellStyle headerStyle = createHeaderStyle(workbook);
         final CellStyle cellStyle = createBorderStyle(workbook);
@@ -79,12 +80,12 @@ public class ExcelServiceImpl implements ExcelService {
             currencyCell.setCellStyle(cellStyle);
 
             final Cell assetSubCell = row.createCell(cellIdx++);
-            final String assetSubName = bookLine.getCategories().getAssetSubcategory().getName();
+            final String assetSubName = getCategoryName(bookLine.getCategories().getAssetSubcategory(), language);
             assetSubCell.setCellValue(assetSubName);
             assetSubCell.setCellStyle(cellStyle);
 
             final Cell lineSubCell = row.createCell(cellIdx++);
-            final String lineSubName = bookLine.getCategories().getLineSubcategory().getName();
+            final String lineSubName = getCategoryName(bookLine.getCategories().getLineSubcategory(), language);
             lineSubCell.setCellValue(lineSubName);
             lineSubCell.setCellStyle(cellStyle);
 
@@ -170,5 +171,30 @@ public class ExcelServiceImpl implements ExcelService {
         if (!bookUserRepository.existsByBookKeyAndUserEmail(bookKey, userEmail)) {
             throw new NotFoundBookUserException(bookKey, userEmail);
         }
+    }
+
+    /**
+     * Returns headers based on language
+     * @param language "en" for English, "ko" for Korean (default)
+     */
+    private List<String> getHeaders(final String language) {
+        if ("en".equalsIgnoreCase(language)) {
+            return List.of("User", "Date", "Type", "Amount", "Currency", "Asset", "Category", "Description");
+        }
+        return List.of("사용자", "날짜", "수입/지출", "금액", "화폐", "자산", "분류", "내용");
+    }
+
+    /**
+     * Returns category name based on language
+     * For English: returns categoryKey if available, otherwise name
+     * For Korean: returns name
+     */
+    private String getCategoryName(final com.floney.floney.book.domain.category.entity.Subcategory subcategory,
+                                   final String language) {
+        if ("en".equalsIgnoreCase(language)) {
+            String categoryKey = subcategory.getCategoryKey();
+            return categoryKey != null ? categoryKey : subcategory.getName();
+        }
+        return subcategory.getName();
     }
 }

@@ -11,6 +11,7 @@ import com.floney.floney.book.dto.process.CategoryInfo;
 import com.floney.floney.book.repository.BookLineRepository;
 import com.floney.floney.book.repository.BookRepository;
 import com.floney.floney.book.repository.BookUserRepository;
+import com.floney.floney.common.exception.book.InvalidCategoryRequestException;
 import com.floney.floney.config.QueryDslTest;
 import com.floney.floney.fixture.BookFixture;
 import com.floney.floney.fixture.SubcategoryFixture;
@@ -29,6 +30,7 @@ import java.util.Optional;
 
 import static com.floney.floney.book.domain.category.CategoryType.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @QueryDslTest
 @DisplayName("단위테스트 : CategoryCustomRepository")
@@ -515,6 +517,189 @@ class CategoryCustomRepositoryTest {
             @DisplayName("가계부의 카테고리가 조회되지 않는다")
             void find_none() {
                 assertThat(categoryRepository.findSubcategories(assetLineCategory, book.getBookKey())).isEmpty();
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("findSubcategory 메서드에서 (Strict CategoryKey Enforcement)")
+    class Describe_StrictCategoryKeyEnforcement {
+
+        @Nested
+        @DisplayName("기본 카테고리에 한글 이름을 사용하면")
+        class WithKoreanNameForDefaultCategory {
+
+            private static final String koreanName = "식비";
+            private static final String categoryKey = "Food";
+
+            @BeforeEach
+            void setup() {
+                // Create a default category with both Korean name and categoryKey
+                Subcategory defaultCategory = SubcategoryFixture.createDefaultSubcategory(
+                    book, outcomeLineCategory, koreanName, categoryKey
+                );
+                subcategoryRepository.save(defaultCategory);
+            }
+
+            @Test
+            @DisplayName("InvalidCategoryRequestException이 발생한다")
+            void throwsException() {
+                assertThatThrownBy(() -> categoryRepository.findSubcategory(koreanName, book, OUTCOME))
+                    .isInstanceOf(InvalidCategoryRequestException.class)
+                    .hasMessageContaining("Korean name")
+                    .hasMessageContaining(koreanName)
+                    .hasMessageContaining(categoryKey);
+            }
+        }
+
+        @Nested
+        @DisplayName("기본 카테고리에 categoryKey를 사용하면")
+        class WithCategoryKeyForDefaultCategory {
+
+            private static final String koreanName = "식비";
+            private static final String categoryKey = "Food";
+
+            @BeforeEach
+            void setup() {
+                Subcategory defaultCategory = SubcategoryFixture.createDefaultSubcategory(
+                    book, outcomeLineCategory, koreanName, categoryKey
+                );
+                subcategoryRepository.save(defaultCategory);
+            }
+
+            @Test
+            @DisplayName("카테고리를 정상적으로 조회할 수 있다")
+            void findsCategory() {
+                Optional<Subcategory> result = categoryRepository.findSubcategory(categoryKey, book, OUTCOME);
+
+                assertThat(result).isPresent();
+                assertThat(result.get().getCategoryKey()).isEqualTo(categoryKey);
+                assertThat(result.get().getName()).isEqualTo(koreanName);
+            }
+        }
+
+        @Nested
+        @DisplayName("사용자 정의 카테고리에 한글 이름을 사용하면")
+        class WithKoreanNameForUserDefinedCategory {
+
+            private static final String customCategoryName = "내맘대로카테고리";
+
+            @BeforeEach
+            void setup() {
+                // User-defined category has no categoryKey (null)
+                Subcategory customCategory = SubcategoryFixture.createSubcategory(
+                    book, outcomeLineCategory, customCategoryName
+                );
+                subcategoryRepository.save(customCategory);
+            }
+
+            @Test
+            @DisplayName("예외 없이 카테고리를 조회할 수 있다")
+            void findsCategory() {
+                Optional<Subcategory> result = categoryRepository.findSubcategory(customCategoryName, book, OUTCOME);
+
+                assertThat(result).isPresent();
+                assertThat(result.get().getName()).isEqualTo(customCategoryName);
+                assertThat(result.get().getCategoryKey()).isNull();
+            }
+        }
+
+        @Nested
+        @DisplayName("영문 이름을 가진 사용자 정의 카테고리를 조회하면")
+        class WithEnglishNameForUserDefinedCategory {
+
+            private static final String englishCustomName = "MyCustomCategory";
+
+            @BeforeEach
+            void setup() {
+                // User-defined category with English name (no categoryKey)
+                Subcategory customCategory = SubcategoryFixture.createSubcategory(
+                    book, outcomeLineCategory, englishCustomName
+                );
+                subcategoryRepository.save(customCategory);
+            }
+
+            @Test
+            @DisplayName("이름으로 조회할 수 있다")
+            void findsCategory() {
+                Optional<Subcategory> result = categoryRepository.findSubcategory(englishCustomName, book, OUTCOME);
+
+                assertThat(result).isPresent();
+                assertThat(result.get().getName()).isEqualTo(englishCustomName);
+                assertThat(result.get().getCategoryKey()).isNull();
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("findSubcategoryByCategoryKey 메서드에서")
+    class Describe_FindSubcategoryByCategoryKey {
+
+        @Nested
+        @DisplayName("유효한 categoryKey가 주어지면")
+        class WithValidCategoryKey {
+
+            private static final String categoryKey = "Transportation";
+            private static final String koreanName = "교통";
+
+            @BeforeEach
+            void setup() {
+                Subcategory defaultCategory = SubcategoryFixture.createDefaultSubcategory(
+                    book, outcomeLineCategory, koreanName, categoryKey
+                );
+                subcategoryRepository.save(defaultCategory);
+            }
+
+            @Test
+            @DisplayName("categoryKey로 카테고리를 조회할 수 있다")
+            void findsCategory() {
+                Optional<Subcategory> result = categoryRepository.findSubcategoryByCategoryKey(
+                    categoryKey, book, OUTCOME
+                );
+
+                assertThat(result).isPresent();
+                assertThat(result.get().getCategoryKey()).isEqualTo(categoryKey);
+                assertThat(result.get().getName()).isEqualTo(koreanName);
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 categoryKey가 주어지면")
+        class WithInvalidCategoryKey {
+
+            @Test
+            @DisplayName("빈 Optional을 반환한다")
+            void returnsEmpty() {
+                Optional<Subcategory> result = categoryRepository.findSubcategoryByCategoryKey(
+                    "NonExistentKey", book, OUTCOME
+                );
+
+                assertThat(result).isEmpty();
+            }
+        }
+
+        @Nested
+        @DisplayName("사용자 정의 카테고리는 categoryKey가 없으므로")
+        class WithUserDefinedCategory {
+
+            private static final String customCategoryName = "사용자카테고리";
+
+            @BeforeEach
+            void setup() {
+                Subcategory customCategory = SubcategoryFixture.createSubcategory(
+                    book, outcomeLineCategory, customCategoryName
+                );
+                subcategoryRepository.save(customCategory);
+            }
+
+            @Test
+            @DisplayName("categoryKey로 조회할 수 없다")
+            void cannotFind() {
+                Optional<Subcategory> result = categoryRepository.findSubcategoryByCategoryKey(
+                    customCategoryName, book, OUTCOME
+                );
+
+                assertThat(result).isEmpty();
             }
         }
     }
