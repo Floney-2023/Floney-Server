@@ -78,6 +78,10 @@ jobs:
 
             cd /home/ubuntu
 
+            # 기존 컨테이너 강제 정리 (docker run으로 실행된 컨테이너 포함)
+            docker stop floney-app || true
+            docker rm floney-app || true
+
             # 새 이미지 Pull 및 컨테이너 재시작
             docker compose pull
             docker compose up -d

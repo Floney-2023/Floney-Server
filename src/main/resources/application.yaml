@@ -13,7 +13,7 @@ spring:
     activate:
       on-profile: develop
     import:
-      - classpath:secrets/application-dev.yaml
+      - classpath:secrets/application-develop.yaml
       - classpath:secrets/application.yaml
 
 ---
