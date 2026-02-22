@@ -4,7 +4,7 @@ set -e
 cd /home/ubuntu
 
 UPSTREAM_CONF="/etc/nginx/conf.d/floney-upstream.conf"
-NGINX_SITE="/etc/nginx/sites-enabled/floney"
+NGINX_SITE="/etc/nginx/sites-enabled/default"
 BLUE_PORT=8081
 GREEN_PORT=8082
 
