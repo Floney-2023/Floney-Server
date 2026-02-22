@@ -60,6 +60,12 @@ jobs:
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
           command_timeout: 20m
           script: |
+            docker stop floney-app || true
+            docker rm floney-app || true
+
+            # 이전 floney 이미지만 제거 (dangling 이미지만)
+            docker image prune -f || true
+            
             cd /home/ubuntu
 
             # GitHub Container Registry 로그인
