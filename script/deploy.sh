@@ -57,14 +57,14 @@ fi
 if [ -z "$CURRENT" ]; then
     echo "🚀 첫 번째 배포 시작..."
 
-    docker compose up -d redis
+    docker compose up -d --remove-orphans redis
 
     write_nginx_config "blue"
-    docker compose up -d app-blue
+    docker compose up -d --remove-orphans app-blue
 
     wait_healthy "floney-app-blue" || exit 1
 
-    docker compose up -d nginx
+    docker compose up -d --remove-orphans nginx
 
     echo "🎉 첫 번째 배포 완료! 활성 슬롯: blue"
     exit 0
@@ -97,7 +97,12 @@ write_nginx_config "$NEXT"
 
 if ! docker ps --format '{{.Names}}' | grep -q "^floney-nginx$"; then
     echo "▶️  nginx 컨테이너 없음 - 최초 기동..."
-    docker compose up -d nginx
+    # 포트 80 충돌 해소
+    docker ps --format '{{.Names}}' | while read name; do
+        docker port "$name" 2>/dev/null | grep -q "^80/" && docker stop "$name" || true
+    done
+    sudo systemctl stop nginx 2>/dev/null || true
+    docker compose up -d --remove-orphans nginx
 else
     docker exec floney-nginx nginx -t
     docker exec floney-nginx nginx -s reload
