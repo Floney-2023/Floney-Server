@@ -20,7 +20,7 @@ EOF
 }
 
 reload_nginx() {
-    sudo nginx -t && sudo nginx -s reload
+    sudo nginx -t && sudo systemctl reload nginx
     echo "✅ nginx reload 완료"
 }
 
