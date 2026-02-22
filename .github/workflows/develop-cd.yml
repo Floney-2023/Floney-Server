@@ -10,7 +10,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: floney-2023/floney-server
 
 jobs:
   build-and-deploy:
@@ -22,9 +22,6 @@ jobs:
         with:
           token: ${{ secrets.ACTIONS_TOKEN }}
           submodules: true
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Docker 메타데이터 추출
         id: meta
@@ -54,82 +51,62 @@ jobs:
 
       - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
         with:
           host: ${{ secrets.OCI_DEV_HOST }}
           username: ubuntu
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
-          command_timeout: 20m
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_TAG
           script: |
+            # 기존 컨테이너 중지 및 제거
             docker stop floney-app || true
             docker rm floney-app || true
 
             # 이전 floney 이미지만 제거 (dangling 이미지만)
             docker image prune -f || true
-            
-            cd /home/ubuntu
 
             # GitHub Container Registry 로그인
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            echo "$GITHUB_TOKEN" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
-            # docker-compose.yml 생성
-            cat > docker-compose.yml << 'EOF'
-            services:
-              redis:
-                image: redis:7-alpine
-                container_name: floney-redis
-                restart: unless-stopped
-                ports:
-                  - "6379:6379"
-                command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
-                healthcheck:
-                  test: ["CMD", "redis-cli", "ping"]
-                  interval: 10s
-                  timeout: 3s
-                  retries: 3
+            # 새 이미지 Pull
+            docker pull $IMAGE_TAG
 
-              app:
-                image: ghcr.io/floney-2023/floney-server:feat-migrate-to-oci
-                container_name: floney-app
-                restart: unless-stopped
-                depends_on:
-                  redis:
-                    condition: service_healthy
-                ports:
-                  - "8080:8080"
-                environment:
-                  SPRING_PROFILES_ACTIVE: develop
-                  SPRING_REDIS_HOST: redis
-                  SPRING_REDIS_PORT: 6379
-                volumes:
-                  - /home/ubuntu/secrets:/app/secrets:ro
-                healthcheck:
-                  test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health-check"]
-                  interval: 30s
-                  timeout: 3s
-                  retries: 3
-                  start_period: 40s
-            EOF
+            # 컨테이너 실행
+            docker run -d \
+              --name floney-app \
+              --restart unless-stopped \
+              --network ubuntu_default \
+              -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=develop \
+              -v /home/ubuntu/secrets:/app/secrets:ro \
+              $IMAGE_TAG
 
-            # 기존 컨테이너 중지 및 제거 (orphan containers 포함)
-            docker compose down --remove-orphans || true
-
-            # 새 이미지 Pull 및 컨테이너 시작
-            docker compose pull
-            docker compose up -d
-
-            # 헬스체크 (최대 10분 대기 - 1GB 인스턴스는 시작이 느림)
+            # 헬스체크 (최대 60초 대기)
             echo "Waiting for application to start..."
-            for i in {1..40}; do
+            for i in {1..60}; do
+              # 컨테이너가 실행 중인지 먼저 확인
+              if ! docker ps --format '{{.Names}}' | grep -q '^floney-app$'; then
+                echo "❌ Container stopped unexpectedly"
+                echo "Container logs:"
+                docker logs floney-app --tail 100 || echo "Failed to get logs"
+                exit 1
+              fi
+
               if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/health-check 2>/dev/null; then
                 echo "✅ Application is healthy!"
-                docker compose ps
                 exit 0
               fi
-              echo "Waiting... ($i/40)"
-              sleep 15
+              echo "Waiting... ($i/12)"
+              sleep 5
             done
 
-            echo "❌ Application failed to start"
-            echo "=== App logs ==="
-            docker logs floney-app --tail 100
+            echo "❌ Application failed to start (health check timeout)"
+            echo "Container status:"
+            docker ps -a | grep floney-app || echo "Container not found"
+            echo "Container logs:"
+            docker logs floney-app --tail 100 || echo "Failed to get logs"
             exit 1
