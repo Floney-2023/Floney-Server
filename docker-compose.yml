@@ -13,7 +13,7 @@ services:
       retries: 3
 
   app:
-    image: ghcr.io/floney-2023/floney-server:feat-migrate-to-oci
+    image: ghcr.io/floney-2023/floney-server:develop
     container_name: floney-app
     restart: unless-stopped
     depends_on:

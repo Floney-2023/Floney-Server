@@ -52,54 +52,43 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: docker-compose.yml 서버에 복사
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.OCI_DEV_HOST }}
+          username: ubuntu
+          key: ${{ secrets.OCI_DEV_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ubuntu"
+
       - name: OCI 인스턴스에 배포
         uses: appleboy/ssh-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
           GITHUB_ACTOR: ${{ github.actor }}
           REGISTRY: ${{ env.REGISTRY }}
-          IMAGE_TAG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:develop
         with:
           host: ${{ secrets.OCI_DEV_HOST }}
           username: ubuntu
           key: ${{ secrets.OCI_DEV_SSH_KEY }}
-          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY,IMAGE_TAG
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,REGISTRY
           script: |
-            # 기존 컨테이너 중지 및 제거
-            docker stop floney-app || true
-            docker rm floney-app || true
-
-            # 이전 floney 이미지만 제거 (dangling 이미지만)
-            docker image prune -f || true
-
             # GitHub Container Registry 로그인
             echo "$GITHUB_TOKEN" | docker login $REGISTRY -u $GITHUB_ACTOR --password-stdin
 
-            # 새 이미지 Pull
-            docker pull $IMAGE_TAG
+            cd /home/ubuntu
 
-            # 컨테이너 실행
-            docker run -d \
-              --name floney-app \
-              --restart unless-stopped \
-              --network ubuntu_default \
-              -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE=develop \
-              -v /home/ubuntu/secrets:/app/secrets:ro \
-              $IMAGE_TAG
+            # 새 이미지 Pull 및 컨테이너 재시작
+            docker compose pull
+            docker compose up -d
+
+            # dangling 이미지 정리
+            docker image prune -f || true
 
             # 헬스체크 (최대 60초 대기)
             echo "Waiting for application to start..."
-            for i in {1..60}; do
-              # 컨테이너가 실행 중인지 먼저 확인
-              if ! docker ps --format '{{.Names}}' | grep -q '^floney-app$'; then
-                echo "❌ Container stopped unexpectedly"
-                echo "Container logs:"
-                docker logs floney-app --tail 100 || echo "Failed to get logs"
-                exit 1
-              fi
-
-              if docker exec floney-app wget --no-verbose --tries=1 --spider http://localhost:8080/health-check 2>/dev/null; then
+            for i in {1..12}; do
+              if docker compose ps | grep -q "healthy"; then
                 echo "✅ Application is healthy!"
                 exit 0
               fi
@@ -108,8 +97,6 @@ jobs:
             done
 
             echo "❌ Application failed to start (health check timeout)"
-            echo "Container status:"
-            docker ps -a | grep floney-app || echo "Container not found"
-            echo "Container logs:"
-            docker logs floney-app --tail 100 || echo "Failed to get logs"
+            docker compose ps
+            docker compose logs --tail 100
             exit 1
