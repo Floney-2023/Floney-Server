@@ -20,7 +20,13 @@ EOF
 }
 
 reload_nginx() {
-    sudo nginx -t && sudo systemctl reload nginx
+    sudo nginx -t && {
+        if sudo systemctl is-active --quiet nginx; then
+            sudo systemctl reload nginx
+        else
+            sudo systemctl start nginx
+        fi
+    }
     echo "✅ nginx reload 완료"
 }
 
