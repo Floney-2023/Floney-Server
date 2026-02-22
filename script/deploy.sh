@@ -33,14 +33,14 @@ EOF
 wait_healthy() {
     local container=$1
     echo "⏳ $container 헬스체크 대기..."
-    for i in $(seq 1 24); do
+    for i in $(seq 1 50); do
         STATUS=$(docker inspect --format='{{.State.Health.Status}}' "$container" 2>/dev/null || echo "none")
         if [ "$STATUS" = "healthy" ]; then
             echo "✅ $container 정상 기동!"
             return 0
         fi
-        [ "$i" -eq 24 ] && { echo "❌ 헬스체크 타임아웃 ($container)"; return 1; }
-        echo "대기 중... ($i/24) status=$STATUS"
+        [ "$i" -eq 50 ] && { echo "❌ 헬스체크 타임아웃 ($container)"; return 1; }
+        echo "대기 중... ($i/50) status=$STATUS"
         sleep 5
     done
 }
