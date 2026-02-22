@@ -94,8 +94,14 @@ wait_healthy "floney-app-$NEXT" || {
 # nginx 설정 업데이트 → 무중단 reload
 echo "🔀 nginx → $NEXT 전환..."
 write_nginx_config "$NEXT"
-docker exec floney-nginx nginx -t
-docker exec floney-nginx nginx -s reload
+
+if ! docker ps --format '{{.Names}}' | grep -q "^floney-nginx$"; then
+    echo "▶️  nginx 컨테이너 없음 - 최초 기동..."
+    docker compose up -d nginx
+else
+    docker exec floney-nginx nginx -t
+    docker exec floney-nginx nginx -s reload
+fi
 echo "✅ nginx → floney-app-$NEXT 전환 완료 (무중단)"
 
 # 구 슬롯 종료
