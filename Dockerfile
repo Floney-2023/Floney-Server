@@ -35,13 +35,13 @@ RUN chown -R appuser:appuser /app
 # Switch to non-root user
 USER appuser
 
-# JVM memory optimization for 1GB instance
-# Heap: 512MB, Metaspace: 128MB, Stack: 1MB per thread
-ENV JAVA_OPTS="-Xms256m -Xmx512m -XX:MaxMetaspaceSize=256m -XX:+UseG1GC -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom"
+# JVM memory optimization for 1GB instance (blue-green 동시 실행 고려)
+# Heap: 320MB, Metaspace: 128MB, SerialGC (저메모리 환경에 적합)
+ENV JAVA_OPTS="-Xms128m -Xmx320m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Djava.security.egd=file:/dev/./urandom"
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=120s --retries=5 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health-check || exit 1
 
 # Expose port
 EXPOSE 8080
