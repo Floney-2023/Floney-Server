@@ -15,7 +15,7 @@ public record FavoriteResponse(long id,
             favorite.getId(),
             favorite.getMoney(),
             favorite.getDescription(),
-            favorite.getLineCategory().getName().getMeaning(),
+            favorite.getLineCategory().getName().name(),
             getCategoryKey(favorite.getLineSubcategory()),
             getCategoryKey(favorite.getAssetSubcategory()),
             favorite.isExceptStatus()
