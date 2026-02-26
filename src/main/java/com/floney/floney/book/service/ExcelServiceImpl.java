@@ -67,7 +67,7 @@ public class ExcelServiceImpl implements ExcelService {
             dateCell.setCellStyle(dateStyle);
 
             final Cell lineCell = row.createCell(cellIdx++);
-            final String lineName = bookLine.getCategories().getLineCategory().getName().getMeaning();
+            final String lineName = getLineCategoryName(bookLine.getCategories().getLineCategory().getName(), language);
             lineCell.setCellValue(lineName);
             lineCell.setCellStyle(cellStyle);
 
@@ -182,6 +182,14 @@ public class ExcelServiceImpl implements ExcelService {
             return List.of("User", "Date", "Type", "Amount", "Currency", "Asset", "Category", "Description");
         }
         return List.of("사용자", "날짜", "수입/지출", "금액", "화폐", "자산", "분류", "내용");
+    }
+
+    private String getLineCategoryName(final com.floney.floney.book.domain.category.CategoryType categoryType,
+                                       final String language) {
+        if ("en".equalsIgnoreCase(language)) {
+            return categoryType.name();
+        }
+        return categoryType.getMeaning();
     }
 
     /**
