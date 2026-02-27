@@ -7,6 +7,7 @@ import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.GoogleClient;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.response.GoogleUserResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,21 @@ public class GoogleUserService implements OAuthUserService {
 
     @Override
     public boolean checkIfSignup(String oAuthToken) {
-        return userRepository.existsByProviderId(getProviderId(oAuthToken));
+        final GoogleUserResponse googleUser = googleClient.getUserInfo(oAuthToken);
+        final String providerId = googleUser.getSub();
+
+        if (userRepository.existsByProviderId(providerId)) {
+            return true;
+        }
+
+        final String googleEmail = googleUser.getEmail();
+        if (googleEmail != null && !googleEmail.isEmpty()) {
+            userRepository.findByEmail(googleEmail).ifPresent(user -> {
+                throw new UserFoundException(user.getEmail(), user.getProvider());
+            });
+        }
+
+        return false;
     }
 
     @Override

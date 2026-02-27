@@ -30,7 +30,20 @@ public class AppleUserService implements OAuthUserService {
 
     @Override
     public boolean checkIfSignup(final String oAuthToken) {
-        return userRepository.existsByProviderId(getProviderId(oAuthToken));
+        final String providerId = getProviderId(oAuthToken);
+
+        if (userRepository.existsByProviderId(providerId)) {
+            return true;
+        }
+
+        final String appleEmail = appleClient.getEmail(oAuthToken);
+        if (appleEmail != null && !appleEmail.isEmpty()) {
+            userRepository.findByEmail(appleEmail).ifPresent(user -> {
+                throw new UserFoundException(user.getEmail(), user.getProvider());
+            });
+        }
+
+        return false;
     }
 
     @Override

@@ -114,6 +114,14 @@ public class AppleClient implements ClientProxy {
 
     @Override
     public String getAuthId(final String authToken) {
+        return parseClaims(authToken).getSubject();
+    }
+
+    public String getEmail(final String authToken) {
+        return parseClaims(authToken).get("email", String.class);
+    }
+
+    private io.jsonwebtoken.Claims parseClaims(final String authToken) {
         try {
             final AppleTokenHeader authTokenHeader = objectMapper.readValue(
                 extractHeaderFrom(authToken), AppleTokenHeader.class
@@ -132,18 +140,12 @@ public class AppleClient implements ClientProxy {
             }
 
             final PublicKey publicKey = publicKeyGenerator.generate(authTokenHeader, applePublicKeys.getKeys());
-            return parseAuthId(authToken, publicKey);
+            return Jwts.parserBuilder().setSigningKey(publicKey).build()
+                .parseClaimsJws(authToken)
+                .getBody();
         } catch (final JsonProcessingException exception) {
             throw new OAuthTokenNotValidException();
-
         }
-    }
-
-    private String parseAuthId(final String authToken, final PublicKey publicKey) {
-        return Jwts.parserBuilder().setSigningKey(publicKey).build()
-            .parseClaimsJws(authToken)
-            .getBody()
-            .getSubject();
     }
 
     private String extractHeaderFrom(final String token) {

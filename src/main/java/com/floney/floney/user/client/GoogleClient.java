@@ -22,6 +22,10 @@ public class GoogleClient implements ClientProxy {
 
     @Override
     public String getAuthId(final String authToken) {
+        return getUserInfo(authToken).getSub();
+    }
+
+    public GoogleUserResponse getUserInfo(final String authToken) {
         final URI uri = UriComponentsBuilder
                 .fromUriString("https://oauth2.googleapis.com")
                 .path("/tokeninfo")
@@ -31,7 +35,10 @@ public class GoogleClient implements ClientProxy {
         try {
             logger.info("[{}]로 통신 시작", uri);
             final GoogleUserResponse result = restTemplate.getForObject(uri, GoogleUserResponse.class);
-            return result.getSub();
+            if (result == null) {
+                throw new OAuthResponseException();
+            }
+            return result;
         } catch (HttpClientErrorException.BadRequest exception) {
             throw new OAuthTokenNotValidException();
         } catch (NullPointerException exception) {
