@@ -28,6 +28,10 @@ public class KakaoClient implements ClientProxy {
 
     @Override
     public String getAuthId(final String authToken) {
+        return getUserInfo(authToken).getId().toString();
+    }
+
+    public KakaoUserResponse getUserInfo(final String authToken) {
         final URI uri = UriComponentsBuilder
                 .fromUriString("https://kapi.kakao.com")
                 .path("/v2/user/me")
@@ -42,7 +46,7 @@ public class KakaoClient implements ClientProxy {
             logger.info("[{}]로 통신 시작", uri);
             final ResponseEntity<KakaoUserResponse> result = restTemplate
                     .exchange(uri, HttpMethod.GET, request, KakaoUserResponse.class);
-            return Objects.requireNonNull(result.getBody()).getId().toString();
+            return Objects.requireNonNull(result.getBody());
         } catch (HttpClientErrorException.Unauthorized exception) {
             throw new OAuthTokenNotValidException();
         } catch (NullPointerException exception) {

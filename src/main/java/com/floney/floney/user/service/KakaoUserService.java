@@ -7,6 +7,7 @@ import com.floney.floney.common.util.JwtProvider;
 import com.floney.floney.user.client.KakaoClient;
 import com.floney.floney.user.dto.constant.Provider;
 import com.floney.floney.user.dto.request.SignupRequest;
+import com.floney.floney.user.dto.response.KakaoUserResponse;
 import com.floney.floney.user.entity.User;
 import com.floney.floney.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,24 @@ public class KakaoUserService implements OAuthUserService {
 
     @Override
     public boolean checkIfSignup(String oAuthToken) {
-        return userRepository.existsByProviderId(getProviderId(oAuthToken));
+        final KakaoUserResponse kakaoUser = kakaoClient.getUserInfo(oAuthToken);
+        final String providerId = kakaoUser.getId().toString();
+
+        if (userRepository.existsByProviderId(providerId)) {
+            return true;
+        }
+
+        final String kakaoEmail = kakaoUser.getKakaoAccount() != null
+                ? kakaoUser.getKakaoAccount().getEmail()
+                : null;
+
+        if (kakaoEmail != null && !kakaoEmail.isEmpty()) {
+            userRepository.findByEmail(kakaoEmail).ifPresent(user -> {
+                throw new UserFoundException(user.getEmail(), user.getProvider());
+            });
+        }
+
+        return false;
     }
 
     @Override
