@@ -81,6 +81,13 @@ CURRENT=$(get_current_slot)
 if ! docker ps --format '{{.Names}}' | grep -qE "^floney-app-(blue|green)$"; then
     echo "🚀 첫 번째 배포 시작..."
 
+    # 기존 standalone 컨테이너 정리 (compose로 전환)
+    echo "🧹 기존 standalone 컨테이너 정리..."
+    docker stop floney-app 2>/dev/null || true
+    docker rm floney-app 2>/dev/null || true
+    docker stop floney-redis 2>/dev/null || true
+    docker rm floney-redis 2>/dev/null || true
+
     docker compose -f "$COMPOSE_FILE" up -d --remove-orphans redis
     docker compose -f "$COMPOSE_FILE" up -d --remove-orphans app-blue
 
@@ -88,10 +95,6 @@ if ! docker ps --format '{{.Names}}' | grep -qE "^floney-app-(blue|green)$"; the
 
     write_upstream $BLUE_PORT
     reload_nginx
-
-    # 구 floney-app 컨테이너 정리
-    docker stop floney-app 2>/dev/null || true
-    docker rm floney-app 2>/dev/null || true
 
     echo "🎉 첫 번째 배포 완료! 활성 슬롯: blue (포트: $BLUE_PORT)"
     exit 0
