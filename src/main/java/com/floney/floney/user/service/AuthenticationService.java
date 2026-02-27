@@ -67,15 +67,28 @@ public class AuthenticationService {
     public Token reissueToken(Token token) {
         final String accessToken = token.getAccessToken();
         final String refreshToken = token.getRefreshToken();
-
         final String username = jwtProvider.getUsername(accessToken);
-        final String redisRefreshToken = redisProvider.get(username);
 
-        if (!refreshToken.equals(redisRefreshToken)) {
+        synchronized (username.intern()) {
+            final String redisRefreshToken = redisProvider.get(username);
+
+            if (redisRefreshToken == null) {
+                throw new MalformedJwtException("");
+            }
+
+            if (refreshToken.equals(redisRefreshToken)) {
+                return jwtProvider.generateToken(username);
+            }
+
+            // 현재 토큰과 불일치 → 직전 토큰(race condition 대비)인지 확인
+            final String prevRefreshToken = redisProvider.get("prev_rt:" + username);
+            if (refreshToken.equals(prevRefreshToken)) {
+                logger.info("동시 reissue 요청 감지: [{}]", username);
+                return jwtProvider.generateToken(username);
+            }
+
             throw new MalformedJwtException("");
         }
-
-        return jwtProvider.generateToken(username);
     }
 
     public String sendEmailAuthMail(String email) {
