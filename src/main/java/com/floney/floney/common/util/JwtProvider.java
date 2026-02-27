@@ -56,7 +56,15 @@ public class JwtProvider {
             .compact();
     }
 
+    private static final long PREV_REFRESH_TOKEN_GRACE_PERIOD = 30_000L; // 30초
+
     private String generateRefreshToken(String subject) {
+        // 기존 refresh token을 직전 토큰으로 저장 (동시 reissue race condition 방어)
+        String oldRefreshToken = redisProvider.get(subject);
+        if (oldRefreshToken != null) {
+            redisProvider.set("prev_rt:" + subject, oldRefreshToken, PREV_REFRESH_TOKEN_GRACE_PERIOD);
+        }
+
         Claims claims = Jwts.claims().setSubject(subject);
 
         Date now = new Date();
