@@ -37,14 +37,15 @@ public class KakaoUserService implements OAuthUserService {
             return true;
         }
 
+        // providerId로 못 찾으면 카카오 이메일로 기존 유저 검색 (iOS/Android 앱 키 다를 때)
         final String kakaoEmail = kakaoUser.getKakaoAccount() != null
                 ? kakaoUser.getKakaoAccount().getEmail()
                 : null;
 
         if (kakaoEmail != null && !kakaoEmail.isEmpty()) {
-            userRepository.findByEmail(kakaoEmail).ifPresent(user -> {
-                throw new UserFoundException(user.getEmail(), user.getProvider());
-            });
+            if (userRepository.findByEmail(kakaoEmail).isPresent()) {
+                return true;
+            }
         }
 
         return false;
@@ -63,8 +64,27 @@ public class KakaoUserService implements OAuthUserService {
     @Override
     @Transactional
     public Token login(final String oAuthToken) {
-        final String providerId = getProviderId(oAuthToken);
-        final User user = findUserByProviderId(oAuthToken, providerId);
+        final KakaoUserResponse kakaoUser = kakaoClient.getUserInfo(oAuthToken);
+        final String providerId = kakaoUser.getId().toString();
+
+        // providerId로 검색, 없으면 카카오 이메일로 검색 후 providerId 연동
+        final User user = userRepository.findByProviderId(providerId)
+                .orElseGet(() -> {
+                    final String kakaoEmail = kakaoUser.getKakaoAccount() != null
+                            ? kakaoUser.getKakaoAccount().getEmail()
+                            : null;
+
+                    if (kakaoEmail == null || kakaoEmail.isEmpty()) {
+                        throw new UserNotFoundException(oAuthToken);
+                    }
+
+                    final User existingUser = userRepository.findByEmail(kakaoEmail)
+                            .orElseThrow(() -> new UserNotFoundException(oAuthToken));
+
+                    logger.info("카카오 providerId 연동: [{}] {} → {}", kakaoEmail, existingUser.getProviderId(), providerId);
+                    existingUser.linkProvider(providerId);
+                    return existingUser;
+                });
 
         user.login();
         userRepository.save(user);

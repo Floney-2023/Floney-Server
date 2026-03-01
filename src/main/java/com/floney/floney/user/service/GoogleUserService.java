@@ -39,9 +39,9 @@ public class GoogleUserService implements OAuthUserService {
 
         final String googleEmail = googleUser.getEmail();
         if (googleEmail != null && !googleEmail.isEmpty()) {
-            userRepository.findByEmail(googleEmail).ifPresent(user -> {
-                throw new UserFoundException(user.getEmail(), user.getProvider());
-            });
+            if (userRepository.findByEmail(googleEmail).isPresent()) {
+                return true;
+            }
         }
 
         return false;
@@ -60,8 +60,24 @@ public class GoogleUserService implements OAuthUserService {
     @Override
     @Transactional
     public Token login(final String oAuthToken) {
-        final String providerId = getProviderId(oAuthToken);
-        final User user = findUserByProviderId(oAuthToken, providerId);
+        final GoogleUserResponse googleUser = googleClient.getUserInfo(oAuthToken);
+        final String providerId = googleUser.getSub();
+
+        final User user = userRepository.findByProviderId(providerId)
+                .orElseGet(() -> {
+                    final String googleEmail = googleUser.getEmail();
+
+                    if (googleEmail == null || googleEmail.isEmpty()) {
+                        throw new UserNotFoundException(oAuthToken);
+                    }
+
+                    final User existingUser = userRepository.findByEmail(googleEmail)
+                            .orElseThrow(() -> new UserNotFoundException(oAuthToken));
+
+                    logger.info("구글 providerId 연동: [{}] {} → {}", googleEmail, existingUser.getProviderId(), providerId);
+                    existingUser.linkProvider(providerId);
+                    return existingUser;
+                });
 
         user.login();
         userRepository.save(user);

@@ -38,9 +38,9 @@ public class AppleUserService implements OAuthUserService {
 
         final String appleEmail = appleClient.getEmail(oAuthToken);
         if (appleEmail != null && !appleEmail.isEmpty()) {
-            userRepository.findByEmail(appleEmail).ifPresent(user -> {
-                throw new UserFoundException(user.getEmail(), user.getProvider());
-            });
+            if (userRepository.findByEmail(appleEmail).isPresent()) {
+                return true;
+            }
         }
 
         return false;
@@ -60,7 +60,22 @@ public class AppleUserService implements OAuthUserService {
     @Transactional
     public Token login(final String oAuthToken) {
         final String providerId = getProviderId(oAuthToken);
-        final User user = findUserByProviderId(oAuthToken, providerId);
+
+        final User user = userRepository.findByProviderId(providerId)
+                .orElseGet(() -> {
+                    final String appleEmail = appleClient.getEmail(oAuthToken);
+
+                    if (appleEmail == null || appleEmail.isEmpty()) {
+                        throw new UserNotFoundException(oAuthToken);
+                    }
+
+                    final User existingUser = userRepository.findByEmail(appleEmail)
+                            .orElseThrow(() -> new UserNotFoundException(oAuthToken));
+
+                    logger.info("애플 providerId 연동: [{}] {} → {}", appleEmail, existingUser.getProviderId(), providerId);
+                    existingUser.linkProvider(providerId);
+                    return existingUser;
+                });
 
         user.login();
         userRepository.save(user);

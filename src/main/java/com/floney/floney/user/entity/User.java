@@ -160,6 +160,10 @@ public class User extends BaseEntity {
         recentBookKey = null;
     }
 
+    public void linkProvider(String providerId) {
+        this.providerId = providerId;
+    }
+
     public void validateEmailUser() {
         if (!Provider.EMAIL.equals(provider)) {
             throw new NotEmailUserException(provider);
